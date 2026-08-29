@@ -36,6 +36,10 @@ local usData     = dofile( LrPathUtils.child( dataDir, "UnitedStates.lua" ) )
 -- Bundled pure-Lua JSON decoder (dkjson, MIT licence).
 local dkjson = dofile( LrPathUtils.child( pluginPath, "dkjson.lua" ) )
 
+-- GitHub sync helper (reads/writes verified/<Country>.json). Sync is only
+-- active on a machine where a token has been entered in Plug-in Manager.
+local GitHubSync = dofile( LrPathUtils.child( pluginPath, "GitHubSync.lua" ) )
+
 local COUNTRIES = {
         { id = "Norway",       name = "Norway",        filename = "Norway.lua",       data = norwayData },
         { id = "Sweden",       name = "Sweden",        filename = "Sweden.lua",       data = swedenData },
@@ -318,6 +322,116 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                         props[ "vcci_" .. cid .. "_" .. i ] = "—"
                         props[ "vaci_" .. cid .. "_" .. i ] = validAction( savedCi[ i ] and savedCi[ i ].a )
                 end
+        end
+
+        -- Persist the current in-memory verification state (conflict + action)
+        -- for a country to prefs.  Captures action changes made via the popup
+        -- after a Verify run (which otherwise would only live in props).
+        local function persistVerToPrefs( cid )
+                local geo = GEO[ cid ]
+                if not geo then return end
+                local function grab( names, vcPfx, vaPfx )
+                        local saved = {}
+                        for i = 1, #names do
+                                saved[ i ] = {
+                                        c = props[ vcPfx .. cid .. "_" .. i ],
+                                        a = props[ vaPfx .. cid .. "_" .. i ],
+                                }
+                        end
+                        return saved
+                end
+                prefs[ "ver_" .. cid .. "_co" ] = grab( geo.counties, "vcco_", "vaco_" )
+                prefs[ "ver_" .. cid .. "_mu" ] = grab( geo.munis,    "vcmu_", "vamu_" )
+                prefs[ "ver_" .. cid .. "_ci" ] = grab( geo.cities,   "vcci_", "vaci_" )
+        end
+
+        -- Build the verified/<Country>.json payload (Lua table) from the current
+        -- in-memory verification state.  Only entries with a real conflict
+        -- suggestion or an action of "change" are included, keeping the file
+        -- small and meaningful.
+        local function buildVerifiedJson( cid, ver )
+                local geo = GEO[ cid ]
+                local function levelArr( names, vcPfx, vaPfx )
+                        local arr = {}
+                        for i = 1, #names do
+                                local conflict = props[ vcPfx .. cid .. "_" .. i ]
+                                local action   = props[ vaPfx .. cid .. "_" .. i ]
+                                local realC    = conflict and conflict ~= "—"
+                                                 and conflict ~= "-" and conflict ~= "..."
+                                if realC or action == "change" then
+                                        arr[ #arr + 1 ] = {
+                                                i        = i,
+                                                name     = names[ i ],
+                                                conflict = realC and conflict or nil,
+                                                action   = ( action == "change" ) and "change" or "dash",
+                                        }
+                                end
+                        end
+                        return arr
+                end
+                return {
+                        country  = cid,
+                        version  = ver or prefs[ "list_version_" .. cid ] or "?",
+                        verified = os.date( "%Y-%m-%d" ),
+                        listname = props[ "listname_" .. cid ],
+                        levels   = {
+                                co = levelArr( geo.counties, "vcco_", "vaco_" ),
+                                mu = levelArr( geo.munis,    "vcmu_", "vamu_" ),
+                                ci = levelArr( geo.cities,   "vcci_", "vaci_" ),
+                        },
+                }
+        end
+
+        -- Apply a decoded verified/<Country>.json payload back into props.
+        -- Entries are matched by name (with an index fallback), so the mapping
+        -- survives small reorderings of the underlying data.
+        local function applyVerifiedJson( cid, obj )
+                local geo = GEO[ cid ]
+                if not geo or not obj or not obj.levels then return end
+                local function applyLevel( names, vcPfx, vaPfx, arr )
+                        if type( arr ) ~= "table" then return end
+                        local byName = {}
+                        for i = 1, #names do
+                                byName[ names[ i ] ] = byName[ names[ i ] ] or {}
+                                table.insert( byName[ names[ i ] ], i )
+                        end
+                        local used = {}
+                        for _, e in ipairs( arr ) do
+                                local idx
+                                if e.name and byName[ e.name ] then
+                                        for _, cand in ipairs( byName[ e.name ] ) do
+                                                if not used[ cand ] then idx = cand; break end
+                                        end
+                                        idx = idx or byName[ e.name ][ 1 ]
+                                end
+                                idx = idx or e.i
+                                if idx and idx >= 1 and idx <= #names then
+                                        used[ idx ] = true
+                                        if e.conflict and e.conflict ~= "" then
+                                                props[ vcPfx .. cid .. "_" .. idx ] = e.conflict
+                                        end
+                                        props[ vaPfx .. cid .. "_" .. idx ] =
+                                                ( e.action == "change" ) and "change" or "dash"
+                                end
+                        end
+                end
+                applyLevel( geo.counties, "vcco_", "vaco_", obj.levels.co )
+                applyLevel( geo.munis,    "vcmu_", "vamu_", obj.levels.mu )
+                applyLevel( geo.cities,   "vcci_", "vaci_", obj.levels.ci )
+
+                if obj.version then
+                        prefs[ "list_version_" .. cid ] = obj.version
+                        props[ "list_version_" .. cid ] = obj.version
+                end
+                if obj.verified then
+                        prefs[ "verified_" .. cid ] = obj.verified
+                        props[ "verified_" .. cid ] = obj.verified
+                end
+                if obj.listname and obj.listname ~= "" then
+                        prefs[ "listname_" .. cid ] = obj.listname
+                        props[ "listname_" .. cid ] = obj.listname
+                end
+                persistVerToPrefs( cid )
         end
 
         ------------------------------------------------------------------------
@@ -697,6 +811,54 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                 local groupMu = makeGroup( labels.muni,   geo.munis,    "vcmu_", "vamu_", "mu" )
                 local groupCi = makeGroup( labels.city,   geo.cities,   "vcci_", "vaci_", "ci" )
 
+                -- Pull the latest verified/<Country>.json from GitHub and apply it.
+                -- Explicit, author-only action: does nothing on machines without a token.
+                local function doRefresh()
+                        LrTasks.startAsyncTask( function()
+                                if not GitHubSync.isConfigured() then
+                                        LrDialogs.message(
+                                                "GitHub not configured",
+                                                "Enter a GitHub token in File ▸ Plug-in Manager ▸ " ..
+                                                "Geography Keyword Builder ▸ GitHub Sync to enable syncing.",
+                                                "warning" )
+                                        return
+                                end
+                                local path = GitHubSync.verifiedPath( cid )
+                                local content, err = GitHubSync.readFile( path )
+                                if not content then
+                                        if err == "not found" then
+                                                LrDialogs.message(
+                                                        "Nothing to refresh — " .. cname,
+                                                        "No verification file exists yet at " .. path ..
+                                                        ".\nVerify and Save first to create it.",
+                                                        "info" )
+                                        else
+                                                LrDialogs.message(
+                                                        "Refresh failed — " .. cname,
+                                                        "Could not read " .. path .. ":\n" .. tostring( err ),
+                                                        "warning" )
+                                        end
+                                        return
+                                end
+                                local obj = dkjson.decode( content )
+                                if type( obj ) ~= "table" or type( obj.levels ) ~= "table" then
+                                        LrDialogs.message(
+                                                "Refresh failed — " .. cname,
+                                                "The file at " .. path .. " is not valid verification JSON.",
+                                                "warning" )
+                                        return
+                                end
+                                applyVerifiedJson( cid, obj )
+                                switchTab( TAB_IDS.MN )   -- rebuild panel with restored data
+                                LrDialogs.message(
+                                        "Refreshed — " .. cname,
+                                        "Loaded verification data from GitHub (version " ..
+                                        tostring( obj.version or "?" ) .. ", verified " ..
+                                        tostring( obj.verified or "?" ) .. ").",
+                                        "info" )
+                        end )
+                end
+
                 return f:column {
                         bind_to_object = props,
                         spacing        = f:control_spacing(),
@@ -718,9 +880,23 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                         },
                         f:static_text {
                                 title = "Clicking Save will store the current verification results as version " ..
-                                        nextVer .. " of the " .. cname .. " list.",
+                                        nextVer .. " of the " .. cname .. " list" ..
+                                        ( GitHubSync.isConfigured() and " and push it to GitHub." or "." ),
                                 width           = CONTENT_W_MN,
                                 height_in_lines = 2,
+                        },
+                        f:row {
+                                spacing = 6,
+                                f:push_button {
+                                        title  = "Refresh from GitHub",
+                                        action = doRefresh,
+                                },
+                                f:static_text {
+                                        title = GitHubSync.isConfigured()
+                                                and "Loads the latest saved verification data for " .. cname .. " from GitHub."
+                                                or  "GitHub sync is disabled — set a token in Plug-in Manager to enable.",
+                                        fill_horizontal = 1,
+                                },
                         },
                         f:separator { fill_horizontal = 1 },
                         f:spacer { height = 5 },
@@ -826,13 +1002,48 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                 local newVer = computeNextVersion( cid, prefs )
                                 prefs[ "list_version_" .. cid ] = newVer
                                 props[ "list_version_" .. cid ] = newVer
-                                LrDialogs.message(
-                                        "Saved — " .. getCountryName( cid ),
-                                        "Verification results saved.\n\n" ..
-                                        "The " .. getCountryName( cid ) .. " list is now listed as version " ..
-                                        newVer .. " in List Overview.",
-                                        "info"
-                                )
+                                prefs[ "verified_" .. cid ]     = os.date( "%Y-%m-%d" )
+                                props[ "verified_" .. cid ]     = prefs[ "verified_" .. cid ]
+                                -- Capture any Action changes made after Verify (popup-only edits).
+                                persistVerToPrefs( cid )
+                                local cname = getCountryName( cid )
+
+                                if GitHubSync.isConfigured() then
+                                        -- Build the payload now (on the UI thread, where props are
+                                        -- valid) then push from an async task (LrHttp requires one).
+                                        local payload = buildVerifiedJson( cid, newVer )
+                                        local path    = GitHubSync.verifiedPath( cid )
+                                        local pretty  = dkjson.encode( payload, { indent = true } )
+                                        LrTasks.startAsyncTask( function()
+                                                local ok, info = GitHubSync.writeFile(
+                                                        path, pretty,
+                                                        "Verify " .. cname .. " → " .. newVer )
+                                                if ok then
+                                                        LrDialogs.message(
+                                                                "Saved & pushed — " .. cname,
+                                                                "Version " .. newVer .. " saved locally and pushed " ..
+                                                                "to GitHub:\n" .. path ..
+                                                                ( info and ( "\n\nCommit: " .. info ) or "" ),
+                                                                "info" )
+                                                else
+                                                        LrDialogs.message(
+                                                                "Saved locally — GitHub push FAILED — " .. cname,
+                                                                "Version " .. newVer .. " was saved on this machine, " ..
+                                                                "but the GitHub push failed:\n" .. tostring( info ) ..
+                                                                "\n\nCheck your token in File ▸ Plug-in Manager.",
+                                                                "warning" )
+                                                end
+                                        end )
+                                else
+                                        LrDialogs.message(
+                                                "Saved — " .. cname,
+                                                "Verification results saved.\n\n" ..
+                                                "The " .. cname .. " list is now listed as version " ..
+                                                newVer .. " in List Overview.\n\n" ..
+                                                "(GitHub sync is off — set a token in Plug-in Manager to " ..
+                                                "push verification files automatically.)",
+                                                "info" )
+                                end
                         end
                         currentDialog = TAB_IDS.OV   -- return to List Overview after Save
 
