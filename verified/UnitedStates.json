@@ -2,20 +2,10 @@
   "listname":"LR-UnitedStates",
   "levels":{
     "mu":[],
-    "ci":[{
-        "i":1875,
-        "action":"change",
-        "name":"Kuliouou - Kalani Iki",
-        "conflict":"Kalani Iki"
-      },{
-        "i":1888,
-        "action":"change",
-        "name":"Marine Corps Base Hawaii - MCBH",
-        "conflict":"MCBH"
-      }],
+    "ci":[],
     "co":[]
   },
-  "version":"0.7.14",
+  "version":"0.7.16",
   "country":"UnitedStates",
-  "verified":"2026-08-30 22:56"
+  "verified":"2026-08-30 22:59"
 }
