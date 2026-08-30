@@ -2,6 +2,11 @@
   "listname":"LR-Norway",
   "levels":{
     "mu":[{
+        "i":290,
+        "action":"none",
+        "name":"Raarvihke - Røyrvik",
+        "conflict":"Røyrvik"
+      },{
         "i":299,
         "action":"change",
         "name":"Snåase - Snåsa",
@@ -10,7 +15,7 @@
     "ci":[],
     "co":[]
   },
-  "version":"0.5.13",
+  "version":"0.5.14",
   "country":"Norway",
-  "verified":"2026-08-30 22:31"
+  "verified":"2026-08-30 22:32"
 }
