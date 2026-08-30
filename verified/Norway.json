@@ -1,0 +1,16 @@
+{
+  "listname":"LR-Norway",
+  "levels":{
+    "mu":[{
+        "i":299,
+        "action":"change",
+        "name":"Snåase - Snåsa",
+        "conflict":"Snåsa"
+      }],
+    "ci":[],
+    "co":[]
+  },
+  "version":"0.5.8",
+  "country":"Norway",
+  "verified":"2026-08-30"
+}
