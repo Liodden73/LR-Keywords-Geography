@@ -34,8 +34,8 @@ function provider.sectionsForTopOfDialog( f, props )
         props.gh_branch     = prefs.gh_branch     or "main"
         props.gh_pathPrefix = prefs.gh_pathPrefix or "verified"
         props.gh_status     = GitHubSync.isConfigured()
-                                 and "Token stored on this machine."
-                                 or  "No token set — sync disabled."
+                                 and "Token stored on this machine — read & write enabled."
+                                 or  "No token — read-only (Save/push disabled)."
 
         -- Persist each field back to prefs as it changes.
         local function persist( key )
@@ -58,11 +58,13 @@ function provider.sectionsForTopOfDialog( f, props )
                         title = "GitHub Sync",
 
                         f:static_text {
-                                title = "Enter a GitHub personal-access token (with repo scope) to " ..
-                                        "read and write verification files. The token is stored only " ..
-                                        "on this machine and is never included in the distributed plugin.",
+                                title = "Reading verification files from a PUBLIC repo works without a token. " ..
+                                        "A GitHub personal-access token (with repo / Contents: write scope) is " ..
+                                        "only required to SAVE (push) changes back to GitHub — writing always " ..
+                                        "needs a token, even on a public repo. The token is stored only on this " ..
+                                        "machine and is never included in the distributed plugin.",
                                 width = 640,
-                                height_in_lines = 2,
+                                height_in_lines = 3,
                         },
 
                         f:row {
