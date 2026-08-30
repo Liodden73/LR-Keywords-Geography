@@ -4,10 +4,10 @@
 -- Data version 0.5.0  generated 2026-08-25
 return {
         meta = {
-                version     = "0.5.0",
+                version     = "0.5.10",
                 country     = "Norway",
                 native_name = "Norge",
-                generated   = "2026-08-25",
+                generated   = "2026-08-30",
         },
 
         national_parks = {
@@ -7428,7 +7428,7 @@ return {
                                         cities = {},
                                 },
                                 {
-                                        name = "Snåase - Snåsa",
+                                        name = "Snåsa",
                                         primary_city = "Snåase",
                                         districts = {},
                                         cities = {},
