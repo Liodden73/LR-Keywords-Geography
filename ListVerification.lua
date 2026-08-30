@@ -815,11 +815,13 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                 -- Explicit, author-only action: does nothing on machines without a token.
                 local function doRefresh()
                         LrTasks.startAsyncTask( function()
-                                if not GitHubSync.isConfigured() then
+                                if not GitHubSync.isReadable() then
                                         LrDialogs.message(
                                                 "GitHub not configured",
-                                                "Enter a GitHub token in File ▸ Plug-in Manager ▸ " ..
-                                                "Geography Keyword Builder ▸ GitHub Sync to enable syncing.",
+                                                "Set the owner and repository in File ▸ Plug-in Manager ▸ " ..
+                                                "Geography Keyword Builder ▸ GitHub Sync to enable syncing. " ..
+                                                "Reading from a public repo works without a token; a token is " ..
+                                                "only needed to Save (push) changes.",
                                                 "warning" )
                                         return
                                 end
@@ -881,7 +883,10 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                         f:static_text {
                                 title = "Clicking Save will store the current verification results as version " ..
                                         nextVer .. " of the " .. cname .. " list" ..
-                                        ( GitHubSync.isConfigured() and " and push it to GitHub." or "." ),
+                                        ( GitHubSync.isConfigured()
+                                          and " and push it to GitHub."
+                                          or  ". To also push it to GitHub, enter a token in Plug-in Manager " ..
+                                              "(writing always requires a token, even on a public repo)." ),
                                 width           = CONTENT_W_MN,
                                 height_in_lines = 2,
                         },
@@ -892,9 +897,9 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                         action = doRefresh,
                                 },
                                 f:static_text {
-                                        title = GitHubSync.isConfigured()
-                                                and "Loads the latest saved verification data for " .. cname .. " from GitHub."
-                                                or  "GitHub sync is disabled — set a token in Plug-in Manager to enable.",
+                                        title = GitHubSync.isReadable()
+                                                and "Loads the latest saved verification data for " .. cname .. " from GitHub (no token needed to read a public repo)."
+                                                or  "Set the owner/repository in Plug-in Manager to enable.",
                                         fill_horizontal = 1,
                                 },
                         },
