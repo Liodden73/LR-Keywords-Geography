@@ -5,7 +5,7 @@
 
 return {
 
-	meta = { version = "0.7.3", country = "United States", native_name = "United States" },
+	meta = { version = "0.7.15", country = "United States", native_name = "United States" },
 
 	counties = {
 		{ name = "Alabama",
@@ -605,7 +605,7 @@ return {
 			{ name = "Kauai County", cities = { "Kapa‘a", "Lihue", "Wailua Homesteads" } },
 			{ name = "Maui County", cities = { "Kahului", "Kīhei", "Wailuku", "Lahaina", "Haiku-Pauwela", "Waihee-Waiehu", "Haʻikū", "Pukalani", "Napili-Honokowai", "Makawao", "Kula", "Spreckelsville", "Wailea", "Wailea-Makena" } },
 			{ name = "Hawaii County", cities = { "Hilo", "Kailua-Kona", "Hawaiian Paradise Park", "Kalaoa", "Waimea", "Hōlualoa" } },
-			{ name = "Honolulu County", cities = { "Honolulu", "East Honolulu", "Pearl City", "Joint Base Pearl Harbor Hickam", "Aliamanu / Salt Lakes / Foster Village", "Kailua", "Waipahu", "Kaneohe", "Mililani Town", "Manoa", "‘Ewa Gentry", "Mililani Mauka", "Kalihi Valley", "Waikīkī", "Diamond Head / Kapahulu / Saint Louis Heights", "Niu Valley", "Makakilo", "Mililani Mauka / Launani Valley", "Wahiawā", "‘Ewa Beach", "Schofield Barracks", "Kuliouou - Kalani Iki", "Kapolei Villages", "Makakilo City", "Kapolei", "Royal Kunia", "Hālawa", "Waimalu", "Hālawa Heights", "Waianae", "Nānākuli", "Palolo", "Waipio", "Village Park", "Marine Corps Base Hawaii - MCBH", "Mā‘ili", "Moanalua", "‘Aiea", "‘Āhuimanu", "Ocean Pointe", "Mākaha", "Pacific Palisades", "Hickam Field", "Keolu Hills", "Lā‘ie", "‘Ewa Villages", "Kuli‘ou‘ou", "Waipi‘o Acres", "West Loch Estates", "‘Aiea Heights", "Waimanalo", "Dowsett Highlands", "East Kapolei", "Pauoa", "Pupukea", "Punahou" } },
+			{ name = "Honolulu County", cities = { "Honolulu", "East Honolulu", "Pearl City", "Joint Base Pearl Harbor Hickam", "Aliamanu / Salt Lakes / Foster Village", "Kailua", "Waipahu", "Kaneohe", "Mililani Town", "Manoa", "‘Ewa Gentry", "Mililani Mauka", "Kalihi Valley", "Waikīkī", "Diamond Head / Kapahulu / Saint Louis Heights", "Niu Valley", "Makakilo", "Mililani Mauka / Launani Valley", "Wahiawā", "‘Ewa Beach", "Schofield Barracks", "Kalani Iki", "Kapolei Villages", "Makakilo City", "Kapolei", "Royal Kunia", "Hālawa", "Waimalu", "Hālawa Heights", "Waianae", "Nānākuli", "Palolo", "Waipio", "Village Park", "MCBH", "Mā‘ili", "Moanalua", "‘Aiea", "‘Āhuimanu", "Ocean Pointe", "Mākaha", "Pacific Palisades", "Hickam Field", "Keolu Hills", "Lā‘ie", "‘Ewa Villages", "Kuli‘ou‘ou", "Waipi‘o Acres", "West Loch Estates", "‘Aiea Heights", "Waimanalo", "Dowsett Highlands", "East Kapolei", "Pauoa", "Pupukea", "Punahou" } },
 		  },
 		},
 		{ name = "Idaho",
