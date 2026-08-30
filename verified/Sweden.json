@@ -1,0 +1,11 @@
+{
+  "listname":"LR-Sweden",
+  "levels":{
+    "mu":[],
+    "ci":[],
+    "co":[]
+  },
+  "version":"0.1.1",
+  "country":"Sweden",
+  "verified":"2026-08-30"
+}
