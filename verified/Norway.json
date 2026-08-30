@@ -4,12 +4,13 @@
     "mu":[{
         "i":299,
         "action":"change",
-        "name":"Snåsa"
+        "name":"Snåase - Snåsa",
+        "conflict":"Snåsa"
       }],
     "ci":[],
     "co":[]
   },
-  "version":"0.5.11",
+  "version":"0.5.12",
   "country":"Norway",
   "verified":"2026-08-30"
 }
