@@ -4,18 +4,18 @@
     "mu":[],
     "ci":[{
         "i":1875,
-        "action":"none",
+        "action":"change",
         "name":"Kuliouou - Kalani Iki",
         "conflict":"Kalani Iki"
       },{
         "i":1888,
-        "action":"none",
+        "action":"change",
         "name":"Marine Corps Base Hawaii - MCBH",
         "conflict":"MCBH"
       }],
     "co":[]
   },
-  "version":"0.7.17",
+  "version":"0.7.18",
   "country":"UnitedStates",
-  "verified":"2026-08-31 17:17"
+  "verified":"2026-08-31 17:27"
 }
