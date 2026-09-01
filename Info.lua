@@ -16,14 +16,10 @@ return {
 
         LrLibraryMenuItems = {
                 {
-                        title = "Keyword List Builder...",
-                        file  = "KeywordBuilder.lua",
-                },
-                {
-                        title = "List Verification...",
+                        title = "Geography Keyword Builder...",
                         file  = "ListVerification.lua",
                 },
         },
 
-        VERSION = { major = 0, minor = 9, revision = 30, build = 0 },
+        VERSION = { major = 0, minor = 9, revision = 79, build = 0 },
 }

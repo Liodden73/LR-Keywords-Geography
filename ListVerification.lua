@@ -32,6 +32,22 @@ local norwayData = dofile( LrPathUtils.child( dataDir, "Norway.lua"       ) )
 local swedenData = dofile( LrPathUtils.child( dataDir, "Sweden.lua"       ) )
 local panamaData = dofile( LrPathUtils.child( dataDir, "Panama.lua"       ) )
 local usData     = dofile( LrPathUtils.child( dataDir, "UnitedStates.lua" ) )
+local chileData  = dofile( LrPathUtils.child( dataDir, "Chile.lua"        ) )
+local kenyaData  = dofile( LrPathUtils.child( dataDir, "Kenya.lua"        ) )
+local nzData     = dofile( LrPathUtils.child( dataDir, "NewZealand.lua"   ) )
+
+local genPath   = LrPathUtils.child( pluginPath, "Generator.lua" )
+local Generator = dofile( genPath )
+local WorldMap  = dofile( LrPathUtils.child( pluginPath, "WorldMap.lua" ) )
+
+local function makeCountyNames( data )
+        local names = {}
+        for _, c in ipairs( data.counties or {} ) do
+                names[ #names + 1 ] = c.name
+        end
+        table.sort( names )
+        return names
+end
 
 -- Bundled pure-Lua JSON decoder (dkjson, MIT licence).
 local dkjson = dofile( LrPathUtils.child( pluginPath, "dkjson.lua" ) )
@@ -41,11 +57,25 @@ local dkjson = dofile( LrPathUtils.child( pluginPath, "dkjson.lua" ) )
 local GitHubSync = dofile( LrPathUtils.child( pluginPath, "GitHubSync.lua" ) )
 
 local COUNTRIES = {
-        { id = "Norway",       name = "Norway",        filename = "Norway.lua",       data = norwayData },
-        { id = "Sweden",       name = "Sweden",        filename = "Sweden.lua",       data = swedenData },
-        { id = "Panama",       name = "Panama",        filename = "Panama.lua",       data = panamaData },
-        { id = "UnitedStates", name = "United States", filename = "UnitedStates.lua", data = usData     },
+        { id = "Norway",       name = "Norway",        code = "NO-578", filename = "Norway.lua",       continent = "Europe",   admin_label = "Counties & Areas",  mountain_max = 2271, data = norwayData, countyNames = makeCountyNames( norwayData ), remoteIslandNames = { "Svalbard", "Jan Mayen", "Peter 1. Island", "Bouvetøya", "Dronning Mauds Land" } },
+        { id = "Sweden",       name = "Sweden",        code = "SE-752", filename = "Sweden.lua",       continent = "Europe",   admin_label = "Counties & Areas",  mountain_max = 2097, data = swedenData, countyNames = makeCountyNames( swedenData ), remoteIslandNames = {} },
+        { id = "Panama",       name = "Panama",        code = "PA-591", filename = "Panama.lua",       continent = "Americas", admin_label = "Provinces & Areas", mountain_max = 3474, data = panamaData, countyNames = makeCountyNames( panamaData ), remoteIslandNames = {} },
+        { id = "UnitedStates", name = "United States", code = "US-840", filename = "UnitedStates.lua", continent = "Americas", admin_label = "States & Areas",    mountain_max = 6194, data = usData,     countyNames = makeCountyNames( usData ),     remoteIslandNames = { "Puerto Rico", "Guam", "US Virgin Islands", "American Samoa", "Northern Mariana Islands" } },
+        { id = "Chile",        name = "Chile",         code = "CL-152", filename = "Chile.lua",        continent = "Americas", admin_label = "Regions & Areas",   mountain_max = 6893, data = chileData,  countyNames = makeCountyNames( chileData ),  remoteIslandNames = { "Isla de Pascua", "Archipiélago Juan Fernández" } },
+        { id = "Kenya",        name = "Kenya",         code = "KE-404", filename = "Kenya.lua",        continent = "Africa",   admin_label = "Counties & Areas",  mountain_max = 5199, data = kenyaData,  countyNames = makeCountyNames( kenyaData ),  remoteIslandNames = {} },
+        { id = "NewZealand",   name = "New Zealand",   code = "NZ-554", filename = "NewZealand.lua",   continent = "Oceania",  admin_label = "Regions & Areas",   mountain_max = 3724, data = nzData,     countyNames = makeCountyNames( nzData ),     remoteIslandNames = { "Chatham Islands", "Subantarctic Islands" } },
 }
+
+local maxCounties = 0
+for _, c in ipairs( COUNTRIES ) do
+        if #c.countyNames > maxCounties then maxCounties = #c.countyNames end
+end
+
+local maxRemoteIslands = 0
+for _, c in ipairs( COUNTRIES ) do
+        local n = #( c.remoteIslandNames or {} )
+        if n > maxRemoteIslands then maxRemoteIslands = n end
+end
 
 -- Per-country label overrides for the three hierarchy levels.
 -- Keys must match COUNTRIES[*].id exactly.
@@ -54,6 +84,9 @@ local LABELS = {
         Sweden       = { county = "County",   muni = "Municipality", city = "City" },
         Panama       = { county = "Province", muni = "District",     city = "City" },
         UnitedStates = { county = "State",    muni = "County",       city = "City" },
+        Chile        = { county = "Region",   muni = "Province",     city = "City" },
+        Kenya        = { county = "County",   muni = "Sub-county",   city = "City" },
+        NewZealand   = { county = "Region",   muni = "District",     city = "City" },
 }
 local DEFAULT_LABELS = { county = "County", muni = "Municipality", city = "City" }
 
@@ -71,6 +104,9 @@ local WIKIDATA_TYPES = {
         Sweden       = { co = "Q200547",   mu = "Q127448",   ci = nil },
         Panama       = { co = "Q608190",   mu = "Q739779",   ci = nil },
         UnitedStates = { co = "Q35657",    mu = "Q13221722", ci = nil },
+        Chile        = { co = nil,         mu = nil,         ci = nil },
+        Kenya        = { co = nil,         mu = nil,         ci = nil },
+        NewZealand   = { co = nil,         mu = nil,         ci = nil },
 }
 
 -- Preferred label language(s) per country for the Wikidata label service.
@@ -79,6 +115,9 @@ local WIKIDATA_LANG = {
         Sweden       = "sv,en",
         Panama       = "es,en",
         UnitedStates = "en",
+        Chile        = "es,en",
+        Kenya        = "sw,en",
+        NewZealand   = "en,mi",
 }
 
 -- Percent-encode a string for safe inclusion in a URL query parameter.
@@ -142,20 +181,22 @@ local function fetchWikidataNames( cid, level )
 end
 
 -- Stable string identifiers for the four tabs.
-local TAB_IDS = { KB = "builder", OV = "overview", MN = "monitor", HLP = "help" }
+local TAB_IDS = { INTRO = "intro", KB = "builder", OV = "overview", MN = "monitor", HLP = "help" }
 
 -- ── Column widths for List Overview ──────────────────────────────────────────
 
+local W_ONOFF    = 35
 local W_COUNTRY  = 90
-local W_LISTNAME = 110
+local W_CODE     = 60
 local W_FILE     = 150
 local W_FILESIZE = 60
 local W_VERSION  = 50
-local W_VERIFIED = 85
-local W_UPDATED  = 85
+local W_NAMES    = 55
+local W_VERIFIED = 115
+local W_UPDATED  = 115
 local W_BUTTON   = 60
-local CONTENT_W  = W_COUNTRY + W_LISTNAME + W_FILE + W_FILESIZE
-                 + W_VERSION + W_VERIFIED + W_BUTTON + W_UPDATED + W_BUTTON + 6 * 8
+local CONTENT_W  = W_ONOFF + W_COUNTRY + W_CODE + W_FILE + W_FILESIZE
+                 + W_VERSION + W_NAMES + W_VERIFIED + W_BUTTON + W_UPDATED + W_BUTTON + 8 * 8 + 15
 
 -- ── Column widths for Verification Monitor ───────────────────────────────────
 
@@ -167,9 +208,23 @@ local G_W          = W_M_NAME + W_M_CONF + W_M_ACT + 12 + 16   -- ~323 px
 -- Total monitor width: 3 groups + inter-group spacing
 local CONTENT_W_MN = G_W * 3 + 30
 
+-- ── Column widths for Keyword List Builder ────────────────────────────────────
+local KB_COL_W_COUNTRY = 380  -- Country column (wider to accommodate continent sliders)
+local KB_COL_W_COUNTY  = 230  -- Counties & Areas column
+
 -- ── Approximate dialog background grey for scrolled_view content ─────────────
 -- LR Classic dialog background is roughly 0.9 (light mode).
 local DLG_BG = LrColor( 0.9, 0.9, 0.9 )
+
+-- ── Action value sanitiser (used across initVerProps + applyVerifiedJson) ─────
+-- Only "change", "change_manual" and "delete" are meaningful persisted actions.
+-- Everything else (old "dash", nil, unknown) maps to "none".
+local function sanitizeAction( v )
+        if v == "change"        then return "change" end
+        if v == "change_manual" then return "change_manual" end
+        if v == "delete"        then return "delete" end
+        return "none"
+end
 
 -- ── Geo data extraction ───────────────────────────────────────────────────────
 
@@ -284,6 +339,548 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
         -- Which country is currently open in the Verification Monitor.
         props.verify_country_id = nil
 
+        -- ── Keyword Builder state ──────────────────────────────────────────────
+
+        local countryState = {}    -- per-country saved settings (keyed by country.id)
+        local loading      = false -- prevents markDirty during state transitions
+
+        -- ── Keyword Builder props ──────────────────────────────────────────────
+
+        props.active_country_id       = ""
+        props.active_country_name     = ""
+        props.active_is_norway        = false
+        props.dirty                   = false
+        props.active_selections_label = "Selections"
+        props.active_divisions_label  = "Counties & Areas"
+        props.active_save_label       = "Save settings"
+        props.active_version_label    = ""
+        props.active_mountain_max     = COUNTRIES[1].mountain_max
+
+        props.feat_select_all          = false
+        props.feat_national_parks      = false
+        props.feat_national_parks_max  = 100
+        props.feat_nature_reserves     = false
+        props.feat_nature_reserves_max = 100
+        props.feat_mountains           = false
+        props.feat_mainland_cutoff     = 1800
+        props.feat_fjords              = false
+        props.feat_fjords_max          = 100
+        props.feat_lakes               = false
+        props.feat_lakes_max           = 100
+        props.feat_rivers              = false
+        props.feat_rivers_max          = 100
+        props.feat_islands             = false
+        props.feat_islands_max         = 100
+        props.feat_viewpoints          = false
+        props.feat_viewpoints_max      = 100
+        props.feat_admin_detail        = 3
+        props.feat_remote_islands_all  = false
+        props.show_ri_section          = false
+        props.ri_count                 = 0
+        for i = 1, maxRemoteIslands do
+                props[ "ri_value_" .. i ] = false
+                props[ "ri_name_"  .. i ] = ""
+        end
+
+        props.div_select_all = false
+        for i = 1, maxCounties do
+                props[ "div_value_" .. i ] = false
+        end
+
+        local _initCont = {}
+        for _, _c in ipairs( COUNTRIES ) do
+                local _cl = ( _c.continent or "Other" ):lower():gsub( "%s+", "_" )
+                if not _initCont[ _cl ] then
+                        _initCont[ _cl ] = true
+                        props[ _cl .. "_expanded" ] = true
+                        props[ _cl .. "_detail"   ] = 0
+                end
+        end
+
+        for _, country in ipairs( COUNTRIES ) do
+                props[ country.id .. "_include" ]      = false
+                props[ country.id .. "_has_settings" ] = false
+                props[ country.id .. "_enabled" ]      = prefs[ "enabled_" .. country.id ] or false
+        end
+
+        for i = 1, maxCounties do
+                props[ "county_name_" .. i ] = ""
+        end
+        props.active_select_all_label     = "Select All"
+
+        -- ── Keyword Builder helpers ────────────────────────────────────────────
+
+        local function inlineSlider( key, minV, maxV, unit )
+                return f:row {
+                        spacing = f:label_spacing(),
+                        f:slider {
+                                bind_to_object = props,
+                                value          = LrView.bind( key ),
+                                min            = minV,
+                                max            = maxV,
+                                integral       = true,
+                                width          = 90,
+                        },
+                        f:static_text {
+                                bind_to_object = props,
+                                font           = { name = "<system>", size = 11 },
+                                title = LrView.bind {
+                                        key       = key,
+                                        transform = function( v )
+                                                return tostring( math.floor( v or 0 ) ) .. ( unit or "" )
+                                        end,
+                                },
+                                width     = 40,
+                                alignment = "right",
+                        },
+                }
+        end
+
+        local function detailLabel( v )
+                local n = math.min( 3, math.max( 1, math.floor( (v or 3) + 0.5 ) ) )
+                return ( { "Less", "More", "All" } )[ n ] or "All"
+        end
+
+        local function contDetailLabel( v )
+                local n = math.min( 3, math.max( 0, math.floor( (v or 0) + 0.5 ) ) )
+                return ( { "None", "Less", "More", "All" } )[ n + 1 ] or "None"
+        end
+
+        -- ── Keyword Builder state management ───────────────────────────────────
+
+        local function kbDefaultState( country )
+                return {
+                        feat_national_parks      = false,
+                        feat_national_parks_max  = 100,
+                        feat_nature_reserves     = false,
+                        feat_nature_reserves_max = 100,
+                        feat_mountains           = false,
+                        feat_mainland_cutoff     = (country.id == "Norway" and 1800 or country.id == "UnitedStates" and 4000 or 1000),
+                        feat_fjords              = false,
+                        feat_fjords_max          = 100,
+                        feat_lakes               = false,
+                        feat_lakes_max           = 100,
+                        feat_rivers              = false,
+                        feat_rivers_max          = 100,
+                        feat_islands             = false,
+                        feat_islands_max         = 100,
+                        feat_viewpoints          = false,
+                        feat_viewpoints_max      = 100,
+                        feat_admin_detail        = 1,
+                        ri                       = {},
+                        counties                 = {},
+                }
+        end
+
+        local function saveCurrentState()
+                local cid = props.active_country_id
+                if cid == "" then return end
+                local activeCountry = nil
+                for _, c in ipairs( COUNTRIES ) do
+                        if c.id == cid then activeCountry = c break end
+                end
+                if not activeCountry then return end
+                local counties = {}
+                for i, name in ipairs( activeCountry.countyNames ) do
+                        counties[ name ] = props[ "div_value_" .. i ] and true or false
+                end
+                countryState[ cid ] = {
+                        feat_national_parks      = props.feat_national_parks,
+                        feat_national_parks_max  = props.feat_national_parks_max,
+                        feat_nature_reserves     = props.feat_nature_reserves,
+                        feat_nature_reserves_max = props.feat_nature_reserves_max,
+                        feat_mountains           = props.feat_mountains,
+                        feat_mainland_cutoff     = props.feat_mainland_cutoff,
+                        feat_fjords              = props.feat_fjords,
+                        feat_fjords_max          = props.feat_fjords_max,
+                        feat_lakes               = props.feat_lakes,
+                        feat_lakes_max           = props.feat_lakes_max,
+                        feat_rivers              = props.feat_rivers,
+                        feat_rivers_max          = props.feat_rivers_max,
+                        feat_islands             = props.feat_islands,
+                        feat_islands_max         = props.feat_islands_max,
+                        feat_viewpoints          = props.feat_viewpoints,
+                        feat_viewpoints_max      = props.feat_viewpoints_max,
+                        feat_admin_detail        = props.feat_admin_detail,
+                        ri                       = (function()
+                                local t = {}
+                                local riNames = activeCountry.remoteIslandNames or {}
+                                for i, riName in ipairs( riNames ) do
+                                        t[ riName ] = props[ "ri_value_" .. i ] and true or false
+                                end
+                                return t
+                        end)(),
+                        counties                 = counties,
+                }
+                props[ cid .. "_has_settings" ] = true
+                props[ cid .. "_include" ]      = true
+                props.dirty = false
+        end
+
+        local function loadCountryState( cid, country )
+                loading = true
+                local state = countryState[ cid ] or kbDefaultState( country )
+                local names = country.countyNames
+                props.feat_national_parks      = state.feat_national_parks      or false
+                props.feat_national_parks_max  = state.feat_national_parks_max  or 100
+                props.feat_nature_reserves     = state.feat_nature_reserves      or false
+                props.feat_nature_reserves_max = state.feat_nature_reserves_max or 100
+                props.feat_mountains           = state.feat_mountains            or false
+                props.feat_mainland_cutoff     = math.min(
+                        state.feat_mainland_cutoff or country.mountain_max,
+                        country.mountain_max )
+                props.feat_fjords              = state.feat_fjords               or false
+                props.feat_fjords_max          = state.feat_fjords_max           or 100
+                props.feat_lakes               = state.feat_lakes                or false
+                props.feat_lakes_max           = state.feat_lakes_max            or 100
+                props.feat_rivers              = state.feat_rivers               or false
+                props.feat_rivers_max          = state.feat_rivers_max           or 100
+                props.feat_islands             = state.feat_islands              or false
+                props.feat_islands_max         = state.feat_islands_max          or 100
+                props.feat_viewpoints          = state.feat_viewpoints           or false
+                props.feat_viewpoints_max      = state.feat_viewpoints_max       or 100
+                props.feat_admin_detail        = state.feat_admin_detail         or 1
+                props.feat_select_all          = false
+                local savedCounties = state.counties or {}
+                for i = 1, #names do
+                        props[ "div_value_" .. i ] = savedCounties[ names[ i ] ] and true or false
+                end
+                for i = #names + 1, maxCounties do
+                        props[ "div_value_" .. i ] = false
+                end
+                props.div_select_all = false
+                for i = 1, maxCounties do
+                        props[ "county_name_" .. i ] = names[ i ] or ""
+                end
+                -- Remote islands
+                local riNames  = country.remoteIslandNames or {}
+                local savedRI  = state.ri or {}
+                local riCount  = #riNames
+                props.ri_count        = riCount
+                props.show_ri_section = riCount > 0
+                for i = 1, riCount do
+                        props[ "ri_name_"  .. i ] = riNames[ i ]
+                        props[ "ri_value_" .. i ] = savedRI[ riNames[ i ] ] and true or false
+                end
+                for i = riCount + 1, maxRemoteIslands do
+                        props[ "ri_name_"  .. i ] = ""
+                        props[ "ri_value_" .. i ] = false
+                end
+                local adminLabel = country.admin_label or "Counties & Areas"
+                local dataVer    = (country.data.meta and country.data.meta.version) or "?"
+                local ver        = props[ "list_version_" .. cid ] or dataVer
+                props.active_country_id       = cid
+                props.active_country_name     = country.name
+                props.active_is_norway        = (cid == "Norway")
+                props.active_mountain_max     = country.mountain_max
+                props.active_selections_label = "Selections for " .. country.name
+                props.active_divisions_label  = adminLabel .. " for " .. country.name
+                props.active_save_label       = "Save settings for " .. country.name
+                props.active_select_all_label = "Select All"
+                props.active_version_label    = country.name .. " v" .. ver
+                props.dirty = false
+                loading = false
+        end
+
+        -- Shared upvalue: tracks which country buildBuilderPanel should render.
+        -- Declared here (before makeSwitchAction AND buildBuilderPanel) so both
+        -- functions see it as the same upvalue.  Initialised below after the
+        -- first loadCountryState call.
+        local activePanelCountry
+
+        local function makeSwitchAction( cid, country )
+                return function()
+                        -- Button action callbacks run outside a task context, so
+                        -- LrDialogs.confirm and LrDialogs.stopModalWithResult require
+                        -- startAsyncTask to work correctly.
+                        LrTasks.startAsyncTask( function()
+                                if props.active_country_id == cid then return end
+                                if props.dirty then
+                                        local r = LrDialogs.confirm(
+                                                "Unsaved settings for " .. props.active_country_name,
+                                                "Save settings before switching to " .. country.name .. "?",
+                                                "Save", "Switch without saving"
+                                        )
+                                        if r == "ok" then saveCurrentState() end
+                                end
+                                loadCountryState( cid, country )
+                                activePanelCountry = country
+                                -- Rebuild KB panel with exact row count for the new country.
+                                -- (visible=false in LR SDK preserves layout space, so rebuild
+                                -- via the keepOpen loop is the only correct approach.)
+                                switchTab( TAB_IDS.KB )
+                        end )
+                end
+        end
+
+        -- ── Keyword Builder generate helpers ───────────────────────────────────
+
+        local function buildCustomPrefs( country )
+                local state = countryState[ country.id ] or kbDefaultState( country )
+                return {
+                        national_parks      = state.feat_national_parks      and true or false,
+                        national_parks_max  = math.floor( state.feat_national_parks_max  or 100 ),
+                        nature_reserves     = state.feat_nature_reserves      and true or false,
+                        nature_reserves_max = math.floor( state.feat_nature_reserves_max or 100 ),
+                        mountains           = state.feat_mountains            and true or false,
+                        mainland_cutoff     = math.floor( state.feat_mainland_cutoff     or 1800 ),
+                        svalbard_cutoff     = 800,
+                        fjords              = state.feat_fjords               and true or false,
+                        fjords_max          = math.floor( state.feat_fjords_max          or 100 ),
+                        lakes               = state.feat_lakes               and true or false,
+                        lakes_max           = math.floor( state.feat_lakes_max           or 100 ),
+                        rivers              = state.feat_rivers              and true or false,
+                        rivers_max          = math.floor( state.feat_rivers_max          or 100 ),
+                        islands             = state.feat_islands             and true or false,
+                        islands_max         = math.floor( state.feat_islands_max         or 100 ),
+                        viewpoints          = state.feat_viewpoints          and true or false,
+                        viewpoints_max      = math.floor( state.feat_viewpoints_max      or 100 ),
+                        administrative      = true,
+                        admin_detail        = math.min( 3, math.max( 1,
+                                math.floor( (state.feat_admin_detail or 3) + 0.5 ) ) ),
+                        remote_islands_names    = country.remoteIslandNames or {},
+                        remote_islands_selected = state.ri or {},
+                        counties            = state.counties or {},
+                }
+        end
+
+        local function buildQuickPrefs( detail, country )
+                local isNorway = (country.id == "Norway")
+                local less = (detail >= 1)
+                local more = (detail >= 2)
+                local all  = (detail >= 3)
+                local counties = {}
+                if more then
+                        for _, name in ipairs( country.countyNames ) do
+                                counties[ name ] = true
+                        end
+                end
+                return {
+                        national_parks      = less,
+                        national_parks_max  = 100,
+                        nature_reserves     = more,
+                        nature_reserves_max = 50,
+                        mountains           = less,
+                        mainland_cutoff     = (isNorway and 2000 or 1500),
+                        svalbard_cutoff     = 1000,
+                        fjords              = more,
+                        fjords_max          = 50,
+                        lakes               = more,
+                        lakes_max           = 50,
+                        rivers              = all,
+                        rivers_max          = 50,
+                        islands             = all,
+                        islands_max         = 50,
+                        viewpoints          = all,
+                        viewpoints_max      = 50,
+                        administrative      = more,
+                        admin_detail        = (all and 3 or 2),
+                        country_synonym     = false,
+                        remote_islands_names    = country.remoteIslandNames or {},
+                        remote_islands_selected = (function()
+                                local t = {}
+                                if more then
+                                        for _, riName in ipairs( country.remoteIslandNames or {} ) do
+                                                t[ riName ] = true
+                                        end
+                                end
+                                return t
+                        end)(),
+                        counties            = counties,
+                }
+        end
+
+        -- ── doGenerate: collect + write keyword file ───────────────────────────
+
+        local function doGenerate()
+                saveCurrentState()
+                local parts      = {}
+                local countryIds = {}
+                local skipped    = {}
+                for _, country in ipairs( COUNTRIES ) do
+                        local cid      = country.id
+                        local genPrefs = nil
+                        if props[ cid .. "_include" ] then
+                                genPrefs = buildCustomPrefs( country )
+                        else
+                                local contLower = (country.continent or "Other"):lower():gsub( "%s+", "_" )
+                                local detail    = math.floor( (props[ contLower .. "_detail" ] or 0) + 0.5 )
+                                if detail > 0 then
+                                        genPrefs = buildQuickPrefs( detail, country )
+                                end
+                        end
+                        if genPrefs then
+                                local output    = Generator.generate( country.data, genPrefs )
+                                local lineCount = 0
+                                for _ in output:gmatch( "[^\n]+" ) do lineCount = lineCount + 1 end
+                                if lineCount > 1 then
+                                        parts[      #parts      + 1 ] = output
+                                        countryIds[ #countryIds + 1 ] = cid
+                                else
+                                        skipped[ #skipped + 1 ] = country.name
+                                end
+                        end
+                end
+                if #skipped > 0 then
+                        LrDialogs.message(
+                                "Nothing exported for " .. table.concat( skipped, ", " ),
+                                "These countries had no counties or features selected and were "
+                                .. "skipped: " .. table.concat( skipped, ", " ) .. ".\n\n"
+                                .. 'Click "Select More" next to a country to configure it, '
+                                .. "then pick counties or enable features before generating.",
+                                "warning"
+                        )
+                end
+                if #parts == 0 then
+                        LrDialogs.message(
+                                "No country selected for export",
+                                "Check the Include box next to a country, or move a continent's "
+                                .. "Include slider above None.",
+                                "warning"
+                        )
+                        return
+                end
+                local content  = table.concat( parts, "\n" )
+                local dateStr  = os.date( "%Y%m%d" )
+                local namePart
+                if #countryIds == 1 then
+                        namePart = countryIds[1]
+                else
+                        namePart = table.concat( countryIds, "+" )
+                end
+                local fileName = "LR-Geography-" .. namePart .. "-" .. dateStr .. ".txt"
+                LrTasks.startAsyncTask( function()
+                        local dirs = LrDialogs.runOpenPanel {
+                                title                   = "Choose a folder to save the keyword file",
+                                canChooseFiles          = false,
+                                canChooseDirectories    = true,
+                                canCreateDirectories    = true,
+                                allowsMultipleSelection = false,
+                        }
+                        if not dirs or not dirs[1] then return end
+                        local LrFileUtils = import 'LrFileUtils'
+                        local savePath    = LrPathUtils.child( dirs[1], fileName )
+                        local skipThisFile = false
+                        if LrFileUtils.exists( savePath ) then
+                                local ok = LrDialogs.confirm(
+                                        "File already exists",
+                                        fileName .. " already exists. Overwrite it?",
+                                        "Overwrite", "Cancel"
+                                )
+                                if ok ~= "ok" then skipThisFile = true end
+                        end
+                        if not skipThisFile then
+                                local fh, err = io.open( savePath, "w" )
+                                if not fh then
+                                        LrDialogs.message( "Could not save file", tostring( err ), "critical" )
+                                        return
+                                end
+                                fh:write( content )
+                                fh:close()
+                                LrDialogs.message(
+                                        "Keywords saved",
+                                        fileName .. " saved to:\n" .. dirs[1]
+                                        .. "\n\nImport into Lightroom via:\n"
+                                        .. "Metadata > Import Keywords... "
+                                        .. "(or File > Import Keywords from Disk)",
+                                        "info"
+                                )
+                        end
+                end )
+        end
+
+        -- ── Keyword Builder colours ────────────────────────────────────────────
+
+        local panelGrey = LrColor( 0.878, 0.878, 0.878 )
+        local dimColor  = LrColor( 0.4, 0.4, 0.4 )
+
+        -- ── Keyword Builder observers ──────────────────────────────────────────
+
+        local function markDirty()
+                if (not loading) and props.active_country_id ~= "" then
+                        props.dirty = true
+                end
+        end
+
+        local featKeys = {
+                "feat_national_parks", "feat_national_parks_max",
+                "feat_nature_reserves", "feat_nature_reserves_max",
+                "feat_mountains", "feat_mainland_cutoff",
+                "feat_fjords", "feat_fjords_max",
+                "feat_lakes", "feat_lakes_max",
+                "feat_rivers", "feat_rivers_max",
+                "feat_islands", "feat_islands_max",
+                "feat_viewpoints", "feat_viewpoints_max",
+                "feat_admin_detail",
+                "feat_remote_islands_all",
+        }
+        for _, key in ipairs( featKeys ) do
+                props:addObserver( key, markDirty )
+        end
+        for i = 1, maxCounties do
+                props:addObserver( "div_value_" .. i, markDirty )
+        end
+        for i = 1, maxRemoteIslands do
+                props:addObserver( "ri_value_" .. i, markDirty )
+        end
+
+        local suppressRIAll = false
+        props:addObserver( "feat_remote_islands_all", function()
+                if suppressRIAll or loading then return end
+                suppressRIAll = true
+                local v = props.feat_remote_islands_all
+                local n = props.ri_count or 0
+                for i = 1, n do
+                        props[ "ri_value_" .. i ] = v
+                end
+                suppressRIAll = false
+        end )
+
+        local suppressDivAll = false
+        props:addObserver( "div_select_all", function()
+                if suppressDivAll or loading then return end
+                suppressDivAll = true
+                local v   = props.div_select_all
+                local cid = props.active_country_id
+                for _, c in ipairs( COUNTRIES ) do
+                        if c.id == cid then
+                                for i = 1, #c.countyNames do
+                                        props[ "div_value_" .. i ] = v
+                                end
+                                local n = #( c.remoteIslandNames or {} )
+                                for i = 1, n do
+                                        props[ "ri_value_" .. i ] = v
+                                end
+                                break
+                        end
+                end
+                suppressDivAll = false
+        end )
+
+        props:addObserver( "feat_select_all", function()
+                if loading then return end
+                local v = props.feat_select_all
+                props.feat_national_parks  = v
+                props.feat_nature_reserves = v
+                props.feat_mountains       = v
+                props.feat_fjords          = v
+                props.feat_lakes           = v
+                props.feat_rivers          = v
+                props.feat_islands         = v
+                props.feat_viewpoints      = v
+        end )
+
+        for _, country in ipairs( COUNTRIES ) do
+                local cid = country.id
+                props:addObserver( cid .. "_enabled", function()
+                        prefs[ "enabled_" .. cid ] = props[ cid .. "_enabled" ]
+                end )
+        end
+
+        loadCountryState( COUNTRIES[1].id, COUNTRIES[1] )
+        activePanelCountry = COUNTRIES[1]   -- initialise shared upvalue
+
+
         -- Track which countries have had their verification props initialised this session.
         local verInited = {}
 
@@ -304,12 +901,9 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                 local savedCo = prefs[ "ver_" .. cid .. "_co" ] or {}
                 local savedMu = prefs[ "ver_" .. cid .. "_mu" ] or {}
                 local savedCi = prefs[ "ver_" .. cid .. "_ci" ] or {}
-                -- Sanitise saved action value: only "change" is preserved; anything else
-                -- (including the old "none" option) resets to "dash".
-                local function validAction( v )
-                        if v == "change" then return "change" end
-                        return "dash"
-                end
+                -- Sanitise saved action value: "change", "change_manual", "delete" are
+                -- preserved; everything else (old "dash", nil, unknown) → "none".
+                local validAction = sanitizeAction
                 for i = 1, #geo.counties do
                         props[ "vcco_" .. cid .. "_" .. i ] = "—"
                         props[ "vaco_" .. cid .. "_" .. i ] = validAction( savedCo[ i ] and savedCo[ i ].a )
@@ -346,9 +940,8 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
         end
 
         -- Build the verified/<Country>.json payload (Lua table) from the current
-        -- in-memory verification state.  Only entries with a real conflict
-        -- suggestion or an action of "change" are included, keeping the file
-        -- small and meaningful.
+        -- in-memory verification state.  Entries with a real conflict suggestion
+        -- or a non-default action (change / change_manual / delete) are included.
         local function buildVerifiedJson( cid, ver )
                 local geo = GEO[ cid ]
                 local function levelArr( names, vcPfx, vaPfx )
@@ -358,12 +951,16 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                 local action   = props[ vaPfx .. cid .. "_" .. i ]
                                 local realC    = conflict and conflict ~= "—"
                                                  and conflict ~= "-" and conflict ~= "..."
-                                if realC or action == "change" then
+                                                 and conflict ~= "✓"
+                                local activeAct = action == "change"
+                                                  or action == "change_manual"
+                                                  or action == "delete"
+                                if realC or activeAct then
                                         arr[ #arr + 1 ] = {
                                                 i        = i,
                                                 name     = names[ i ],
                                                 conflict = realC and conflict or nil,
-                                                action   = ( action == "change" ) and "change" or "dash",
+                                                action   = activeAct and action or "none",
                                         }
                                 end
                         end
@@ -372,7 +969,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                 return {
                         country  = cid,
                         version  = ver or prefs[ "list_version_" .. cid ] or "?",
-                        verified = os.date( "%Y-%m-%d" ),
+                        verified = os.date( "%Y-%m-%d %H:%M" ),
                         listname = props[ "listname_" .. cid ],
                         levels   = {
                                 co = levelArr( geo.counties, "vcco_", "vaco_" ),
@@ -411,7 +1008,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                                 props[ vcPfx .. cid .. "_" .. idx ] = e.conflict
                                         end
                                         props[ vaPfx .. cid .. "_" .. idx ] =
-                                                ( e.action == "change" ) and "change" or "dash"
+                                                sanitizeAction( e.action )
                                 end
                         end
                 end
@@ -438,10 +1035,10 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
         -- Tab navigation — LR-ListDoctor pattern
         ------------------------------------------------------------------------
 
-        props.activeTabId = TAB_IDS.OV
+        props.activeTabId = TAB_IDS.INTRO
 
         local contents
-        local currentDialog = TAB_IDS.OV
+        local currentDialog = TAB_IDS.INTRO
         local switching     = false
 
         local function switchTab( target )
@@ -456,12 +1053,6 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                 end
         end )
 
-        for _, c in ipairs( COUNTRIES ) do
-                local cid = c.id
-                props:addObserver( "listname_" .. cid, function()
-                        prefs[ "listname_" .. cid ] = props[ "listname_" .. cid ]
-                end )
-        end
 
         ------------------------------------------------------------------------
         -- Tab 1 — List Overview
@@ -470,33 +1061,50 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
         local function buildOverviewPanel()
                 local headerRow = f:row {
                         spacing = 6,
+                        f:static_text { title = "Show",          width = W_ONOFF,    font = "<system/bold>" },
                         f:static_text { title = "Country",       width = W_COUNTRY,  font = "<system/bold>" },
-                        f:static_text { title = "List name",     width = W_LISTNAME, font = "<system/bold>" },
-                        f:static_text { title = "File",          width = W_FILE,     font = "<system/bold>" },
+                        f:static_text { title = "Code",          width = W_CODE,     font = "<system/bold>" },
+                        f:static_text { title = "File name",     width = W_FILE,     font = "<system/bold>" },
                         f:static_text { title = "File size",     width = W_FILESIZE, font = "<system/bold>" },
                         f:static_text { title = "Version",       width = W_VERSION,  font = "<system/bold>" },
+                        f:spacer      { width = 5 },
+                        f:static_text { title = "Names",         width = W_NAMES,    font = "<system/bold>" },
                         f:static_text { title = "Last verified", width = W_VERIFIED, font = "<system/bold>" },
                         f:spacer      { width = W_BUTTON },
+                        f:spacer      { width = 10 },
                         f:static_text { title = "Last update",   width = W_UPDATED,  font = "<system/bold>" },
                         f:spacer      { width = W_BUTTON },
                 }
 
+                -- Sort: enabled countries first (alphabetical), then disabled (alphabetical).
+                -- If none enabled, all are sorted alphabetically.
+                local sorted = {}
+                for _, c in ipairs( COUNTRIES ) do sorted[ #sorted + 1 ] = c end
+                table.sort( sorted, function( a, b )
+                        local ae = props[ a.id .. "_enabled" ] and true or false
+                        local be = props[ b.id .. "_enabled" ] and true or false
+                        if ae ~= be then return ae end
+                        return a.name < b.name
+                end )
+
                 local rowViews = {}
-                for _, country in ipairs( COUNTRIES ) do
+                for _, country in ipairs( sorted ) do
                         local verKey  = "verified_"     .. country.id
                         local updKey  = "updated_"      .. country.id
-                        local nmKey   = "listname_"     .. country.id
                         local lvKey   = "list_version_" .. country.id
                         local cname   = country.name
+                        local geo     = GEO[ country.id ]
+                        local nTotal  = ( geo and ( #geo.counties + #geo.munis + #geo.cities ) or 0 )
                         rowViews[ #rowViews + 1 ] = f:row {
                                 spacing = 6,
-                                f:static_text { title = cname, width = W_COUNTRY },
-                                f:edit_field {
+                                f:checkbox {
                                         bind_to_object = props,
-                                        value          = LrView.bind( nmKey ),
-                                        width          = W_LISTNAME,
-                                        immediate      = true,
+                                        title          = "",
+                                        value          = LrView.bind( country.id .. "_enabled" ),
+                                        width          = W_ONOFF,
                                 },
+                                f:static_text { title = cname,               width = W_COUNTRY },
+                                f:static_text { title = country.code or "",  width = W_CODE },
                                 f:static_text { title = "data/" .. country.filename, width = W_FILE },
                                 f:static_text { title = getFileSize( country.filename ), width = W_FILESIZE },
                                 -- Version column: shows list_version prop (may be bumped by Save).
@@ -505,14 +1113,16 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                         title          = LrView.bind( lvKey ),
                                         width          = W_VERSION,
                                 },
+                                f:spacer { width = 5 },
+                                f:static_text { title = tostring( nTotal ), width = W_NAMES },
                                 f:static_text {
                                         bind_to_object = props,
                                         title          = LrView.bind( verKey ),
                                         width          = W_VERIFIED,
                                 },
-                                -- Verify button → opens Monitor for this country.
+                                -- Verify with Wiki button → opens Monitor for this country.
                                 f:push_button {
-                                        title  = "Verify",
+                                        title  = "Verify with Wiki",
                                         width  = W_BUTTON,
                                         action = function()
                                                 props.verify_country_id = country.id
@@ -520,6 +1130,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                                 switchTab( TAB_IDS.MN )
                                         end,
                                 },
+                                f:spacer { width = 10 },
                                 f:static_text {
                                         bind_to_object = props,
                                         title          = LrView.bind( updKey ),
@@ -529,21 +1140,449 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                         title  = "Update",
                                         width  = W_BUTTON,
                                         action = function()
-                                                local answer = LrDialogs.confirm(
-                                                        "Update Keyword List",
-                                                        "Do you want to update the keyword list for " .. cname .. "?",
-                                                        "Update", "Cancel"
-                                                )
-                                                if answer == "ok" then
-                                                        LrDialogs.message(
-                                                                "Update — " .. cname,
-                                                                "Update functionality is not yet implemented.",
-                                                                "info"
-                                                        )
-                                                        local today = os.date( "%Y-%m-%d" )
-                                                        props[ updKey ]                   = today
-                                                        prefs[ "updated_" .. country.id ] = today
+                                                LrTasks.startAsyncTask( function()
+                                                local cid    = country.id
+                                                local geo    = GEO[ cid ]
+                                                local labels = LABELS[ cid ] or DEFAULT_LABELS
+
+                                                -- Flush any action popup changes that were made after
+                                                -- the last Verify/Save (user may have switched tabs
+                                                -- without clicking Save on the Monitor tab).
+                                                persistVerToPrefs( cid )
+
+                                                -- Collect all non-default actions from prefs.
+                                                local savedCo = prefs[ "ver_" .. cid .. "_co" ] or {}
+                                                local savedMu = prefs[ "ver_" .. cid .. "_mu" ] or {}
+                                                local savedCi = prefs[ "ver_" .. cid .. "_ci" ] or {}
+
+                                                -- coChanges / muChanges / ciChanges: rename (change or change_manual)
+                                                -- coDeletes / muDeletes / ciDeletes: remove entry from data file
+                                                local coChanges = {}
+                                                local muChanges = {}
+                                                local ciChanges = {}
+                                                local coDeletes = {}
+                                                local muDeletes = {}
+                                                local ciDeletes = {}
+
+                                                local function hasName( c )
+                                                        return c and c ~= "" and c ~= "—" and c ~= "-" and c ~= "✓"
                                                 end
+
+                                                -- For "Change manually" rows where Conflicts shows "✓"
+                                                -- (no Wikidata suggestion), prompt the user for a custom name
+                                                -- before the main confirmation dialog.
+                                                local function promptCustomName( oldName )
+                                                        local result = nil
+                                                        LrFunctionContext.callWithContext(
+                                                                "promptCustomName", function( ctx )
+                                                                local np = LrBinding.makePropertyTable( ctx )
+                                                                np.customName = ""
+                                                                local dlgResult = LrDialogs.presentModalDialog {
+                                                                        title    = "Custom name — " .. cname,
+                                                                        contents = f:column {
+                                                                                spacing = f:control_spacing(),
+                                                                                f:static_text {
+                                                                                        title = "Enter new name for \"" .. oldName .. "\":",
+                                                                                        width = 300,
+                                                                                },
+                                                                                f:edit_field {
+                                                                                        bind_to_object = np,
+                                                                                        value          = LrView.bind( "customName" ),
+                                                                                        width          = 300,
+                                                                                        immediate      = true,
+                                                                                },
+                                                                        },
+                                                                        actionVerb = "OK",
+                                                                        cancelVerb = "Skip",
+                                                                }
+                                                                if dlgResult == "ok" and np.customName ~= "" then
+                                                                        result = np.customName
+                                                                end
+                                                        end )
+                                                        return result
+                                                end
+
+                                                -- Pre-pass: resolve change_manual rows with no Wikidata name.
+                                                for i, entry in ipairs( savedCo ) do
+                                                        if geo.counties[ i ] and entry.a == "change_manual"
+                                                                        and not hasName( entry.c ) then
+                                                                local custom = promptCustomName( geo.counties[ i ] )
+                                                                if custom then entry.c = custom end
+                                                        end
+                                                end
+                                                for i, entry in ipairs( savedMu ) do
+                                                        if geo.munis[ i ] and entry.a == "change_manual"
+                                                                        and not hasName( entry.c ) then
+                                                                local custom = promptCustomName( geo.munis[ i ] )
+                                                                if custom then entry.c = custom end
+                                                        end
+                                                end
+                                                for i, entry in ipairs( savedCi ) do
+                                                        if geo.cities[ i ] and entry.a == "change_manual"
+                                                                        and not hasName( entry.c ) then
+                                                                local custom = promptCustomName( geo.cities[ i ] )
+                                                                if custom then entry.c = custom end
+                                                        end
+                                                end
+
+                                                for i, entry in ipairs( savedCo ) do
+                                                        if not geo.counties[ i ] then break end
+                                                        if entry.a == "change" or entry.a == "change_manual" then
+                                                                if hasName( entry.c ) then
+                                                                        coChanges[ #coChanges + 1 ] = {
+                                                                                idx = i,
+                                                                                old = geo.counties[ i ],
+                                                                                new = entry.c,
+                                                                        }
+                                                                end
+                                                        elseif entry.a == "delete" then
+                                                                coDeletes[ #coDeletes + 1 ] = {
+                                                                        idx = i,
+                                                                        old = geo.counties[ i ],
+                                                                }
+                                                        end
+                                                end
+                                                for i, entry in ipairs( savedMu ) do
+                                                        if not geo.munis[ i ] then break end
+                                                        if entry.a == "change" or entry.a == "change_manual" then
+                                                                if hasName( entry.c ) then
+                                                                        muChanges[ #muChanges + 1 ] = {
+                                                                                idx = i,
+                                                                                old = geo.munis[ i ],
+                                                                                new = entry.c,
+                                                                        }
+                                                                end
+                                                        elseif entry.a == "delete" then
+                                                                muDeletes[ #muDeletes + 1 ] = {
+                                                                        idx = i,
+                                                                        old = geo.munis[ i ],
+                                                                }
+                                                        end
+                                                end
+                                                for i, entry in ipairs( savedCi ) do
+                                                        if not geo.cities[ i ] then break end
+                                                        if entry.a == "change" or entry.a == "change_manual" then
+                                                                if hasName( entry.c ) then
+                                                                        ciChanges[ #ciChanges + 1 ] = {
+                                                                                idx = i,
+                                                                                old = geo.cities[ i ],
+                                                                                new = entry.c,
+                                                                        }
+                                                                end
+                                                        elseif entry.a == "delete" then
+                                                                ciDeletes[ #ciDeletes + 1 ] = {
+                                                                        idx = i,
+                                                                        old = geo.cities[ i ],
+                                                                }
+                                                        end
+                                                end
+
+                                                local totalOps = #coChanges + #muChanges + #ciChanges
+                                                                 + #coDeletes + #muDeletes + #ciDeletes
+                                                if totalOps == 0 then
+                                                        -- No changes to apply, but still record today's
+                                                        -- date so "Last update" reflects the verification run.
+                                                        prefs[ "updated_" .. cid ] = os.date( "%Y-%m-%d %H:%M" )
+                                                        props[ "updated_" .. cid ] = prefs[ "updated_" .. cid ]
+                                                        LrDialogs.message(
+                                                                "No changes to apply — " .. cname,
+                                                                "No entries are marked with Change, " ..
+                                                                "Change manually, or Delete in " ..
+                                                                "Verification Monitor for " .. cname .. ".\n\n" ..
+                                                                "The 'Last update' date has been set to today.",
+                                                                "info" )
+                                                        return
+                                                end
+
+                                                -- Build change summary for confirmation.
+                                                local lines = {}
+                                                for _, ch in ipairs( coChanges ) do
+                                                        lines[ #lines + 1 ] =
+                                                                labels.county .. ":  \"" .. ch.old .. "\"  →  \"" .. ch.new .. "\""
+                                                end
+                                                for _, ch in ipairs( muChanges ) do
+                                                        lines[ #lines + 1 ] =
+                                                                labels.muni .. ":  \"" .. ch.old .. "\"  →  \"" .. ch.new .. "\""
+                                                end
+                                                for _, ch in ipairs( coDeletes ) do
+                                                        lines[ #lines + 1 ] =
+                                                                "DELETE " .. labels.county .. ":  \"" .. ch.old .. "\""
+                                                end
+                                                for _, ch in ipairs( muDeletes ) do
+                                                        lines[ #lines + 1 ] =
+                                                                "DELETE " .. labels.muni .. ":  \"" .. ch.old .. "\""
+                                                end
+                                                for _, ch in ipairs( ciChanges ) do
+                                                        lines[ #lines + 1 ] =
+                                                                labels.city .. ":  \"" .. ch.old .. "\"  →  \"" .. ch.new .. "\""
+                                                end
+                                                for _, ch in ipairs( ciDeletes ) do
+                                                        lines[ #lines + 1 ] =
+                                                                "DELETE " .. labels.city .. ":  \"" .. ch.old .. "\""
+                                                end
+                                                local currentVer = prefs[ "list_version_" .. cid ]
+                                                                   or getVersion( country.data )
+                                                local newVer     = nextPatchVersion( currentVer )
+
+                                                local answer = LrDialogs.confirm(
+                                                        "Update " .. country.filename,
+                                                        "The following changes will be written to the data file:\n\n" ..
+                                                        table.concat( lines, "\n" ) ..
+                                                        "\n\nVersion: " .. currentVer .. " → " .. newVer ..
+                                                        "\n\nThis modifies the bundled data file on disk. Continue?",
+                                                        "Update", "Cancel" )
+                                                if answer ~= "ok" then return end
+
+                                                -- Read the data file as text.
+                                                local filePath = LrPathUtils.child( dataDir, country.filename )
+                                                local fh = io.open( filePath, "r" )
+                                                if not fh then
+                                                        LrDialogs.message(
+                                                                "Kan ikke lese filen", filePath, "warning" )
+                                                        return
+                                                end
+                                                local content = fh:read( "*all" )
+                                                fh:close()
+
+                                                -- ── 1. Apply name substitutions (change / change_manual). ──────
+                                                -- Targets the pattern:  name = "ExactOldName"
+                                                local applied = 0
+                                                local function doSubs( changes )
+                                                        for _, ch in ipairs( changes ) do
+                                                                local esc = ch.old:gsub(
+                                                                        "([%(%)%.%%%+%-%*%?%[%^%$])", "%%%1" )
+                                                                local pat = '(name%s*=%s*")' .. esc .. '(")'
+                                                                local safeNew = ch.new:gsub( "%%", "%%%%" )
+                                                                local newContent, n =
+                                                                        content:gsub( pat, "%1" .. safeNew .. "%2" )
+                                                                if n > 0 then
+                                                                        content = newContent
+                                                                        applied = applied + n
+                                                                end
+                                                        end
+                                                end
+                                                local function doCitySubs( changes )
+                                                        for _, ch in ipairs( changes ) do
+                                                                local esc = ch.old:gsub(
+                                                                        "([%(%)%.%%%+%-%*%?%[%^%$])", "%%%1" )
+                                                                local safeNew = ch.new:gsub( "%%", "%%%%" )
+                                                                -- Try structured entry:  name = "OldName"
+                                                                local pat1 = '(name%s*=%s*")' .. esc .. '(")'  
+                                                                local newContent, n =
+                                                                        content:gsub( pat1, "%1" .. safeNew .. "%2" )
+                                                                if n > 0 then
+                                                                        content = newContent
+                                                                        applied = applied + n
+                                                                else
+                                                                        -- Fallback: plain string literal:  "OldName"
+                                                                        local pat2 = '"' .. esc .. '"'
+                                                                        newContent, n =
+                                                                                content:gsub(
+                                                                                        pat2, '"' .. safeNew .. '"' )
+                                                                        if n > 0 then
+                                                                                content = newContent
+                                                                                applied = applied + n
+                                                                        end
+                                                                end
+                                                        end
+                                                end
+                                                doSubs( coChanges )
+                                                doSubs( muChanges )
+                                                doCitySubs( ciChanges )
+
+                                                -- ── 2. Apply deletions (delete). ───────────────────────────────
+                                                -- Line-based block removal: find the { ... }, block whose
+                                                -- first name field matches the target, strip quoted strings
+                                                -- before counting braces to handle nested tables safely.
+                                                local deleted = 0
+                                                local function deleteName( targetName )
+                                                        local lns = {}
+                                                        for line in ( content .. "\n" ):gmatch( "([^\n]*)\n" ) do
+                                                                lns[ #lns + 1 ] = line
+                                                        end
+                                                        local esc = targetName:gsub(
+                                                                "([%(%)%.%%%+%-%*%?%[%^%$])", "%%%1" )
+                                                        -- Find the line that holds name = "targetName"
+                                                        local nameLine = nil
+                                                        for i, ln in ipairs( lns ) do
+                                                                if ln:match( 'name%s*=%s*"' .. esc .. '"' ) then
+                                                                        nameLine = i; break
+                                                                end
+                                                        end
+                                                        if not nameLine then return end
+                                                        -- Scan backwards for the opening "{" of this entry.
+                                                        local openLine = nameLine - 1
+                                                        while openLine >= 1 do
+                                                                local stripped = lns[ openLine ]:gsub( '"[^"]*"', '""' )
+                                                                if stripped:match( "^%s*{%s*$" ) or
+                                                                   stripped:match( "^%s*{%s*%-%-" ) then
+                                                                        break
+                                                                end
+                                                                openLine = openLine - 1
+                                                        end
+                                                        if openLine < 1 then return end
+                                                        -- Scan forward from openLine to find the matching close.
+                                                        local depth    = 0
+                                                        local closeLine = nil
+                                                        for i = openLine, #lns do
+                                                                local stripped = lns[ i ]:gsub( '"[^"]*"', '""' )
+                                                                for ch in stripped:gmatch( "." ) do
+                                                                        if     ch == "{" then depth = depth + 1
+                                                                        elseif ch == "}" then
+                                                                                depth = depth - 1
+                                                                                if depth == 0 then
+                                                                                        closeLine = i; break
+                                                                                end
+                                                                        end
+                                                                end
+                                                                if closeLine then break end
+                                                        end
+                                                        if not closeLine then return end
+                                                        -- Rebuild content without lines openLine..closeLine.
+                                                        local out = {}
+                                                        for i, ln in ipairs( lns ) do
+                                                                if i < openLine or i > closeLine then
+                                                                        out[ #out + 1 ] = ln
+                                                                end
+                                                        end
+                                                        content = table.concat( out, "\n" )
+                                                        deleted = deleted + 1
+                                                end
+                                                for _, ch in ipairs( coDeletes ) do deleteName( ch.old ) end
+                                                for _, ch in ipairs( muDeletes ) do deleteName( ch.old ) end
+                                                for _, ch in ipairs( ciDeletes ) do deleteName( ch.old ) end
+
+                                                -- ── 3. Bump version in the meta block. ────────────────────────
+                                                content = content:gsub(
+                                                        '(version%s*=%s*")([^"]*)"',
+                                                        "%1" .. newVer .. '"', 1 )
+                                                content = content:gsub(
+                                                        '(generated%s*=%s*")([^"]*)"',
+                                                        "%1" .. os.date( "%Y-%m-%d" ) .. '"', 1 )
+                                                content = content:gsub(
+                                                        "Data version [%d%.]+ generated [%d%-]+",
+                                                        "Data version " .. newVer ..
+                                                        " generated " .. os.date( "%Y-%m-%d" ) )
+
+                                                -- Write back to disk.
+                                                local wh = io.open( filePath, "w" )
+                                                if not wh then
+                                                        LrDialogs.message(
+                                                                "Kan ikke skrive filen", filePath, "warning" )
+                                                        return
+                                                end
+                                                wh:write( content )
+                                                wh:close()
+
+                                                -- Update prefs and UI props.
+                                                prefs[ "list_version_" .. cid ] = newVer
+                                                props[ "list_version_" .. cid ] = newVer
+                                                prefs[ "updated_" .. cid ]      = os.date( "%Y-%m-%d %H:%M" )
+                                                props[ "updated_" .. cid ]      = prefs[ "updated_" .. cid ]
+
+                                                -- Clear applied actions in prefs so next Verify starts clean.
+                                                local coSaved = prefs[ "ver_" .. cid .. "_co" ] or {}
+                                                for _, ch in ipairs( coChanges ) do
+                                                        if coSaved[ ch.idx ] then
+                                                                coSaved[ ch.idx ].a = "none"
+                                                        end
+                                                end
+                                                for _, ch in ipairs( coDeletes ) do
+                                                        if coSaved[ ch.idx ] then
+                                                                coSaved[ ch.idx ].a = "none"
+                                                        end
+                                                end
+                                                prefs[ "ver_" .. cid .. "_co" ] = coSaved
+
+                                                local muSaved = prefs[ "ver_" .. cid .. "_mu" ] or {}
+                                                for _, ch in ipairs( muChanges ) do
+                                                        if muSaved[ ch.idx ] then
+                                                                muSaved[ ch.idx ].a = "none"
+                                                        end
+                                                end
+                                                for _, ch in ipairs( muDeletes ) do
+                                                        if muSaved[ ch.idx ] then
+                                                                muSaved[ ch.idx ].a = "none"
+                                                        end
+                                                end
+                                                prefs[ "ver_" .. cid .. "_mu" ] = muSaved
+
+                                                local ciSaved = prefs[ "ver_" .. cid .. "_ci" ] or {}
+                                                for _, ch in ipairs( ciChanges ) do
+                                                        if ciSaved[ ch.idx ] then
+                                                                ciSaved[ ch.idx ].a = "none"
+                                                        end
+                                                end
+                                                for _, ch in ipairs( ciDeletes ) do
+                                                        if ciSaved[ ch.idx ] then
+                                                                ciSaved[ ch.idx ].a = "none"
+                                                        end
+                                                end
+                                                prefs[ "ver_" .. cid .. "_ci" ] = ciSaved
+
+                                                -- Reload data file in memory so Verification Monitor
+                                                -- sees the updated names immediately (no plugin reload needed
+                                                -- to re-verify).  Keyword List Builder is a separate
+                                                -- dofile() and still needs a plugin reload.
+                                                local newData = dofile( filePath )
+                                                for _, c in ipairs( COUNTRIES ) do
+                                                        if c.id == cid then
+                                                                c.data = newData
+                                                                break
+                                                        end
+                                                end
+                                                local rCos, rMus, rCis = extractGeoData( newData )
+                                                GEO[ cid ] = { counties = rCos, munis = rMus, cities = rCis }
+                                                verInited[ cid ] = false  -- Force Monitor to reinit on next open
+
+                                                -- Push updated data file to GitHub if a token is configured.
+                                                local summary = applied .. " name(s) changed"
+                                                if deleted > 0 then
+                                                        summary = summary .. ", " .. deleted .. " entr" ..
+                                                                  ( deleted == 1 and "y" or "ies" ) .. " deleted"
+                                                end
+
+                                                if GitHubSync.isConfigured() then
+                                                        LrTasks.startAsyncTask( function()
+                                                                local ok, info = GitHubSync.writeFile(
+                                                                        "data/" .. country.filename,
+                                                                        content,
+                                                                        "Update " .. cid .. " data → " .. newVer )
+                                                                if ok then
+                                                                        LrDialogs.message(
+                                                                                "Updated & pushed — " .. cname,
+                                                                                summary .. ". " ..
+                                                                                country.filename .. " version " .. newVer ..
+                                                                                " written and pushed to GitHub.\n\n" ..
+                                                                                "You can run Verify again immediately. " ..
+                                                                                "To update the Keyword List Builder, " ..
+                                                                                "click 'Reload Plug-in'.",
+                                                                                "info" )
+                                                                else
+                                                                        LrDialogs.message(
+                                                                                "Updated locally — GitHub push FAILED — " .. cname,
+                                                                                summary .. " in " ..
+                                                                                country.filename .. " (version " .. newVer ..
+                                                                                "), but the GitHub push failed:\n" ..
+                                                                                tostring( info ) ..
+                                                                                "\n\nCheck your token in File ▸ Plug-in Manager.\n\n" ..
+                                                                                "You can run Verify again immediately. " ..
+                                                                                "To update the Keyword List Builder, " ..
+                                                                                "click 'Reload Plug-in'.",
+                                                                                "warning" )
+                                                                end
+                                                        end )
+                                                else
+                                                        LrDialogs.message(
+                                                                "Updated — " .. cname,
+                                                                summary .. " in " ..
+                                                                country.filename .. " (version " .. newVer .. ").\n\n" ..
+                                                                "You can run Verify again immediately. " ..
+                                                                "To update the Keyword List Builder, " ..
+                                                                "click 'Reload Plug-in'.",
+                                                                "info" )
+                                                end
+                                                end )  -- LrTasks.startAsyncTask
                                         end,
                                 },
                         }
@@ -572,6 +1611,183 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                         f:separator { fill_horizontal = 1 },
                         f:spacer { height = 5 },
                         f:column( tableSpec ),
+                        f:spacer { height = 10 },
+                        f:push_button {
+                                title  = "New country",
+                                action = function()
+                                        LrFunctionContext.callWithContext( "newCountry", function( ctx )
+                                                local np = LrBinding.makePropertyTable( ctx )
+                                                np.c_name   = ""
+                                                np.c_native = ""
+                                                np.c_id     = ""
+                                                np.c_lv1    = "County"
+                                                np.c_lv2    = "Municipality"
+                                                local result = LrDialogs.presentModalDialog {
+                                                        title    = "New country",
+                                                        contents = f:column {
+                                                                bind_to_object = np,
+                                                                spacing        = f:label_spacing(),
+                                                                f:static_text {
+                                                                        title = "Fill in the details for the new country:",
+                                                                        font  = "<system/bold>",
+                                                                },
+                                                                f:spacer { height = 6 },
+                                                                f:row {
+                                                                        f:static_text { title = "Country name (English):", width = 170 },
+                                                                        f:edit_field { bind_to_object = np, value = LrView.bind( "c_name" ),   width = 200, immediate = true },
+                                                                },
+                                                                f:row {
+                                                                        f:static_text { title = "Native name:", width = 170 },
+                                                                        f:edit_field { bind_to_object = np, value = LrView.bind( "c_native" ), width = 200, immediate = true },
+                                                                },
+                                                                f:row {
+                                                                        f:static_text { title = "Country ID (no spaces):", width = 170 },
+                                                                        f:edit_field { bind_to_object = np, value = LrView.bind( "c_id" ),     width = 200, immediate = true },
+                                                                },
+                                                                f:row {
+                                                                        f:static_text { title = "Admin level 1 label:", width = 170 },
+                                                                        f:edit_field { bind_to_object = np, value = LrView.bind( "c_lv1" ),   width = 200, immediate = true },
+                                                                },
+                                                                f:row {
+                                                                        f:static_text { title = "Admin level 2 label:", width = 170 },
+                                                                        f:edit_field { bind_to_object = np, value = LrView.bind( "c_lv2" ),   width = 200, immediate = true },
+                                                                },
+                                                                f:spacer { height = 8 },
+                                                                f:static_text {
+                                                                        title           = "Creates a data file template and registers the country in\nthe plugin. Reload the plug-in (Plug-in Manager) afterwards.",
+                                                                        width           = 390,
+                                                                        height_in_lines = 2,
+                                                                },
+                                                        },
+                                                        actionVerb = "Create",
+                                                }
+                                                if result ~= "ok" then return end
+
+                                                local function trim( s )
+                                                        return ( s or "" ):match( "^%s*(.-)%s*$" )
+                                                end
+                                                local cname  = trim( np.c_name )
+                                                local native = trim( np.c_native )
+                                                local cid    = trim( np.c_id ):gsub( "%s+", "" )
+                                                local lv1    = trim( np.c_lv1 )
+                                                local lv2    = trim( np.c_lv2 )
+                                                if cname == "" or cid == "" then
+                                                        LrDialogs.message( "New country",
+                                                                "Country name and Country ID are required.", "warning" )
+                                                        return
+                                                end
+                                                if native == "" then native = cname end
+                                                if lv1    == "" then lv1    = "County" end
+                                                if lv2    == "" then lv2    = "Municipality" end
+
+                                                local filename = cid .. ".lua"
+                                                local filePath = LrPathUtils.child( dataDir, filename )
+                                                local chk = io.open( filePath, "r" )
+                                                if chk then
+                                                        chk:close()
+                                                        LrDialogs.message( "New country",
+                                                                "A data file already exists: data/" .. filename, "warning" )
+                                                        return
+                                                end
+
+                                                -- ── Write skeleton data file ───────────────────────
+                                                local today = os.date( "%Y-%m-%d" )
+                                                local tpl = "-- " .. filename .. " — Geography Keyword Builder\n" ..
+                                                        "-- Template created " .. today .. "\n\n" ..
+                                                        "return {\n" ..
+                                                        "    meta = {\n" ..
+                                                        '        version     = "0.0.1",\n' ..
+                                                        '        generated   = "' .. today .. '",\n' ..
+                                                        '        native_name = "' .. native .. '",\n' ..
+                                                        '        language    = "en",\n' ..
+                                                        "    },\n" ..
+                                                        "    counties = {\n" ..
+                                                        "        -- Add entries here. Example:\n" ..
+                                                        "        -- {\n" ..
+                                                        '        --     name  = "Region Name",\n' ..
+                                                        '        --     qcode = "",\n' ..
+                                                        "        --     municipalities = {\n" ..
+                                                        "        --         {\n" ..
+                                                        '        --             name   = "Municipality Name",\n' ..
+                                                        '        --             qcode  = "",\n' ..
+                                                        '        --             cities = { "City Name" },\n' ..
+                                                        "        --         },\n" ..
+                                                        "        --     },\n" ..
+                                                        "        -- },\n" ..
+                                                        "    },\n" ..
+                                                        "}\n"
+                                                local wf = io.open( filePath, "w" )
+                                                if not wf then
+                                                        LrDialogs.message( "New country",
+                                                                "Cannot write: " .. filePath, "critical" )
+                                                        return
+                                                end
+                                                wf:write( tpl )
+                                                wf:close()
+
+                                                -- ── Patch ListVerification.lua ─────────────────────
+                                                local varName  = cid:lower() .. "Data"
+                                                local selfPath = LrPathUtils.child( pluginPath, "ListVerification.lua" )
+                                                local sf = io.open( selfPath, "r" )
+                                                if not sf then
+                                                        LrDialogs.message( "New country — file created",
+                                                                "data/" .. filename .. " written.\n\n" ..
+                                                                "Could not patch ListVerification.lua.\n" ..
+                                                                "Add the country manually and reload.", "warning" )
+                                                        return
+                                                end
+                                                local sc = sf:read( "*all" )
+                                                sf:close()
+
+                                                -- 1. Add dofile after last existing dofile in data section
+                                                local doLine = 'local ' .. varName ..
+                                                        ' = dofile( LrPathUtils.child( dataDir, "' ..
+                                                        filename .. '" ) )\n'
+                                                sc = sc:gsub(
+                                                        "(local " .. varName .. "[^\n]*\n)",
+                                                        "%1" .. doLine )
+
+                                                -- 2. Add COUNTRIES entry after UnitedStates entry
+                                                local coEntry =
+                                                        '        { id = "' .. cid ..
+                                                        '", name = "' .. cname ..
+                                                        '", filename = "' .. filename ..
+                                                        '", data = ' .. varName .. '     },\n'
+                                                sc = sc:gsub(
+                                                        '(        { id = "UnitedStates"[^\n]+\n)',
+                                                        '%1' .. coEntry )
+
+                                                -- 3. Add LABELS entry after UnitedStates entry
+                                                local lbEntry =
+                                                        '        ' .. cid ..
+                                                        ' = { county = "' .. lv1 ..
+                                                        '", muni = "' .. lv2 ..
+                                                        '", city = "City" },\n'
+                                                sc = sc:gsub(
+                                                        '(        UnitedStates%s*=%s*{[^\n]+\n)',
+                                                        '%1' .. lbEntry )
+
+                                                local wsc = io.open( selfPath, "w" )
+                                                if not wsc then
+                                                        LrDialogs.message( "New country — file created",
+                                                                "data/" .. filename .. " written.\n\n" ..
+                                                                "Could not patch ListVerification.lua.\n" ..
+                                                                "Add the country manually and reload.", "warning" )
+                                                        return
+                                                end
+                                                wsc:write( sc )
+                                                wsc:close()
+
+                                                LrDialogs.message(
+                                                        "New country added — " .. cname,
+                                                        "Data template: data/" .. filename .. "\n\n" ..
+                                                        "The plugin has been updated. Reload the plug-in\n" ..
+                                                        "(Plug-in Manager → Reload Plug-in) to see the new\n" ..
+                                                        "country in List Overview.",
+                                                        "info" )
+                                        end )
+                                end,
+                        },
                 }
         end
 
@@ -590,7 +1806,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
         --
         -- Prop naming (cid = country id, i = GEO index):
         --   "vcco_<cid>_<i>"  conflict text for county i
-        --   "vaco_<cid>_<i>"  action value ("dash"|"change")
+        --   "vaco_<cid>_<i>"  action value ("none"|"change"|"change_manual"|"delete")
         --   (same with vcmu_/vamu_ for munis, vcci_/vaci_ for cities)
         ------------------------------------------------------------------------
 
@@ -631,44 +1847,78 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                 --   prefKey  : prefs sub-key ("co" | "mu" | "ci")
                 ----------------------------------------------------------------
 
+                -- Groups with more than this many items use the compact / lazy
+                -- rendering strategy: only conflict rows are shown; large verified-OK
+                -- groups are collapsed to a single summary line.
+                local LARGE_GROUP = 300
+
                 local function makeGroup( label, items, vcPfx, vaPfx, prefKey )
 
-                        -- Build display order each time the panel is constructed.
-                        -- Rows with an actual conflict suggestion sort first;
-                        -- the rest follow in alphabetical name order.
-                        local display = {}
+                        -- Scan verification state: count verified & conflict items.
+                        local verifiedCount = 0
+                        local conflictItems = {}   -- {i, name} for items with real suggestions
                         for i = 1, #items do
-                                display[ #display + 1 ] = { i = i, name = items[i] }
+                                local vc = props[ vcPfx .. cid .. "_" .. i ] or "—"
+                                if vc ~= "—" and vc ~= "-" then
+                                        verifiedCount = verifiedCount + 1
+                                        if vc ~= "✓" then
+                                                conflictItems[ #conflictItems + 1 ] = { i = i, name = items[ i ] }
+                                        end
+                                end
                         end
-                        table.sort( display, function( a, b )
-                                local vcA = props[ vcPfx .. cid .. "_" .. a.i ] or "—"
-                                local vcB = props[ vcPfx .. cid .. "_" .. b.i ] or "—"
-                                local aC  = ( vcA ~= "—" ) and ( vcA ~= "-" )
-                                local bC  = ( vcB ~= "—" ) and ( vcB ~= "-" )
-                                if aC ~= bC then return aC end
-                                return a.name < b.name
-                        end )
+                        local noneVerified = ( verifiedCount == 0 )
+                        local allVerified  = ( verifiedCount == #items )
+                        local isLarge      = ( #items > LARGE_GROUP )
+
+                        -- Build display order each time the panel is constructed.
+                        -- For large groups use only the conflict subset (already small).
+                        -- For small groups (counties, municipalities) include all items.
+                        local display = {}
+                        if isLarge then
+                                -- Sort conflict rows alphabetically (no "all items" sort needed).
+                                table.sort( conflictItems, function( a, b ) return a.name < b.name end )
+                                display = conflictItems
+                        else
+                                for i = 1, #items do
+                                        display[ #display + 1 ] = { i = i, name = items[ i ] }
+                                end
+                                table.sort( display, function( a, b )
+                                        local vcA = props[ vcPfx .. cid .. "_" .. a.i ] or "—"
+                                        local vcB = props[ vcPfx .. cid .. "_" .. b.i ] or "—"
+                                        local aC  = ( vcA ~= "—" ) and ( vcA ~= "-" ) and ( vcA ~= "✓" )
+                                        local bC  = ( vcB ~= "—" ) and ( vcB ~= "-" ) and ( vcB ~= "✓" )
+                                        if aC ~= bC then return aC end
+                                        return a.name < b.name
+                                end )
+                        end
 
                         -- Verify action: compare every item against Wikidata canonical names
                         -- (or fall back to pattern analysis if Wikidata is unreachable).
                         --
-                        -- Runs in an async task so the UI updates row-by-row as each item
-                        -- is checked.  The Wikidata HTTP call (one per country × level) runs
-                        -- first; rows show "..." during the fetch then fill in one by one.
+                        -- Runs bottom-to-top so the user immediately sees activity at the
+                        -- bottom of the list, then yields every batchSize rows to repaint.
                         --
-                        -- Action = "change" is PRESERVED: if the user already flagged an
-                        -- entry for renaming, re-verifying keeps that decision intact.
+                        -- Existing Actions (change / change_manual / delete) are PRESERVED
+                        -- so re-verifying keeps the user's decisions intact.
                         --
                         --   Conflicts = "—"        → not yet verified (initial state)
                         --   Conflicts = "..."       → currently being checked
-                        --   Conflicts = "-"         → confirmed OK
+                        --   Conflicts = "✓"         → confirmed OK by Wikidata / pattern
                         --   Conflicts = "SomeName"  → suggested canonical spelling
+                        local vprogKey = "vprog_"  .. prefKey .. "_" .. cid
+                        local vcurrKey = "vcurr_"  .. prefKey .. "_" .. cid
+
                         local function doVerify()
                                 LrTasks.startAsyncTask( function()
 
-                                        local today = os.date( "%Y-%m-%d" )
+                                        local today     = os.date( "%Y-%m-%d %H:%M" )
+                                        local startTime = os.time()   -- for time-remaining estimate
 
-                                        -- Mark all cells in this group as "checking…"
+                                        -- Reset progress counter and current-item label.
+                                        props[ vprogKey ] = ""
+                                        props[ vcurrKey ] = ""
+
+                                        -- Mark all cells in this group as "checking..."
                                         for i = 1, #items do
                                                 props[ vcPfx .. cid .. "_" .. i ] = "..."
                                         end
@@ -678,12 +1928,17 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                         -- Returns { [name]=true } or nil when offline / not applicable.
                                         local wikidataNames = fetchWikidataNames( cid, prefKey )
 
-                                        -- Check each item and update its row progressively.
+                                        -- Check each item bottom-to-top so the user sees progress
+                                        -- immediately from the bottom of the list.
                                         -- Yield every batchSize rows (~25 visual refreshes per group).
                                         local batchSize = math.max( 1, math.ceil( #items / 25 ) )
-                                        for i = 1, #items do
+                                        for idx = 1, #items do
+                                                local i          = #items - idx + 1
                                                 local name       = items[ i ]
                                                 local suggestion = nil
+
+                                                -- Show current item name above the scroll list.
+                                                props[ vcurrKey ] = name
 
                                                 if wikidataNames then
                                                         -- Wikidata available: exact-match lookup.
@@ -705,19 +1960,40 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                                         suggestion = checkName( name )
                                                 end
 
-                                                props[ vcPfx .. cid .. "_" .. i ] = suggestion or "-"
+                                                props[ vcPfx .. cid .. "_" .. i ] = suggestion or "✓"
 
-                                                -- Preserve Action = "change" (user's acknowledged decision).
-                                                -- Only set "dash" when the entry is still at its default.
-                                                if props[ vaPfx .. cid .. "_" .. i ] ~= "change" then
-                                                        props[ vaPfx .. cid .. "_" .. i ] = "dash"
+                                                -- Preserve existing user decisions (change / change_manual / delete).
+                                                -- Only reset to "none" when the entry has no prior user decision.
+                                                local curAct = props[ vaPfx .. cid .. "_" .. i ]
+                                                if curAct ~= "change" and curAct ~= "change_manual"
+                                                                      and curAct ~= "delete" then
+                                                        props[ vaPfx .. cid .. "_" .. i ] = "none"
                                                 end
 
-                                                -- Yield every batchSize items to let the UI repaint.
-                                                if i % batchSize == 0 then
+                                                -- Update progress label: "idx / total — ca. X min/sec remaining".
+                                                -- Time estimate is computed after the first batch yield.
+                                                if idx % batchSize == 0 then
+                                                        local elapsed = os.time() - startTime
+                                                        local remStr  = ""
+                                                        if elapsed > 0 and idx > 0 then
+                                                                local rate      = idx / elapsed
+                                                                local remaining = math.ceil( ( #items - idx ) / rate )
+                                                                if remaining > 60 then
+                                                                        remStr = " — ca. " ..
+                                                                                 math.ceil( remaining / 60 ) ..
+                                                                                 " min remaining"
+                                                                elseif remaining > 1 then
+                                                                        remStr = " — ca. " .. remaining .. " sec remaining"
+                                                                end
+                                                        end
+                                                        props[ vprogKey ] = idx .. " / " .. #items .. remStr
                                                         LrTasks.sleep( 0.04 )
                                                 end
                                         end
+
+                                        -- Mark as fully done; clear current-item label.
+                                        props[ vprogKey ] = #items .. " / " .. #items .. " ✓"
+                                        props[ vcurrKey ] = ""
 
                                         -- Persist all results to prefs.
                                         local saved = {}
@@ -737,12 +2013,12 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                 end )   -- end startAsyncTask
                         end
 
-                        -- Top row: Verify button above Name column.
+                        -- Top row: "Verify with Wiki" button, centred across the group width.
                         local verRow = f:row {
-                                spacing = 6,
-                                f:push_button { title = "Verify", width = W_M_NAME, action = doVerify },
-                                f:spacer { width = W_M_CONF },
-                                f:spacer { width = W_M_ACT  },
+                                fill_horizontal = 1,
+                                f:spacer { fill_horizontal = 1 },
+                                f:push_button { title = "Verify with Wiki", action = doVerify },
+                                f:spacer { fill_horizontal = 1 },
                         }
 
                         -- Sub-header row (bold column labels).
@@ -754,47 +2030,101 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                         }
 
                         -- One data row per item in sorted display order.
+                        -- Large groups (> LARGE_GROUP) use compact rendering:
+                        --   • Not yet verified → placeholder row only.
+                        --   • All verified, no conflicts → single "all OK" row.
+                        --   • Conflicts found → only the conflict rows.
                         local colSpec = {
                                 spacing          = f:control_spacing(),
                                 background_color = DLG_BG,
                         }
-                        for _, d in ipairs( display ) do
-                                local vcKey = vcPfx .. cid .. "_" .. d.i
-                                local vaKey = vaPfx .. cid .. "_" .. d.i
+
+                        if isLarge and noneVerified then
+                                -- Not verified yet — show a single placeholder row.
                                 colSpec[ #colSpec + 1 ] = f:row {
                                         spacing = 6,
                                         f:static_text {
-                                                title = d.name,
-                                                width = W_M_NAME,
-                                        },
-                                        f:static_text {
-                                                bind_to_object = props,
-                                                title          = LrView.bind( vcKey ),
-                                                width          = W_M_CONF,
-                                        },
-                                        f:popup_menu {
-                                                bind_to_object = props,
-                                                value          = LrView.bind( vaKey ),
-                                                items          = {
-                                                        { title = "—",      value = "dash"   },
-                                                        { title = "Change", value = "change" },
-                                                },
-                                                width = W_M_ACT,
+                                                title = "Click 'Verify with Wiki' to verify " ..
+                                                        #items .. " entries.",
+                                                width           = W_M_NAME + W_M_CONF + W_M_ACT + 12,
+                                                height_in_lines = 2,
+                                                font            = "<system/small>",
                                         },
                                 }
+
+                        elseif isLarge and allVerified and #conflictItems == 0 then
+                                -- All verified, no conflicts — compact summary row.
+                                colSpec[ #colSpec + 1 ] = f:row {
+                                        spacing = 6,
+                                        f:static_text {
+                                                title = "All " .. #items .. " entries confirmed ✓ — no conflicts.",
+                                                width = W_M_NAME + W_M_CONF + W_M_ACT + 12,
+                                                font  = "<system/small>",
+                                        },
+                                }
+
+                        else
+                                -- Small group OR large group with conflicts: render data rows.
+                                for _, d in ipairs( display ) do
+                                        local vcKey = vcPfx .. cid .. "_" .. d.i
+                                        local vaKey = vaPfx .. cid .. "_" .. d.i
+                                        colSpec[ #colSpec + 1 ] = f:row {
+                                                spacing = 6,
+                                                f:static_text {
+                                                        title = d.name,
+                                                        width = W_M_NAME,
+                                                },
+                                                f:static_text {
+                                                        bind_to_object = props,
+                                                        title          = LrView.bind( vcKey ),
+                                                        width          = W_M_CONF,
+                                                },
+                                                f:popup_menu {
+                                                        bind_to_object = props,
+                                                        value          = LrView.bind( vaKey ),
+                                                        items          = {
+                                                                { title = "None",            value = "none"          },
+                                                                { title = "Change",          value = "change"        },
+                                                                { title = "Change manually", value = "change_manual" },
+                                                                { title = "Delete",          value = "delete"        },
+                                                        },
+                                                        width = W_M_ACT,
+                                                },
+                                        }
+                                end
                         end
 
+                        -- Label that shows the name currently being verified (updates live
+                        -- during the async task; hidden when verification is not running).
+                        local currLabel = f:static_text {
+                                bind_to_object = props,
+                                title          = LrView.bind( vcurrKey ),
+                                font           = "<system/small>",
+                                fill_horizontal = 1,
+                        }
+
                         local scrolled = f:scrolled_view {
-                                width            = G_W,
-                                height           = 250,
-                                background_color = DLG_BG,
+                                width               = G_W,
+                                height              = 250,
+                                background_color    = DLG_BG,
+                                horizontal_scroller = false,
                                 f:column( colSpec ),
                         }
 
-                        -- Row count summary below the scroll area.
-                        local countLabel = f:static_text {
-                                title = #items .. " " .. label:lower() .. " entries",
-                                font  = "<system/small>",
+                        -- Row count + live progress indicator below the scroll area.
+                        local countLabel = f:row {
+                                spacing = 4,
+                                f:static_text {
+                                        title = #items .. " " .. label:lower() .. " entries",
+                                        font  = "<system/small>",
+                                },
+                                f:spacer { fill_horizontal = 1 },
+                                f:static_text {
+                                        bind_to_object = props,
+                                        title          = LrView.bind( vprogKey ),
+                                        font           = "<system/small>",
+                                        alignment      = "right",
+                                },
                         }
 
                         return f:column {
@@ -802,6 +2132,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                 verRow,
                                 subHdr,
                                 f:separator { fill_horizontal = 1 },
+                                currLabel,
                                 scrolled,
                                 countLabel,
                         }
@@ -810,54 +2141,6 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                 local groupCo = makeGroup( labels.county, geo.counties, "vcco_", "vaco_", "co" )
                 local groupMu = makeGroup( labels.muni,   geo.munis,    "vcmu_", "vamu_", "mu" )
                 local groupCi = makeGroup( labels.city,   geo.cities,   "vcci_", "vaci_", "ci" )
-
-                -- Pull the latest verified/<Country>.json from GitHub and apply it.
-                -- Explicit, author-only action: does nothing on machines without a token.
-                local function doRefresh()
-                        LrTasks.startAsyncTask( function()
-                                if not GitHubSync.isConfigured() then
-                                        LrDialogs.message(
-                                                "GitHub not configured",
-                                                "Enter a GitHub token in File ▸ Plug-in Manager ▸ " ..
-                                                "Geography Keyword Builder ▸ GitHub Sync to enable syncing.",
-                                                "warning" )
-                                        return
-                                end
-                                local path = GitHubSync.verifiedPath( cid )
-                                local content, err = GitHubSync.readFile( path )
-                                if not content then
-                                        if err == "not found" then
-                                                LrDialogs.message(
-                                                        "Nothing to refresh — " .. cname,
-                                                        "No verification file exists yet at " .. path ..
-                                                        ".\nVerify and Save first to create it.",
-                                                        "info" )
-                                        else
-                                                LrDialogs.message(
-                                                        "Refresh failed — " .. cname,
-                                                        "Could not read " .. path .. ":\n" .. tostring( err ),
-                                                        "warning" )
-                                        end
-                                        return
-                                end
-                                local obj = dkjson.decode( content )
-                                if type( obj ) ~= "table" or type( obj.levels ) ~= "table" then
-                                        LrDialogs.message(
-                                                "Refresh failed — " .. cname,
-                                                "The file at " .. path .. " is not valid verification JSON.",
-                                                "warning" )
-                                        return
-                                end
-                                applyVerifiedJson( cid, obj )
-                                switchTab( TAB_IDS.MN )   -- rebuild panel with restored data
-                                LrDialogs.message(
-                                        "Refreshed — " .. cname,
-                                        "Loaded verification data from GitHub (version " ..
-                                        tostring( obj.version or "?" ) .. ", verified " ..
-                                        tostring( obj.verified or "?" ) .. ").",
-                                        "info" )
-                        end )
-                end
 
                 return f:column {
                         bind_to_object = props,
@@ -869,34 +2152,24 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                         },
                         f:spacer { height = 5 },
                         f:static_text {
-                                title = "Click a 'Verify' button to check entries against " ..
-                                        "Wikidata (county and municipality levels; falls back " ..
-                                        "to pattern analysis when offline). Conflicts shows " ..
-                                        "'-' for confirmed names or a suggested canonical " ..
-                                        "spelling. Set Action to 'Change' to flag an entry " ..
-                                        "for renaming in a future data update.",
+                                title = "Click 'Verify with Wiki' to check names against Wikidata " ..
+                                        "(counties and municipalities; falls back to pattern analysis " ..
+                                        "when offline). Conflicts shows '✓' for confirmed names " ..
+                                        "or a suggested canonical name when a mismatch is found. " ..
+                                        "Set Action = Change, Change manually, or Delete " ..
+                                        "for entries you want to update, then click Update " ..
+                                        "in List Overview.",
                                 width           = CONTENT_W_MN,
                                 height_in_lines = 3,
                         },
                         f:static_text {
-                                title = "Clicking Save will store the current verification results as version " ..
+                                title = "Click Save to store the results as version " ..
                                         nextVer .. " of the " .. cname .. " list" ..
-                                        ( GitHubSync.isConfigured() and " and push it to GitHub." or "." ),
+                                        ( GitHubSync.isConfigured()
+                                          and " and push to GitHub."
+                                          or  ". To push to GitHub, add a token in Plug-in Manager." ),
                                 width           = CONTENT_W_MN,
                                 height_in_lines = 2,
-                        },
-                        f:row {
-                                spacing = 6,
-                                f:push_button {
-                                        title  = "Refresh from GitHub",
-                                        action = doRefresh,
-                                },
-                                f:static_text {
-                                        title = GitHubSync.isConfigured()
-                                                and "Loads the latest saved verification data for " .. cname .. " from GitHub."
-                                                or  "GitHub sync is disabled — set a token in Plug-in Manager to enable.",
-                                        fill_horizontal = 1,
-                                },
                         },
                         f:separator { fill_horizontal = 1 },
                         f:spacer { height = 5 },
@@ -934,6 +2207,442 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
         end
 
         ------------------------------------------------------------------------
+        -- Tab 0 — Keyword Builder
+        ------------------------------------------------------------------------
+
+        local function buildBuilderPanel()
+
+                -- Country column
+                -- Show only enabled countries; if none are enabled, show all.
+                local anyEnabled = false
+                for _, c in ipairs( COUNTRIES ) do
+                        if props[ c.id .. "_enabled" ] then anyEnabled = true break end
+                end
+
+                local continents  = {}
+                local byContinent = {}
+                for _, country in ipairs( COUNTRIES ) do
+                        if not anyEnabled or props[ country.id .. "_enabled" ] then
+                                local cont = country.continent or "Other"
+                                if not byContinent[ cont ] then
+                                        byContinent[ cont ] = {}
+                                        continents[ #continents + 1 ] = cont
+                                end
+                                local cl = byContinent[ cont ]
+                                cl[ #cl + 1 ] = country
+                        end
+                end
+
+                local countryChildren = {
+                        spacing         = f:control_spacing(),
+                        fill_horizontal = 1,
+                        f:static_text { title = "Country", font = "<system/bold>" },
+                        f:spacer { height = 2 },
+                }
+
+                for _, cont in ipairs( continents ) do
+                        local contLower = cont:lower():gsub( "%s+", "_" )
+                        local contKey   = contLower .. "_expanded"
+                        local detailKey = contLower .. "_detail"
+
+                        countryChildren[ #countryChildren + 1 ] = f:push_button {
+                                bind_to_object = props,
+                                title = LrView.bind {
+                                        key       = contKey,
+                                        transform = function( v )
+                                                return (v and "\226\150\178" or "\226\150\188") .. "   " .. cont
+                                        end,
+                                },
+                                action = function()
+                                        props[ contKey ] = not props[ contKey ]
+                                end,
+                        }
+
+                        countryChildren[ #countryChildren + 1 ] = f:column {
+                                bind_to_object  = props,
+                                visible         = LrView.bind( contKey ),
+                                fill_horizontal = 1,
+                                f:row {
+                                        spacing = f:label_spacing(),
+                                        f:static_text { title = "Include:", width = 55 },
+                                        f:slider {
+                                                bind_to_object = props,
+                                                value          = LrView.bind( detailKey ),
+                                                min            = 0,
+                                                max            = 3,
+                                                integral       = true,
+                                                width          = 90,
+                                        },
+                                        f:static_text {
+                                                bind_to_object = props,
+                                                title = LrView.bind {
+                                                        key       = detailKey,
+                                                        transform = function( v )
+                                                                return contDetailLabel( v )
+                                                        end,
+                                                },
+                                                width = 36,
+                                        },
+                                },
+                        }
+
+                        for _, country in ipairs( byContinent[ cont ] ) do
+                                local cid          = country.id
+                                local includeKey   = cid .. "_include"
+                                local switchAction = makeSwitchAction( cid, country )
+
+                                countryChildren[ #countryChildren + 1 ] = f:column {
+                                        bind_to_object  = props,
+                                        visible         = LrView.bind( contKey ),
+                                        fill_horizontal = 1,
+                                        f:row {
+                                                spacing         = f:label_spacing(),
+                                                fill_horizontal = 1,
+                                                f:static_text {
+                                                        bind_to_object = props,
+                                                        title = LrView.bind {
+                                                                key       = "active_country_id",
+                                                                transform = function( v )
+                                                                        return v == cid and "\226\150\182" or "  "
+                                                                end,
+                                                        },
+                                                        width = 16,
+                                                },
+                                                f:static_text {
+                                                        title           = country.name,
+                                                        fill_horizontal = 1,
+                                                },
+                                                f:push_button {
+                                                        title  = "Select More",
+                                                        action = switchAction,
+                                                },
+                                                f:checkbox {
+                                                        bind_to_object = props,
+                                                        title          = "Include",
+                                                        value          = LrView.bind( includeKey ),
+                                                },
+                                        },
+                                }
+                        end
+
+                        countryChildren[ #countryChildren + 1 ] = f:spacer { height = 4 }
+                end
+
+                local countryColumn = f:column( countryChildren )
+
+                -- County section — exact-count approach (v0.9.77).
+                -- LR SDK: visible=false on ANY element type preserves layout space.
+                -- The only fix is to build EXACTLY the right number of rows at construction
+                -- time. We do this by reading the active country's county list from
+                -- props (already populated by loadCountryState before buildBuilderPanel
+                -- is called). When the user switches country, makeSwitchAction calls
+                -- switchTab(TAB_IDS.KB), which closes and rebuilds the panel via the
+                -- while-keepOpen dialog loop — ensuring the new country's exact count.
+                -- activePanelCountry is the shared upvalue set by makeSwitchAction
+                -- (and initialised after the first loadCountryState call).  Using it
+                -- directly avoids any prop-timing race with props.active_country_id.
+                local activeCountry = activePanelCountry or COUNTRIES[1]
+                local names  = activeCountry.countyNames  or {}
+                local riList = activeCountry.remoteIslandNames or {}
+                local n   = #names
+                local riN = #riList
+
+                local countyItems = {
+                        bind_to_object  = props,
+                        spacing         = 4,
+                        fill_horizontal = 1,
+                }
+                for i = 1, n do
+                        countyItems[ #countyItems + 1 ] = f:checkbox {
+                                bind_to_object = props,
+                                font           = "<system/small>",
+                                title          = LrView.bind( "county_name_" .. i ),
+                                value          = LrView.bind( "div_value_"   .. i ),
+                        }
+                end
+                if riN > 0 then
+                        countyItems[ #countyItems + 1 ] = f:separator { fill_horizontal = 1 }
+                        for i = 1, riN do
+                                countyItems[ #countyItems + 1 ] = f:checkbox {
+                                        bind_to_object = props,
+                                        font           = "<system/small>",
+                                        title          = LrView.bind( "ri_name_"  .. i ),
+                                        value          = LrView.bind( "ri_value_" .. i ),
+                                }
+                        end
+                end
+
+                local countyListContainer = f:scrolled_view {
+                        bind_to_object      = props,
+                        fill_vertical       = 1,
+                        width               = KB_COL_W_COUNTY,
+                        horizontal_scroller = false,
+                        background_color    = panelGrey,
+                        f:column( countyItems ),
+                }
+
+                local countySection = f:column {
+                        bind_to_object = props,
+                        fill_vertical  = 1,
+                        spacing        = f:control_spacing(),
+                        f:static_text {
+                                bind_to_object = props,
+                                title          = LrView.bind( "active_divisions_label" ),
+                                font           = "<system/bold>",
+                        },
+                        f:static_text {
+                                title = "Select which information to include\nand how detailed.",
+                                wrap  = true,
+                                width = KB_COL_W_COUNTY,
+                        },
+                        f:separator { fill_horizontal = 1 },
+                        f:row {
+                                spacing = 2,
+                                f:static_text { title = "Level of detail:", width = 101 },
+                                f:slider {
+                                        bind_to_object = props,
+                                        value          = LrView.bind( "feat_admin_detail" ),
+                                        min            = 1,
+                                        max            = 3,
+                                        integral       = true,
+                                        width          = 75,
+                                },
+                                f:static_text {
+                                        bind_to_object = props,
+                                        title = LrView.bind {
+                                                key       = "feat_admin_detail",
+                                                transform = function( v ) return detailLabel( v ) end,
+                                        },
+                                        width     = 30,
+                                        alignment = "right",
+                                },
+                        },
+                        -- Inner column takes all remaining vertical space in countySection.
+                        -- The two-level fill_vertical chain (countySection → this column →
+                        -- countyListContainer) is required: a single fill_vertical on the
+                        -- scrolled_view alone does not expand it correctly in the LR SDK.
+                        f:column {
+                                fill_vertical = 1,
+                                spacing       = 4,
+                                f:checkbox {
+                                        bind_to_object = props,
+                                        font           = "<system>",
+                                        title          = LrView.bind( "active_select_all_label" ),
+                                        value          = LrView.bind( "div_select_all" ),
+                                        width          = KB_COL_W_COUNTY,
+                                },
+                                countyListContainer,
+                                f:static_text {
+                                        bind_to_object = props,
+                                        title          = LrView.bind( "active_version_label" ),
+                                        text_color     = dimColor,
+                                },
+                        },
+                }
+
+                -- Feature selections
+                local featuresContent = f:column {
+                        bind_to_object = props,
+                        spacing        = f:control_spacing(),
+                        f:static_text {
+                                bind_to_object = props,
+                                title          = LrView.bind( "active_selections_label" ),
+                                font           = "<system/bold>",
+                        },
+                        f:column {
+                                spacing = 2,
+                                f:static_text { title = "Use the sliders below to set max count or" },
+                                f:static_text { title = "min elevation (only for mountains)." },
+                        },
+                        f:separator { fill_horizontal = 1 },
+                        f:checkbox {
+                                bind_to_object = props,
+                                font           = "<system>",
+                                title          = "Select All",
+                                value          = LrView.bind( "feat_select_all" ),
+                        },
+                        f:row { fill_horizontal = 1, spacing = f:label_spacing(),
+                                f:checkbox { bind_to_object=props, font="<system>", title="National Park",  value=LrView.bind("feat_national_parks") },
+                                f:spacer { fill_horizontal = 1 },
+                                inlineSlider( "feat_national_parks_max",  10, 500, "" ) },
+                        f:row { fill_horizontal = 1, spacing = f:label_spacing(),
+                                f:checkbox { bind_to_object=props, font="<system>", title="Nature Reserve", value=LrView.bind("feat_nature_reserves") },
+                                f:spacer { fill_horizontal = 1 },
+                                inlineSlider( "feat_nature_reserves_max", 10, 500, "" ) },
+                        f:row { fill_horizontal = 1, spacing = f:label_spacing(),
+                                f:checkbox { bind_to_object=props, font="<system>", title="Mountain",       value=LrView.bind("feat_mountains") },
+                                f:spacer { fill_horizontal = 1 },
+                                inlineSlider( "feat_mainland_cutoff", 500, LrView.bind("active_mountain_max"), "m" ) },
+                        f:row { fill_horizontal = 1, spacing = f:label_spacing(),
+                                f:checkbox { bind_to_object=props, font="<system>", title="Fjord",          value=LrView.bind("feat_fjords") },
+                                f:spacer { fill_horizontal = 1 },
+                                inlineSlider( "feat_fjords_max",     10, 100, "" ) },
+                        f:row { fill_horizontal = 1, spacing = f:label_spacing(),
+                                f:checkbox { bind_to_object=props, font="<system>", title="Lake",           value=LrView.bind("feat_lakes") },
+                                f:spacer { fill_horizontal = 1 },
+                                inlineSlider( "feat_lakes_max",      10, 100, "" ) },
+                        f:row { fill_horizontal = 1, spacing = f:label_spacing(),
+                                f:checkbox { bind_to_object=props, font="<system>", title="River",          value=LrView.bind("feat_rivers") },
+                                f:spacer { fill_horizontal = 1 },
+                                inlineSlider( "feat_rivers_max",     10, 100, "" ) },
+                        f:row { fill_horizontal = 1, spacing = f:label_spacing(),
+                                f:checkbox { bind_to_object=props, font="<system>", title="Island",         value=LrView.bind("feat_islands") },
+                                f:spacer { fill_horizontal = 1 },
+                                inlineSlider( "feat_islands_max",    10, 100, "" ) },
+                        f:row { fill_horizontal = 1, spacing = f:label_spacing(),
+                                f:checkbox { bind_to_object=props, font="<system>", title="Viewpoint",      value=LrView.bind("feat_viewpoints") },
+                                f:spacer { fill_horizontal = 1 },
+                                inlineSlider( "feat_viewpoints_max", 10, 500, "" ) },
+                }
+
+                -- Save + Generate row
+                local saveRow = f:row {
+                        bind_to_object  = props,
+                        fill_horizontal = 1,
+                        f:spacer { fill_horizontal = 1 },
+                        f:static_text {
+                                bind_to_object = props,
+                                visible        = LrView.bind( "dirty" ),
+                                title          = "Unsaved changes  ",
+                                text_color     = dimColor,
+                        },
+                        f:push_button {
+                                bind_to_object = props,
+                                title          = LrView.bind( "active_save_label" ),
+                                action         = saveCurrentState,
+                        },
+                        f:push_button {
+                                title  = "Generate",
+                                action = doGenerate,
+                        },
+                }
+
+                return f:column {
+                        bind_to_object = props,
+                        spacing        = f:control_spacing(),
+                        f:static_text {
+                                title = "Select a country (Select More), configure sections and areas, "
+                                     .. "check Include to add it to the export, then click Generate.",
+                        },
+                        f:row {
+                                spacing = f:label_spacing() * 2,
+                                f:group_box {
+                                        title   = "",
+                                        spacing = f:control_spacing(),
+                                        countryColumn,
+                                },
+                                f:group_box {
+                                        title         = "",
+                                        fill_vertical = 1,
+                                        spacing       = f:control_spacing(),
+                                        countySection,
+                                },
+                                f:column {
+                                        spacing = f:control_spacing(),
+                                        f:group_box {
+                                                title           = "",
+                                                fill_horizontal = 1,
+                                                featuresContent,
+                                        },
+                                        saveRow,
+                                },
+                        },
+                }
+
+        end  -- buildBuilderPanel
+
+        ------------------------------------------------------------------------
+        -- Tab 0 — Intro  (world-map welcome panel)
+        ------------------------------------------------------------------------
+
+        local function buildIntroPanel()
+                -- Generate (or retrieve cached) world-map PNG with current enabled colours.
+                local enabledSet = {}
+                for _, c in ipairs( COUNTRIES ) do
+                        if props[ c.id .. "_enabled" ] then enabledSet[ c.id ] = true end
+                end
+                local mapPath = WorldMap.generate( enabledSet )
+
+                local mapItem
+                if mapPath then
+                        mapItem = f:picture {
+                                value  = mapPath,
+                                width  = 600,
+                                height = 300,
+                        }
+                else
+                        mapItem = f:static_text {
+                                title = "(Map image could not be generated)",
+                                width = 600,
+                        }
+                end
+
+                return f:column {
+                        bind_to_object = props,
+                        spacing        = f:control_spacing(),
+                        f:spacer { height = 8 },
+                        f:row {
+                                f:spacer { fill_horizontal = 1 },
+                                mapItem,
+                                f:spacer { fill_horizontal = 1 },
+                        },
+                        f:spacer { height = 6 },
+                        f:separator { fill_horizontal = 1 },
+                        f:spacer { height = 4 },
+                        f:static_text {
+                                title = "Geography Keyword Builder",
+                                font  = "<system/bold>",
+                        },
+                        f:spacer { height = 2 },
+                        f:static_text {
+                                title           = "Welcome to the Geography Keyword Builder plugin for Adobe Lightroom Classic. "
+                                                .. "This plugin helps you create and manage hierarchical geographic keyword lists "
+                                                .. "for your photo library. "
+                                                .. "Use the tabs above to build keyword lists (Keyword List Builder), "
+                                                .. "manage country data files (List Overview), verify keyword data "
+                                                .. "(Verification Monitor), or read the documentation (Help).",
+                                width           = CONTENT_W,
+                                height_in_lines = 4,
+                        },
+                        f:spacer { height = 2 },
+                        f:static_text {
+                                title           = "Blue = supported countries.  Red = currently enabled (On).  "
+                                                .. "Click below to open a fully interactive map in your browser.",
+                                width           = CONTENT_W,
+                                height_in_lines = 2,
+                        },
+                        f:spacer { height = 6 },
+                        f:row {
+                                f:spacer { fill_horizontal = 1 },
+                                f:push_button {
+                                        title = "Show Interactive Map in Browser",
+                                        action = function()
+                                                LrTasks.startAsyncTask( function()
+                                                        local currentEnabled = {}
+                                                        for _, c in ipairs( COUNTRIES ) do
+                                                                if props[ c.id .. "_enabled" ] then
+                                                                        currentEnabled[ c.id ] = true
+                                                                end
+                                                        end
+                                                        local htmlPath = WorldMap.generateHTML( currentEnabled )
+                                                        if htmlPath then
+                                                                local url
+                                                                if WIN_ENV then
+                                                                        url = "file:///" .. htmlPath:gsub( "\\", "/" )
+                                                                else
+                                                                        url = "file://" .. htmlPath
+                                                                end
+                                                                LrHttp.openUrlInBrowser( url )
+                                                        end
+                                                end )
+                                        end,
+                                },
+                                f:spacer { fill_horizontal = 1 },
+                        },
+                }
+        end  -- buildIntroPanel
+
+        ------------------------------------------------------------------------
         -- Dialog loop
         ------------------------------------------------------------------------
 
@@ -946,6 +2655,8 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
 
                 local placeholder = f:column { f:spacer { height = 5 } }
 
+                local panelINTRO = ( currentDialog == TAB_IDS.INTRO ) and buildIntroPanel()  or placeholder
+                local panelKB    = ( currentDialog == TAB_IDS.KB    ) and buildBuilderPanel() or placeholder
                 local panelOV  = ( currentDialog == TAB_IDS.OV  ) and buildOverviewPanel() or placeholder
                 local panelMN  = ( currentDialog == TAB_IDS.MN  ) and buildMonitorPanel()  or placeholder
                 local panelHLP = ( currentDialog == TAB_IDS.HLP ) and buildHelpPanel()     or placeholder
@@ -958,9 +2669,14 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                         bind_to_object = props,
                         value          = LrView.bind( "activeTabId" ),
                         f:tab_view_item {
+                                title      = "Intro",
+                                identifier = TAB_IDS.INTRO,
+                                f:column { width = CONTENT_W, spacing = f:control_spacing(), panelINTRO },
+                        },
+                        f:tab_view_item {
                                 title      = "Keyword List Builder",
                                 identifier = TAB_IDS.KB,
-                                f:column { width = CONTENT_W, spacing = f:control_spacing(), placeholder },
+                                f:column { spacing = f:control_spacing(), panelKB },
                         },
                         f:tab_view_item {
                                 title      = "List Overview",
@@ -985,14 +2701,20 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                 -- of the button bar together.
                 -- On all other tabs: actionVerb = "Close", no cancel button.
                 local result = LrDialogs.presentModalDialog {
-                        title      = "Geography Keyword Builder — Data Management",
+                        title      = "Geography Keyword Builder",
                         contents   = contents,
                         actionVerb = showSave and "Save" or "Close",
                         cancelVerb = showSave and "Cancel" or "< exclude >",
                 }
 
-                if result == TAB_IDS.OV or result == TAB_IDS.MN or result == TAB_IDS.HLP then
+                if result == TAB_IDS.INTRO or result == TAB_IDS.KB or result == TAB_IDS.OV or result == TAB_IDS.MN or result == TAB_IDS.HLP then
                         -- Tab switch triggered by observer or switchTab() call.
+                        -- If leaving the Monitor tab, flush any unsaved action popup changes
+                        -- to prefs so Update can read them even if Save was not clicked.
+                        if currentDialog == TAB_IDS.MN then
+                                local cid = props.verify_country_id
+                                if cid then persistVerToPrefs( cid ) end
+                        end
                         currentDialog = result
 
                 elseif showSave and result == "ok" then
@@ -1002,7 +2724,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                 local newVer = computeNextVersion( cid, prefs )
                                 prefs[ "list_version_" .. cid ] = newVer
                                 props[ "list_version_" .. cid ] = newVer
-                                prefs[ "verified_" .. cid ]     = os.date( "%Y-%m-%d" )
+                                prefs[ "verified_" .. cid ]     = os.date( "%Y-%m-%d %H:%M" )
                                 props[ "verified_" .. cid ]     = prefs[ "verified_" .. cid ]
                                 -- Capture any Action changes made after Verify (popup-only edits).
                                 persistVerToPrefs( cid )
@@ -1056,8 +2778,5 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
 
         end
 
-        if currentDialog == TAB_IDS.KB then
-                dofile( LrPathUtils.child( pluginPath, "KeywordBuilder.lua" ) )
-        end
 
 end )
