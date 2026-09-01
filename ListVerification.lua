@@ -211,6 +211,9 @@ local CONTENT_W_MN = G_W * 3 + 30
 -- ── Column widths for Keyword List Builder ────────────────────────────────────
 local KB_COL_W_COUNTRY = 380  -- Country column (wider to accommodate continent sliders)
 local KB_COL_W_COUNTY  = 230  -- Counties & Areas column
+local KB_COUNTY_LIST_H = 300  -- Fixed height of the county scrolled_view (fills the
+                              -- middle column down to the version text; fill_vertical
+                              -- on scrolled_view is unreliable in the LR SDK)
 
 -- ── Approximate dialog background grey for scrolled_view content ─────────────
 -- LR Classic dialog background is roughly 0.9 (light mode).
@@ -2381,18 +2384,28 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                         end
                 end
 
+                -- Explicit height instead of fill_vertical.  fill_vertical=1 on an
+                -- f:scrolled_view proved unreliable across v0.9.74–v0.9.81 (the
+                -- scrolled_view locks its content-based height at construction and
+                -- does not expand to fill the parent column, regardless of the
+                -- fill chain).  KB_COUNTY_LIST_H is sized so the county list fills
+                -- down to the version text, matching the tall left country column.
                 local countyListContainer = f:scrolled_view {
                         bind_to_object      = props,
-                        fill_vertical       = 1,
+                        height              = KB_COUNTY_LIST_H,
                         width               = KB_COL_W_COUNTY,
                         horizontal_scroller = false,
                         background_color    = panelGrey,
                         f:column( countyItems ),
                 }
 
-                local countySection = f:column {
+                -- County group_box (matches the left country column and right
+                -- features column, which are also group_boxes).  Its height is
+                -- driven by the fixed-height scrolled_view child, so no
+                -- fill_vertical is needed — that mechanism was unreliable here.
+                local countyGroupBox = f:group_box {
                         bind_to_object = props,
-                        fill_vertical  = 1,
+                        title          = "",
                         spacing        = f:control_spacing(),
                         f:static_text {
                                 bind_to_object = props,
@@ -2433,10 +2446,6 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                 value          = LrView.bind( "div_select_all" ),
                                 width          = KB_COL_W_COUNTY,
                         },
-                        -- countyListContainer is a direct child of countySection — no
-                        -- intermediate f:column wrapper. Nested fill_vertical containers
-                        -- break the fill chain in LR SDK; scrolled_view must be a direct
-                        -- child of the fill_vertical parent to expand correctly.
                         countyListContainer,
                         f:static_text {
                                 bind_to_object = props,
@@ -2536,12 +2545,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                         spacing = f:control_spacing(),
                                         countryColumn,
                                 },
-                                f:group_box {
-                                        title         = "",
-                                        fill_vertical = 1,
-                                        spacing       = f:control_spacing(),
-                                        countySection,
-                                },
+                                countyGroupBox,
                                 f:column {
                                         spacing = f:control_spacing(),
                                         f:group_box {

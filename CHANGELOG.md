@@ -1,3 +1,8 @@
+## [0.9.82] - 2026-09-01
+
+### Fixed
+- ListVerification (Keyword List Builder): Fixed the county list not filling the middle column down to the version text (large empty gap below the last county). After six unsuccessful `fill_vertical` attempts (v0.9.74–v0.9.81), the conclusion is that `fill_vertical=1` on an `f:scrolled_view` is unreliable in the LR SDK — the scrolled_view locks its content-based height at construction and does not expand to fill its parent, regardless of the fill chain. Fix: switched to a **deterministic explicit height** (`KB_COUNTY_LIST_H = 300`) on the county `f:scrolled_view`, sized so the list fills down to the version text, matching the tall left country column. The middle column was also converted to an `f:group_box` (title `""`) so it visually matches the left country column and right features column, which are already group_boxes.
+
 ## [0.9.81] - 2026-09-01
 
 ### Fixed
