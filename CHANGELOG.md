@@ -1,3 +1,8 @@
+## [0.9.80] - 2026-09-01
+
+### Fixed
+- ListVerification (Keyword List Builder): Fixed crash when clicking "Select More" for any country — `[ListVerification.lua]:611: attempt to call global 'switchTab' (a nil value)`. Root cause: `switchTab` is defined *after* `makeSwitchAction` in the file (at the dialog setup section, line ~1053), so `makeSwitchAction` could not close over it as an upvalue. In plain button `action` callbacks (v0.9.78 and earlier) LR SDK silently swallowed the error; wrapping the body in `startAsyncTask` (v0.9.79) caused the error to propagate visibly. Fix: forward-declared `local switchTab` before `makeSwitchAction`, then changed the definition site from `local function switchTab(...)` to `switchTab = function(...)` so the same upvalue is assigned where `contents` is in scope.
+
 ## [0.9.79] - 2026-09-01
 
 ### Fixed

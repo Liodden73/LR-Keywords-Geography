@@ -588,6 +588,13 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
         -- first loadCountryState call.
         local activePanelCountry
 
+        -- Forward reference: switchTab is defined in the dialog setup section
+        -- (after this function), but makeSwitchAction needs to call it from
+        -- inside startAsyncTask.  Lua requires the local to be declared before
+        -- the closure that captures it; the actual function body is assigned
+        -- below where `contents` is also in scope.
+        local switchTab
+
         local function makeSwitchAction( cid, country )
                 return function()
                         -- Button action callbacks run outside a task context, so
@@ -1041,7 +1048,9 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
         local currentDialog = TAB_IDS.INTRO
         local switching     = false
 
-        local function switchTab( target )
+        -- Assign the forward-declared upvalue (declared before makeSwitchAction
+        -- so that startAsyncTask closures can call it).
+        switchTab = function( target )
                 if switching then return end
                 switching = true
                 LrDialogs.stopModalWithResult( contents, target )
