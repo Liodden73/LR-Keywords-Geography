@@ -1,3 +1,8 @@
+## [0.9.81] - 2026-09-01
+
+### Fixed
+- ListVerification (Keyword List Builder): Fixed county scrolled_view not filling dialog height down to bottom version text. Root cause: v0.9.79 added an intermediate `f:column { fill_vertical=1 }` wrapper between `countySection` and `countyListContainer` (scrolled_view), which breaks the fill_vertical chain in LR SDK — nested fill_vertical containers do not propagate fill correctly. Fix: removed the wrapper; `countyListContainer` is now a direct child of `countySection`, restoring the single-level fill chain: `countySection { fill_vertical=1 }` → `countyListContainer { fill_vertical=1 }`. The scrolled_view now expands correctly to fill remaining vertical space.
+
 ## [0.9.80] - 2026-09-01
 
 ### Fixed

@@ -2426,26 +2426,22 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                         alignment = "right",
                                 },
                         },
-                        -- Inner column takes all remaining vertical space in countySection.
-                        -- The two-level fill_vertical chain (countySection → this column →
-                        -- countyListContainer) is required: a single fill_vertical on the
-                        -- scrolled_view alone does not expand it correctly in the LR SDK.
-                        f:column {
-                                fill_vertical = 1,
-                                spacing       = 4,
-                                f:checkbox {
-                                        bind_to_object = props,
-                                        font           = "<system>",
-                                        title          = LrView.bind( "active_select_all_label" ),
-                                        value          = LrView.bind( "div_select_all" ),
-                                        width          = KB_COL_W_COUNTY,
-                                },
-                                countyListContainer,
-                                f:static_text {
-                                        bind_to_object = props,
-                                        title          = LrView.bind( "active_version_label" ),
-                                        text_color     = dimColor,
-                                },
+                        f:checkbox {
+                                bind_to_object = props,
+                                font           = "<system>",
+                                title          = LrView.bind( "active_select_all_label" ),
+                                value          = LrView.bind( "div_select_all" ),
+                                width          = KB_COL_W_COUNTY,
+                        },
+                        -- countyListContainer is a direct child of countySection — no
+                        -- intermediate f:column wrapper. Nested fill_vertical containers
+                        -- break the fill chain in LR SDK; scrolled_view must be a direct
+                        -- child of the fill_vertical parent to expand correctly.
+                        countyListContainer,
+                        f:static_text {
+                                bind_to_object = props,
+                                title          = LrView.bind( "active_version_label" ),
+                                text_color     = dimColor,
                         },
                 }
 
