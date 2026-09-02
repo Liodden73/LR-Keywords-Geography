@@ -234,9 +234,9 @@ local TAB_IDS = { INTRO = "intro", KB = "builder", OV = "overview", MN = "monito
 -- ── Column widths for List Overview ──────────────────────────────────────────
 
 local W_ONOFF    = 35
-local W_COUNTRY  = 90
+local W_COUNTRY  = 130
 local W_CODE     = 60
-local W_FILE     = 150
+local W_FILE     = 110
 local W_FILESIZE = 60
 local W_VERSION  = 50
 local W_NAMES    = 55
@@ -1170,7 +1170,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                 },
                                 f:static_text { title = cname,               width = W_COUNTRY },
                                 f:static_text { title = country.code or "",  width = W_CODE },
-                                f:static_text { title = "data/" .. country.filename, width = W_FILE },
+                                f:static_text { title = country.filename, width = W_FILE },
                                 f:static_text { title = getFileSize( country.filename ), width = W_FILESIZE },
                                 -- Version column: shows list_version prop (may be bumped by Save).
                                 f:static_text {
