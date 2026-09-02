@@ -1,3 +1,11 @@
+## [0.9.149] - 2026-09-02
+
+### Fixed
+- **Verdenskart — 4 nye land vises nå**: `WorldMap.lua` hadde ikke polygondata for Grønland, Finland, Storbritannia og India, så de manglet på Intro-kartet (både statisk PNG og interaktivt HTML-kart).
+  - Lagt til polygonringer i `_PP` for alle 4 land, generert fra Natural Earth 110m-geometri med samme ekvirektangulære projeksjon som de øvrige landene (x = (lon+180)/360·600, y = (90−lat)/180·300). Verifisert mot eksisterende Norge-data.
+  - Lagt til landene i `ORDER` (tegnerekkefølge).
+  - Lagt til ISO 3166-1-koder i `ISO`-tabellen og `NM`-objektet for det interaktive HTML-kartet: Grønland 304, Finland 246, Storbritannia 826, India 356.
+
 ## [0.9.148] - 2026-09-02
 
 ### Fixed
