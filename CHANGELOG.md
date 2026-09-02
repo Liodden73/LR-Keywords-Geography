@@ -1,3 +1,10 @@
+## [0.9.156] – 2026-09-02
+### Added
+- **9 nye land**: Argentina, Antarktis, Australia, Rwanda, Sør-Afrika, Ecuador, Botswana, Ungarn, Nederland
+  - Hvert land har data-fil med regioner/fylker, kommuner, byer, fjell, innsjøer, elver, øyer, nasjonalparker og utsiktspunkter
+  - `ListVerification.lua` oppdatert med dofile, addCountry, LABELS, WIKIDATA_TYPES og WIKIDATA_LANG for alle 9 land
+  - `WorldMap.lua` oppdatert med polygondata (_PP), ORDER, ISO-koder og NM-visningsnavn for alle 9 land
+
 ## [0.9.155] – 2026-09-02
 ### Changed
 - United Kingdom — Remote Islands: «South Georgia and the South Sandwich Islands» er delt opp i to separate oppføringer: «South Georgia» og «South Sandwich Islands». Lista er nå sortert alfabetisk (18 oppføringer totalt).
