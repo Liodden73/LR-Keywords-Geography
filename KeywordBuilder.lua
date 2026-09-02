@@ -43,9 +43,6 @@ local norwayData = dofile( LrPathUtils.child( dataDir, "Norway.lua" ) )
 local swedenData = dofile( LrPathUtils.child( dataDir, "Sweden.lua" ) )
 local panamaData = dofile( LrPathUtils.child( dataDir, "Panama.lua" ) )
 local usData     = dofile( LrPathUtils.child( dataDir, "UnitedStates.lua" ) )
-local chileData  = dofile( LrPathUtils.child( dataDir, "Chile.lua" ) )
-local kenyaData  = dofile( LrPathUtils.child( dataDir, "Kenya.lua" ) )
-local nzData     = dofile( LrPathUtils.child( dataDir, "NewZealand.lua" ) )
 
 -- County/province name lists (loaded once at module level)
 local norwayCountyNames = {}
@@ -66,21 +63,6 @@ end
 local usStateNames = {}
 for _, c in ipairs( usData.counties or {} ) do
         usStateNames[ #usStateNames + 1 ] = c.name
-end
-
-local chileRegionNames = {}
-for _, c in ipairs( chileData.counties or {} ) do
-        chileRegionNames[ #chileRegionNames + 1 ] = c.name
-end
-
-local kenyaCountyNames = {}
-for _, c in ipairs( kenyaData.counties or {} ) do
-        kenyaCountyNames[ #kenyaCountyNames + 1 ] = c.name
-end
-
-local nzRegionNames = {}
-for _, c in ipairs( nzData.counties or {} ) do
-        nzRegionNames[ #nzRegionNames + 1 ] = c.name
 end
 
 -- Country registry — the ONLY place to add new countries
@@ -114,27 +96,6 @@ local COUNTRIES = {
           mountain_max = 6194,
           data         = usData,
           countyNames  = usStateNames },
-        { id           = "Chile",
-          name         = "Chile",
-          continent    = "Americas",
-          admin_label  = "Regions & Areas",
-          mountain_max = 6893,
-          data         = chileData,
-          countyNames  = chileRegionNames },
-        { id           = "Kenya",
-          name         = "Kenya",
-          continent    = "Africa",
-          admin_label  = "Counties & Areas",
-          mountain_max = 5199,
-          data         = kenyaData,
-          countyNames  = kenyaCountyNames },
-        { id           = "NewZealand",
-          name         = "New Zealand",
-          continent    = "Oceania",
-          admin_label  = "Regions & Areas",
-          mountain_max = 3724,
-          data         = nzData,
-          countyNames  = nzRegionNames },
 }
 
 -- Maximum county count across all countries (drives how many div_value_i props we need)
@@ -195,9 +156,6 @@ local function showDialog()
                 props.feat_svalbard  = false
                 props.feat_jan_mayen = false
 
-                -- New Zealand-only
-                props.feat_remote_islands = false
-
                 -- Shared division (county) value slots (one per county, indexed by position)
                 props.div_select_all = false
                 for i = 1, maxCounties do
@@ -218,9 +176,8 @@ local function showDialog()
                 for i = 1, maxCounties do
                         props[ "county_name_" .. i ] = ""
                 end
-                props.show_svalbard_section       = false
-                props.show_remote_islands_section = false
-                props.active_select_all_label     = "Select All"
+                props.show_svalbard_section    = false
+                props.active_select_all_label  = "Select All"
 
                 -- ── Helpers ────────────────────────────────────────────────────────
 
@@ -285,7 +242,6 @@ local function showDialog()
                                 feat_admin_detail        = 1,
                                 feat_svalbard            = false,
                                 feat_jan_mayen           = false,
-                                feat_remote_islands      = false,
                                 counties                 = {},
                         }
                 end
@@ -325,7 +281,6 @@ local function showDialog()
                                 feat_admin_detail        = props.feat_admin_detail,
                                 feat_svalbard            = props.feat_svalbard,
                                 feat_jan_mayen           = props.feat_jan_mayen,
-                                feat_remote_islands      = props.feat_remote_islands,
                                 counties                 = counties,
                         }
 
@@ -362,7 +317,6 @@ local function showDialog()
                         props.feat_admin_detail        = state.feat_admin_detail         or 1
                         props.feat_svalbard            = state.feat_svalbard             or false
                         props.feat_jan_mayen           = state.feat_jan_mayen            or false
-                        props.feat_remote_islands      = state.feat_remote_islands       or false
                         props.feat_select_all          = false
 
                         -- Division (county) slots — fill from saved state
@@ -380,8 +334,7 @@ local function showDialog()
                         for i = 1, maxCounties do
                                 props[ "county_name_" .. i ] = names[ i ] or ""
                         end
-                        props.show_svalbard_section    = ( cid == "Norway" )
-                        props.show_remote_islands_section = ( cid == "NewZealand" )
+                        props.show_svalbard_section = ( cid == "Norway" )
 
                         -- Active-country state
                         local adminLabel = country.admin_label or "Counties & Areas"
@@ -445,7 +398,6 @@ local function showDialog()
                                         math.floor( (state.feat_admin_detail or 3) + 0.5 ) ) ),
                                 svalbard            = state.feat_svalbard            and true or false,
                                 jan_mayen           = state.feat_jan_mayen           and true or false,
-                                remote_islands      = state.feat_remote_islands      and true or false,
                                 counties            = state.counties or {},
                         }
                 end
@@ -486,7 +438,6 @@ local function showDialog()
                                 country_synonym     = false,
                                 svalbard            = (isNorway and more),
                                 jan_mayen           = (isNorway and all),
-                                remote_islands      = ((country.id == "NewZealand") and more),
                                 counties            = counties,
                         }
                 end
@@ -509,7 +460,7 @@ local function showDialog()
                         "feat_islands", "feat_islands_max",
                         "feat_viewpoints", "feat_viewpoints_max",
                         "feat_admin_detail",
-                        "feat_svalbard", "feat_jan_mayen", "feat_remote_islands",
+                        "feat_svalbard", "feat_jan_mayen",
                 }
                 for _, key in ipairs( featKeys ) do
                         props:addObserver( key, markDirty )
@@ -537,10 +488,6 @@ local function showDialog()
                         if cid == "Norway" then
                                 props.feat_svalbard  = v
                                 props.feat_jan_mayen = v
-                        end
-                        -- New Zealand: also include Remote Islands
-                        if cid == "NewZealand" then
-                                props.feat_remote_islands = v
                         end
                         suppressDivAll = false
                 end )
@@ -582,10 +529,10 @@ local function showDialog()
                 end
 
                 local countryChildren = {
-                        spacing         = 2,
+                        spacing         = f:control_spacing(),
                         fill_horizontal = 1,
                         f:static_text { title = "Country", font = "<system/bold>" },
-                        f:spacer { height = 1 },
+                        f:spacer { height = 2 },
                 }
 
                 for _, cont in ipairs( continents ) do
@@ -593,7 +540,7 @@ local function showDialog()
                         local contKey   = contLower .. "_expanded"
                         local detailKey = contLower .. "_detail"
 
-                        -- Continent toggle button — always visible
+                        -- Continent toggle button — natural width so text is left-aligned
                         countryChildren[ #countryChildren + 1 ] = f:push_button {
                                 bind_to_object = props,
                                 title = LrView.bind {
@@ -607,16 +554,11 @@ local function showDialog()
                                 end,
                         }
 
-                        -- All expandable content in ONE column so it collapses to
-                        -- zero height (not just invisible) when the continent is closed.
-                        -- This prevents Lightroom from adding per-child spacing between
-                        -- the invisible rows when collapsed.
-                        local expandedChildren = {
-                                bind_to_object  = props,
-                                visible         = LrView.bind( contKey ),
+                        -- Continent Include slider (shown when expanded)
+                        countryChildren[ #countryChildren + 1 ] = f:column {
+                                bind_to_object = props,
+                                visible        = LrView.bind( contKey ),
                                 fill_horizontal = 1,
-                                spacing         = 2,
-                                -- Include slider row
                                 f:row {
                                         spacing = f:label_spacing(),
                                         f:static_text { title = "Include:", width = 55 },
@@ -641,51 +583,55 @@ local function showDialog()
                                 },
                         }
 
-                        -- Country rows — inside the single collapsible wrapper
+                        -- Country rows (shown when continent expanded)
                         for _, country in ipairs( byContinent[ cont ] ) do
                                 local cid          = country.id
                                 local includeKey   = cid .. "_include"
                                 local switchAction = makeSwitchAction( cid, country )
 
-                                expandedChildren[ #expandedChildren + 1 ] = f:row {
-                                        spacing         = f:label_spacing(),
+                                countryChildren[ #countryChildren + 1 ] = f:column {
+                                        bind_to_object  = props,
+                                        visible         = LrView.bind( contKey ),
                                         fill_horizontal = 1,
-
-                                        -- ▶ active indicator (U+25B6)
-                                        f:static_text {
-                                                bind_to_object = props,
-                                                title = LrView.bind {
-                                                        key       = "active_country_id",
-                                                        transform = function( v )
-                                                                return v == cid and "\226\150\182" or "  "
-                                                        end,
-                                                },
-                                                width = 16,
-                                        },
-
-                                        -- Country name
-                                        f:static_text {
-                                                title           = country.name,
+                                        f:row {
+                                                spacing         = f:label_spacing(),
                                                 fill_horizontal = 1,
-                                        },
 
-                                        -- Select More
-                                        f:push_button {
-                                                title  = "Select More",
-                                                action = switchAction,
-                                        },
+                                                -- ▶ active indicator (U+25B6)
+                                                f:static_text {
+                                                        bind_to_object = props,
+                                                        title = LrView.bind {
+                                                                key       = "active_country_id",
+                                                                transform = function( v )
+                                                                        return v == cid and "\226\150\182" or "  "
+                                                                end,
+                                                        },
+                                                        width = 16,
+                                                },
 
-                                        -- Include in export
-                                        f:checkbox {
-                                                bind_to_object = props,
-                                                title          = "Include",
-                                                value          = LrView.bind( includeKey ),
+                                                -- Country name (plain — no ✓ indicator; Include checkbox is the single status+action control)
+                                                f:static_text {
+                                                        title           = country.name,
+                                                        fill_horizontal = 1,
+                                                },
+
+                                                -- Select More
+                                                f:push_button {
+                                                        title  = "Select More",
+                                                        action = switchAction,
+                                                },
+
+                                                -- Include in export (labelled; auto-checked on Save)
+                                                f:checkbox {
+                                                        bind_to_object = props,
+                                                        title          = "Include",
+                                                        value          = LrView.bind( includeKey ),
+                                                },
                                         },
                                 }
                         end
 
-                        countryChildren[ #countryChildren + 1 ] = f:column( expandedChildren )
-                        countryChildren[ #countryChildren + 1 ] = f:spacer { height = 2 }
+                        countryChildren[ #countryChildren + 1 ] = f:spacer { height = 4 }
                 end
 
                 local countryColumn = f:column( countryChildren )
@@ -731,18 +677,6 @@ local function showDialog()
                         title          = "Jan Mayen",
                         value          = LrView.bind( "feat_jan_mayen" ),
                         visible        = LrView.bind( "show_svalbard_section" ),
-                }
-                -- New Zealand-only extras (hidden when show_remote_islands_section is false)
-                singleListSpec[ #singleListSpec + 1 ] = f:separator {
-                        fill_horizontal = 1,
-                        visible         = LrView.bind( "show_remote_islands_section" ),
-                }
-                singleListSpec[ #singleListSpec + 1 ] = f:checkbox {
-                        bind_to_object = props,
-                        font           = "<system/small>",
-                        title          = "Remote Islands",
-                        value          = LrView.bind( "feat_remote_islands" ),
-                        visible        = LrView.bind( "show_remote_islands_section" ),
                 }
 
                 local countyListContainer = f:scrolled_view {

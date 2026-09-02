@@ -1,3 +1,7 @@
+## [0.9.153] – 2026-09-02
+### Reverted
+- Keyword List Builder — Country-panelet: tilbakeført til uendret linjeavstand (v0.9.150-tilstand). Forsøkene i v0.9.151 og v0.9.152 på å redusere luft mellom kontinentene hadde ingen synlig effekt og er annullert.
+
 ## [0.9.152] – 2026-09-02
 ### Fixed
 - Keyword List Builder — Country-panelet: luft mellom kontinentene er nå eliminert for kollapsede kontinenter.
