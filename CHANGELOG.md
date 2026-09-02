@@ -1,3 +1,11 @@
+## [0.9.148] - 2026-09-02
+
+### Fixed
+- **Storbritannia — county-navn ryddet**: `data/UnitedKingdom.lua` hadde 20 county-navn med administrative prefiks/suffiks fra GeoNames som gir dårlige nøkkelord. Fjernet «Borough of …», «City and Borough of …», «Metropolitan Borough of …», «Royal Borough of …» og «… County Borough» slik at navnene nå er de vanlige stedsnavnene (f.eks. «Borough of Bolton» → «Bolton», «City and Borough of Birmingham» → «Birmingham», «Caerphilly County Borough» → «Caerphilly»). Ingen navnekollisjoner mellom counties.
+
+### Verified
+- **Storbritannia — hierarki bekreftet korrekt**: United Kingdom → nasjon (England/Scotland/Wales/Northern Ireland) → county → by. 4 nasjoner, 185 counties, 1114 byer. De tilsynelatende avkortede navnene i Verification Monitor («Antrim and», «Armagh City Banbridge») er komplette i dataene («Antrim and Newtownabbey», «Armagh City Banbridge and Craigavon») — bare avkortet i den smale UI-kolonnen.
+
 ## [0.9.147] - 2026-09-02
 
 ### Fixed
