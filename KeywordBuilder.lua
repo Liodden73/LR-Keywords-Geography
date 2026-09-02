@@ -593,7 +593,7 @@ local function showDialog()
                         local contKey   = contLower .. "_expanded"
                         local detailKey = contLower .. "_detail"
 
-                        -- Continent toggle button — natural width so text is left-aligned
+                        -- Continent toggle button — always visible
                         countryChildren[ #countryChildren + 1 ] = f:push_button {
                                 bind_to_object = props,
                                 title = LrView.bind {
@@ -607,11 +607,16 @@ local function showDialog()
                                 end,
                         }
 
-                        -- Continent Include slider (shown when expanded)
-                        countryChildren[ #countryChildren + 1 ] = f:column {
-                                bind_to_object = props,
-                                visible        = LrView.bind( contKey ),
+                        -- All expandable content in ONE column so it collapses to
+                        -- zero height (not just invisible) when the continent is closed.
+                        -- This prevents Lightroom from adding per-child spacing between
+                        -- the invisible rows when collapsed.
+                        local expandedChildren = {
+                                bind_to_object  = props,
+                                visible         = LrView.bind( contKey ),
                                 fill_horizontal = 1,
+                                spacing         = 2,
+                                -- Include slider row
                                 f:row {
                                         spacing = f:label_spacing(),
                                         f:static_text { title = "Include:", width = 55 },
@@ -636,54 +641,50 @@ local function showDialog()
                                 },
                         }
 
-                        -- Country rows (shown when continent expanded)
+                        -- Country rows — inside the single collapsible wrapper
                         for _, country in ipairs( byContinent[ cont ] ) do
                                 local cid          = country.id
                                 local includeKey   = cid .. "_include"
                                 local switchAction = makeSwitchAction( cid, country )
 
-                                countryChildren[ #countryChildren + 1 ] = f:column {
-                                        bind_to_object  = props,
-                                        visible         = LrView.bind( contKey ),
+                                expandedChildren[ #expandedChildren + 1 ] = f:row {
+                                        spacing         = f:label_spacing(),
                                         fill_horizontal = 1,
-                                        f:row {
-                                                spacing         = f:label_spacing(),
+
+                                        -- ▶ active indicator (U+25B6)
+                                        f:static_text {
+                                                bind_to_object = props,
+                                                title = LrView.bind {
+                                                        key       = "active_country_id",
+                                                        transform = function( v )
+                                                                return v == cid and "\226\150\182" or "  "
+                                                        end,
+                                                },
+                                                width = 16,
+                                        },
+
+                                        -- Country name
+                                        f:static_text {
+                                                title           = country.name,
                                                 fill_horizontal = 1,
+                                        },
 
-                                                -- ▶ active indicator (U+25B6)
-                                                f:static_text {
-                                                        bind_to_object = props,
-                                                        title = LrView.bind {
-                                                                key       = "active_country_id",
-                                                                transform = function( v )
-                                                                        return v == cid and "\226\150\182" or "  "
-                                                                end,
-                                                        },
-                                                        width = 16,
-                                                },
+                                        -- Select More
+                                        f:push_button {
+                                                title  = "Select More",
+                                                action = switchAction,
+                                        },
 
-                                                -- Country name (plain — no ✓ indicator; Include checkbox is the single status+action control)
-                                                f:static_text {
-                                                        title           = country.name,
-                                                        fill_horizontal = 1,
-                                                },
-
-                                                -- Select More
-                                                f:push_button {
-                                                        title  = "Select More",
-                                                        action = switchAction,
-                                                },
-
-                                                -- Include in export (labelled; auto-checked on Save)
-                                                f:checkbox {
-                                                        bind_to_object = props,
-                                                        title          = "Include",
-                                                        value          = LrView.bind( includeKey ),
-                                                },
+                                        -- Include in export
+                                        f:checkbox {
+                                                bind_to_object = props,
+                                                title          = "Include",
+                                                value          = LrView.bind( includeKey ),
                                         },
                                 }
                         end
 
+                        countryChildren[ #countryChildren + 1 ] = f:column( expandedChildren )
                         countryChildren[ #countryChildren + 1 ] = f:spacer { height = 2 }
                 end
 

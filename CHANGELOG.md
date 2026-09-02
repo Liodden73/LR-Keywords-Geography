@@ -1,3 +1,8 @@
+## [0.9.152] – 2026-09-02
+### Fixed
+- Keyword List Builder — Country-panelet: luft mellom kontinentene er nå eliminert for kollapsede kontinenter.
+  Rot-årsak: hvert land-rad og Include-slideren var separate barn i parent-kolonnen med egne `visible`-bindinger; Lightroom legger til `spacing` også mellom usynlige elementer. Løsning: alt utvidbart innhold per kontinent er samlet i én enkelt `f:column` med `visible`-binding. Når kontinentet er kollapsert, er wrapper-kolonnen én enkelt 0-høyde enhet uten indre mellomrom.
+
 ## [0.9.151] – 2026-09-02
 ### Changed
 - Keyword List Builder — Country-panelet: redusert linjeavstand (spacing 2 px, spacer 1 px) for å få plass til 2–3 flere rader i vinduet uten rulling
