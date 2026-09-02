@@ -1,3 +1,8 @@
+## [0.9.151] – 2026-09-02
+### Changed
+- Keyword List Builder — Country-panelet: redusert linjeavstand (spacing 2 px, spacer 1 px) for å få plass til 2–3 flere rader i vinduet uten rulling
+- List Overview: fjernet «New country»-knappen (oppretter bare en tom Lua-mal uten faktiske data; nye land legges inn manuelt via buildskript)
+
 ## [0.9.150] – 2026-09-02
 ### Changed
 - List Overview: «Country»-kolonnen er bredere (90 → 130 px) så «United Kingdom» vises fullt ut
