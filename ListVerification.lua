@@ -34,7 +34,11 @@ local panamaData = dofile( LrPathUtils.child( dataDir, "Panama.lua"       ) )
 local usData     = dofile( LrPathUtils.child( dataDir, "UnitedStates.lua" ) )
 local chileData  = dofile( LrPathUtils.child( dataDir, "Chile.lua"        ) )
 local kenyaData  = dofile( LrPathUtils.child( dataDir, "Kenya.lua"        ) )
-local nzData     = dofile( LrPathUtils.child( dataDir, "NewZealand.lua"   ) )
+local nzData          = dofile( LrPathUtils.child( dataDir, "NewZealand.lua"   ) )
+local greenlandData   = dofile( LrPathUtils.child( dataDir, "Greenland.lua"    ) )
+local finlandData     = dofile( LrPathUtils.child( dataDir, "Finland.lua"      ) )
+local ukData          = dofile( LrPathUtils.child( dataDir, "UnitedKingdom.lua") )
+local indiaData       = dofile( LrPathUtils.child( dataDir, "India.lua"        ) )
 
 local genPath   = LrPathUtils.child( pluginPath, "Generator.lua" )
 local Generator = dofile( genPath )
@@ -49,6 +53,22 @@ local function makeCountyNames( data )
         return names
 end
 
+--- Compute slider maxes from actual data lengths.
+--- NP/NR: full count (no cap).
+--- FJ/LK/RV/IS/VP: capped at 100 (top-100 policy).
+local function addCountry( t )
+        local d = t.data
+        t.np_max      = #( d.national_parks  or {} )
+        t.nr_max      = #( d.nature_reserves or {} )
+        t.fj_max      = math.min( #( d.fjords     or {} ), 100 )
+        t.lk_max      = math.min( #( d.lakes      or {} ), 100 )
+        t.rv_max      = math.min( #( d.rivers     or {} ), 100 )
+        t.is_max      = math.min( #( d.islands    or {} ), 100 )
+        t.vp_max      = math.min( #( d.viewpoints or {} ), 100 )
+        t.countyNames = makeCountyNames( d )
+        return t
+end
+
 -- Bundled pure-Lua JSON decoder (dkjson, MIT licence).
 local dkjson = dofile( LrPathUtils.child( pluginPath, "dkjson.lua" ) )
 
@@ -57,13 +77,29 @@ local dkjson = dofile( LrPathUtils.child( pluginPath, "dkjson.lua" ) )
 local GitHubSync = dofile( LrPathUtils.child( pluginPath, "GitHubSync.lua" ) )
 
 local COUNTRIES = {
-        { id = "Norway",       name = "Norway",        code = "NO-578", filename = "Norway.lua",       continent = "Europe",   admin_label = "Counties & Areas",  mountain_max = 2271, data = norwayData, countyNames = makeCountyNames( norwayData ), remoteIslandNames = { "Svalbard", "Jan Mayen", "Peter 1. Island", "Bouvetøya", "Dronning Mauds Land" } },
-        { id = "Sweden",       name = "Sweden",        code = "SE-752", filename = "Sweden.lua",       continent = "Europe",   admin_label = "Counties & Areas",  mountain_max = 2097, data = swedenData, countyNames = makeCountyNames( swedenData ), remoteIslandNames = {} },
-        { id = "Panama",       name = "Panama",        code = "PA-591", filename = "Panama.lua",       continent = "Americas", admin_label = "Provinces & Areas", mountain_max = 3474, data = panamaData, countyNames = makeCountyNames( panamaData ), remoteIslandNames = {} },
-        { id = "UnitedStates", name = "United States", code = "US-840", filename = "UnitedStates.lua", continent = "Americas", admin_label = "States & Areas",    mountain_max = 6194, data = usData,     countyNames = makeCountyNames( usData ),     remoteIslandNames = { "Puerto Rico", "Guam", "US Virgin Islands", "American Samoa", "Northern Mariana Islands" } },
-        { id = "Chile",        name = "Chile",         code = "CL-152", filename = "Chile.lua",        continent = "Americas", admin_label = "Regions & Areas",   mountain_max = 6893, data = chileData,  countyNames = makeCountyNames( chileData ),  remoteIslandNames = { "Isla de Pascua", "Archipiélago Juan Fernández" } },
-        { id = "Kenya",        name = "Kenya",         code = "KE-404", filename = "Kenya.lua",        continent = "Africa",   admin_label = "Counties & Areas",  mountain_max = 5199, data = kenyaData,  countyNames = makeCountyNames( kenyaData ),  remoteIslandNames = {} },
-        { id = "NewZealand",   name = "New Zealand",   code = "NZ-554", filename = "NewZealand.lua",   continent = "Oceania",  admin_label = "Regions & Areas",   mountain_max = 3724, data = nzData,     countyNames = makeCountyNames( nzData ),     remoteIslandNames = { "Chatham Islands", "Subantarctic Islands" } },
+        addCountry { id = "Norway",       name = "Norway",        code = "NO-578", filename = "Norway.lua",       continent = "Europe",        admin_label = "Counties & Areas",  mountain_max = 2469, data = norwayData, remoteIslandNames = { "Svalbard", "Jan Mayen", "Peter 1. Island", "Bouvetøya", "Dronning Mauds Land" } },
+        addCountry { id = "Sweden",       name = "Sweden",        code = "SE-752", filename = "Sweden.lua",       continent = "Europe",        admin_label = "Counties & Areas",  mountain_max = 2097, data = swedenData, remoteIslandNames = {} },
+        addCountry { id = "Panama",       name = "Panama",        code = "PA-591", filename = "Panama.lua",       continent = "North America", admin_label = "Provinces & Areas", mountain_max = 3474, data = panamaData, remoteIslandNames = {} },
+        addCountry { id = "UnitedStates", name = "United States", code = "US-840", filename = "UnitedStates.lua", continent = "North America", admin_label = "States & Areas",    mountain_max = 6194, data = usData,     remoteIslandNames = { "Puerto Rico", "Guam", "US Virgin Islands", "American Samoa", "Northern Mariana Islands" } },
+        addCountry { id = "Chile",        name = "Chile",         code = "CL-152", filename = "Chile.lua",        continent = "South America", admin_label = "Regions & Areas",   mountain_max = 6893, data = chileData,  remoteIslandNames = { "Isla de Pascua", "Archipiélago Juan Fernández" } },
+        addCountry { id = "Kenya",        name = "Kenya",         code = "KE-404", filename = "Kenya.lua",        continent = "Africa",        admin_label = "Counties & Areas",  mountain_max = 5199, data = kenyaData,  remoteIslandNames = {} },
+        addCountry { id = "NewZealand",   name = "New Zealand",   code = "NZ-554", filename = "NewZealand.lua",   continent = "Oceania",       admin_label = "Regions & Areas",   mountain_max = 3724, data = nzData,          remoteIslandNames = { "Chatham Islands", "Subantarctic Islands" } },
+        addCountry { id = "Greenland",    name = "Greenland",     code = "GL-304", filename = "Greenland.lua",    continent = "North America", admin_label = "Municipalities & Areas", mountain_max = 3694, data = greenlandData,  remoteIslandNames = {} },
+        addCountry { id = "Finland",      name = "Finland",       code = "FI-246", filename = "Finland.lua",      continent = "Europe",        admin_label = "Regions & Areas",        mountain_max = 1328, data = finlandData,    remoteIslandNames = { "Åland Islands" } },
+        addCountry { id = "UnitedKingdom",name = "United Kingdom",code = "GB-826", filename = "UnitedKingdom.lua",continent = "Europe",        admin_label = "Countries & Areas",      mountain_max = 1345, data = ukData,         remoteIslandNames = { "Falkland Islands", "Gibraltar", "Channel Islands", "Isle of Man" } },
+        addCountry { id = "India",        name = "India",         code = "IN-356", filename = "India.lua",        continent = "Asia",          admin_label = "States & Areas",         mountain_max = 8586, data = indiaData,      remoteIslandNames = { "Andaman and Nicobar Islands", "Lakshadweep" } },
+}
+
+-- Fixed continent order — shown in Country column regardless of whether
+-- any countries are currently loaded for that continent.
+local CONTINENT_ORDER = {
+        "Europe",
+        "North America",
+        "South America",
+        "Africa",
+        "Asia",
+        "Oceania",
+        "Antarctica",
 }
 
 local maxCounties = 0
@@ -86,7 +122,11 @@ local LABELS = {
         UnitedStates = { county = "State",    muni = "County",       city = "City" },
         Chile        = { county = "Region",   muni = "Province",     city = "City" },
         Kenya        = { county = "County",   muni = "Sub-county",   city = "City" },
-        NewZealand   = { county = "Region",   muni = "District",     city = "City" },
+        NewZealand    = { county = "Region",       muni = "District",   city = "City" },
+        Greenland     = { county = "Municipality", muni = "Area",       city = "City" },
+        Finland       = { county = "Region",       muni = "Sub-region", city = "City" },
+        UnitedKingdom = { county = "Country",      muni = "County",     city = "City" },
+        India         = { county = "State",        muni = "District",   city = "City" },
 }
 local DEFAULT_LABELS = { county = "County", muni = "Municipality", city = "City" }
 
@@ -106,7 +146,11 @@ local WIKIDATA_TYPES = {
         UnitedStates = { co = "Q35657",    mu = "Q13221722", ci = nil },
         Chile        = { co = nil,         mu = nil,         ci = nil },
         Kenya        = { co = nil,         mu = nil,         ci = nil },
-        NewZealand   = { co = nil,         mu = nil,         ci = nil },
+        NewZealand    = { co = nil, mu = nil, ci = nil },
+        Greenland     = { co = nil, mu = nil, ci = nil },
+        Finland       = { co = nil, mu = nil, ci = nil },
+        UnitedKingdom = { co = nil, mu = nil, ci = nil },
+        India         = { co = nil, mu = nil, ci = nil },
 }
 
 -- Preferred label language(s) per country for the Wikidata label service.
@@ -117,7 +161,11 @@ local WIKIDATA_LANG = {
         UnitedStates = "en",
         Chile        = "es,en",
         Kenya        = "sw,en",
-        NewZealand   = "en,mi",
+        NewZealand    = "en,mi",
+        Greenland     = "kl,da,en",
+        Finland       = "fi,sv,en",
+        UnitedKingdom = "en",
+        India         = "hi,en",
 }
 
 -- Percent-encode a string for safe inclusion in a URL query parameter.
@@ -209,9 +257,10 @@ local G_W          = W_M_NAME + W_M_CONF + W_M_ACT + 12 + 16   -- ~323 px
 local CONTENT_W_MN = G_W * 3 + 30
 
 -- ── Column widths for Keyword List Builder ────────────────────────────────────
-local KB_COL_W_COUNTRY = 380  -- Country column (wider to accommodate continent sliders)
-local KB_COL_W_COUNTY  = 230  -- Counties & Areas column
-local KB_COUNTY_LIST_H = 300  -- Fixed height of the county scrolled_view (fills the
+local KB_COL_W_COUNTRY = 380  -- Country column
+local KB_COL_W_COUNTY  = 300  -- Counties & Areas column
+local KB_COL_W_FEAT    = 300  -- Selections (Features) column
+local KB_COUNTY_LIST_H = 327  -- Fixed height of the county scrolled_view (fills the
                               -- middle column down to the version text; fill_vertical
                               -- on scrolled_view is unreliable in the LR SDK)
 
@@ -355,27 +404,34 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
         props.dirty                   = false
         props.active_selections_label = "Selections"
         props.active_divisions_label  = "Counties & Areas"
-        props.active_save_label       = "Save settings"
+        props.active_save_label       = "Save setting"
         props.active_version_label    = ""
         props.active_mountain_max     = COUNTRIES[1].mountain_max
+        props.active_np_max           = COUNTRIES[1].np_max
+        props.active_nr_max           = COUNTRIES[1].nr_max
+        props.active_fj_max           = COUNTRIES[1].fj_max
+        props.active_lk_max           = COUNTRIES[1].lk_max
+        props.active_rv_max           = COUNTRIES[1].rv_max
+        props.active_is_max           = COUNTRIES[1].is_max
+        props.active_vp_max           = COUNTRIES[1].vp_max
 
         props.feat_select_all          = false
         props.feat_national_parks      = false
-        props.feat_national_parks_max  = 100
+        props.feat_national_parks_max  = COUNTRIES[1].np_max
         props.feat_nature_reserves     = false
-        props.feat_nature_reserves_max = 100
+        props.feat_nature_reserves_max = COUNTRIES[1].nr_max
         props.feat_mountains           = false
         props.feat_mainland_cutoff     = 1800
         props.feat_fjords              = false
-        props.feat_fjords_max          = 100
+        props.feat_fjords_max          = COUNTRIES[1].fj_max
         props.feat_lakes               = false
-        props.feat_lakes_max           = 100
+        props.feat_lakes_max           = COUNTRIES[1].lk_max
         props.feat_rivers              = false
-        props.feat_rivers_max          = 100
+        props.feat_rivers_max          = COUNTRIES[1].rv_max
         props.feat_islands             = false
-        props.feat_islands_max         = 100
+        props.feat_islands_max         = COUNTRIES[1].is_max
         props.feat_viewpoints          = false
-        props.feat_viewpoints_max      = 100
+        props.feat_viewpoints_max      = COUNTRIES[1].vp_max
         props.feat_admin_detail        = 3
         props.feat_remote_islands_all  = false
         props.show_ri_section          = false
@@ -390,14 +446,9 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                 props[ "div_value_" .. i ] = false
         end
 
-        local _initCont = {}
-        for _, _c in ipairs( COUNTRIES ) do
-                local _cl = ( _c.continent or "Other" ):lower():gsub( "%s+", "_" )
-                if not _initCont[ _cl ] then
-                        _initCont[ _cl ] = true
-                        props[ _cl .. "_expanded" ] = true
-                        props[ _cl .. "_detail"   ] = 0
-                end
+        for _, _cont in ipairs( CONTINENT_ORDER ) do
+                local _cl = _cont:lower():gsub( "%s+", "_" )
+                props[ _cl .. "_expanded" ] = false
         end
 
         for _, country in ipairs( COUNTRIES ) do
@@ -444,31 +495,26 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                 return ( { "Less", "More", "All" } )[ n ] or "All"
         end
 
-        local function contDetailLabel( v )
-                local n = math.min( 3, math.max( 0, math.floor( (v or 0) + 0.5 ) ) )
-                return ( { "None", "Less", "More", "All" } )[ n + 1 ] or "None"
-        end
-
         -- ── Keyword Builder state management ───────────────────────────────────
 
         local function kbDefaultState( country )
                 return {
                         feat_national_parks      = false,
-                        feat_national_parks_max  = 100,
+                        feat_national_parks_max  = country.np_max,
                         feat_nature_reserves     = false,
-                        feat_nature_reserves_max = 100,
+                        feat_nature_reserves_max = country.nr_max,
                         feat_mountains           = false,
                         feat_mainland_cutoff     = (country.id == "Norway" and 1800 or country.id == "UnitedStates" and 4000 or 1000),
                         feat_fjords              = false,
-                        feat_fjords_max          = 100,
+                        feat_fjords_max          = country.fj_max,
                         feat_lakes               = false,
-                        feat_lakes_max           = 100,
+                        feat_lakes_max           = country.lk_max,
                         feat_rivers              = false,
-                        feat_rivers_max          = 100,
+                        feat_rivers_max          = country.rv_max,
                         feat_islands             = false,
-                        feat_islands_max         = 100,
+                        feat_islands_max         = country.is_max,
                         feat_viewpoints          = false,
-                        feat_viewpoints_max      = 100,
+                        feat_viewpoints_max      = country.vp_max,
                         feat_admin_detail        = 1,
                         ri                       = {},
                         counties                 = {},
@@ -524,24 +570,31 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                 loading = true
                 local state = countryState[ cid ] or kbDefaultState( country )
                 local names = country.countyNames
+                props.active_np_max            = country.np_max
+                props.active_nr_max            = country.nr_max
+                props.active_fj_max            = country.fj_max
+                props.active_lk_max            = country.lk_max
+                props.active_rv_max            = country.rv_max
+                props.active_is_max            = country.is_max
+                props.active_vp_max            = country.vp_max
                 props.feat_national_parks      = state.feat_national_parks      or false
-                props.feat_national_parks_max  = state.feat_national_parks_max  or 100
+                props.feat_national_parks_max  = math.min( state.feat_national_parks_max  or country.np_max, country.np_max )
                 props.feat_nature_reserves     = state.feat_nature_reserves      or false
-                props.feat_nature_reserves_max = state.feat_nature_reserves_max or 100
+                props.feat_nature_reserves_max = math.min( state.feat_nature_reserves_max or country.nr_max, country.nr_max )
                 props.feat_mountains           = state.feat_mountains            or false
                 props.feat_mainland_cutoff     = math.min(
                         state.feat_mainland_cutoff or country.mountain_max,
                         country.mountain_max )
                 props.feat_fjords              = state.feat_fjords               or false
-                props.feat_fjords_max          = state.feat_fjords_max           or 100
+                props.feat_fjords_max          = math.min( state.feat_fjords_max           or country.fj_max, math.max( country.fj_max, 1 ) )
                 props.feat_lakes               = state.feat_lakes                or false
-                props.feat_lakes_max           = state.feat_lakes_max            or 100
+                props.feat_lakes_max           = math.min( state.feat_lakes_max            or country.lk_max, math.max( country.lk_max, 1 ) )
                 props.feat_rivers              = state.feat_rivers               or false
-                props.feat_rivers_max          = state.feat_rivers_max           or 100
+                props.feat_rivers_max          = math.min( state.feat_rivers_max           or country.rv_max, math.max( country.rv_max, 1 ) )
                 props.feat_islands             = state.feat_islands              or false
-                props.feat_islands_max         = state.feat_islands_max          or 100
+                props.feat_islands_max         = math.min( state.feat_islands_max          or country.is_max, math.max( country.is_max, 1 ) )
                 props.feat_viewpoints          = state.feat_viewpoints           or false
-                props.feat_viewpoints_max      = state.feat_viewpoints_max       or 100
+                props.feat_viewpoints_max      = math.min( state.feat_viewpoints_max or country.vp_max, math.max( country.vp_max, 1 ) )
                 props.feat_admin_detail        = state.feat_admin_detail         or 1
                 props.feat_select_all          = false
                 local savedCounties = state.counties or {}
@@ -578,7 +631,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                 props.active_mountain_max     = country.mountain_max
                 props.active_selections_label = "Selections for " .. country.name
                 props.active_divisions_label  = adminLabel .. " for " .. country.name
-                props.active_save_label       = "Save settings for " .. country.name
+                props.active_save_label       = "Save setting"
                 props.active_select_all_label = "Select All"
                 props.active_version_label    = country.name .. " v" .. ver
                 props.dirty = false
@@ -1761,12 +1814,14 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
 
                                                 -- 2. Add COUNTRIES entry after UnitedStates entry
                                                 local coEntry =
-                                                        '        { id = "' .. cid ..
+                                                        '        addCountry { id = "' .. cid ..
                                                         '", name = "' .. cname ..
-                                                        '", filename = "' .. filename ..
-                                                        '", data = ' .. varName .. '     },\n'
+                                                        '", code = "", filename = "' .. filename ..
+                                                        '", continent = "", admin_label = "", mountain_max = 0' ..
+                                                        ', data = ' .. varName ..
+                                                        ', remoteIslandNames = {} },\n'
                                                 sc = sc:gsub(
-                                                        '(        { id = "UnitedStates"[^\n]+\n)',
+                                                        '(        addCountry { id = "UnitedStates"[^\n]+\n)',
                                                         '%1' .. coEntry )
 
                                                 -- 3. Add LABELS entry after UnitedStates entry
@@ -2231,31 +2286,34 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                         if props[ c.id .. "_enabled" ] then anyEnabled = true break end
                 end
 
-                local continents  = {}
                 local byContinent = {}
                 for _, country in ipairs( COUNTRIES ) do
                         if not anyEnabled or props[ country.id .. "_enabled" ] then
                                 local cont = country.continent or "Other"
-                                if not byContinent[ cont ] then
-                                        byContinent[ cont ] = {}
-                                        continents[ #continents + 1 ] = cont
-                                end
+                                if not byContinent[ cont ] then byContinent[ cont ] = {} end
                                 local cl = byContinent[ cont ]
                                 cl[ #cl + 1 ] = country
                         end
                 end
+                -- Use fixed order; continents without countries still get a button.
+                local continents = CONTINENT_ORDER
 
                 local countryChildren = {
-                        spacing         = f:control_spacing(),
-                        fill_horizontal = 1,
+                        spacing = f:control_spacing(),
+                        width   = KB_COL_W_COUNTRY - 20,
                         f:static_text { title = "Country", font = "<system/bold>" },
+                        f:static_text {
+                                title = "Select a country (Select More) and check \226\128\156Include\226\128\157\nto export keywords.",
+                                font  = "<system>",
+                                width = KB_COL_W_COUNTRY - 20,
+                        },
+                        f:separator { fill_horizontal = 1 },
                         f:spacer { height = 2 },
                 }
 
                 for _, cont in ipairs( continents ) do
                         local contLower = cont:lower():gsub( "%s+", "_" )
                         local contKey   = contLower .. "_expanded"
-                        local detailKey = contLower .. "_detail"
 
                         countryChildren[ #countryChildren + 1 ] = f:push_button {
                                 bind_to_object = props,
@@ -2266,81 +2324,74 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                         end,
                                 },
                                 action = function()
+                                        -- Accordion: close all other continents first
+                                        for _, otherCont in ipairs( continents ) do
+                                                local otherKey = otherCont:lower():gsub( "%s+", "_" ) .. "_expanded"
+                                                if otherKey ~= contKey then
+                                                        props[ otherKey ] = false
+                                                end
+                                        end
                                         props[ contKey ] = not props[ contKey ]
+                                        switchTab( TAB_IDS.KB )
                                 end,
                         }
 
-                        countryChildren[ #countryChildren + 1 ] = f:column {
-                                bind_to_object  = props,
-                                visible         = LrView.bind( contKey ),
-                                fill_horizontal = 1,
-                                f:row {
-                                        spacing = f:label_spacing(),
-                                        f:static_text { title = "Include:", width = 55 },
-                                        f:slider {
-                                                bind_to_object = props,
-                                                value          = LrView.bind( detailKey ),
-                                                min            = 0,
-                                                max            = 3,
-                                                integral       = true,
-                                                width          = 90,
-                                        },
-                                        f:static_text {
-                                                bind_to_object = props,
-                                                title = LrView.bind {
-                                                        key       = detailKey,
-                                                        transform = function( v )
-                                                                return contDetailLabel( v )
-                                                        end,
-                                                },
-                                                width = 36,
-                                        },
-                                },
-                        }
+                        -- Only build country rows when this continent is expanded.
+                        -- Rebuild-on-click (switchTab above) ensures correct layout:
+                        -- invisible elements are never created, so LR SDK space-reservation
+                        -- for visible=false is completely avoided.
+                        if props[ contKey ] then
+                                for _, country in ipairs( byContinent[ cont ] or {} ) do
+                                        local cid          = country.id
+                                        local includeKey   = cid .. "_include"
+                                        local switchAction = makeSwitchAction( cid, country )
 
-                        for _, country in ipairs( byContinent[ cont ] ) do
-                                local cid          = country.id
-                                local includeKey   = cid .. "_include"
-                                local switchAction = makeSwitchAction( cid, country )
-
-                                countryChildren[ #countryChildren + 1 ] = f:column {
-                                        bind_to_object  = props,
-                                        visible         = LrView.bind( contKey ),
-                                        fill_horizontal = 1,
-                                        f:row {
-                                                spacing         = f:label_spacing(),
+                                        countryChildren[ #countryChildren + 1 ] = f:column {
                                                 fill_horizontal = 1,
-                                                f:static_text {
-                                                        bind_to_object = props,
-                                                        title = LrView.bind {
-                                                                key       = "active_country_id",
-                                                                transform = function( v )
-                                                                        return v == cid and "\226\150\182" or "  "
-                                                                end,
-                                                        },
-                                                        width = 16,
-                                                },
-                                                f:static_text {
-                                                        title           = country.name,
+                                                f:row {
                                                         fill_horizontal = 1,
+                                                        f:static_text {
+                                                                bind_to_object = props,
+                                                                title = LrView.bind {
+                                                                        key       = "active_country_id",
+                                                                        transform = function( v )
+                                                                                return v == cid and "\226\150\182" or "  "
+                                                                        end,
+                                                                },
+                                                                width = 16,
+                                                        },
+                                                        f:static_text {
+                                                                title           = country.name,
+                                                                fill_horizontal = 1,
+                                                        },
+                                                        f:spacer { width = 12 },
+                                                        f:push_button {
+                                                                title  = "Select More",
+                                                                action = switchAction,
+                                                        },
+                                                        f:checkbox {
+                                                                bind_to_object = props,
+                                                                title          = "Include",
+                                                                value          = LrView.bind( includeKey ),
+                                                        },
+                                                        f:spacer { width = 20 },
                                                 },
-                                                f:push_button {
-                                                        title  = "Select More",
-                                                        action = switchAction,
-                                                },
-                                                f:checkbox {
-                                                        bind_to_object = props,
-                                                        title          = "Include",
-                                                        value          = LrView.bind( includeKey ),
-                                                },
-                                        },
-                                }
+                                        }
+                                end
                         end
 
                         countryChildren[ #countryChildren + 1 ] = f:spacer { height = 4 }
                 end
 
-                local countryColumn = f:column( countryChildren )
+                local countryScrollView = f:scrolled_view {
+                        height              = 481,
+                        width               = KB_COL_W_COUNTRY - 20,
+                        horizontal_scroller = false,
+                        background_color    = LrColor( 0.835, 0.835, 0.835 ),
+                        border_color        = LrColor( 0.835, 0.835, 0.835 ),
+                        border_width        = 0,
+                        f:column( countryChildren ),
+                }
 
                 -- County section — exact-count approach (v0.9.77).
                 -- LR SDK: visible=false on ANY element type preserves layout space.
@@ -2390,12 +2441,20 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                 -- does not expand to fill the parent column, regardless of the
                 -- fill chain).  KB_COUNTY_LIST_H is sized so the county list fills
                 -- down to the version text, matching the tall left country column.
+                -- border_color/border_width are not honoured by LR SDK for scrolled_view
+                -- (the OS draws the frame independently); left here as documentation.
+                -- scrolled_view width = group_box width minus internal padding (~10 px each side).
+                -- This makes the group_box total outer width match KB_COL_W_COUNTY.
+                -- fill_horizontal=1 pushes the group_box wider (LR SDK limitation), so
+                -- an explicit inner width is required.
                 local countyListContainer = f:scrolled_view {
                         bind_to_object      = props,
                         height              = KB_COUNTY_LIST_H,
-                        width               = KB_COL_W_COUNTY,
+                        width               = KB_COL_W_COUNTY - 20,
                         horizontal_scroller = false,
-                        background_color    = panelGrey,
+                        background_color    = LrColor( 0.835, 0.835, 0.835 ),
+                        border_color        = LrColor( 0.835, 0.835, 0.835 ),
+                        border_width        = 0,
                         f:column( countyItems ),
                 }
 
@@ -2407,6 +2466,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                         bind_to_object = props,
                         title          = "",
                         spacing        = f:control_spacing(),
+                        width          = KB_COL_W_COUNTY,
                         f:static_text {
                                 bind_to_object = props,
                                 title          = LrView.bind( "active_divisions_label" ),
@@ -2414,8 +2474,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                         },
                         f:static_text {
                                 title = "Select which information to include\nand how detailed.",
-                                wrap  = true,
-                                width = KB_COL_W_COUNTY,
+                                font  = "<system>",
                         },
                         f:separator { fill_horizontal = 1 },
                         f:row {
@@ -2444,7 +2503,6 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                 font           = "<system>",
                                 title          = LrView.bind( "active_select_all_label" ),
                                 value          = LrView.bind( "div_select_all" ),
-                                width          = KB_COL_W_COUNTY,
                         },
                         countyListContainer,
                         f:static_text {
@@ -2456,17 +2514,17 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
 
                 -- Feature selections
                 local featuresContent = f:column {
-                        bind_to_object = props,
-                        spacing        = f:control_spacing(),
+                        bind_to_object  = props,
+                        spacing         = f:control_spacing(),
+                        fill_horizontal = 1,
                         f:static_text {
                                 bind_to_object = props,
                                 title          = LrView.bind( "active_selections_label" ),
                                 font           = "<system/bold>",
                         },
-                        f:column {
-                                spacing = 2,
-                                f:static_text { title = "Use the sliders below to set max count or" },
-                                f:static_text { title = "min elevation (only for mountains)." },
+                        f:static_text {
+                                title = "Use the sliders below to set max count or\nmin elevation (only for mountains).",
+                                font  = "<system>",
                         },
                         f:separator { fill_horizontal = 1 },
                         f:checkbox {
@@ -2478,11 +2536,11 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                         f:row { fill_horizontal = 1, spacing = f:label_spacing(),
                                 f:checkbox { bind_to_object=props, font="<system>", title="National Park",  value=LrView.bind("feat_national_parks") },
                                 f:spacer { fill_horizontal = 1 },
-                                inlineSlider( "feat_national_parks_max",  10, 500, "" ) },
+                                inlineSlider( "feat_national_parks_max",  1, LrView.bind("active_np_max"), "" ) },
                         f:row { fill_horizontal = 1, spacing = f:label_spacing(),
                                 f:checkbox { bind_to_object=props, font="<system>", title="Nature Reserve", value=LrView.bind("feat_nature_reserves") },
                                 f:spacer { fill_horizontal = 1 },
-                                inlineSlider( "feat_nature_reserves_max", 10, 500, "" ) },
+                                inlineSlider( "feat_nature_reserves_max", 1, LrView.bind("active_nr_max"), "" ) },
                         f:row { fill_horizontal = 1, spacing = f:label_spacing(),
                                 f:checkbox { bind_to_object=props, font="<system>", title="Mountain",       value=LrView.bind("feat_mountains") },
                                 f:spacer { fill_horizontal = 1 },
@@ -2490,23 +2548,23 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                         f:row { fill_horizontal = 1, spacing = f:label_spacing(),
                                 f:checkbox { bind_to_object=props, font="<system>", title="Fjord",          value=LrView.bind("feat_fjords") },
                                 f:spacer { fill_horizontal = 1 },
-                                inlineSlider( "feat_fjords_max",     10, 100, "" ) },
+                                inlineSlider( "feat_fjords_max",     1, LrView.bind("active_fj_max"), "" ) },
                         f:row { fill_horizontal = 1, spacing = f:label_spacing(),
                                 f:checkbox { bind_to_object=props, font="<system>", title="Lake",           value=LrView.bind("feat_lakes") },
                                 f:spacer { fill_horizontal = 1 },
-                                inlineSlider( "feat_lakes_max",      10, 100, "" ) },
+                                inlineSlider( "feat_lakes_max",      1, LrView.bind("active_lk_max"), "" ) },
                         f:row { fill_horizontal = 1, spacing = f:label_spacing(),
                                 f:checkbox { bind_to_object=props, font="<system>", title="River",          value=LrView.bind("feat_rivers") },
                                 f:spacer { fill_horizontal = 1 },
-                                inlineSlider( "feat_rivers_max",     10, 100, "" ) },
+                                inlineSlider( "feat_rivers_max",     1, LrView.bind("active_rv_max"), "" ) },
                         f:row { fill_horizontal = 1, spacing = f:label_spacing(),
                                 f:checkbox { bind_to_object=props, font="<system>", title="Island",         value=LrView.bind("feat_islands") },
                                 f:spacer { fill_horizontal = 1 },
-                                inlineSlider( "feat_islands_max",    10, 100, "" ) },
+                                inlineSlider( "feat_islands_max",    1, LrView.bind("active_is_max"), "" ) },
                         f:row { fill_horizontal = 1, spacing = f:label_spacing(),
                                 f:checkbox { bind_to_object=props, font="<system>", title="Viewpoint",      value=LrView.bind("feat_viewpoints") },
                                 f:spacer { fill_horizontal = 1 },
-                                inlineSlider( "feat_viewpoints_max", 10, 500, "" ) },
+                                inlineSlider( "feat_viewpoints_max", 1, LrView.bind("active_vp_max"), "" ) },
                 }
 
                 -- Save + Generate row
@@ -2532,22 +2590,29 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                 }
 
                 return f:column {
-                        bind_to_object = props,
-                        spacing        = f:control_spacing(),
+                        bind_to_object  = props,
+                        spacing         = f:control_spacing(),
+                        fill_horizontal = 1,
                         f:static_text {
                                 title = "Select a country (Select More), configure sections and areas, "
                                      .. "check Include to add it to the export, then click Generate.",
                         },
                         f:row {
-                                spacing = f:label_spacing() * 2,
-                                f:group_box {
-                                        title   = "",
-                                        spacing = f:control_spacing(),
-                                        countryColumn,
+                                spacing         = f:label_spacing() * 2,
+                                fill_horizontal = 1,
+                                f:column {
+                                        background_color = LrColor( 0.94, 0.94, 0.94 ),
+                                        f:group_box {
+                                                title   = "",
+                                                spacing = f:control_spacing(),
+                                                width   = KB_COL_W_COUNTRY,
+                                                countryScrollView,
+                                        },
                                 },
                                 countyGroupBox,
                                 f:column {
-                                        spacing = f:control_spacing(),
+                                        spacing         = f:control_spacing(),
+                                        fill_horizontal = 1,
                                         f:group_box {
                                                 title           = "",
                                                 fill_horizontal = 1,
@@ -2576,13 +2641,13 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                 if mapPath then
                         mapItem = f:picture {
                                 value  = mapPath,
-                                width  = 600,
-                                height = 300,
+                                width  = 900,
+                                height = 450,
                         }
                 else
                         mapItem = f:static_text {
                                 title = "(Map image could not be generated)",
-                                width = 600,
+                                width = 900,
                         }
                 end
 
@@ -2593,6 +2658,14 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                         f:row {
                                 f:spacer { fill_horizontal = 1 },
                                 mapItem,
+                                f:spacer { fill_horizontal = 1 },
+                        },
+                        f:row {
+                                f:spacer { fill_horizontal = 1 },
+                                f:static_text {
+                                        title = "Map of country geography keywords - Red: currently enabled (On) - Blue: supported countries",
+                                        font  = "<system/small>",
+                                },
                                 f:spacer { fill_horizontal = 1 },
                         },
                         f:spacer { height = 6 },
@@ -2615,10 +2688,9 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                         },
                         f:spacer { height = 2 },
                         f:static_text {
-                                title           = "Blue = supported countries.  Red = currently enabled (On).  "
-                                                .. "Click below to open a fully interactive map in your browser.",
+                                title           = "Click below to open a fully interactive map in your browser.",
                                 width           = CONTENT_W,
-                                height_in_lines = 2,
+                                height_in_lines = 1,
                         },
                         f:spacer { height = 6 },
                         f:row {
@@ -2685,7 +2757,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                         f:tab_view_item {
                                 title      = "Keyword List Builder",
                                 identifier = TAB_IDS.KB,
-                                f:column { spacing = f:control_spacing(), panelKB },
+                                f:column { spacing = f:control_spacing(), fill_horizontal = 1, panelKB },
                         },
                         f:tab_view_item {
                                 title      = "List Overview",
@@ -2705,15 +2777,28 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                         },
                 }
 
+                -- Copyright footer shown left-aligned on the same line as the action buttons.
+                -- accessoryView is the SDK mechanism for placing content in the button bar.
+                local info   = dofile( LrPathUtils.child( _PLUGIN.path, "Info.lua" ) )
+                local pv     = info.VERSION
+                local pvStr  = string.format( "%d.%d.%d.%d", pv.major, pv.minor, pv.revision, pv.build )
+                local footer = f:static_text {
+                        title      = string.char( 194, 169 ) .. " Liodden Media " .. os.date( "%Y" ) .. " - version " .. pvStr,
+                        text_color = LrColor( 0.45, 0.45, 0.45 ),
+                        font       = { name = "<system>", size = 11 },
+                        height     = 12,
+                }
+
                 -- On the Monitor (with a country selected): actionVerb = "Save" (blue,
                 -- Enter-key default), cancelVerb = "Cancel" — both appear on the right side
                 -- of the button bar together.
                 -- On all other tabs: actionVerb = "Close", no cancel button.
                 local result = LrDialogs.presentModalDialog {
-                        title      = "Geography Keyword Builder",
-                        contents   = contents,
-                        actionVerb = showSave and "Save" or "Close",
-                        cancelVerb = showSave and "Cancel" or "< exclude >",
+                        title         = "Geography Keyword Builder",
+                        contents      = contents,
+                        actionVerb    = showSave and "Save" or "Close",
+                        cancelVerb    = showSave and "Cancel" or "< exclude >",
+                        accessoryView = footer,
                 }
 
                 if result == TAB_IDS.INTRO or result == TAB_IDS.KB or result == TAB_IDS.OV or result == TAB_IDS.MN or result == TAB_IDS.HLP then

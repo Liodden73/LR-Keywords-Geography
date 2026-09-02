@@ -1,3 +1,45 @@
+## [0.9.146] - 2026-09-02
+
+### Added
+- **4 nye land**: Lagt til `data/Greenland.lua`, `data/Finland.lua`, `data/UnitedKingdom.lua` og `data/India.lua`. Data er hentet fra GeoNames (CC BY 4.0) og filtrert med kurerte lister.
+  - **Grønland**: 1 nasjonalpark, 1 naturreservat, 50 fjell (inkl. Gunnbjørn Fjeld 3694 m via NTK-kode), 57 fjorder, 97 øyer (3 duplikater fjernet), 100 innsjøer, 100 elver, 3 utsiktspunkter, 5 kommuner, 7 regioner.
+  - **Finland**: 34 nasjonalparker, 130 naturreservater, 50 fjell, 100 innsjøer, 100 elver, 100 øyer, 8 utsiktspunkter, 18 regioner (Åland-øyer ikke i GeoNames FI — legg til manuelt).
+  - **Storbritannia**: 15 nasjonalparker, 59 naturreservater, 50 fjell (Ben Nevis 1345 m øverst), 99 øyer (Isle of Wight fjernet — duplikat), 100 innsjøer, 100 elver, 15 utsiktspunkter, 4 nasjoner (England/Scotland/Wales/Northern Ireland), 185 county-/council-areas.
+  - **India**: 31 nasjonalparker, 200 naturreservater, 50 fjell (Kangchenjunga 8505 m i GeoNames, mountain_max=8586), 100 øyer, 100 innsjøer, 100 elver, 9 utsiktspunkter, 36 stater/territorier, 763 distrikter.
+- **ListVerification.lua oppdatert**: Lagt til `dofile`-linjer, `addCountry`-oppføringer og poster i `LABELS`, `WIKIDATA_TYPES` og `WIKIDATA_LANG` for alle 4 nye land.
+- **GeoNames NTK-kode**: `extract_mountains()` inkluderer nå nunatakker (NTK) — nødvendig for Gunnbjørn Fjeld på Grønland.
+- **Dedup-sjekk**: Fjernet overlapp mellom `islands[]` og admin-hierarki: Grønland (Kangaamiut, Qeqertarsuaq, Uummannaq), UK (Isle of Wight).
+
+## [0.9.145] - 2026-09-02
+
+### Fixed
+- **Dobbeltoppføringer i islands-seksjoner**: Øyer som allerede er listet som admin-enheter (fylker, kommuner, regioner, provinser eller fjernøy-grupper) er fjernet fra `islands`-valglistene for å unngå dupliserte nøkkelord i hierarkiet.
+  - **Norge** (`Norway.lua`): Fjernet 20 øykommuner: Askøy, Bømlo, Dønna, Fedje, Frøya, Giske, Hitra, Karmøy, Leka, Nøtterøy, Osterøy, Radøy, Røst, Senja, Smøla, Stord, Tjøme, Træna, Utsira, Vega. Islands-listen redusert fra 100 til 80.
+  - **Sverige** (`Sweden.lua`): Fjernet Gotland (fylke), Lidingö og Orust (kommuner). Islands-listen redusert fra 4698 til 4695.
+  - **Chile** (`Chile.lua`): Fjernet Tierra del Fuego (provins). Islands-listen redusert fra 100 til 99.
+  - **Ny-Zealand** (`NewZealand.lua`): Fjernet 5 øyer som allerede finnes i `remote_islands`-seksjonen: Bounty Islands, Campbell Island, Chatham Islands, Pitt Island, Three Kings Islands. Islands-listen redusert fra 100 til 95.
+  - Panama, USA og Kenya: Ingen overlapp funnet — ingen endringer.
+
+## [0.9.144] - 2026-09-02
+
+### Fixed
+- **Norway mountain_max**: Rettet feil høyde for Galdhøpiggen fra 2271 m til 2469 m. Årsaken var at `build_v04.py` brukte GeoNames-kolonnen `dem` (SRTM-modell) i stedet for den autoritative `elevation`-kolonnen. `elev()`-funksjonen er nå oppdatert til å foretrekke `elevation`-verdien (ignorerer 0) og faller tilbake til `dem` kun hvis `elevation` mangler. COUNTRIES-tabellen i `ListVerification.lua` er tilsvarende oppdatert.
+
+### Added
+- **Manglende kategorier — Chile, Kenya, New Zealand**: Lagt til seksjoner for fjorder, innsjøer, elver, øyer og utsiktspunkter i `data/Chile.lua`, `data/Kenya.lua` og `data/NewZealand.lua`. Data er hentet fra GeoNames (CC BY 4.0) for hvert land og kuratert til topp-100 per kategori (VP-grense: 15).
+
+### Changed
+- **Dynamiske slider-maks**: `np_max`, `nr_max`, `fj_max`, `lk_max`, `rv_max`, `is_max` og `vp_max` i COUNTRIES-tabellen beregnes nå automatisk av `addCountry()`-funksjonen i `ListVerification.lua`. Hardkodede verdier er fjernet fra alle landoppføringer. Policy: NP/NR = fullt antall; FJ/LK/RV/IS/VP = min(antall, 100).
+- **Runtime «New country»**: Oppdatert patching-kode til å sette inn `addCountry { ... }` i stedet for det gamle `{ id = ... }`-formatet, slik at dynamiske slider-maks fungerer også for brukeropprettede land. Regex-mønster for UnitedStates-ankerpunkt er tilsvarende oppdatert.
+
+## [0.9.121] - 2026-09-02
+
+### Changed
+- ListVerification (Keyword List Builder — Country column):
+  1. **Fjernet kontinent-Include-slider**: Hele `f:column { visible=… f:row { "Include:" slider contDetailLabel } }` blokken per kontinent er fjernet. `detailKey` / `_detail`-props initialiseres ikke lenger, og `contDetailLabel`-hjelperfunksjonen er slettet.
+  2. **Rebuild-on-click for kontinent-ekspandering**: Kontinentknappens `action` kaller nå `switchTab(TAB_IDS.KB)` i tillegg til å toggle `props[contKey]`, slik at panelet bygges på nytt ved ekspandere/kollapse — samme mønster som land-veksling. Dette omgår LR SDK-feilen der `visible=false` beholder layoutplass.
+  3. **Scrolled view i Country-kolonnen**: `countryColumn` er pakket inn i en `f:scrolled_view` med `height=100`, `width=KB_COL_W_COUNTRY-20`, `horizontal_scroller=false`. Group_box bruker nå `countryScrollView` i stedet for `countryColumn` direkte. (Testverdien 100 px er ment for verifisering; juster etter behov.)
+
 ## [0.9.82] - 2026-09-01
 
 ### Fixed
@@ -177,7 +219,83 @@
 - ListVerification: Redusert avstand mellom de tre tekstparagrafene på Intro-fanen.
 
 
-# Changelog — Geography Keyword Builder
+# Changelog
+
+## v0.9.107 (2026-09-02)
+- Country column: 390→400 px. Counties and Selections unchanged at 300 px.
+
+## v0.9.106 (2026-09-02)
+- Country column: 380→390 px. Counties and Selections unchanged at 300 px.
+
+## v0.9.105 (2026-09-02)
+- Country column: 350→380 px. Counties and Selections unchanged at 300 px.
+
+## v0.9.104 (2026-09-02)
+- Country column: 300→350 px. Counties and Selections unchanged at 300 px.
+
+## v0.9.103 (2026-09-02)
+- Fix Counties column width: scrolled_view width = KB_COL_W_COUNTY - 20 (accounts for group_box internal padding) so outer column matches 300 px.
+
+## v0.9.102 (2026-09-02)
+- Fix Counties column width: replace width=KB_COL_W_COUNTY on scrolled_view with fill_horizontal=1; group_box outer width (300 px) now controls the column width without double-counting padding.
+
+## v0.9.101 (2026-09-02)
+- Remove explicit width=KB_COL_W_COUNTY from children inside countyGroupBox (static_text and checkbox were pushing the box wider than 300 px).
+
+## v0.9.100 (2026-09-02)
+- Fix Counties group_box missing width=KB_COL_W_COUNTY (300 px); now all three columns have explicit width on their group_box.
+
+## v0.9.99 (2026-09-02)
+- Fix Selections column width: move width=KB_COL_W_FEAT from outer f:column to group_box directly (matches Country column pattern).
+
+## v0.9.98 (2026-09-02)
+- Selections: 280→300 px. All three columns now 300 px.
+
+## v0.9.97 (2026-09-01)
+- Selections: 250→280 px.
+
+## v0.9.96 (2026-09-01)
+- Country: 350→300 px, Counties: 350→300 px, Selections: 300→250 px.
+
+## v0.9.95 (2026-09-01)
+- Country: 400→350 px, Counties: 300→350 px, Selections: 250→300 px.
+
+## v0.9.94 (2026-09-01)
+- Fix Country group_box missing width=KB_COL_W_COUNTRY (400 px); constant was defined but never applied to the layout.
+
+## v0.9.93 (2026-09-01)
+- Selections column: 300→250 px.
+- Save button label changed to "Save setting" (was "Save settings for <country>").
+
+## v0.9.92 (2026-09-01)
+- Country column: 380→400 px, Counties: 230→300 px, Selections: add KB_COL_W_FEAT=300 px (was fill_horizontal).
+
+## v0.9.91 (2026-09-01)
+- Revert v0.9.90 county column change; restore scrolled_view for all countries (as in v0.9.89).
+
+## v0.9.90 (2026-09-01)
+- Use f:column (no system border) for county lists with ≤25 items; keep f:scrolled_view for large lists (e.g. USA with 51 states).
+
+## v0.9.89 (2026-09-01)
+- Add border_width=0 on county scrolled_view to suppress system-drawn border.
+
+## v0.9.88 (2026-09-01)
+- Set county scrolled_view border_color to match background (0.835) so border is invisible.
+
+## v0.9.87 (2026-09-01)
+- Change county scrolled_view background_color from panelGrey (0.878) to LrColor(0.835) to match group_box background.
+
+## v0.9.86 (2026-09-01)
+- Adjust KB_COUNTY_LIST_H from 325 to 327 px.
+
+## v0.9.85 (2026-09-01)
+- Reduce KB_COUNTY_LIST_H from 330 to 325 px.
+
+## v0.9.84 (2026-09-01)
+- Increase KB_COUNTY_LIST_H from 310 to 330 px.
+
+## v0.9.83 (2026-09-01)
+- Increase KB_COUNTY_LIST_H from 300 to 310 so county scrolled_view matches country column height. — Geography Keyword Builder
 
 All notable changes to the plugin and its bundled data are recorded here.
 The version in `VERSION` is the single source of truth; `build_v04.py --export-lua`
