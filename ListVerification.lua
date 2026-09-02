@@ -39,6 +39,15 @@ local greenlandData   = dofile( LrPathUtils.child( dataDir, "Greenland.lua"    )
 local finlandData     = dofile( LrPathUtils.child( dataDir, "Finland.lua"      ) )
 local ukData          = dofile( LrPathUtils.child( dataDir, "UnitedKingdom.lua") )
 local indiaData       = dofile( LrPathUtils.child( dataDir, "India.lua"        ) )
+local argentinaData   = dofile( LrPathUtils.child( dataDir, "Argentina.lua"    ) )
+local antarcticaData  = dofile( LrPathUtils.child( dataDir, "Antarctica.lua"   ) )
+local australiaData   = dofile( LrPathUtils.child( dataDir, "Australia.lua"    ) )
+local rwandaData      = dofile( LrPathUtils.child( dataDir, "Rwanda.lua"       ) )
+local southAfricaData = dofile( LrPathUtils.child( dataDir, "SouthAfrica.lua"  ) )
+local ecuadorData     = dofile( LrPathUtils.child( dataDir, "Ecuador.lua"      ) )
+local botswanaData    = dofile( LrPathUtils.child( dataDir, "Botswana.lua"     ) )
+local hungaryData     = dofile( LrPathUtils.child( dataDir, "Hungary.lua"      ) )
+local netherlandsData = dofile( LrPathUtils.child( dataDir, "Netherlands.lua"  ) )
 
 local genPath   = LrPathUtils.child( pluginPath, "Generator.lua" )
 local Generator = dofile( genPath )
@@ -107,6 +116,15 @@ local COUNTRIES = {
                 "Turks and Caicos Islands",
         } },
         addCountry { id = "India",        name = "India",         code = "IN-356", filename = "India.lua",        continent = "Asia",          admin_label = "States & Areas",         mountain_max = 8586, data = indiaData,      remoteIslandNames = { "Andaman and Nicobar Islands", "Lakshadweep" } },
+        addCountry { id = "Argentina",   name = "Argentina",    code = "AR-032", filename = "Argentina.lua",   continent = "South America", admin_label = "Provinces & Areas",  mountain_max = 6961, data = argentinaData,   remoteIslandNames = { "Islas Malvinas", "Isla de los Estados", "Tierra del Fuego" } },
+        addCountry { id = "Ecuador",     name = "Ecuador",      code = "EC-218", filename = "Ecuador.lua",     continent = "South America", admin_label = "Provinces & Areas",  mountain_max = 6268, data = ecuadorData,     remoteIslandNames = { "Galápagos Islands" } },
+        addCountry { id = "Rwanda",      name = "Rwanda",       code = "RW-646", filename = "Rwanda.lua",      continent = "Africa",        admin_label = "Provinces & Areas",  mountain_max = 4507, data = rwandaData,      remoteIslandNames = {} },
+        addCountry { id = "Botswana",    name = "Botswana",     code = "BW-072", filename = "Botswana.lua",    continent = "Africa",        admin_label = "Districts & Areas",  mountain_max = 1491, data = botswanaData,    remoteIslandNames = {} },
+        addCountry { id = "SouthAfrica", name = "South Africa", code = "ZA-710", filename = "SouthAfrica.lua", continent = "Africa",        admin_label = "Provinces & Areas",  mountain_max = 3482, data = southAfricaData, remoteIslandNames = { "Prince Edward Islands" } },
+        addCountry { id = "Australia",   name = "Australia",    code = "AU-036", filename = "Australia.lua",   continent = "Oceania",       admin_label = "States & Areas",     mountain_max = 2228, data = australiaData,   remoteIslandNames = { "Christmas Island", "Cocos Islands", "Norfolk Island", "Lord Howe Island", "Macquarie Island", "Heard Island" } },
+        addCountry { id = "Hungary",     name = "Hungary",      code = "HU-348", filename = "Hungary.lua",     continent = "Europe",        admin_label = "Counties & Areas",   mountain_max = 1014, data = hungaryData,     remoteIslandNames = {} },
+        addCountry { id = "Netherlands", name = "Netherlands",  code = "NL-528", filename = "Netherlands.lua", continent = "Europe",        admin_label = "Provinces & Areas",  mountain_max = 323,  data = netherlandsData, remoteIslandNames = { "Aruba", "Curaçao", "Sint Maarten", "Bonaire", "Sint Eustatius", "Saba" } },
+        addCountry { id = "Antarctica",  name = "Antarctica",   code = "AQ-010", filename = "Antarctica.lua",  continent = "Antarctica",    admin_label = "Regions & Areas",    mountain_max = 4892, data = antarcticaData,  remoteIslandNames = {} },
 }
 
 -- Fixed continent order — shown in Country column regardless of whether
@@ -146,6 +164,15 @@ local LABELS = {
         Finland       = { county = "Region",       muni = "Sub-region", city = "City" },
         UnitedKingdom = { county = "Country",      muni = "County",     city = "City" },
         India         = { county = "State",        muni = "District",   city = "City" },
+        Argentina     = { county = "Province",    muni = "Department",   city = "City" },
+        Antarctica    = { county = "Region",      muni = "Territory",    city = "Station" },
+        Australia     = { county = "State",       muni = "Region",       city = "City" },
+        Rwanda        = { county = "Province",    muni = "District",     city = "City" },
+        SouthAfrica   = { county = "Province",    muni = "District",     city = "City" },
+        Ecuador       = { county = "Province",    muni = "Canton",       city = "City" },
+        Botswana      = { county = "District",    muni = "Sub-district", city = "City" },
+        Hungary       = { county = "County",      muni = "District",     city = "City" },
+        Netherlands   = { county = "Province",    muni = "Municipality", city = "City" },
 }
 local DEFAULT_LABELS = { county = "County", muni = "Municipality", city = "City" }
 
@@ -170,6 +197,15 @@ local WIKIDATA_TYPES = {
         Finland       = { co = nil, mu = nil, ci = nil },
         UnitedKingdom = { co = nil, mu = nil, ci = nil },
         India         = { co = nil, mu = nil, ci = nil },
+        Argentina     = { co = nil, mu = nil, ci = nil },
+        Antarctica    = { co = nil, mu = nil, ci = nil },
+        Australia     = { co = nil, mu = nil, ci = nil },
+        Rwanda        = { co = nil, mu = nil, ci = nil },
+        SouthAfrica   = { co = nil, mu = nil, ci = nil },
+        Ecuador       = { co = nil, mu = nil, ci = nil },
+        Botswana      = { co = nil, mu = nil, ci = nil },
+        Hungary       = { co = nil, mu = nil, ci = nil },
+        Netherlands   = { co = nil, mu = nil, ci = nil },
 }
 
 -- Preferred label language(s) per country for the Wikidata label service.
@@ -185,6 +221,15 @@ local WIKIDATA_LANG = {
         Finland       = "fi,sv,en",
         UnitedKingdom = "en",
         India         = "hi,en",
+        Argentina     = "es,en",
+        Antarctica    = "en",
+        Australia     = "en",
+        Rwanda        = "rw,fr,en",
+        SouthAfrica   = "en,af,zu",
+        Ecuador       = "es,en",
+        Botswana      = "tn,en",
+        Hungary       = "hu,en",
+        Netherlands   = "nl,en",
 }
 
 -- Percent-encode a string for safe inclusion in a URL query parameter.
