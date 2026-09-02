@@ -1,3 +1,15 @@
+## [0.9.154] – 2026-09-02
+### Changed
+- **United Kingdom — Remote Islands utvidet**: `remoteIslandNames` er utvidet fra 4 til 17 oppføringer (alle 14 britiske oversjøiske territorier + 2 Crown Dependencies + Gibraltar). Nye territorier:
+  - *Crown Dependencies*: Channel Islands, Isle of Man (beholdt)
+  - *BOT Europa*: Gibraltar (beholdt)
+  - *BOT Sør-Atlanteren*: Falkland Islands (beholdt), South Georgia and the South Sandwich Islands, Saint Helena, Ascension Island, Tristan da Cunha
+  - *BOT Karibia*: Bermuda, Anguilla, British Virgin Islands, Cayman Islands, Montserrat, Turks and Caicos Islands
+  - *BOT Stillehavet*: Pitcairn Islands
+  - *BOT Indiahavet*: British Indian Ocean Territory
+  - *BOT Antarktis*: British Antarctic Territory
+  - Akrotiri og Dhekelia (militærbase på Kypros) er utelatt — ikke et fotografisk reisemål
+
 ## [0.9.153] – 2026-09-02
 ### Reverted
 - Keyword List Builder — Country-panelet: tilbakeført til uendret linjeavstand (v0.9.150-tilstand). Forsøkene i v0.9.151 og v0.9.152 på å redusere luft mellom kontinentene hadde ingen synlig effekt og er annullert.

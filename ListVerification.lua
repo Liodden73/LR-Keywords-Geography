@@ -86,7 +86,24 @@ local COUNTRIES = {
         addCountry { id = "NewZealand",   name = "New Zealand",   code = "NZ-554", filename = "NewZealand.lua",   continent = "Oceania",       admin_label = "Regions & Areas",   mountain_max = 3724, data = nzData,          remoteIslandNames = { "Chatham Islands", "Subantarctic Islands" } },
         addCountry { id = "Greenland",    name = "Greenland",     code = "GL-304", filename = "Greenland.lua",    continent = "North America", admin_label = "Municipalities & Areas", mountain_max = 3694, data = greenlandData,  remoteIslandNames = {} },
         addCountry { id = "Finland",      name = "Finland",       code = "FI-246", filename = "Finland.lua",      continent = "Europe",        admin_label = "Regions & Areas",        mountain_max = 1328, data = finlandData,    remoteIslandNames = { "Åland Islands" } },
-        addCountry { id = "UnitedKingdom",name = "United Kingdom",code = "GB-826", filename = "UnitedKingdom.lua",continent = "Europe",        admin_label = "Countries & Areas",      mountain_max = 1345, data = ukData,         remoteIslandNames = { "Falkland Islands", "Gibraltar", "Channel Islands", "Isle of Man" } },
+        addCountry { id = "UnitedKingdom",name = "United Kingdom",code = "GB-826", filename = "UnitedKingdom.lua",continent = "Europe",        admin_label = "Countries & Areas",      mountain_max = 1345, data = ukData,         remoteIslandNames = {
+                -- Crown Dependencies
+                "Channel Islands", "Isle of Man",
+                -- British Overseas Territories — Europe
+                "Gibraltar",
+                -- British Overseas Territories — South Atlantic
+                "Falkland Islands", "South Georgia and the South Sandwich Islands",
+                "Saint Helena", "Ascension Island", "Tristan da Cunha",
+                -- British Overseas Territories — Caribbean
+                "Bermuda", "Anguilla", "British Virgin Islands",
+                "Cayman Islands", "Montserrat", "Turks and Caicos Islands",
+                -- British Overseas Territories — Pacific
+                "Pitcairn Islands",
+                -- British Overseas Territories — Indian Ocean
+                "British Indian Ocean Territory",
+                -- British Overseas Territories — Antarctica
+                "British Antarctic Territory",
+        } },
         addCountry { id = "India",        name = "India",         code = "IN-356", filename = "India.lua",        continent = "Asia",          admin_label = "States & Areas",         mountain_max = 8586, data = indiaData,      remoteIslandNames = { "Andaman and Nicobar Islands", "Lakshadweep" } },
 }
 
