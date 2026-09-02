@@ -388,7 +388,6 @@ return {
             "Scott Keltie Øer",
             "Saqqarliit",
             "Salliit",
-            "Saattut",
             "Røde Ø",
             "Ravneøer",
             "Qulleq",
@@ -449,9 +448,24 @@ return {
             name = "Avannaata",
             municipalities = {
                 {
-                    name = "Avannaata",
+                    name = "Ilulissat",
                     primary_city = "Ilulissat",
-                    cities = { "Ilulissat", "Uummannaq", "Upernavik", "Qaanaaq", "Kullorsuaq", "Tasiusaq", "Ikerasak", "Upernavik Kujalleq", "Nuussuaq", "Qaarsut", "Ukkusissat", "Aappilattoq", "Saqqaq", "Kangersuatsiaq", "Nuugaatsiaq" },
+                    cities = { "Ilulissat", "Oqaatsut", "Ilimanaq", "Saqqaq" },
+                },
+                {
+                    name = "Qaanaaq",
+                    primary_city = "Qaanaaq",
+                    cities = { "Qaanaaq", "Siorapaluk", "Savissivik" },
+                },
+                {
+                    name = "Upernavik",
+                    primary_city = "Upernavik",
+                    cities = { "Upernavik", "Upernavik Kujalleq", "Kangersuatsiaq", "Aappilattoq", "Tasiusaq", "Nuussuaq", "Kullorsuaq", "Nutaarmiut", "Innaarsuit", "Naajaat" },
+                },
+                {
+                    name = "Uummannaq",
+                    primary_city = "Uummannaq",
+                    cities = { "Uummannaq", "Ikerasak", "Qaarsut", "Ukkusissat", "Saattut", "Niaqornat", "Nuugaatsiaq" },
                 },
             },
         },
@@ -459,19 +473,19 @@ return {
             name = "Kujalleq",
             municipalities = {
                 {
-                    name = "Nanortalik Municipality",
+                    name = "Nanortalik",
                     primary_city = "Nanortalik",
-                    cities = { "Nanortalik", "Alluitsup Paa", "Aappilattoq", "Tasiusaq" },
+                    cities = { "Nanortalik", "Aappilattoq", "Alluitsup Paa", "Ammassivik", "Narsaq Kujalleq", "Tasiusaq" },
                 },
                 {
-                    name = "Narsaq Municipality",
+                    name = "Narsaq",
                     primary_city = "Narsaq",
-                    cities = { "Narsaq", "Narsarmijit" },
+                    cities = { "Narsaq", "Igaliku", "Narsarsuaq", "Qassiarsuk" },
                 },
                 {
-                    name = "Qaqortoq Municipality",
+                    name = "Qaqortoq",
                     primary_city = "Qaqortoq",
-                    cities = { "Qaqortoq" },
+                    cities = { "Qaqortoq", "Eqalugaarsuit", "Qassimiut", "Saarloq", "Upernaviarsuk" },
                 },
             },
         },
@@ -479,9 +493,24 @@ return {
             name = "Qeqertalik",
             municipalities = {
                 {
-                    name = "Qeqertalik",
+                    name = "Aasiaat",
                     primary_city = "Aasiaat",
-                    cities = { "Aasiaat", "Qasigiannguit", "Qeqertarsuaq", "Attu", "Ikamiut", "Iginniarfik" },
+                    cities = { "Aasiaat", "Akunnaaq", "Kitsissuarsuit" },
+                },
+                {
+                    name = "Kangaatsiaq",
+                    primary_city = "Kangaatsiaq",
+                    cities = { "Kangaatsiaq", "Attu", "Iginniarfik", "Niaqornaarsuk", "Ikerasaarsuk" },
+                },
+                {
+                    name = "Qasigiannguit",
+                    primary_city = "Qasigiannguit",
+                    cities = { "Qasigiannguit", "Ikamiut" },
+                },
+                {
+                    name = "Qeqertarsuaq",
+                    primary_city = "Qeqertarsuaq",
+                    cities = { "Qeqertarsuaq", "Kangerluk" },
                 },
             },
         },
@@ -489,9 +518,14 @@ return {
             name = "Qeqqata",
             municipalities = {
                 {
-                    name = "Qeqqata",
+                    name = "Maniitsoq",
+                    primary_city = "Maniitsoq",
+                    cities = { "Maniitsoq", "Kangaamiut", "Atammik", "Napasoq" },
+                },
+                {
+                    name = "Sisimiut",
                     primary_city = "Sisimiut",
-                    cities = { "Sisimiut", "Maniitsoq", "Kangerlussuaq", "Kangaamiut", "Atammik", "Sarfannguit", "Itilleq", "Napasoq" },
+                    cities = { "Sisimiut", "Itilleq", "Sarfannguit", "Kangerlussuaq" },
                 },
             },
         },
@@ -499,9 +533,29 @@ return {
             name = "Sermersooq",
             municipalities = {
                 {
-                    name = "Sermersooq",
+                    name = "Ittoqqortoormiit",
+                    primary_city = "Ittoqqortoormiit",
+                    cities = { "Ittoqqortoormiit", "Uunarteq" },
+                },
+                {
+                    name = "Ivittuut",
+                    primary_city = "Ivittuut",
+                    cities = { "Ivittuut", "Kangilinnguit" },
+                },
+                {
+                    name = "Nuuk",
                     primary_city = "Nuuk",
-                    cities = { "Nuuk", "Tasiilaq", "Paamiut", "Qeqertarsuaq", "Ittoqqortoormiit", "Kuummiit", "Kulusuk", "Sermiligaaq", "Qeqertarsuatsiaat", "Kangilinnguit", "Tiniteqilaaq", "Arsuk", "Isortoq", "Kapisillit" },
+                    cities = { "Nuuk", "Kapisillit", "Qeqertarsuatsiaat" },
+                },
+                {
+                    name = "Paamiut",
+                    primary_city = "Paamiut",
+                    cities = { "Paamiut", "Arsuk" },
+                },
+                {
+                    name = "Tasiilaq",
+                    primary_city = "Tasiilaq",
+                    cities = { "Tasiilaq", "Kuummiit", "Sermiligaaq", "Isortoq", "Kulusuk", "Tiniteqilaaq" },
                 },
             },
         },

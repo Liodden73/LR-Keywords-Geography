@@ -123,7 +123,7 @@ local LABELS = {
         Chile        = { county = "Region",   muni = "Province",     city = "City" },
         Kenya        = { county = "County",   muni = "Sub-county",   city = "City" },
         NewZealand    = { county = "Region",       muni = "District",   city = "City" },
-        Greenland     = { county = "Municipality", muni = "Area",       city = "City" },
+        Greenland     = { county = "Municipality", muni = "District",   city = "Town" },
         Finland       = { county = "Region",       muni = "Sub-region", city = "City" },
         UnitedKingdom = { county = "Country",      muni = "County",     city = "City" },
         India         = { county = "State",        muni = "District",   city = "City" },

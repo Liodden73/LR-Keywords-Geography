@@ -1,3 +1,16 @@
+## [0.9.147] - 2026-09-02
+
+### Fixed
+- **Grønland — admin-hierarki (Kommune → Distrikt → By)**: `data/Greenland.lua` hadde et feilaktig mellomnivå. GeoNames ga bare Kujalleq nedlagte ADM2-enheter (Nanortalik/Narsaq/Qaqortoq Municipality — slått sammen i 2009), mens de andre 4 kommunene fikk sitt eget navn duplisert som eneste «Area». Erstattet med korrekt geografisk struktur basert på bygdedistrikter (de gamle før-2009-kommunene), hver med by + tilhørende bygder:
+  - **Avannaata** (4 distrikter): Ilulissat, Qaanaaq, Upernavik, Uummannaq
+  - **Kujalleq** (3): Nanortalik, Narsaq, Qaqortoq
+  - **Qeqertalik** (4): Aasiaat, Kangaatsiaq, Qasigiannguit, Qeqertarsuaq
+  - **Qeqqata** (2): Maniitsoq, Sisimiut
+  - **Sermersooq** (5): Ittoqqortoormiit, Ivittuut, Nuuk, Paamiut, Tasiilaq
+  - Totalt 5 kommuner → 18 distrikter → 71 byer/bygder.
+- **Etiketter for Grønland**: `LABELS` endret til Municipality / District / Town (var Municipality / Area / City).
+- **Dedup**: Fjernet Saattut fra `islands[]` (finnes nå som bygd i Uummannaq-distriktet). Grønland-øyer: 96.
+
 ## [0.9.146] - 2026-09-02
 
 ### Added
