@@ -1,3 +1,7 @@
+## [0.9.155] – 2026-09-02
+### Changed
+- United Kingdom — Remote Islands: «South Georgia and the South Sandwich Islands» er delt opp i to separate oppføringer: «South Georgia» og «South Sandwich Islands». Lista er nå sortert alfabetisk (18 oppføringer totalt).
+
 ## [0.9.154] – 2026-09-02
 ### Changed
 - **United Kingdom — Remote Islands utvidet**: `remoteIslandNames` er utvidet fra 4 til 17 oppføringer (alle 14 britiske oversjøiske territorier + 2 Crown Dependencies + Gibraltar). Nye territorier:
