@@ -2280,6 +2280,8 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                                 height              = 107,
                                                 width               = KB_COL_W_COUNTRY - 20,
                                                 horizontal_scroller = false,
+                                                vertical_scroller   = false,
+                                                background_color    = LrColor( 0.835, 0.835, 0.835 ),
                                                 f:column( innerSpec ),
                                         }
                                 else
