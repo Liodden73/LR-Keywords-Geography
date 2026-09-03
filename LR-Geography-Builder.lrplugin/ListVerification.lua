@@ -49,6 +49,12 @@ local botswanaData    = dofile( LrPathUtils.child( dataDir, "Botswana.lua"     )
 local hungaryData     = dofile( LrPathUtils.child( dataDir, "Hungary.lua"      ) )
 local netherlandsData = dofile( LrPathUtils.child( dataDir, "Netherlands.lua"  ) )
 local chinaData       = dofile( LrPathUtils.child( dataDir, "China.lua"        ) )
+local russiaData      = dofile( LrPathUtils.child( dataDir, "Russia.lua"       ) )
+local franceData      = dofile( LrPathUtils.child( dataDir, "France.lua"       ) )
+local denmarkData     = dofile( LrPathUtils.child( dataDir, "Denmark.lua"      ) )
+local icelandData     = dofile( LrPathUtils.child( dataDir, "Iceland.lua"      ) )
+local germanyData     = dofile( LrPathUtils.child( dataDir, "Germany.lua"      ) )
+local spainData       = dofile( LrPathUtils.child( dataDir, "Spain.lua"        ) )
 
 local genPath   = LrPathUtils.child( pluginPath, "Generator.lua" )
 local Generator = dofile( genPath )
@@ -126,6 +132,12 @@ local COUNTRIES = {
         addCountry { id = "Hungary",     name = "Hungary",      code = "HU-348", filename = "Hungary.lua",     continent = "Europe",        admin_label = "Counties & Areas",   mountain_max = 1014, data = hungaryData,     remoteIslandNames = {} },
         addCountry { id = "Netherlands", name = "Netherlands",  code = "NL-528", filename = "Netherlands.lua", continent = "Europe",        admin_label = "Provinces & Areas",  mountain_max = 323,  data = netherlandsData, remoteIslandNames = { "Aruba", "Bonaire", "Curaçao", "Saba", "Sint Eustatius", "Sint Maarten" } },
         addCountry { id = "China",        name = "China",         code = "CN-156", filename = "China.lua",        continent = "Asia",          admin_label = "Provinces & Areas",       mountain_max = 8849, data = chinaData,       remoteIslandNames = {} },
+        addCountry { id = "Russia",      name = "Russia",       code = "RU-643", filename = "Russia.lua",      continent = "Europe",        admin_label = "Federal Subjects & Areas", mountain_max = 5642, data = russiaData,      remoteIslandNames = {} },
+        addCountry { id = "France",      name = "France",       code = "FR-250", filename = "France.lua",      continent = "Europe",        admin_label = "Regions & Areas",    mountain_max = 4808, data = franceData,      remoteIslandNames = { "Clipperton Island", "French Guiana", "French Polynesia", "Guadeloupe", "Martinique", "Mayotte", "New Caledonia", "Réunion", "Saint Barthélemy", "Saint Martin", "Saint Pierre and Miquelon", "Wallis and Futuna" } },
+        addCountry { id = "Denmark",     name = "Denmark",      code = "DK-208", filename = "Denmark.lua",     continent = "Europe",        admin_label = "Regions & Areas",    mountain_max = 171,  data = denmarkData,     remoteIslandNames = { "Faroe Islands" } },
+        addCountry { id = "Iceland",     name = "Iceland",      code = "IS-352", filename = "Iceland.lua",     continent = "Europe",        admin_label = "Regions & Areas",    mountain_max = 2110, data = icelandData,     remoteIslandNames = {} },
+        addCountry { id = "Germany",     name = "Germany",      code = "DE-276", filename = "Germany.lua",     continent = "Europe",        admin_label = "States & Areas",     mountain_max = 2962, data = germanyData,     remoteIslandNames = {} },
+        addCountry { id = "Spain",       name = "Spain",        code = "ES-724", filename = "Spain.lua",       continent = "Europe",        admin_label = "Communities & Areas", mountain_max = 3715, data = spainData,       remoteIslandNames = {} },
         addCountry { id = "Antarctica",  name = "Antarctica",   code = "AQ-010", filename = "Antarctica.lua",  continent = "Antarctica",    admin_label = "Regions & Areas",    mountain_max = 4892, data = antarcticaData,  remoteIslandNames = {} },
 }
 
@@ -176,6 +188,12 @@ local LABELS = {
         Hungary       = { county = "County",      muni = "District",     city = "City" },
         Netherlands   = { county = "Province",    muni = "Municipality", city = "City" },
         China         = { county = "Province",    muni = "Prefecture",   city = "City" },
+        Russia        = { county = "Federal Subject", muni = "District",  city = "City" },
+        France        = { county = "Region",       muni = "Department",   city = "Commune" },
+        Denmark       = { county = "Region",       muni = "Municipality", city = "City" },
+        Iceland       = { county = "Region",       muni = "Municipality", city = "City" },
+        Germany       = { county = "State",        muni = "District",     city = "City" },
+        Spain         = { county = "Community",    muni = "Province",     city = "City" },
 }
 local DEFAULT_LABELS = { county = "County", muni = "Municipality", city = "City" }
 
@@ -210,6 +228,12 @@ local WIKIDATA_TYPES = {
         Hungary       = { co = nil, mu = nil, ci = nil },
         Netherlands   = { co = nil, mu = nil, ci = nil },
         China         = { co = nil, mu = nil, ci = nil },
+        Russia        = { co = nil, mu = nil, ci = nil },
+        France        = { co = nil, mu = nil, ci = nil },
+        Denmark       = { co = nil, mu = nil, ci = nil },
+        Iceland       = { co = nil, mu = nil, ci = nil },
+        Germany       = { co = nil, mu = nil, ci = nil },
+        Spain         = { co = nil, mu = nil, ci = nil },
 }
 
 -- Preferred label language(s) per country for the Wikidata label service.
@@ -235,6 +259,12 @@ local WIKIDATA_LANG = {
         Hungary       = "hu,en",
         Netherlands   = "nl,en",
         China         = "zh,en",
+        Russia        = "ru,en",
+        France        = "fr,en",
+        Denmark       = "da,en",
+        Iceland       = "is,en",
+        Germany       = "de,en",
+        Spain         = "es,en",
 }
 
 -- Percent-encode a string for safe inclusion in a URL query parameter.
