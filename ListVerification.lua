@@ -1739,8 +1739,9 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                         f:separator { fill_horizontal = 1 },
                         f:scrolled_view {
                                 height              = 390,
-                                fill_horizontal     = 1,
+                                width               = CONTENT_W,
                                 horizontal_scroller = false,
+                                background_color    = LrColor( 0.835, 0.835, 0.835 ),
                                 f:column( rowSpec ),
                         },
                 }
