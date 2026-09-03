@@ -74,6 +74,10 @@ local slovakiaData    = dofile( LrPathUtils.child( dataDir, "Slovakia.lua"     )
 local estoniaData     = dofile( LrPathUtils.child( dataDir, "Estonia.lua"      ) )
 local latviaData      = dofile( LrPathUtils.child( dataDir, "Latvia.lua"       ) )
 local lithuaniaData   = dofile( LrPathUtils.child( dataDir, "Lithuania.lua"    ) )
+local albaniaData     = dofile( LrPathUtils.child( dataDir, "Albania.lua"      ) )
+local bosniaData      = dofile( LrPathUtils.child( dataDir, "BosniaAndHerzegovina.lua" ) )
+local montenegroData  = dofile( LrPathUtils.child( dataDir, "Montenegro.lua"   ) )
+local northMacedoniaData = dofile( LrPathUtils.child( dataDir, "NorthMacedonia.lua" ) )
 
 local genPath   = LrPathUtils.child( pluginPath, "Generator.lua" )
 local Generator = dofile( genPath )
@@ -176,6 +180,10 @@ local COUNTRIES = {
         addCountry { id = "Latvia",      name = "Latvia",       code = "LV-428", filename = "Latvia.lua",      continent = "Europe",        admin_label = "Municipalities & Areas", mountain_max = 320,  data = latviaData,      remoteIslandNames = {} },
         addCountry { id = "Lithuania",   name = "Lithuania",    code = "LT-440", filename = "Lithuania.lua",   continent = "Europe",        admin_label = "Counties & Areas",      mountain_max = 300,  data = lithuaniaData,   remoteIslandNames = {} },
         addCountry { id = "Ukraine",     name = "Ukraine",      code = "UA-804", filename = "Ukraine.lua",     continent = "Europe",        admin_label = "Oblasts & Areas",       mountain_max = 2061, data = ukraineData,     remoteIslandNames = {} },
+        addCountry { id = "Albania",     name = "Albania",      code = "AL-008", filename = "Albania.lua",     continent = "Europe",        admin_label = "Counties & Areas",      mountain_max = 2700, data = albaniaData,     remoteIslandNames = {} },
+        addCountry { id = "BosniaAndHerzegovina", name = "Bosnia and Herzegovina", code = "BA-070", filename = "BosniaAndHerzegovina.lua", continent = "Europe", admin_label = "Entities & Areas", mountain_max = 2400, data = bosniaData, remoteIslandNames = {} },
+        addCountry { id = "Montenegro",  name = "Montenegro",   code = "ME-499", filename = "Montenegro.lua",  continent = "Europe",        admin_label = "Municipalities & Areas", mountain_max = 2530, data = montenegroData,  remoteIslandNames = {} },
+        addCountry { id = "NorthMacedonia", name = "North Macedonia", code = "MK-807", filename = "NorthMacedonia.lua", continent = "Europe", admin_label = "Municipalities & Areas", mountain_max = 2770, data = northMacedoniaData, remoteIslandNames = {} },
         addCountry { id = "Antarctica",  name = "Antarctica",   code = "AQ-010", filename = "Antarctica.lua",  continent = "Antarctica",    admin_label = "Regions & Areas",    mountain_max = 4892, data = antarcticaData,  remoteIslandNames = {} },
 }
 
@@ -251,6 +259,10 @@ local LABELS = {
         Estonia       = { county = "County",       muni = "Municipality", city = "City" },
         Latvia        = { county = "Municipality", muni = "Pagasts",      city = "City" },
         Lithuania     = { county = "County",       muni = "Municipality", city = "City" },
+        Albania       = { county = "County",       muni = "Municipality", city = "City" },
+        BosniaAndHerzegovina = { county = "Entity", muni = "Municipality", city = "City" },
+        Montenegro    = { county = "Municipality", muni = "Settlement",   city = "City" },
+        NorthMacedonia = { county = "Municipality", muni = "Settlement",  city = "City" },
 }
 local DEFAULT_LABELS = { county = "County", muni = "Municipality", city = "City" }
 
@@ -310,6 +322,10 @@ local WIKIDATA_TYPES = {
         Estonia       = { co = nil, mu = nil, ci = nil },
         Latvia        = { co = nil, mu = nil, ci = nil },
         Lithuania     = { co = nil, mu = nil, ci = nil },
+        Albania       = { co = nil, mu = nil, ci = nil },
+        BosniaAndHerzegovina = { co = nil, mu = nil, ci = nil },
+        Montenegro    = { co = nil, mu = nil, ci = nil },
+        NorthMacedonia = { co = nil, mu = nil, ci = nil },
 }
 
 -- Preferred label language(s) per country for the Wikidata label service.
@@ -360,6 +376,10 @@ local WIKIDATA_LANG = {
         Estonia       = "et,en",
         Latvia        = "lv,en",
         Lithuania     = "lt,en",
+        Albania       = "sq,en",
+        BosniaAndHerzegovina = "bs,hr,sr,en",
+        Montenegro    = "sr,en",
+        NorthMacedonia = "mk,en",
 }
 
 -- Percent-encode a string for safe inclusion in a URL query parameter.

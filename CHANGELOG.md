@@ -1,3 +1,11 @@
+## [0.9.179] – 2026-09-03
+### Added
+- **Albania**: Lagt til som nytt land (Europa). Data inkluderer 12 fylker (qarqe), 61 kommuner (bashki), 3 naturreservater, 70 fjell (Maja e Jezercës 2694 m øverst), 34 innsjøer, 120 elver, 11 øyer og 1 utsiktspunkt
+- **Bosnia-Hercegovina**: Lagt til som nytt land (Europa). Data inkluderer 3 entiteter (Føderasjonen BiH, Republika Srpska, Brčko-distriktet), 145 kommuner (opštine/općine), 4 naturreservater, 70 fjell (Maglić 2386 m øverst), 57 innsjøer, 120 elver og 7 øyer
+- **Montenegro**: Lagt til som nytt land (Europa). Flat struktur med 25 kommuner (opštine), 2 naturreservater, 70 fjell (Bobotov Kuk 2523 m øverst), 46 innsjøer, 120 elver, 36 øyer og 1 utsiktspunkt
+- **Nord-Makedonia**: Lagt til som nytt land (Europa). Flat struktur med 71 kommuner (opštini), 70 fjell (Golem Korab 2764 m øverst), 21 innsjøer, 120 elver, 5 øyer og 2 utsiktspunkter
+- Alle fire landene er integrert med administrative hierarkier, geografiske funksjoner og verdenskart-visualisering (polygoner, ISO-koder, kontinentrekkefølge). Kosovo er bevisst utelatt grunnet omstridt status.
+
 ## [0.9.178] – 2026-09-03
 ### Added
 - **Estland**: Lagt til som nytt land (Europa). Data inkluderer 15 counties (maakonnad), 79 kommuner (vald/linn), 9 naturreservater, 1 fjell (Suur Munamägi 318 m), 120 innsjøer, 120 elver og 120 øyer
