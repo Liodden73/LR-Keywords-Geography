@@ -1,3 +1,12 @@
+## [0.9.172] – 2026-09-03
+### Added
+- **Russia**: Lagt til som nytt land (Europa). Data inkluderer 83 føderale subjekter (kun internasjonalt anerkjente – Krim, Sevastopol, Donetsk, Luhansk, Zaporizjzja og Kherson er utelatt), 104 distrikter, 12 nasjonalparker, 40 naturreservater, 60 fjell, 100 innsjøer, 100 elver, 100 øyer og 2 utsiktspunkter
+- **France**: Lagt til som nytt land (Europa). Data inkluderer 13 fastlandsregioner, 96 departementer, 10 nasjonalparker, 31 naturreservater, 60 fjell, 100 innsjøer, 100 elver, 100 øyer og 11 utsiktspunkter. Fjerne øyer: French Guiana, Guadeloupe, Martinique, Mayotte, Réunion, New Caledonia, French Polynesia, Saint Barthélemy, Saint Martin, Saint Pierre and Miquelon, Wallis and Futuna, Clipperton Island
+- **Denmark**: Lagt til som nytt land (Europa). Data inkluderer 5 regioner, 99 kommuner, 5 nasjonalparker, 3 naturreservater, 100 innsjøer, 100 elver, 100 øyer og 1 utsiktspunkt. Fjerne øyer: Faroe Islands
+- **Iceland**: Lagt til som nytt land (Europa). Data inkluderer 8 regioner, 64 kommuner, 3 nasjonalparker, 1 naturreservat, 60 fjell, 100 innsjøer, 100 elver, 100 øyer og 3 utsiktspunkter
+- **Germany**: Lagt til som nytt land (Europa). Data inkluderer 16 delstater, 322 distrikter, 15 nasjonalparker, 40 naturreservater, 60 fjell, 100 innsjøer, 100 elver, 100 øyer og 15 utsiktspunkter
+- **Spain**: Lagt til som nytt land (Europa). Data inkluderer 19 autonome regioner (17 + Ceuta og Melilla), 52 provinser, 15 nasjonalparker, 21 naturreservater, 60 fjell, 100 innsjøer, 100 elver, 100 øyer og 15 utsiktspunkter
+
 ## [0.9.171] – 2026-09-03
 ### Changed
 - **China**: Fjernet Paracel Islands og Spratly Islands fra listen over fjerne øyer (politisk omstridte territorier)
