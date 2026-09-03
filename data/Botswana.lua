@@ -373,7 +373,7 @@ return {
             name = "South East District",
             municipalities = {
                 {
-                    name = "Gaborone",
+                    name = "Ramotswa",
                     primary_city = "Ramotswa Station/Taung",
                     cities = { "Ramotswa Station/Taung" },
                 },

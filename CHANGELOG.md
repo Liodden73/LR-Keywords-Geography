@@ -1,3 +1,7 @@
+## [0.9.157] – 2026-09-03
+### Fixed
+- **Botswana**: Sub-distriktet under «South East District» rettet fra «Gaborone» til «Ramotswa» (riktig geografisk navn — Gaborone er et eget distrikts-nivå)
+
 ## [0.9.156] – 2026-09-02
 ### Added
 - **9 nye land**: Argentina, Antarktis, Australia, Rwanda, Sør-Afrika, Ecuador, Botswana, Ungarn, Nederland
