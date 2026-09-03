@@ -1,3 +1,7 @@
+## [0.9.159] – 2026-09-03
+### Fixed
+- **Remote Islands**: Alle lister sortert alfabetisk for alle land (Norge, USA, Chile, Australia, Nederland)
+
 ## [0.9.158] – 2026-09-03
 ### Fixed
 - **Argentina**: Fjernet «Islas Malvinas» fra Remote Islands — Falklandsøyene er britisk territorium og er allerede listet under United Kingdom
