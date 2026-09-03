@@ -1,0 +1,16 @@
+{
+  "listname":"Italia",
+  "levels":{
+    "mu":[{
+        "i":67,
+        "action":"change",
+        "name":"Barletta - Andria - Trani",
+        "conflict":"Trani"
+      }],
+    "ci":[],
+    "co":[]
+  },
+  "version":"0.1.1",
+  "country":"Italy",
+  "verified":"2026-09-03 15:17"
+}
