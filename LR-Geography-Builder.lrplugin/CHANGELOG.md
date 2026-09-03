@@ -1,3 +1,12 @@
+## [0.9.174] – 2026-09-03
+### Added
+- **Portugal**: Lagt til som nytt land (Europa). Data inkluderer 20 admin-enheter (18 distrikter + Azorene + Madeira), 308 kommuner, 1 nasjonalpark, 14 naturreservater, 60 fjell, 100 innsjøer, 100 elver, 100 øyer og 15 utsiktspunkter. Fjerne øyer: Azores, Madeira
+- **Italia**: Lagt til som nytt land (Europa). Data inkluderer 20 regioner, 107 provinser, 15 nasjonalparker, 40 naturreservater, 60 fjell, 100 innsjøer, 100 elver, 100 øyer og 15 utsiktspunkter
+- **Østerrike**: Lagt til som nytt land (Europa). Data inkluderer 9 Bundesländer, 94 distrikter, 6 nasjonalparker, 8 naturreservater, 60 fjell, 100 innsjøer, 100 elver, 3 øyer og 7 utsiktspunkter
+- **Belgia**: Lagt til som nytt land (Europa). Data inkluderer 3 regioner, 11 provinser, 1 nasjonalpark, 1 naturreservat, 4 fjell, 22 innsjøer, 100 elver, 5 øyer og 1 utsiktspunkt
+- **Sveits**: Lagt til som nytt land (Europa). Data inkluderer 26 kantoner, 149 distrikter, 1 nasjonalpark, 5 naturreservater, 60 fjell, 100 innsjøer, 100 elver, 25 øyer og 7 utsiktspunkter
+- **Irland**: Lagt til som nytt land (Europa). Data inkluderer 38 counties, 29 local authorities, 6 nasjonalparker, 4 naturreservater, 60 fjell, 100 innsjøer, 100 elver, 100 øyer og 5 utsiktspunkter
+
 ## [0.9.173] – 2026-09-03
 ### Changed
 - **France**: Lagt til 4 sub-antarktiske øyer i remoteIslandNames: Amsterdam Island, Crozet Islands, Kerguelen Islands, Saint-Paul Island (totalt 16 fjerne øyer)
