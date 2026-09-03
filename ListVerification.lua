@@ -105,6 +105,12 @@ local belizeData        = dofile( LrPathUtils.child( dataDir, "Belize.lua"      
 local elSalvadorData    = dofile( LrPathUtils.child( dataDir, "ElSalvador.lua"    ) )
 local nicaraguaData     = dofile( LrPathUtils.child( dataDir, "Nicaragua.lua"     ) )
 local boliviaData       = dofile( LrPathUtils.child( dataDir, "Bolivia.lua"       ) )
+local jamaicaData       = dofile( LrPathUtils.child( dataDir, "Jamaica.lua"       ) )
+local haitiData         = dofile( LrPathUtils.child( dataDir, "Haiti.lua"         ) )
+local dominicanRepData  = dofile( LrPathUtils.child( dataDir, "DominicanRepublic.lua" ) )
+local bahamasData       = dofile( LrPathUtils.child( dataDir, "Bahamas.lua"       ) )
+local guyanaData        = dofile( LrPathUtils.child( dataDir, "Guyana.lua"        ) )
+local surinamData       = dofile( LrPathUtils.child( dataDir, "Surinam.lua"       ) )
 
 local genPath   = LrPathUtils.child( pluginPath, "Generator.lua" )
 local Generator = dofile( genPath )
@@ -160,6 +166,12 @@ local COUNTRIES = {
         addCountry { id = "ElSalvador",   name = "El Salvador",   code = "SV-222", filename = "ElSalvador.lua",   continent = "North America", admin_label = "Departments & Areas", mountain_max = 2381, data = elSalvadorData, remoteIslandNames = {} },
         addCountry { id = "Nicaragua",    name = "Nicaragua",     code = "NI-558", filename = "Nicaragua.lua",    continent = "North America", admin_label = "Departments & Areas", mountain_max = 2438, data = nicaraguaData,  remoteIslandNames = {} },
         addCountry { id = "Bolivia",      name = "Bolivia",       code = "BO-068", filename = "Bolivia.lua",      continent = "South America", admin_label = "Departments & Areas", mountain_max = 6542, data = boliviaData,    remoteIslandNames = {} },
+        addCountry { id = "Jamaica",      name = "Jamaica",       code = "JM-388", filename = "Jamaica.lua",      continent = "North America", admin_label = "Parishes & Areas",    mountain_max = 2256, data = jamaicaData,    remoteIslandNames = {} },
+        addCountry { id = "Haiti",        name = "Haiti",         code = "HT-332", filename = "Haiti.lua",        continent = "North America", admin_label = "Departments & Areas", mountain_max = 2674, data = haitiData,      remoteIslandNames = {} },
+        addCountry { id = "DominicanRepublic", name = "Dominican Republic", code = "DO-214", filename = "DominicanRepublic.lua", continent = "North America", admin_label = "Provinces & Areas", mountain_max = 3098, data = dominicanRepData, remoteIslandNames = {} },
+        addCountry { id = "Bahamas",      name = "Bahamas",       code = "BS-044", filename = "Bahamas.lua",      continent = "North America", admin_label = "Districts & Areas",   mountain_max = 63,   data = bahamasData,    remoteIslandNames = {} },
+        addCountry { id = "Guyana",       name = "Guyana",        code = "GY-328", filename = "Guyana.lua",       continent = "South America", admin_label = "Regions & Areas",     mountain_max = 2775, data = guyanaData,     remoteIslandNames = {} },
+        addCountry { id = "Surinam",      name = "Surinam",       code = "SR-740", filename = "Surinam.lua",      continent = "South America", admin_label = "Districts & Areas",   mountain_max = 1280, data = surinamData,    remoteIslandNames = {} },
         addCountry { id = "Kenya",        name = "Kenya",         code = "KE-404", filename = "Kenya.lua",        continent = "Africa",        admin_label = "Counties & Areas",  mountain_max = 5199, data = kenyaData,  remoteIslandNames = {} },
         addCountry { id = "NewZealand",   name = "New Zealand",   code = "NZ-554", filename = "NewZealand.lua",   continent = "Oceania",       admin_label = "Regions & Areas",   mountain_max = 3724, data = nzData,          remoteIslandNames = { "Auckland Islands", "Bounty Islands", "Campbell Island", "Chatham Islands", "Great Barrier Island", "Kermadec Islands", "Poor Knights Islands", "The Antipodes Islands", "The Snares" } },
         addCountry { id = "Greenland",    name = "Greenland",     code = "GL-304", filename = "Greenland.lua",    continent = "North America", admin_label = "Municipalities & Areas", mountain_max = 3694, data = greenlandData,  remoteIslandNames = {} },
@@ -444,6 +456,12 @@ local WIKIDATA_LANG = {
         ElSalvador    = "es,en",
         Nicaragua     = "es,en",
         Bolivia       = "es,qu,ay,en",
+        Jamaica       = "en",
+        Haiti         = "fr,ht,en",
+        DominicanRepublic = "es,en",
+        Bahamas       = "en",
+        Guyana        = "en",
+        Surinam       = "nl,en",
 }
 
 -- Percent-encode a string for safe inclusion in a URL query parameter.

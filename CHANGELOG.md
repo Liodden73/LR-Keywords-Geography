@@ -1,3 +1,10 @@
+## [0.9.187] – 2026-09-03
+### Added
+- **6 nye land**: Jamaica, Haiti, Den dominikanske republikk, Bahamas (Nord-Amerika/Karibia) samt Guyana og Surinam (Sør-Amerika). Alle bruker plugin-standardens befolkningsfilter ≥ 1000 innbyggere for byer (administrative sentre PPLA*/PPLC inkluderes alltid).
+  - Byantall: Jamaica 96 (14 sogne, 95 kommuner), Haiti 109 (10 departementer, 43 arrondissementer), Den dominikanske republikk 202 (32 provinser, 144 kommuner), Bahamas 28 (32 distrikter, 24 kommuner), Guyana 20 (10 regioner, 10 kommuner), Surinam 20 (10 distrikter, 10 kommuner).
+  - Alle seks bruker hierarkisk struktur (departement/distrikt/sogn → kommune/arrondissement → by).
+  - Dette fullfører Nord- og Sør-Amerika. Pluginen støtter nå **83 land** (77 + 6).
+
 ## [0.9.186] – 2026-09-03
 ### Added
 - **5 nye land**: Guatemala, Belize, El Salvador, Nicaragua (Sentral-Amerika/Nord-Amerika) og Bolivia (Sør-Amerika). Alle bruker plugin-standardens befolkningsfilter ≥ 1000 innbyggere for byer (administrative sentre PPLA*/PPLC inkluderes alltid).
