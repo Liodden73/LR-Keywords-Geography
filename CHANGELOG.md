@@ -1,3 +1,11 @@
+## [0.9.185] – 2026-09-03
+### Added
+- **5 nye land**: Paraguay, Uruguay, Colombia, Peru (Sør-Amerika) og Cuba (Nord-Amerika/Karibia). Alle bruker plugin-standardens befolkningsfilter ≥ 1000 innbyggere for byer (administrative sentre PPLA*/PPLC inkluderes alltid).
+  - Byantall: Paraguay 150 (18 departementer, 143 kommuner), Uruguay 134 (19 departementer, flat struktur), Colombia 1161 (33 departementer, 1068 kommuner), Peru 1758 (26 departementer, 196 provinser), Cuba 181 (16 provinser, 140 kommuner).
+  - **Uruguay** bruker flat struktur (departement → by) fordi 29 % av byene – inkludert alle departementshovedsteder – mangler adm2-kode i GeoNames-dataene og ville blitt droppet i en hierarkisk struktur.
+  - Colombia-dataene inneholder en uvanlig ADM1-oppføring for øygruppen San Andrés; den presenteres som «San Andrés y Providencia».
+  - Cuba er plassert under kontinentet **North America** (Karibia).
+
 ## [0.9.184] – 2026-09-03
 ### Added
 - **2 nye land i Sør-Amerika**: Venezuela og Brasil. Begge bruker plugin-standarden befolkningsfilter ≥ 1000 personer for byer (administrative sentre PPLA*/PPLC inkluderes alltid) og hierarkisk struktur (delstat → kommune → by), på linje med Chile og de øvrige landene.
