@@ -1,3 +1,7 @@
+## [0.9.166] – 2026-09-03
+### Fixed
+- **List Overview**: Scrolled_view fikk mørkegrå bakgrunn og full bredde (`width = CONTENT_W` — `fill_horizontal` virker ikke på `f:scrolled_view` i LR SDK)
+
 ## [0.9.165] – 2026-09-03
 ### Changed
 - **List Overview**: Landrader pakket inn i `f:scrolled_view` (høyde 390 px, ca. 15 synlige rader). Overskriftsrad og separator forblir alltid synlig utenfor scroll-vinduet
