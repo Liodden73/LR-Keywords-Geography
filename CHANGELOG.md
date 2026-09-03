@@ -1,3 +1,22 @@
+## [0.9.182] – 2026-09-03
+### Added
+- **11 nye europeiske land/mikrostater**: Moldova, Belarus, Tyrkia, Luxembourg, Malta, Kypros, Andorra, Monaco, San Marino, Liechtenstein og Vatikanstaten. Dette fullfører Europa-dekningen. Alle bruker plugin-standarden befolkningsfilter ≥ 1000 personer for byer (administrative sentre inkluderes alltid). Byantall: Moldova 97, Belarus 266, Tyrkia 2571, Luxembourg 148, Malta 67, Kypros 101, Andorra 15, Monaco 10, San Marino 14, Liechtenstein 14, Vatikanstaten 1.
+  - Tyrkia og Luxembourg bruker hierarkisk struktur (provins/kanton → distrikt/kommune → by). Resten bruker flat struktur (region/distrikt/sogn → by).
+  - Mikrostatene (Andorra, Monaco, San Marino, Liechtenstein, Vatikanstaten) inkluderer også bydeler/tettsteder (PPLX/PPLL) slik at deres meningsfulle underinndelinger fanges opp.
+  - Belarus bruker flat oblast-struktur fordi GeoNames-dataene ikke kobler byene til raion-nivå (adm2), noe som ellers ville droppet 241 av 266 byer.
+
+### Fixed
+- **Flat landstruktur viste ikke byer**: Generator.lua emitterte kun byer under `municipalities`. Land med flat struktur (byer direkte under fylke/region) fikk aldri byene sine med i nøkkelordlisten. Dette rammet Slovenia, Montenegro og Nord-Makedonia – og nå er det rettet. Byer emitteres nå korrekt for både flat og hierarkisk struktur.
+
+## [0.9.181] – 2026-09-03
+### Fixed
+- **Balkan- og øst-Europa-landene** (Kroatia, Bulgaria, Serbia, Slovakia, Slovenia, Albania): Bruker nå befolkningsfilter ≥ 1000 personer (plugin-standard) for byer, med unntak for administrative sentre (PPLA*/PPLC) som alltid inkluderes. Dette reduserer byantallet fra 7 393 til 746 (Kroatia), fra 5 863 til 300 (Bulgaria), fra 7 718 til 426 (Serbia), fra 4 915 til 593 (Slovakia), fra 6 355 til 300 (Slovenia) og fra 4 052 til 376 (Albania). Alle Lua-datafiler oppdatert med `min_city_pop = 1000` i metadata.
+- **USA**: Befolkningsfilteret ble rettet fra 5 000 til 1 000 personer for konsistens med alle andre land. Dette øker byantallet fra 7 047 til 16 174 (den forrige filen hadde `min_city_pop = 1000` i metadata men ble faktisk bygget med 5 000-terskelen). UnitedStates.lua oppdatert med korrekt `min_city_pop = 1000` og `continent = "North America"` i metadata.
+
+## [0.9.180] – 2026-09-03
+### Fixed
+- **Baltikum-landene** (Estland, Latvia, Litauen): Bruker nå befolkningsfilter ≥ 1000 personer (plugin-standard) for byer, med unntak for administrative sentre (PPLA*/PPLC) som alltid inkluderes. Dette reduserer byantallet fra ~6 600 til 117 (Estland), fra ~1 800 til 48 (Latvia) og fra ~19 700 til 113 (Litauen). Endringen sikrer konsistens med alle andre land i pluginen og gjør bylistene mer håndterbare. Alle Lua-datafiler oppdatert med `min_city_pop = 1000` i metadata.
+
 ## [0.9.179] – 2026-09-03
 ### Added
 - **Albania**: Lagt til som nytt land (Europa). Data inkluderer 12 fylker (qarqe), 61 kommuner (bashki), 3 naturreservater, 70 fjell (Maja e Jezercës 2694 m øverst), 34 innsjøer, 120 elver, 11 øyer og 1 utsiktspunkt

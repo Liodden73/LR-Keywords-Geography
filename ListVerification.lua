@@ -78,6 +78,17 @@ local albaniaData     = dofile( LrPathUtils.child( dataDir, "Albania.lua"      )
 local bosniaData      = dofile( LrPathUtils.child( dataDir, "BosniaAndHerzegovina.lua" ) )
 local montenegroData  = dofile( LrPathUtils.child( dataDir, "Montenegro.lua"   ) )
 local northMacedoniaData = dofile( LrPathUtils.child( dataDir, "NorthMacedonia.lua" ) )
+local moldovaData       = dofile( LrPathUtils.child( dataDir, "Moldova.lua"       ) )
+local belarusData       = dofile( LrPathUtils.child( dataDir, "Belarus.lua"       ) )
+local turkeyData        = dofile( LrPathUtils.child( dataDir, "Turkey.lua"        ) )
+local luxembourgData    = dofile( LrPathUtils.child( dataDir, "Luxembourg.lua"    ) )
+local maltaData         = dofile( LrPathUtils.child( dataDir, "Malta.lua"         ) )
+local cyprusData        = dofile( LrPathUtils.child( dataDir, "Cyprus.lua"        ) )
+local andorraData       = dofile( LrPathUtils.child( dataDir, "Andorra.lua"       ) )
+local monacoData        = dofile( LrPathUtils.child( dataDir, "Monaco.lua"        ) )
+local sanMarinoData     = dofile( LrPathUtils.child( dataDir, "SanMarino.lua"     ) )
+local liechtensteinData = dofile( LrPathUtils.child( dataDir, "Liechtenstein.lua" ) )
+local vaticanData       = dofile( LrPathUtils.child( dataDir, "Vatican.lua"       ) )
 
 local genPath   = LrPathUtils.child( pluginPath, "Generator.lua" )
 local Generator = dofile( genPath )
@@ -184,6 +195,17 @@ local COUNTRIES = {
         addCountry { id = "BosniaAndHerzegovina", name = "Bosnia and Herzegovina", code = "BA-070", filename = "BosniaAndHerzegovina.lua", continent = "Europe", admin_label = "Entities & Areas", mountain_max = 2400, data = bosniaData, remoteIslandNames = {} },
         addCountry { id = "Montenegro",  name = "Montenegro",   code = "ME-499", filename = "Montenegro.lua",  continent = "Europe",        admin_label = "Municipalities & Areas", mountain_max = 2530, data = montenegroData,  remoteIslandNames = {} },
         addCountry { id = "NorthMacedonia", name = "North Macedonia", code = "MK-807", filename = "NorthMacedonia.lua", continent = "Europe", admin_label = "Municipalities & Areas", mountain_max = 2770, data = northMacedoniaData, remoteIslandNames = {} },
+        addCountry { id = "Moldova",     name = "Moldova",      code = "MD-498", filename = "Moldova.lua",     continent = "Europe",        admin_label = "Districts & Areas",     mountain_max = 428,  data = moldovaData,     remoteIslandNames = {} },
+        addCountry { id = "Belarus",     name = "Belarus",      code = "BY-112", filename = "Belarus.lua",     continent = "Europe",        admin_label = "Regions & Areas",       mountain_max = 345,  data = belarusData,     remoteIslandNames = {} },
+        addCountry { id = "Turkey",      name = "Turkey",       code = "TR-792", filename = "Turkey.lua",      continent = "Europe",        admin_label = "Provinces & Areas",     mountain_max = 5137, data = turkeyData,      remoteIslandNames = {} },
+        addCountry { id = "Luxembourg",  name = "Luxembourg",   code = "LU-442", filename = "Luxembourg.lua",  continent = "Europe",        admin_label = "Cantons & Areas",       mountain_max = 560,  data = luxembourgData,  remoteIslandNames = {} },
+        addCountry { id = "Malta",       name = "Malta",        code = "MT-470", filename = "Malta.lua",       continent = "Europe",        admin_label = "Local Councils & Areas", mountain_max = 253, data = maltaData,       remoteIslandNames = {} },
+        addCountry { id = "Cyprus",      name = "Cyprus",       code = "CY-196", filename = "Cyprus.lua",      continent = "Europe",        admin_label = "Districts & Areas",     mountain_max = 1952, data = cyprusData,      remoteIslandNames = {} },
+        addCountry { id = "Andorra",     name = "Andorra",      code = "AD-020", filename = "Andorra.lua",     continent = "Europe",        admin_label = "Parishes & Areas",      mountain_max = 2942, data = andorraData,     remoteIslandNames = {} },
+        addCountry { id = "Monaco",      name = "Monaco",       code = "MC-492", filename = "Monaco.lua",      continent = "Europe",        admin_label = "Wards & Areas",         mountain_max = 161,  data = monacoData,      remoteIslandNames = {} },
+        addCountry { id = "SanMarino",   name = "San Marino",   code = "SM-674", filename = "SanMarino.lua",   continent = "Europe",        admin_label = "Municipalities & Areas", mountain_max = 739, data = sanMarinoData,   remoteIslandNames = {} },
+        addCountry { id = "Liechtenstein", name = "Liechtenstein", code = "LI-438", filename = "Liechtenstein.lua", continent = "Europe", admin_label = "Municipalities & Areas", mountain_max = 2599, data = liechtensteinData, remoteIslandNames = {} },
+        addCountry { id = "Vatican",     name = "Vatican City", code = "VA-336", filename = "Vatican.lua",     continent = "Europe",        admin_label = "Areas",                 mountain_max = 75,   data = vaticanData,     remoteIslandNames = {} },
         addCountry { id = "Antarctica",  name = "Antarctica",   code = "AQ-010", filename = "Antarctica.lua",  continent = "Antarctica",    admin_label = "Regions & Areas",    mountain_max = 4892, data = antarcticaData,  remoteIslandNames = {} },
 }
 
