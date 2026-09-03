@@ -1,3 +1,7 @@
+## [0.9.165] – 2026-09-03
+### Changed
+- **List Overview**: Landrader pakket inn i `f:scrolled_view` (høyde 390 px, ca. 15 synlige rader). Overskriftsrad og separator forblir alltid synlig utenfor scroll-vinduet
+
 ## [0.9.164] – 2026-09-03
 ### Changed
 - **New Zealand Remote Islands**: Erstattet «Subantarctic Islands» med de individuelle øyene. Remote Islands er nå: Auckland Islands, Bounty Islands, Campbell Island, Chatham Islands, Great Barrier Island, Kermadec Islands, Poor Knights Islands, The Antipodes Islands, The Snares (alfabetisk sortert)
