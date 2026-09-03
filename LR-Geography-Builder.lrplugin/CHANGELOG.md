@@ -1,3 +1,7 @@
+## [0.9.171] – 2026-09-03
+### Changed
+- **China**: Fjernet Paracel Islands og Spratly Islands fra listen over fjerne øyer (politisk omstridte territorier)
+
 ## [0.9.170] – 2026-09-03
 ### Added
 - **China**: Lagt til som nytt land (Asia). Data inkluderer 31 provinser, 360 kommuner, 12 nasjonalparker, 39 naturreservater, 60 fjell, 100 innsjøer, 100 elver, 100 øyer og 15 utsiktspunkter. Fjerne øyer: Paracel Islands, Spratly Islands
