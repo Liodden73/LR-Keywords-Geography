@@ -549,6 +549,7 @@ return {
             "Kleineiland",
             "Jutteneiland",
             "Grootpenseiland",
+            "Dassen Island",
             "Dasseneiland",
             "Woody Island",
             "Witklipeiland",
