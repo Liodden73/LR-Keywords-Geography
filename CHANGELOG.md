@@ -1,3 +1,209 @@
+## [0.9.175] – 2026-09-03
+### Added
+- **Polen**: Lagt til som nytt land (Europa). Data inkluderer 16 voivodskap, 380 powiat-enheter, 23 nasjonalparker, 9 naturreservater, 60 fjell (Rysy 2499 m øverst), 100 innsjøer, 100 elver, 22 øyer og 3 utsiktspunkter
+- **Hellas**: Lagt til som nytt land (Europa). Data inkluderer 13 regioner (Athos utelatt), 325 kommuner (dimoi), 10 nasjonalparker, 6 naturreservater, 60 fjell (Olympos 2918 m øverst), 70 innsjøer, 100 elver, 100 øyer og 3 utsiktspunkter
+- **Tsjekkia**: Lagt til som nytt land (Europa). Data inkluderer 14 regioner (kraje), 98 distrikter (okresy), 4 nasjonalparker, 5 naturreservater, 60 fjell (Sněžka 1603 m øverst), 69 innsjøer, 100 elver, 7 øyer og 5 utsiktspunkter
+- **Romania**: Lagt til som nytt land (Europa). Data inkluderer 42 fylker (județe), 360 kommuner, 13 nasjonalparker, 40 naturreservater, 60 fjell (Moldoveanu 2544 m øverst), 100 innsjøer, 100 elver, 83 øyer og 3 utsiktspunkter
+- **Ukraina**: Lagt til som nytt land (Europa). Data inkluderer 27 admin-enheter (24 oblaster + Krim + Kyiv by + Sevastopol – alle internasjonalt anerkjent som ukrainsk territorium), 147 raioner, 10 nasjonalparker, 40 naturreservater, 60 fjell (Hoverla 2061 m øverst), 100 innsjøer, 100 elver, 96 øyer og 2 utsiktspunkter
+- **ListVerification.lua oppdatert**: Lagt til `dofile`-linjer, `addCountry`-oppføringer og poster i `LABELS`, `WIKIDATA_TYPES` og `WIKIDATA_LANG` for alle 5 nye land.
+- **WorldMap.lua oppdatert**: Lagt til polygondata (`_PP`), `ORDER`, ISO-koder og `NM`-visningsnavn for alle 5 nye land. Plugin støtter nå totalt 38 land.
+
+## [0.9.174] – 2026-09-03
+### Added
+- **Portugal**: Lagt til som nytt land (Europa). Data inkluderer 20 admin-enheter (18 distrikter + Azorene + Madeira), 308 kommuner, 1 nasjonalpark, 14 naturreservater, 60 fjell, 100 innsjøer, 100 elver, 100 øyer og 15 utsiktspunkter. Fjerne øyer: Azores, Madeira
+- **Italia**: Lagt til som nytt land (Europa). Data inkluderer 20 regioner, 107 provinser, 15 nasjonalparker, 40 naturreservater, 60 fjell, 100 innsjøer, 100 elver, 100 øyer og 15 utsiktspunkter
+- **Østerrike**: Lagt til som nytt land (Europa). Data inkluderer 9 Bundesländer, 94 distrikter, 6 nasjonalparker, 8 naturreservater, 60 fjell, 100 innsjøer, 100 elver, 3 øyer og 7 utsiktspunkter
+- **Belgia**: Lagt til som nytt land (Europa). Data inkluderer 3 regioner, 11 provinser, 1 nasjonalpark, 1 naturreservat, 4 fjell, 22 innsjøer, 100 elver, 5 øyer og 1 utsiktspunkt
+- **Sveits**: Lagt til som nytt land (Europa). Data inkluderer 26 kantoner, 149 distrikter, 1 nasjonalpark, 5 naturreservater, 60 fjell, 100 innsjøer, 100 elver, 25 øyer og 7 utsiktspunkter
+- **Irland**: Lagt til som nytt land (Europa). Data inkluderer 38 counties, 29 local authorities, 6 nasjonalparker, 4 naturreservater, 60 fjell, 100 innsjøer, 100 elver, 100 øyer og 5 utsiktspunkter
+
+## [0.9.173] – 2026-09-03
+### Changed
+- **France**: Lagt til 4 sub-antarktiske øyer i remoteIslandNames: Amsterdam Island, Crozet Islands, Kerguelen Islands, Saint-Paul Island (totalt 16 fjerne øyer)
+
+## [0.9.172] – 2026-09-03
+### Added
+- **Russia**: Lagt til som nytt land (Europa). Data inkluderer 83 føderale subjekter (kun internasjonalt anerkjente – Krim, Sevastopol, Donetsk, Luhansk, Zaporizjzja og Kherson er utelatt), 104 distrikter, 12 nasjonalparker, 40 naturreservater, 60 fjell, 100 innsjøer, 100 elver, 100 øyer og 2 utsiktspunkter
+- **France**: Lagt til som nytt land (Europa). Data inkluderer 13 fastlandsregioner, 96 departementer, 10 nasjonalparker, 31 naturreservater, 60 fjell, 100 innsjøer, 100 elver, 100 øyer og 11 utsiktspunkter. Fjerne øyer: French Guiana, Guadeloupe, Martinique, Mayotte, Réunion, New Caledonia, French Polynesia, Saint Barthélemy, Saint Martin, Saint Pierre and Miquelon, Wallis and Futuna, Clipperton Island
+- **Denmark**: Lagt til som nytt land (Europa). Data inkluderer 5 regioner, 99 kommuner, 5 nasjonalparker, 3 naturreservater, 100 innsjøer, 100 elver, 100 øyer og 1 utsiktspunkt. Fjerne øyer: Faroe Islands
+- **Iceland**: Lagt til som nytt land (Europa). Data inkluderer 8 regioner, 64 kommuner, 3 nasjonalparker, 1 naturreservat, 60 fjell, 100 innsjøer, 100 elver, 100 øyer og 3 utsiktspunkter
+- **Germany**: Lagt til som nytt land (Europa). Data inkluderer 16 delstater, 322 distrikter, 15 nasjonalparker, 40 naturreservater, 60 fjell, 100 innsjøer, 100 elver, 100 øyer og 15 utsiktspunkter
+- **Spain**: Lagt til som nytt land (Europa). Data inkluderer 19 autonome regioner (17 + Ceuta og Melilla), 52 provinser, 15 nasjonalparker, 21 naturreservater, 60 fjell, 100 innsjøer, 100 elver, 100 øyer og 15 utsiktspunkter
+
+## [0.9.171] – 2026-09-03
+### Changed
+- **China**: Fjernet Paracel Islands og Spratly Islands fra listen over fjerne øyer (politisk omstridte territorier)
+
+## [0.9.170] – 2026-09-03
+### Added
+- **China**: Lagt til som nytt land (Asia). Data inkluderer 31 provinser, 360 kommuner, 12 nasjonalparker, 39 naturreservater, 60 fjell, 100 innsjøer, 100 elver, 100 øyer og 15 utsiktspunkter. Fjerne øyer: Paracel Islands, Spratly Islands
+
+## [0.9.169] – 2026-09-03
+### Changed
+- **List Overview**: Scrolled_view bredde økt fra 980 px til 1000 px
+
+## [0.9.168] – 2026-09-03
+### Changed
+- **List Overview**: Scrolled_view bredde økt fra 950 px til 980 px
+
+## [0.9.167] – 2026-09-03
+### Changed
+- **List Overview**: Scrolled_view bredde satt til 950 px; bakgrunnsfarge lysnet til `0.88` (mellom mørkegrå `0.835` og dialogbakgrunn `0.90`)
+
+## [0.9.166] – 2026-09-03
+### Fixed
+- **List Overview**: Scrolled_view fikk mørkegrå bakgrunn og full bredde (`width = CONTENT_W` — `fill_horizontal` virker ikke på `f:scrolled_view` i LR SDK)
+
+## [0.9.165] – 2026-09-03
+### Changed
+- **List Overview**: Landrader pakket inn i `f:scrolled_view` (høyde 390 px, ca. 15 synlige rader). Overskriftsrad og separator forblir alltid synlig utenfor scroll-vinduet
+
+## [0.9.164] – 2026-09-03
+### Changed
+- **New Zealand Remote Islands**: Erstattet «Subantarctic Islands» med de individuelle øyene. Remote Islands er nå: Auckland Islands, Bounty Islands, Campbell Island, Chatham Islands, Great Barrier Island, Kermadec Islands, Poor Knights Islands, The Antipodes Islands, The Snares (alfabetisk sortert)
+- **New Zealand Islands (Selections)**: Fjernet Kermadec Islands, Great Barrier Island og Antipodes Island Group fra Islands-utvalget (disse ligger nå under Remote Islands)
+
+## [0.9.163] – 2026-09-03
+### Fixed
+- **Keyword Builder UI**: Indre `scrolled_view` for kontinenter med > 4 land (Europa) fikk korrekt mørkegrå bakgrunn og skjult vertikal scrollbar-slider (`vertical_scroller = false`) — scroll med trackpad/mus fungerer fortsatt
+
+## [0.9.162] – 2026-09-03
+### Fixed
+- **Sør-Afrika Remote Islands**: Beholder kun Marion Island og Prince Edward Island som Remote Islands (sub-antarktiske, tusenvis av km fra fastlandet)
+- **Sør-Afrika Islands**: Bird Island, Dassen Island, Malgas Island, Robben Island og Saint Croix Island ligger nå under Selections > Islands (kystnære isolerte øyer). Lagt til «Dassen Island» (engelsk navn) i data-filen
+
+## [0.9.161] – 2026-09-03
+### Fixed
+- **Sør-Afrika Remote Islands**: Erstattet arkipelagnavnet «Prince Edward Islands» med de individuelle øyene; lagt til 5 kystnære isolerte øyer — Bird Island, Dassen Island, Malgas Island, Marion Island, Prince Edward Island, Robben Island, St Croix Island (alfabetisk sortert)
+
+## [0.9.160] – 2026-09-03
+### Changed
+- **Keyword Builder UI**: Land sorteres nå alfabetisk innenfor hvert kontinent
+- **Keyword Builder UI**: Kontinenter med mer enn 4 land bruker nå `f:scrolled_view` (høyde 107) slik at lista kan scrolles (gjelder p.t. Europa med 6 land)
+
+## [0.9.159] – 2026-09-03
+### Fixed
+- **Remote Islands**: Alle lister sortert alfabetisk for alle land (Norge, USA, Chile, Australia, Nederland)
+
+## [0.9.158] – 2026-09-03
+### Fixed
+- **Argentina**: Fjernet «Islas Malvinas» fra Remote Islands — Falklandsøyene er britisk territorium og er allerede listet under United Kingdom
+
+## [0.9.157] – 2026-09-03
+### Fixed
+- **Botswana**: Sub-distriktet under «South East District» rettet fra «Gaborone» til «Ramotswa» (riktig geografisk navn — Gaborone er et eget distrikts-nivå)
+
+## [0.9.156] – 2026-09-02
+### Added
+- **9 nye land**: Argentina, Antarktis, Australia, Rwanda, Sør-Afrika, Ecuador, Botswana, Ungarn, Nederland
+  - Hvert land har data-fil med regioner/fylker, kommuner, byer, fjell, innsjøer, elver, øyer, nasjonalparker og utsiktspunkter
+  - `ListVerification.lua` oppdatert med dofile, addCountry, LABELS, WIKIDATA_TYPES og WIKIDATA_LANG for alle 9 land
+  - `WorldMap.lua` oppdatert med polygondata (_PP), ORDER, ISO-koder og NM-visningsnavn for alle 9 land
+
+## [0.9.155] – 2026-09-02
+### Changed
+- United Kingdom — Remote Islands: «South Georgia and the South Sandwich Islands» er delt opp i to separate oppføringer: «South Georgia» og «South Sandwich Islands». Lista er nå sortert alfabetisk (18 oppføringer totalt).
+
+## [0.9.154] – 2026-09-02
+### Changed
+- **United Kingdom — Remote Islands utvidet**: `remoteIslandNames` er utvidet fra 4 til 17 oppføringer (alle 14 britiske oversjøiske territorier + 2 Crown Dependencies + Gibraltar). Nye territorier:
+  - *Crown Dependencies*: Channel Islands, Isle of Man (beholdt)
+  - *BOT Europa*: Gibraltar (beholdt)
+  - *BOT Sør-Atlanteren*: Falkland Islands (beholdt), South Georgia and the South Sandwich Islands, Saint Helena, Ascension Island, Tristan da Cunha
+  - *BOT Karibia*: Bermuda, Anguilla, British Virgin Islands, Cayman Islands, Montserrat, Turks and Caicos Islands
+  - *BOT Stillehavet*: Pitcairn Islands
+  - *BOT Indiahavet*: British Indian Ocean Territory
+  - *BOT Antarktis*: British Antarctic Territory
+  - Akrotiri og Dhekelia (militærbase på Kypros) er utelatt — ikke et fotografisk reisemål
+
+## [0.9.153] – 2026-09-02
+### Reverted
+- Keyword List Builder — Country-panelet: tilbakeført til uendret linjeavstand (v0.9.150-tilstand). Forsøkene i v0.9.151 og v0.9.152 på å redusere luft mellom kontinentene hadde ingen synlig effekt og er annullert.
+
+## [0.9.152] – 2026-09-02
+### Fixed
+- Keyword List Builder — Country-panelet: luft mellom kontinentene er nå eliminert for kollapsede kontinenter.
+  Rot-årsak: hvert land-rad og Include-slideren var separate barn i parent-kolonnen med egne `visible`-bindinger; Lightroom legger til `spacing` også mellom usynlige elementer. Løsning: alt utvidbart innhold per kontinent er samlet i én enkelt `f:column` med `visible`-binding. Når kontinentet er kollapsert, er wrapper-kolonnen én enkelt 0-høyde enhet uten indre mellomrom.
+
+## [0.9.151] – 2026-09-02
+### Changed
+- Keyword List Builder — Country-panelet: redusert linjeavstand (spacing 2 px, spacer 1 px) for å få plass til 2–3 flere rader i vinduet uten rulling
+- List Overview: fjernet «New country»-knappen (oppretter bare en tom Lua-mal uten faktiske data; nye land legges inn manuelt via buildskript)
+
+## [0.9.150] – 2026-09-02
+### Changed
+- List Overview: «Country»-kolonnen er bredere (90 → 130 px) så «United Kingdom» vises fullt ut
+- List Overview: «File name»-kolonnen er smalere (150 → 110 px); «data/»-prefikset er fjernet fra visningen
+
+## [0.9.149] - 2026-09-02
+### Fixed
+- **Verdenskart — 4 nye land vises nå**: `WorldMap.lua` hadde ikke polygondata for Grønland, Finland, Storbritannia og India, så de manglet på Intro-kartet (både statisk PNG og interaktivt HTML-kart).
+  - Lagt til polygonringer i `_PP` for alle 4 land fra Natural Earth 110m-geometri med samme ekvirektangulære projeksjon som de øvrige landene.
+  - Lagt til landene i `ORDER` (tegnerekkefølge) og ISO 3166-1-koder i `ISO`-tabellen og `NM`-objektet: Grønland 304, Finland 246, Storbritannia 826, India 356.
+
+## [0.9.148] - 2026-09-02
+
+### Fixed
+- **Storbritannia — county-navn ryddet**: `data/UnitedKingdom.lua` hadde 20 county-navn med administrative prefiks/suffiks fra GeoNames som gir dårlige nøkkelord. Fjernet «Borough of …», «City and Borough of …», «Metropolitan Borough of …», «Royal Borough of …» og «… County Borough» slik at navnene nå er de vanlige stedsnavnene (f.eks. «Borough of Bolton» → «Bolton», «City and Borough of Birmingham» → «Birmingham», «Caerphilly County Borough» → «Caerphilly»). Ingen navnekollisjoner mellom counties.
+
+### Verified
+- **Storbritannia — hierarki bekreftet korrekt**: United Kingdom → nasjon (England/Scotland/Wales/Northern Ireland) → county → by. 4 nasjoner, 185 counties, 1114 byer. De tilsynelatende avkortede navnene i Verification Monitor («Antrim and», «Armagh City Banbridge») er komplette i dataene («Antrim and Newtownabbey», «Armagh City Banbridge and Craigavon») — bare avkortet i den smale UI-kolonnen.
+
+## [0.9.147] - 2026-09-02
+
+### Fixed
+- **Grønland — admin-hierarki (Kommune → Distrikt → By)**: `data/Greenland.lua` hadde et feilaktig mellomnivå. GeoNames ga bare Kujalleq nedlagte ADM2-enheter (Nanortalik/Narsaq/Qaqortoq Municipality — slått sammen i 2009), mens de andre 4 kommunene fikk sitt eget navn duplisert som eneste «Area». Erstattet med korrekt geografisk struktur basert på bygdedistrikter (de gamle før-2009-kommunene), hver med by + tilhørende bygder:
+  - **Avannaata** (4 distrikter): Ilulissat, Qaanaaq, Upernavik, Uummannaq
+  - **Kujalleq** (3): Nanortalik, Narsaq, Qaqortoq
+  - **Qeqertalik** (4): Aasiaat, Kangaatsiaq, Qasigiannguit, Qeqertarsuaq
+  - **Qeqqata** (2): Maniitsoq, Sisimiut
+  - **Sermersooq** (5): Ittoqqortoormiit, Ivittuut, Nuuk, Paamiut, Tasiilaq
+  - Totalt 5 kommuner → 18 distrikter → 71 byer/bygder.
+- **Etiketter for Grønland**: `LABELS` endret til Municipality / District / Town (var Municipality / Area / City).
+- **Dedup**: Fjernet Saattut fra `islands[]` (finnes nå som bygd i Uummannaq-distriktet). Grønland-øyer: 96.
+
+## [0.9.146] - 2026-09-02
+
+### Added
+- **4 nye land**: Lagt til `data/Greenland.lua`, `data/Finland.lua`, `data/UnitedKingdom.lua` og `data/India.lua`. Data er hentet fra GeoNames (CC BY 4.0) og filtrert med kurerte lister.
+  - **Grønland**: 1 nasjonalpark, 1 naturreservat, 50 fjell (inkl. Gunnbjørn Fjeld 3694 m via NTK-kode), 57 fjorder, 97 øyer (3 duplikater fjernet), 100 innsjøer, 100 elver, 3 utsiktspunkter, 5 kommuner, 7 regioner.
+  - **Finland**: 34 nasjonalparker, 130 naturreservater, 50 fjell, 100 innsjøer, 100 elver, 100 øyer, 8 utsiktspunkter, 18 regioner (Åland-øyer ikke i GeoNames FI — legg til manuelt).
+  - **Storbritannia**: 15 nasjonalparker, 59 naturreservater, 50 fjell (Ben Nevis 1345 m øverst), 99 øyer (Isle of Wight fjernet — duplikat), 100 innsjøer, 100 elver, 15 utsiktspunkter, 4 nasjoner (England/Scotland/Wales/Northern Ireland), 185 county-/council-areas.
+  - **India**: 31 nasjonalparker, 200 naturreservater, 50 fjell (Kangchenjunga 8505 m i GeoNames, mountain_max=8586), 100 øyer, 100 innsjøer, 100 elver, 9 utsiktspunkter, 36 stater/territorier, 763 distrikter.
+- **ListVerification.lua oppdatert**: Lagt til `dofile`-linjer, `addCountry`-oppføringer og poster i `LABELS`, `WIKIDATA_TYPES` og `WIKIDATA_LANG` for alle 4 nye land.
+- **GeoNames NTK-kode**: `extract_mountains()` inkluderer nå nunatakker (NTK) — nødvendig for Gunnbjørn Fjeld på Grønland.
+- **Dedup-sjekk**: Fjernet overlapp mellom `islands[]` og admin-hierarki: Grønland (Kangaamiut, Qeqertarsuaq, Uummannaq), UK (Isle of Wight).
+
+## [0.9.145] - 2026-09-02
+
+### Fixed
+- **Dobbeltoppføringer i islands-seksjoner**: Øyer som allerede er listet som admin-enheter (fylker, kommuner, regioner, provinser eller fjernøy-grupper) er fjernet fra `islands`-valglistene for å unngå dupliserte nøkkelord i hierarkiet.
+  - **Norge** (`Norway.lua`): Fjernet 20 øykommuner: Askøy, Bømlo, Dønna, Fedje, Frøya, Giske, Hitra, Karmøy, Leka, Nøtterøy, Osterøy, Radøy, Røst, Senja, Smøla, Stord, Tjøme, Træna, Utsira, Vega. Islands-listen redusert fra 100 til 80.
+  - **Sverige** (`Sweden.lua`): Fjernet Gotland (fylke), Lidingö og Orust (kommuner). Islands-listen redusert fra 4698 til 4695.
+  - **Chile** (`Chile.lua`): Fjernet Tierra del Fuego (provins). Islands-listen redusert fra 100 til 99.
+  - **Ny-Zealand** (`NewZealand.lua`): Fjernet 5 øyer som allerede finnes i `remote_islands`-seksjonen: Bounty Islands, Campbell Island, Chatham Islands, Pitt Island, Three Kings Islands. Islands-listen redusert fra 100 til 95.
+  - Panama, USA og Kenya: Ingen overlapp funnet — ingen endringer.
+
+## [0.9.144] - 2026-09-02
+
+### Fixed
+- **Norway mountain_max**: Rettet feil høyde for Galdhøpiggen fra 2271 m til 2469 m. Årsaken var at `build_v04.py` brukte GeoNames-kolonnen `dem` (SRTM-modell) i stedet for den autoritative `elevation`-kolonnen. `elev()`-funksjonen er nå oppdatert til å foretrekke `elevation`-verdien (ignorerer 0) og faller tilbake til `dem` kun hvis `elevation` mangler. COUNTRIES-tabellen i `ListVerification.lua` er tilsvarende oppdatert.
+
+### Added
+- **Manglende kategorier — Chile, Kenya, New Zealand**: Lagt til seksjoner for fjorder, innsjøer, elver, øyer og utsiktspunkter i `data/Chile.lua`, `data/Kenya.lua` og `data/NewZealand.lua`. Data er hentet fra GeoNames (CC BY 4.0) for hvert land og kuratert til topp-100 per kategori (VP-grense: 15).
+
+### Changed
+- **Dynamiske slider-maks**: `np_max`, `nr_max`, `fj_max`, `lk_max`, `rv_max`, `is_max` og `vp_max` i COUNTRIES-tabellen beregnes nå automatisk av `addCountry()`-funksjonen i `ListVerification.lua`. Hardkodede verdier er fjernet fra alle landoppføringer. Policy: NP/NR = fullt antall; FJ/LK/RV/IS/VP = min(antall, 100).
+- **Runtime «New country»**: Oppdatert patching-kode til å sette inn `addCountry { ... }` i stedet for det gamle `{ id = ... }`-formatet, slik at dynamiske slider-maks fungerer også for brukeropprettede land. Regex-mønster for UnitedStates-ankerpunkt er tilsvarende oppdatert.
+
+## [0.9.121] - 2026-09-02
+
+### Changed
+- ListVerification (Keyword List Builder — Country column):
+  1. **Fjernet kontinent-Include-slider**: Hele `f:column { visible=… f:row { "Include:" slider contDetailLabel } }` blokken per kontinent er fjernet. `detailKey` / `_detail`-props initialiseres ikke lenger, og `contDetailLabel`-hjelperfunksjonen er slettet.
+  2. **Rebuild-on-click for kontinent-ekspandering**: Kontinentknappens `action` kaller nå `switchTab(TAB_IDS.KB)` i tillegg til å toggle `props[contKey]`, slik at panelet bygges på nytt ved ekspandere/kollapse — samme mønster som land-veksling. Dette omgår LR SDK-feilen der `visible=false` beholder layoutplass.
+  3. **Scrolled view i Country-kolonnen**: `countryColumn` er pakket inn i en `f:scrolled_view` med `height=100`, `width=KB_COL_W_COUNTRY-20`, `horizontal_scroller=false`. Group_box bruker nå `countryScrollView` i stedet for `countryColumn` direkte. (Testverdien 100 px er ment for verifisering; juster etter behov.)
+
 ## [0.9.82] - 2026-09-01
 
 ### Fixed
@@ -177,7 +383,83 @@
 - ListVerification: Redusert avstand mellom de tre tekstparagrafene på Intro-fanen.
 
 
-# Changelog — Geography Keyword Builder
+# Changelog
+
+## v0.9.107 (2026-09-02)
+- Country column: 390→400 px. Counties and Selections unchanged at 300 px.
+
+## v0.9.106 (2026-09-02)
+- Country column: 380→390 px. Counties and Selections unchanged at 300 px.
+
+## v0.9.105 (2026-09-02)
+- Country column: 350→380 px. Counties and Selections unchanged at 300 px.
+
+## v0.9.104 (2026-09-02)
+- Country column: 300→350 px. Counties and Selections unchanged at 300 px.
+
+## v0.9.103 (2026-09-02)
+- Fix Counties column width: scrolled_view width = KB_COL_W_COUNTY - 20 (accounts for group_box internal padding) so outer column matches 300 px.
+
+## v0.9.102 (2026-09-02)
+- Fix Counties column width: replace width=KB_COL_W_COUNTY on scrolled_view with fill_horizontal=1; group_box outer width (300 px) now controls the column width without double-counting padding.
+
+## v0.9.101 (2026-09-02)
+- Remove explicit width=KB_COL_W_COUNTY from children inside countyGroupBox (static_text and checkbox were pushing the box wider than 300 px).
+
+## v0.9.100 (2026-09-02)
+- Fix Counties group_box missing width=KB_COL_W_COUNTY (300 px); now all three columns have explicit width on their group_box.
+
+## v0.9.99 (2026-09-02)
+- Fix Selections column width: move width=KB_COL_W_FEAT from outer f:column to group_box directly (matches Country column pattern).
+
+## v0.9.98 (2026-09-02)
+- Selections: 280→300 px. All three columns now 300 px.
+
+## v0.9.97 (2026-09-01)
+- Selections: 250→280 px.
+
+## v0.9.96 (2026-09-01)
+- Country: 350→300 px, Counties: 350→300 px, Selections: 300→250 px.
+
+## v0.9.95 (2026-09-01)
+- Country: 400→350 px, Counties: 300→350 px, Selections: 250→300 px.
+
+## v0.9.94 (2026-09-01)
+- Fix Country group_box missing width=KB_COL_W_COUNTRY (400 px); constant was defined but never applied to the layout.
+
+## v0.9.93 (2026-09-01)
+- Selections column: 300→250 px.
+- Save button label changed to "Save setting" (was "Save settings for <country>").
+
+## v0.9.92 (2026-09-01)
+- Country column: 380→400 px, Counties: 230→300 px, Selections: add KB_COL_W_FEAT=300 px (was fill_horizontal).
+
+## v0.9.91 (2026-09-01)
+- Revert v0.9.90 county column change; restore scrolled_view for all countries (as in v0.9.89).
+
+## v0.9.90 (2026-09-01)
+- Use f:column (no system border) for county lists with ≤25 items; keep f:scrolled_view for large lists (e.g. USA with 51 states).
+
+## v0.9.89 (2026-09-01)
+- Add border_width=0 on county scrolled_view to suppress system-drawn border.
+
+## v0.9.88 (2026-09-01)
+- Set county scrolled_view border_color to match background (0.835) so border is invisible.
+
+## v0.9.87 (2026-09-01)
+- Change county scrolled_view background_color from panelGrey (0.878) to LrColor(0.835) to match group_box background.
+
+## v0.9.86 (2026-09-01)
+- Adjust KB_COUNTY_LIST_H from 325 to 327 px.
+
+## v0.9.85 (2026-09-01)
+- Reduce KB_COUNTY_LIST_H from 330 to 325 px.
+
+## v0.9.84 (2026-09-01)
+- Increase KB_COUNTY_LIST_H from 310 to 330 px.
+
+## v0.9.83 (2026-09-01)
+- Increase KB_COUNTY_LIST_H from 300 to 310 so county scrolled_view matches country column height. — Geography Keyword Builder
 
 All notable changes to the plugin and its bundled data are recorded here.
 The version in `VERSION` is the single source of truth; `build_v04.py --export-lua`
