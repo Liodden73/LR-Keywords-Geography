@@ -111,6 +111,16 @@ local dominicanRepData  = dofile( LrPathUtils.child( dataDir, "DominicanRepublic
 local bahamasData       = dofile( LrPathUtils.child( dataDir, "Bahamas.lua"       ) )
 local guyanaData        = dofile( LrPathUtils.child( dataDir, "Guyana.lua"        ) )
 local surinamData       = dofile( LrPathUtils.child( dataDir, "Surinam.lua"       ) )
+local egyptData         = dofile( LrPathUtils.child( dataDir, "Egypt.lua"         ) )
+local moroccoData       = dofile( LrPathUtils.child( dataDir, "Morocco.lua"       ) )
+local tunisiaData       = dofile( LrPathUtils.child( dataDir, "Tunisia.lua"       ) )
+local nigeriaData       = dofile( LrPathUtils.child( dataDir, "Nigeria.lua"       ) )
+local ghanaData         = dofile( LrPathUtils.child( dataDir, "Ghana.lua"         ) )
+local senegalData       = dofile( LrPathUtils.child( dataDir, "Senegal.lua"       ) )
+local tanzaniaData      = dofile( LrPathUtils.child( dataDir, "Tanzania.lua"      ) )
+local ethiopiaData      = dofile( LrPathUtils.child( dataDir, "Ethiopia.lua"      ) )
+local ugandaData        = dofile( LrPathUtils.child( dataDir, "Uganda.lua"        ) )
+local namibiaData       = dofile( LrPathUtils.child( dataDir, "Namibia.lua"       ) )
 
 local genPath   = LrPathUtils.child( pluginPath, "Generator.lua" )
 local Generator = dofile( genPath )
@@ -206,6 +216,16 @@ local COUNTRIES = {
         addCountry { id = "Rwanda",      name = "Rwanda",       code = "RW-646", filename = "Rwanda.lua",      continent = "Africa",        admin_label = "Provinces & Areas",  mountain_max = 4507, data = rwandaData,      remoteIslandNames = {} },
         addCountry { id = "Botswana",    name = "Botswana",     code = "BW-072", filename = "Botswana.lua",    continent = "Africa",        admin_label = "Districts & Areas",  mountain_max = 1491, data = botswanaData,    remoteIslandNames = {} },
         addCountry { id = "SouthAfrica", name = "South Africa", code = "ZA-710", filename = "SouthAfrica.lua", continent = "Africa",        admin_label = "Provinces & Areas",  mountain_max = 3482, data = southAfricaData, remoteIslandNames = { "Marion Island", "Prince Edward Island" } },
+        addCountry { id = "Egypt",       name = "Egypt",        code = "EG-818", filename = "Egypt.lua",       continent = "Africa",        admin_label = "Governorates & Areas", mountain_max = 2629, data = egyptData,      remoteIslandNames = {} },
+        addCountry { id = "Morocco",     name = "Morocco",      code = "MA-504", filename = "Morocco.lua",     continent = "Africa",        admin_label = "Regions & Areas",    mountain_max = 4167, data = moroccoData,    remoteIslandNames = {} },
+        addCountry { id = "Tunisia",     name = "Tunisia",      code = "TN-788", filename = "Tunisia.lua",     continent = "Africa",        admin_label = "Governorates & Areas", mountain_max = 1544, data = tunisiaData,    remoteIslandNames = {} },
+        addCountry { id = "Nigeria",     name = "Nigeria",      code = "NG-566", filename = "Nigeria.lua",     continent = "Africa",        admin_label = "States & Areas",     mountain_max = 2419, data = nigeriaData,    remoteIslandNames = {} },
+        addCountry { id = "Ghana",       name = "Ghana",        code = "GH-288", filename = "Ghana.lua",       continent = "Africa",        admin_label = "Regions & Areas",    mountain_max = 885,  data = ghanaData,      remoteIslandNames = {} },
+        addCountry { id = "Senegal",     name = "Senegal",      code = "SN-686", filename = "Senegal.lua",     continent = "Africa",        admin_label = "Regions & Areas",    mountain_max = 648,  data = senegalData,    remoteIslandNames = {} },
+        addCountry { id = "Tanzania",    name = "Tanzania",     code = "TZ-834", filename = "Tanzania.lua",    continent = "Africa",        admin_label = "Regions & Areas",    mountain_max = 5895, data = tanzaniaData,   remoteIslandNames = {} },
+        addCountry { id = "Ethiopia",    name = "Ethiopia",     code = "ET-231", filename = "Ethiopia.lua",    continent = "Africa",        admin_label = "Regions & Areas",    mountain_max = 4550, data = ethiopiaData,   remoteIslandNames = {} },
+        addCountry { id = "Uganda",      name = "Uganda",       code = "UG-800", filename = "Uganda.lua",      continent = "Africa",        admin_label = "Regions & Areas",    mountain_max = 5109, data = ugandaData,     remoteIslandNames = {} },
+        addCountry { id = "Namibia",     name = "Namibia",      code = "NA-516", filename = "Namibia.lua",     continent = "Africa",        admin_label = "Regions & Areas",    mountain_max = 2606, data = namibiaData,    remoteIslandNames = {} },
         addCountry { id = "Australia",   name = "Australia",    code = "AU-036", filename = "Australia.lua",   continent = "Oceania",       admin_label = "States & Areas",     mountain_max = 2228, data = australiaData,   remoteIslandNames = { "Christmas Island", "Cocos Islands", "Heard Island", "Lord Howe Island", "Macquarie Island", "Norfolk Island" } },
         addCountry { id = "Hungary",     name = "Hungary",      code = "HU-348", filename = "Hungary.lua",     continent = "Europe",        admin_label = "Counties & Areas",   mountain_max = 1014, data = hungaryData,     remoteIslandNames = {} },
         addCountry { id = "Netherlands", name = "Netherlands",  code = "NL-528", filename = "Netherlands.lua", continent = "Europe",        admin_label = "Provinces & Areas",  mountain_max = 323,  data = netherlandsData, remoteIslandNames = { "Aruba", "Bonaire", "Curaçao", "Saba", "Sint Eustatius", "Sint Maarten" } },
@@ -462,6 +482,16 @@ local WIKIDATA_LANG = {
         Bahamas       = "en",
         Guyana        = "en",
         Surinam       = "nl,en",
+        Egypt         = "ar,en",
+        Morocco       = "ar,fr,en",
+        Tunisia       = "ar,fr,en",
+        Nigeria       = "en",
+        Ghana         = "en",
+        Senegal       = "fr,en",
+        Tanzania      = "sw,en",
+        Ethiopia      = "am,en",
+        Uganda        = "en,sw",
+        Namibia       = "en,af,de",
 }
 
 -- Percent-encode a string for safe inclusion in a URL query parameter.

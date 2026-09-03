@@ -1,3 +1,10 @@
+## [0.9.189] – 2026-09-03
+### Added
+- **10 nye land i Afrika**: Egypt, Marokko, Tunisia (Nord-Afrika), Nigeria, Ghana, Senegal (Vest-Afrika), Tanzania, Etiopia, Uganda (Øst-Afrika) og Namibia (Sørlige Afrika). Alle bruker plugin-standardens befolkningsfilter ≥ 1000 innbyggere for byer (administrative sentre PPLA*/PPLC inkluderes alltid) og hierarkisk struktur (ADM1 → ADM2 → by).
+  - Byantall: Egypt 252 (27 guvernementer, 28 distrikter), Marokko 473 (12 regioner, 73 provinser), Tunisia 281 (24 guvernementer, 206 delegasjoner), Nigeria 926 (37 delstater, 746 LGA-er), Ghana 115 (16 regioner, 89 distrikter), Senegal 147 (14 regioner, 17 departementer), Tanzania 323 (31 regioner, 157 distrikter), Etiopia 253 (14 regioner, 23 soner), Uganda 208 (4 regioner, 116 distrikter), Namibia 78 (14 regioner, 16 valgkretser).
+  - Totalt 3 056 nye byer. Administrative navn er ryddet for prefikser/suffikser (f.eks. «Muḩāfaz̧at», «Gouvernorat de», «State», «Region», «District», «Constituency»).
+  - Dette utvider Afrika-dekningen fra 4 til 14 land. Pluginen støtter nå **93 land** (83 + 10).
+
 ## [0.9.188] – 2026-09-03
 ### Fixed
 - **Flat-struktur land viser nå byer på Basic-nivå**: Land med flat struktur (departement/distrikt → by direkte, uten kommunenivå) som Uruguay, Moldova, Slovenia, Montenegro, Belarus og mikrostatene viste tidligere bare ADM1-nivået (19 departementer for Uruguay, 37 distrikter for Moldova) på Basic administrativt detalj-nivå. Byene dukket først opp når man valgte "More" eller "All". Dette var feil siden disse landene ikke har noe ADM2-nivå å falle tilbake på. Nå emitteres flat-struktur byer allerede på Basic-nivå (adminDetail >= 1), slik at Uruguay viser 19 + 134 = 153 nøkkelord og Moldova viser 37 + 97 = 134 nøkkelord selv på Basic.
