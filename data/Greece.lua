@@ -5,7 +5,7 @@
 return {
 
     meta = {
-        version     = "0.1.0",
+        version     = "0.1.3",
         country     = "Greece",
         native_name = "Ελλάδα",
         continent   = "Europe",
@@ -928,7 +928,7 @@ return {
                 {
                     name = "Kordelio-Evosmos",
                     primary_city = "Évosmos",
-                    cities = { "Évosmos", "Elefthério - Kordelió" },
+                    cities = { "Évosmos", "Kordelió" },
                 },
                 {
                     name = "Lagkadas",
