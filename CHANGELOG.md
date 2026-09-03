@@ -1,3 +1,7 @@
+## [0.9.167] – 2026-09-03
+### Changed
+- **List Overview**: Scrolled_view bredde satt til 950 px; bakgrunnsfarge lysnet til `0.88` (mellom mørkegrå `0.835` og dialogbakgrunn `0.90`)
+
 ## [0.9.166] – 2026-09-03
 ### Fixed
 - **List Overview**: Scrolled_view fikk mørkegrå bakgrunn og full bredde (`width = CONTENT_W` — `fill_horizontal` virker ikke på `f:scrolled_view` i LR SDK)
