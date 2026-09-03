@@ -1,0 +1,11 @@
+{
+  "listname":"Argentina",
+  "levels":{
+    "mu":[],
+    "ci":[],
+    "co":[]
+  },
+  "version":"0.1.1",
+  "country":"Argentina",
+  "verified":"2026-09-03 08:00"
+}
