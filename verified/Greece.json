@@ -2,15 +2,10 @@
   "listname":"Ελλάδα",
   "levels":{
     "mu":[],
-    "ci":[{
-        "i":167,
-        "action":"change",
-        "name":"Elefthério - Kordelió",
-        "conflict":"Kordelió"
-      }],
+    "ci":[],
     "co":[]
   },
-  "version":"0.1.2",
+  "version":"0.1.4",
   "country":"Greece",
   "verified":"2026-09-03 15:46"
 }
