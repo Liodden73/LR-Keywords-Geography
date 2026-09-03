@@ -1,3 +1,8 @@
+## [0.9.164] – 2026-09-03
+### Changed
+- **New Zealand Remote Islands**: Erstattet «Subantarctic Islands» med de individuelle øyene. Remote Islands er nå: Auckland Islands, Bounty Islands, Campbell Island, Chatham Islands, Great Barrier Island, Kermadec Islands, Poor Knights Islands, The Antipodes Islands, The Snares (alfabetisk sortert)
+- **New Zealand Islands (Selections)**: Fjernet Kermadec Islands, Great Barrier Island og Antipodes Island Group fra Islands-utvalget (disse ligger nå under Remote Islands)
+
 ## [0.9.163] – 2026-09-03
 ### Fixed
 - **Keyword Builder UI**: Indre `scrolled_view` for kontinenter med > 4 land (Europa) fikk korrekt mørkegrå bakgrunn og skjult vertikal scrollbar-slider (`vertical_scroller = false`) — scroll med trackpad/mus fungerer fortsatt
