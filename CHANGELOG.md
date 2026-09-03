@@ -1,3 +1,7 @@
+## [0.9.188] – 2026-09-03
+### Fixed
+- **Flat-struktur land viser nå byer på Basic-nivå**: Land med flat struktur (departement/distrikt → by direkte, uten kommunenivå) som Uruguay, Moldova, Slovenia, Montenegro, Belarus og mikrostatene viste tidligere bare ADM1-nivået (19 departementer for Uruguay, 37 distrikter for Moldova) på Basic administrativt detalj-nivå. Byene dukket først opp når man valgte "More" eller "All". Dette var feil siden disse landene ikke har noe ADM2-nivå å falle tilbake på. Nå emitteres flat-struktur byer allerede på Basic-nivå (adminDetail >= 1), slik at Uruguay viser 19 + 134 = 153 nøkkelord og Moldova viser 37 + 97 = 134 nøkkelord selv på Basic.
+
 ## [0.9.187] – 2026-09-03
 ### Added
 - **6 nye land**: Jamaica, Haiti, Den dominikanske republikk, Bahamas (Nord-Amerika/Karibia) samt Guyana og Surinam (Sør-Amerika). Alle bruker plugin-standardens befolkningsfilter ≥ 1000 innbyggere for byer (administrative sentre PPLA*/PPLC inkluderes alltid).

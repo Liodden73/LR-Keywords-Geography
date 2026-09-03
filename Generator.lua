@@ -270,6 +270,17 @@ function Generator.generate(data, prefs)
                         for _, county in ipairs(data.counties) do
                                 if prefsCounties[county.name] then
                                         add(4, county.name)
+                                        
+                                        -- Flat structure: cities directly under the county
+                                        -- (no municipality level, e.g. Uruguay, Moldova, Slovenia,
+                                        -- Montenegro, Belarus, microstates). These should be shown
+                                        -- even at Basic level since there's no ADM2 alternative.
+                                        if adminDetail >= 1 then
+                                                for _, cityName in ipairs(county.cities or {}) do
+                                                        add(5, cityName)
+                                                end
+                                        end
+                                        
                                         -- Level 2 (More / All): include municipalities
                                         if adminDetail >= 2 then
                                                 for _, muni in ipairs(county.municipalities or {}) do
@@ -286,12 +297,6 @@ function Generator.generate(data, prefs)
                                                                         add(6, cityName)
                                                                 end
                                                         end
-                                                end
-                                                -- Flat structure: cities directly under the
-                                                -- county (no municipality level, e.g. Slovenia,
-                                                -- Montenegro, Moldova, Belarus, microstates).
-                                                for _, cityName in ipairs(county.cities or {}) do
-                                                        add(5, cityName)
                                                 end
                                         end
                                 end
