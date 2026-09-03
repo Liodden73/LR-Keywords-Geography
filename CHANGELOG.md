@@ -1,3 +1,10 @@
+## [0.9.183] – 2026-09-03
+### Added
+- **4 nye land i Nord-Amerika**: Canada, Mexico, Honduras og Costa Rica. Alle bruker plugin-standarden befolkningsfilter ≥ 1000 personer for byer (administrative sentre PPLA*/PPLC inkluderes alltid) og hierarkisk struktur (delstat/provins/departement → kommune/distrikt → by), på linje med USA og Panama.
+  - Byantall: Canada 1551 (13 provinser/territorier, 386 kommuner), Mexico 8908 (32 delstater, 2330 kommuner), Honduras 469 (18 departementer, 238 kommuner), Costa Rica 119 (7 provinser, 74 kantoner).
+  - Kommuner uten kvalifiserende byer utelates for å holde listen ryddig.
+  - Alle fire er plassert under kontinentet **North America**.
+
 ## [0.9.182] – 2026-09-03
 ### Added
 - **11 nye europeiske land/mikrostater**: Moldova, Belarus, Tyrkia, Luxembourg, Malta, Kypros, Andorra, Monaco, San Marino, Liechtenstein og Vatikanstaten. Dette fullfører Europa-dekningen. Alle bruker plugin-standarden befolkningsfilter ≥ 1000 personer for byer (administrative sentre inkluderes alltid). Byantall: Moldova 97, Belarus 266, Tyrkia 2571, Luxembourg 148, Malta 67, Kypros 101, Andorra 15, Monaco 10, San Marino 14, Liechtenstein 14, Vatikanstaten 1.
