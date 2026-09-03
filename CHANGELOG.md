@@ -1,3 +1,7 @@
+## [0.9.158] – 2026-09-03
+### Fixed
+- **Argentina**: Fjernet «Islas Malvinas» fra Remote Islands — Falklandsøyene er britisk territorium og er allerede listet under United Kingdom
+
 ## [0.9.157] – 2026-09-03
 ### Fixed
 - **Botswana**: Sub-distriktet under «South East District» rettet fra «Gaborone» til «Ramotswa» (riktig geografisk navn — Gaborone er et eget distrikts-nivå)

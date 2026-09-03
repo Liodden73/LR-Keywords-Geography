@@ -116,7 +116,7 @@ local COUNTRIES = {
                 "Turks and Caicos Islands",
         } },
         addCountry { id = "India",        name = "India",         code = "IN-356", filename = "India.lua",        continent = "Asia",          admin_label = "States & Areas",         mountain_max = 8586, data = indiaData,      remoteIslandNames = { "Andaman and Nicobar Islands", "Lakshadweep" } },
-        addCountry { id = "Argentina",   name = "Argentina",    code = "AR-032", filename = "Argentina.lua",   continent = "South America", admin_label = "Provinces & Areas",  mountain_max = 6961, data = argentinaData,   remoteIslandNames = { "Islas Malvinas", "Isla de los Estados", "Tierra del Fuego" } },
+        addCountry { id = "Argentina",   name = "Argentina",    code = "AR-032", filename = "Argentina.lua",   continent = "South America", admin_label = "Provinces & Areas",  mountain_max = 6961, data = argentinaData,   remoteIslandNames = { "Isla de los Estados", "Tierra del Fuego" } },
         addCountry { id = "Ecuador",     name = "Ecuador",      code = "EC-218", filename = "Ecuador.lua",     continent = "South America", admin_label = "Provinces & Areas",  mountain_max = 6268, data = ecuadorData,     remoteIslandNames = { "Galápagos Islands" } },
         addCountry { id = "Rwanda",      name = "Rwanda",       code = "RW-646", filename = "Rwanda.lua",      continent = "Africa",        admin_label = "Provinces & Areas",  mountain_max = 4507, data = rwandaData,      remoteIslandNames = {} },
         addCountry { id = "Botswana",    name = "Botswana",     code = "BW-072", filename = "Botswana.lua",    continent = "Africa",        admin_label = "Districts & Areas",  mountain_max = 1491, data = botswanaData,    remoteIslandNames = {} },
