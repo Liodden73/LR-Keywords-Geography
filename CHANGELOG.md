@@ -1,3 +1,9 @@
+## [0.9.178] – 2026-09-03
+### Added
+- **Estland**: Lagt til som nytt land (Europa). Data inkluderer 15 counties (maakonnad), 79 kommuner (vald/linn), 9 naturreservater, 1 fjell (Suur Munamägi 318 m), 120 innsjøer, 120 elver og 120 øyer
+- **Latvia**: Lagt til som nytt land (Europa). Data inkluderer 43 kommuner (novadi), 171 underenheter (pagasti), 6 naturreservater, 2 fjell (Gaizina Kalns 312 m øverst), 120 innsjøer, 120 elver og 67 øyer
+- **Litauen**: Lagt til som nytt land (Europa). Data inkluderer 10 counties (apskritys), 60 kommuner (savivaldybės), 6 naturreservater, 2 fjell (Aukštasis kalnas 294 m øverst), 120 innsjøer, 120 elver og 13 øyer
+
 ## [0.9.177] – 2026-09-03
 ### Fixed
 - **Slovenia**: Rettet datastruktur til flat hierarki. Slovenia har 212 kommuner (občine) på ADM1-nivå uten underkommuner (ADM2). Verification Monitor viser nå riktige etiketter: "Municipality" for første kolonne og "Settlement" for andre kolonne

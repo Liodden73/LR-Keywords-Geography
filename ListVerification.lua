@@ -71,6 +71,9 @@ local sloveniaData    = dofile( LrPathUtils.child( dataDir, "Slovenia.lua"     )
 local bulgariaData    = dofile( LrPathUtils.child( dataDir, "Bulgaria.lua"     ) )
 local serbiaData      = dofile( LrPathUtils.child( dataDir, "Serbia.lua"       ) )
 local slovakiaData    = dofile( LrPathUtils.child( dataDir, "Slovakia.lua"     ) )
+local estoniaData     = dofile( LrPathUtils.child( dataDir, "Estonia.lua"      ) )
+local latviaData      = dofile( LrPathUtils.child( dataDir, "Latvia.lua"       ) )
+local lithuaniaData   = dofile( LrPathUtils.child( dataDir, "Lithuania.lua"    ) )
 
 local genPath   = LrPathUtils.child( pluginPath, "Generator.lua" )
 local Generator = dofile( genPath )
@@ -169,6 +172,9 @@ local COUNTRIES = {
         addCountry { id = "Serbia",      name = "Serbia",       code = "RS-688", filename = "Serbia.lua",      continent = "Europe",        admin_label = "Regions & Areas",       mountain_max = 2174, data = serbiaData,      remoteIslandNames = {} },
         addCountry { id = "Slovakia",    name = "Slovakia",     code = "SK-703", filename = "Slovakia.lua",    continent = "Europe",        admin_label = "Regions & Areas",       mountain_max = 2655, data = slovakiaData,    remoteIslandNames = {} },
         addCountry { id = "Slovenia",    name = "Slovenia",     code = "SI-705", filename = "Slovenia.lua",    continent = "Europe",        admin_label = "Municipalities & Areas", mountain_max = 2740, data = sloveniaData,    remoteIslandNames = {} },
+        addCountry { id = "Estonia",     name = "Estonia",      code = "EE-233", filename = "Estonia.lua",     continent = "Europe",        admin_label = "Counties & Areas",      mountain_max = 320,  data = estoniaData,     remoteIslandNames = {} },
+        addCountry { id = "Latvia",      name = "Latvia",       code = "LV-428", filename = "Latvia.lua",      continent = "Europe",        admin_label = "Municipalities & Areas", mountain_max = 320,  data = latviaData,      remoteIslandNames = {} },
+        addCountry { id = "Lithuania",   name = "Lithuania",    code = "LT-440", filename = "Lithuania.lua",   continent = "Europe",        admin_label = "Counties & Areas",      mountain_max = 300,  data = lithuaniaData,   remoteIslandNames = {} },
         addCountry { id = "Ukraine",     name = "Ukraine",      code = "UA-804", filename = "Ukraine.lua",     continent = "Europe",        admin_label = "Oblasts & Areas",       mountain_max = 2061, data = ukraineData,     remoteIslandNames = {} },
         addCountry { id = "Antarctica",  name = "Antarctica",   code = "AQ-010", filename = "Antarctica.lua",  continent = "Antarctica",    admin_label = "Regions & Areas",    mountain_max = 4892, data = antarcticaData,  remoteIslandNames = {} },
 }
@@ -242,6 +248,9 @@ local LABELS = {
         Bulgaria      = { county = "Province",     muni = "Municipality", city = "City" },
         Serbia        = { county = "Region",       muni = "District",     city = "City" },
         Slovakia      = { county = "Region",       muni = "District",     city = "City" },
+        Estonia       = { county = "County",       muni = "Municipality", city = "City" },
+        Latvia        = { county = "Municipality", muni = "Pagasts",      city = "City" },
+        Lithuania     = { county = "County",       muni = "Municipality", city = "City" },
 }
 local DEFAULT_LABELS = { county = "County", muni = "Municipality", city = "City" }
 
@@ -298,6 +307,9 @@ local WIKIDATA_TYPES = {
         Bulgaria      = { co = nil, mu = nil, ci = nil },
         Serbia        = { co = nil, mu = nil, ci = nil },
         Slovakia      = { co = nil, mu = nil, ci = nil },
+        Estonia       = { co = nil, mu = nil, ci = nil },
+        Latvia        = { co = nil, mu = nil, ci = nil },
+        Lithuania     = { co = nil, mu = nil, ci = nil },
 }
 
 -- Preferred label language(s) per country for the Wikidata label service.
@@ -345,6 +357,9 @@ local WIKIDATA_LANG = {
         Bulgaria      = "bg,en",
         Serbia        = "sr,en",
         Slovakia      = "sk,en",
+        Estonia       = "et,en",
+        Latvia        = "lv,en",
+        Lithuania     = "lt,en",
 }
 
 -- Percent-encode a string for safe inclusion in a URL query parameter.
