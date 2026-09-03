@@ -1,3 +1,7 @@
+## [0.9.163] – 2026-09-03
+### Fixed
+- **Keyword Builder UI**: Indre `scrolled_view` for kontinenter med > 4 land (Europa) fikk korrekt mørkegrå bakgrunn og skjult vertikal scrollbar-slider (`vertical_scroller = false`) — scroll med trackpad/mus fungerer fortsatt
+
 ## [0.9.162] – 2026-09-03
 ### Fixed
 - **Sør-Afrika Remote Islands**: Beholder kun Marion Island og Prince Edward Island som Remote Islands (sub-antarktiske, tusenvis av km fra fastlandet)
