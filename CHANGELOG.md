@@ -1,3 +1,10 @@
+## [0.9.184] – 2026-09-03
+### Added
+- **2 nye land i Sør-Amerika**: Venezuela og Brasil. Begge bruker plugin-standarden befolkningsfilter ≥ 1000 personer for byer (administrative sentre PPLA*/PPLC inkluderes alltid) og hierarkisk struktur (delstat → kommune → by), på linje med Chile og de øvrige landene.
+  - Byantall: Venezuela 410 (25 delstater, 336 kommuner), Brasil 5666 (27 delstater, 5506 kommuner).
+  - Kommuner uten kvalifiserende byer utelates for å holde listen ryddig.
+  - Begge er plassert under kontinentet **South America**.
+
 ## [0.9.183] – 2026-09-03
 ### Added
 - **4 nye land i Nord-Amerika**: Canada, Mexico, Honduras og Costa Rica. Alle bruker plugin-standarden befolkningsfilter ≥ 1000 personer for byer (administrative sentre PPLA*/PPLC inkluderes alltid) og hierarkisk struktur (delstat/provins/departement → kommune/distrikt → by), på linje med USA og Panama.

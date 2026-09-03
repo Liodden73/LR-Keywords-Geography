@@ -93,6 +93,8 @@ local canadaData        = dofile( LrPathUtils.child( dataDir, "Canada.lua"      
 local mexicoData        = dofile( LrPathUtils.child( dataDir, "Mexico.lua"        ) )
 local hondurasData      = dofile( LrPathUtils.child( dataDir, "Honduras.lua"      ) )
 local costaRicaData     = dofile( LrPathUtils.child( dataDir, "CostaRica.lua"     ) )
+local venezuelaData     = dofile( LrPathUtils.child( dataDir, "Venezuela.lua"     ) )
+local brazilData        = dofile( LrPathUtils.child( dataDir, "Brazil.lua"        ) )
 
 local genPath   = LrPathUtils.child( pluginPath, "Generator.lua" )
 local Generator = dofile( genPath )
@@ -136,6 +138,8 @@ local COUNTRIES = {
         addCountry { id = "Panama",       name = "Panama",        code = "PA-591", filename = "Panama.lua",       continent = "North America", admin_label = "Provinces & Areas", mountain_max = 3474, data = panamaData, remoteIslandNames = {} },
         addCountry { id = "UnitedStates", name = "United States", code = "US-840", filename = "UnitedStates.lua", continent = "North America", admin_label = "States & Areas",    mountain_max = 6194, data = usData,     remoteIslandNames = { "American Samoa", "Guam", "Northern Mariana Islands", "Puerto Rico", "US Virgin Islands" } },
         addCountry { id = "Chile",        name = "Chile",         code = "CL-152", filename = "Chile.lua",        continent = "South America", admin_label = "Regions & Areas",   mountain_max = 6893, data = chileData,  remoteIslandNames = { "Archipiélago Juan Fernández", "Isla de Pascua" } },
+        addCountry { id = "Venezuela",    name = "Venezuela",     code = "VE-862", filename = "Venezuela.lua",    continent = "South America", admin_label = "States & Areas",    mountain_max = 4981, data = venezuelaData,  remoteIslandNames = {} },
+        addCountry { id = "Brazil",       name = "Brazil",        code = "BR-076", filename = "Brazil.lua",       continent = "South America", admin_label = "States & Areas",    mountain_max = 2973, data = brazilData,    remoteIslandNames = {} },
         addCountry { id = "Kenya",        name = "Kenya",         code = "KE-404", filename = "Kenya.lua",        continent = "Africa",        admin_label = "Counties & Areas",  mountain_max = 5199, data = kenyaData,  remoteIslandNames = {} },
         addCountry { id = "NewZealand",   name = "New Zealand",   code = "NZ-554", filename = "NewZealand.lua",   continent = "Oceania",       admin_label = "Regions & Areas",   mountain_max = 3724, data = nzData,          remoteIslandNames = { "Auckland Islands", "Bounty Islands", "Campbell Island", "Chatham Islands", "Great Barrier Island", "Kermadec Islands", "Poor Knights Islands", "The Antipodes Islands", "The Snares" } },
         addCountry { id = "Greenland",    name = "Greenland",     code = "GL-304", filename = "Greenland.lua",    continent = "North America", admin_label = "Municipalities & Areas", mountain_max = 3694, data = greenlandData,  remoteIslandNames = {} },
