@@ -1,3 +1,7 @@
+## [0.9.173] – 2026-09-03
+### Changed
+- **France**: Lagt til 4 sub-antarktiske øyer i remoteIslandNames: Amsterdam Island, Crozet Islands, Kerguelen Islands, Saint-Paul Island (totalt 16 fjerne øyer)
+
 ## [0.9.172] – 2026-09-03
 ### Added
 - **Russia**: Lagt til som nytt land (Europa). Data inkluderer 83 føderale subjekter (kun internasjonalt anerkjente – Krim, Sevastopol, Donetsk, Luhansk, Zaporizjzja og Kherson er utelatt), 104 distrikter, 12 nasjonalparker, 40 naturreservater, 60 fjell, 100 innsjøer, 100 elver, 100 øyer og 2 utsiktspunkter
