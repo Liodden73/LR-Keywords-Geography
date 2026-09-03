@@ -4,13 +4,13 @@
     "mu":[],
     "ci":[{
         "i":167,
-        "action":"none",
+        "action":"change",
         "name":"Elefthério - Kordelió",
         "conflict":"Kordelió"
       }],
     "co":[]
   },
-  "version":"0.1.1",
+  "version":"0.1.2",
   "country":"Greece",
   "verified":"2026-09-03 15:46"
 }
