@@ -1,3 +1,8 @@
+## [0.9.162] – 2026-09-03
+### Fixed
+- **Sør-Afrika Remote Islands**: Beholder kun Marion Island og Prince Edward Island som Remote Islands (sub-antarktiske, tusenvis av km fra fastlandet)
+- **Sør-Afrika Islands**: Bird Island, Dassen Island, Malgas Island, Robben Island og Saint Croix Island ligger nå under Selections > Islands (kystnære isolerte øyer). Lagt til «Dassen Island» (engelsk navn) i data-filen
+
 ## [0.9.161] – 2026-09-03
 ### Fixed
 - **Sør-Afrika Remote Islands**: Erstattet arkipelagnavnet «Prince Edward Islands» med de individuelle øyene; lagt til 5 kystnære isolerte øyer — Bird Island, Dassen Island, Malgas Island, Marion Island, Prince Edward Island, Robben Island, St Croix Island (alfabetisk sortert)
