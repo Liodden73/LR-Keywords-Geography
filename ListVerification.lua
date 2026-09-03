@@ -1717,13 +1717,9 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                         }
                 end
 
-                local tableSpec = {
-                        spacing = f:control_spacing(),
-                        headerRow,
-                        f:separator { fill_horizontal = 1 },
-                }
+                local rowSpec = { spacing = f:control_spacing() }
                 for _, row in ipairs( rowViews ) do
-                        tableSpec[ #tableSpec + 1 ] = row
+                        rowSpec[ #rowSpec + 1 ] = row
                 end
 
                 return f:column {
@@ -1739,7 +1735,14 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                         },
                         f:separator { fill_horizontal = 1 },
                         f:spacer { height = 5 },
-                        f:column( tableSpec ),
+                        headerRow,
+                        f:separator { fill_horizontal = 1 },
+                        f:scrolled_view {
+                                height              = 390,
+                                fill_horizontal     = 1,
+                                horizontal_scroller = false,
+                                f:column( rowSpec ),
+                        },
                 }
         end
 
