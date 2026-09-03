@@ -1,0 +1,21 @@
+{
+  "listname":"Slovensko",
+  "levels":{
+    "mu":[],
+    "ci":[{
+        "i":995,
+        "action":"change",
+        "name":"Bratislava - Rača",
+        "conflict":"Rača"
+      },{
+        "i":1080,
+        "action":"change",
+        "name":"Chorvátsky Grob - Čierna Voda",
+        "conflict":"Čierna Voda"
+      }],
+    "co":[]
+  },
+  "version":"0.1.1",
+  "country":"Slovakia",
+  "verified":"2026-09-03 16:22"
+}
