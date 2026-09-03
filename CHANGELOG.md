@@ -1,3 +1,10 @@
+## [0.9.186] – 2026-09-03
+### Added
+- **5 nye land**: Guatemala, Belize, El Salvador, Nicaragua (Sentral-Amerika/Nord-Amerika) og Bolivia (Sør-Amerika). Alle bruker plugin-standardens befolkningsfilter ≥ 1000 innbyggere for byer (administrative sentre PPLA*/PPLC inkluderes alltid).
+  - Byantall: Guatemala 340 (22 departementer, 181 kommuner), Belize 81 (6 distrikter, 7 kommuner), El Salvador 101 (14 departementer, 15 kommuner), Nicaragua 164 (17 departementer/autonome regioner, 63 kommuner), Bolivia 144 (9 departementer, 26 provinser).
+  - Alle fem bruker hierarkisk struktur (departement/distrikt → kommune/provins → by).
+  - Pluginen støtter nå **77 land** (72 + 5).
+
 ## [0.9.185] – 2026-09-03
 ### Added
 - **5 nye land**: Paraguay, Uruguay, Colombia, Peru (Sør-Amerika) og Cuba (Nord-Amerika/Karibia). Alle bruker plugin-standardens befolkningsfilter ≥ 1000 innbyggere for byer (administrative sentre PPLA*/PPLC inkluderes alltid).

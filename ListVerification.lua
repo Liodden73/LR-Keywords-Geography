@@ -100,6 +100,11 @@ local uruguayData       = dofile( LrPathUtils.child( dataDir, "Uruguay.lua"     
 local colombiaData      = dofile( LrPathUtils.child( dataDir, "Colombia.lua"      ) )
 local peruData          = dofile( LrPathUtils.child( dataDir, "Peru.lua"          ) )
 local cubaData          = dofile( LrPathUtils.child( dataDir, "Cuba.lua"          ) )
+local guatemalaData     = dofile( LrPathUtils.child( dataDir, "Guatemala.lua"     ) )
+local belizeData        = dofile( LrPathUtils.child( dataDir, "Belize.lua"        ) )
+local elSalvadorData    = dofile( LrPathUtils.child( dataDir, "ElSalvador.lua"    ) )
+local nicaraguaData     = dofile( LrPathUtils.child( dataDir, "Nicaragua.lua"     ) )
+local boliviaData       = dofile( LrPathUtils.child( dataDir, "Bolivia.lua"       ) )
 
 local genPath   = LrPathUtils.child( pluginPath, "Generator.lua" )
 local Generator = dofile( genPath )
@@ -150,6 +155,11 @@ local COUNTRIES = {
         addCountry { id = "Colombia",     name = "Colombia",      code = "CO-170", filename = "Colombia.lua",     continent = "South America", admin_label = "Departments & Areas", mountain_max = 5775, data = colombiaData,   remoteIslandNames = {} },
         addCountry { id = "Peru",         name = "Peru",          code = "PE-604", filename = "Peru.lua",         continent = "South America", admin_label = "Departments & Areas", mountain_max = 6768, data = peruData,       remoteIslandNames = {} },
         addCountry { id = "Cuba",         name = "Cuba",          code = "CU-192", filename = "Cuba.lua",         continent = "North America", admin_label = "Provinces & Areas",   mountain_max = 1974, data = cubaData,       remoteIslandNames = {} },
+        addCountry { id = "Guatemala",    name = "Guatemala",     code = "GT-320", filename = "Guatemala.lua",    continent = "North America", admin_label = "Departments & Areas", mountain_max = 4220, data = guatemalaData,  remoteIslandNames = {} },
+        addCountry { id = "Belize",       name = "Belize",        code = "BZ-084", filename = "Belize.lua",       continent = "North America", admin_label = "Districts & Areas",   mountain_max = 1124, data = belizeData,     remoteIslandNames = {} },
+        addCountry { id = "ElSalvador",   name = "El Salvador",   code = "SV-222", filename = "ElSalvador.lua",   continent = "North America", admin_label = "Departments & Areas", mountain_max = 2381, data = elSalvadorData, remoteIslandNames = {} },
+        addCountry { id = "Nicaragua",    name = "Nicaragua",     code = "NI-558", filename = "Nicaragua.lua",    continent = "North America", admin_label = "Departments & Areas", mountain_max = 2438, data = nicaraguaData,  remoteIslandNames = {} },
+        addCountry { id = "Bolivia",      name = "Bolivia",       code = "BO-068", filename = "Bolivia.lua",      continent = "South America", admin_label = "Departments & Areas", mountain_max = 6542, data = boliviaData,    remoteIslandNames = {} },
         addCountry { id = "Kenya",        name = "Kenya",         code = "KE-404", filename = "Kenya.lua",        continent = "Africa",        admin_label = "Counties & Areas",  mountain_max = 5199, data = kenyaData,  remoteIslandNames = {} },
         addCountry { id = "NewZealand",   name = "New Zealand",   code = "NZ-554", filename = "NewZealand.lua",   continent = "Oceania",       admin_label = "Regions & Areas",   mountain_max = 3724, data = nzData,          remoteIslandNames = { "Auckland Islands", "Bounty Islands", "Campbell Island", "Chatham Islands", "Great Barrier Island", "Kermadec Islands", "Poor Knights Islands", "The Antipodes Islands", "The Snares" } },
         addCountry { id = "Greenland",    name = "Greenland",     code = "GL-304", filename = "Greenland.lua",    continent = "North America", admin_label = "Municipalities & Areas", mountain_max = 3694, data = greenlandData,  remoteIslandNames = {} },
@@ -370,6 +380,11 @@ local WIKIDATA_TYPES = {
         BosniaAndHerzegovina = { co = nil, mu = nil, ci = nil },
         Montenegro    = { co = nil, mu = nil, ci = nil },
         NorthMacedonia = { co = nil, mu = nil, ci = nil },
+        Guatemala     = { co = nil, mu = nil, ci = nil },
+        Belize        = { co = nil, mu = nil, ci = nil },
+        ElSalvador    = { co = nil, mu = nil, ci = nil },
+        Nicaragua     = { co = nil, mu = nil, ci = nil },
+        Bolivia       = { co = nil, mu = nil, ci = nil },
 }
 
 -- Preferred label language(s) per country for the Wikidata label service.
@@ -424,6 +439,11 @@ local WIKIDATA_LANG = {
         BosniaAndHerzegovina = "bs,hr,sr,en",
         Montenegro    = "sr,en",
         NorthMacedonia = "mk,en",
+        Guatemala     = "es,en",
+        Belize        = "en,es",
+        ElSalvador    = "es,en",
+        Nicaragua     = "es,en",
+        Bolivia       = "es,qu,ay,en",
 }
 
 -- Percent-encode a string for safe inclusion in a URL query parameter.
