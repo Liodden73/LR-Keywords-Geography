@@ -1,0 +1,86 @@
+{
+  "listname":"Hrvatska",
+  "levels":{
+    "mu":[{
+        "i":563,
+        "action":"none",
+        "name":"Novi Zagreb - zapad",
+        "conflict":"zapad"
+      },{
+        "i":570,
+        "action":"none",
+        "name":"Podsused - Vrapče",
+        "conflict":"Vrapče"
+      }],
+    "ci":[{
+        "i":1333,
+        "action":"none",
+        "name":"Višnjan - Visignano",
+        "conflict":"Visignano"
+      },{
+        "i":1526,
+        "action":"none",
+        "name":"Červar - Cervera",
+        "conflict":"Cervera"
+      },{
+        "i":2670,
+        "action":"none",
+        "name":"Donja Batina - dio",
+        "conflict":"dio"
+      },{
+        "i":2681,
+        "action":"none",
+        "name":"Sušobreg - dio",
+        "conflict":"dio"
+      },{
+        "i":5587,
+        "action":"none",
+        "name":"Podstrana - Grbavac",
+        "conflict":"Grbavac"
+      },{
+        "i":5588,
+        "action":"none",
+        "name":"Podstrana - Miljevac",
+        "conflict":"Miljevac"
+      },{
+        "i":5589,
+        "action":"none",
+        "name":"Podstrana - Mutogras",
+        "conflict":"Mutogras"
+      },{
+        "i":5590,
+        "action":"none",
+        "name":"Podstrana - Sita",
+        "conflict":"Sita"
+      },{
+        "i":5591,
+        "action":"none",
+        "name":"Podstrana - Strožanac Gornji",
+        "conflict":"Strožanac Gornji"
+      },{
+        "i":5592,
+        "action":"none",
+        "name":"Podstrana - Žminjača",
+        "conflict":"Žminjača"
+      },{
+        "i":5594,
+        "action":"none",
+        "name":"Strožanac - Donji",
+        "conflict":"Donji"
+      },{
+        "i":5927,
+        "action":"none",
+        "name":"Donje Vratno - dio",
+        "conflict":"dio"
+      },{
+        "i":6476,
+        "action":"none",
+        "name":"Kruševo - Crna Punta",
+        "conflict":"Crna Punta"
+      }],
+    "co":[]
+  },
+  "version":"0.1.1",
+  "country":"Croatia",
+  "verified":"2026-09-03 16:21"
+}
