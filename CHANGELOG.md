@@ -1,3 +1,8 @@
+## [0.9.160] – 2026-09-03
+### Changed
+- **Keyword Builder UI**: Land sorteres nå alfabetisk innenfor hvert kontinent
+- **Keyword Builder UI**: Kontinenter med mer enn 4 land bruker nå `f:scrolled_view` (høyde 107) slik at lista kan scrolles (gjelder p.t. Europa med 6 land)
+
 ## [0.9.159] – 2026-09-03
 ### Fixed
 - **Remote Islands**: Alle lister sortert alfabetisk for alle land (Norge, USA, Chile, Australia, Nederland)
