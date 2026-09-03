@@ -1,3 +1,7 @@
+## [0.9.169] – 2026-09-03
+### Changed
+- **List Overview**: Scrolled_view bredde økt fra 980 px til 1000 px
+
 ## [0.9.168] – 2026-09-03
 ### Changed
 - **List Overview**: Scrolled_view bredde økt fra 950 px til 980 px
