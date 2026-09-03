@@ -2180,6 +2180,10 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                 cl[ #cl + 1 ] = country
                         end
                 end
+                -- Sort countries alphabetically within each continent.
+                for _, cl in pairs( byContinent ) do
+                        table.sort( cl, function( a, b ) return a.name:lower() < b.name:lower() end )
+                end
                 -- Use fixed order; continents without countries still get a button.
                 local continents = CONTINENT_ORDER
 
@@ -2226,12 +2230,13 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                         -- invisible elements are never created, so LR SDK space-reservation
                         -- for visible=false is completely avoided.
                         if props[ contKey ] then
-                                for _, country in ipairs( byContinent[ cont ] or {} ) do
+                                local contCountries = byContinent[ cont ] or {}
+
+                                local function makeCountryRow( country )
                                         local cid          = country.id
                                         local includeKey   = cid .. "_include"
                                         local switchAction = makeSwitchAction( cid, country )
-
-                                        countryChildren[ #countryChildren + 1 ] = f:column {
+                                        return f:column {
                                                 fill_horizontal = 1,
                                                 f:row {
                                                         fill_horizontal = 1,
@@ -2262,6 +2267,25 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                                         f:spacer { width = 20 },
                                                 },
                                         }
+                                end
+
+                                if #contCountries > 4 then
+                                        -- Wrap in a scrolled_view showing 4 rows; scroll for the rest.
+                                        -- Height = 4 rows × 26 px per row (button height + spacing).
+                                        local innerSpec = { spacing = f:control_spacing() }
+                                        for _, country in ipairs( contCountries ) do
+                                                innerSpec[ #innerSpec + 1 ] = makeCountryRow( country )
+                                        end
+                                        countryChildren[ #countryChildren + 1 ] = f:scrolled_view {
+                                                height              = 107,
+                                                width               = KB_COL_W_COUNTRY - 20,
+                                                horizontal_scroller = false,
+                                                f:column( innerSpec ),
+                                        }
+                                else
+                                        for _, country in ipairs( contCountries ) do
+                                                countryChildren[ #countryChildren + 1 ] = makeCountryRow( country )
+                                        end
                                 end
                         end
 
