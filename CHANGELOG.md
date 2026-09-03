@@ -1,3 +1,7 @@
+## [0.9.177] – 2026-09-03
+### Fixed
+- **Slovenia**: Rettet datastruktur til flat hierarki. Slovenia har 212 kommuner (občine) på ADM1-nivå uten underkommuner (ADM2). Verification Monitor viser nå riktige etiketter: "Municipality" for første kolonne og "Settlement" for andre kolonne
+
 ## [0.9.176] – 2026-09-03
 ### Added
 - **Kroatia**: Lagt til som nytt land (Europa). Data inkluderer 21 counties (20 + Zagreb), 572 kommuner, 23 naturreservater, 70 fjell (Dinara 1830 m øverst), 65 innsjøer, 120 elver, 120 øyer og 5 utsiktspunkter

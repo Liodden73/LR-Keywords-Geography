@@ -238,7 +238,7 @@ local LABELS = {
         Romania       = { county = "County",       muni = "Commune",      city = "City" },
         Ukraine       = { county = "Oblast",       muni = "Raion",        city = "City" },
         Croatia       = { county = "County",       muni = "Municipality", city = "City" },
-        Slovenia      = { county = "Municipality", muni = "Municipality", city = "City" },
+        Slovenia      = { county = "Municipality", muni = "Settlement",   city = "City" },
         Bulgaria      = { county = "Province",     muni = "Municipality", city = "City" },
         Serbia        = { county = "Region",       muni = "District",     city = "City" },
         Slovakia      = { county = "Region",       muni = "District",     city = "City" },
