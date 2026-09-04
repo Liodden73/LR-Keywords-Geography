@@ -4,13 +4,15 @@
         Data management window, using the same native f:tab_view +
         stopModalWithResult / while-loop navigation pattern as LR-ListDoctor.
 
-        Four tabs:
+        Five tabs:
           1. Keyword List Builder  — opens KeywordBuilder.lua (dofile after loop)
           2. List Overview         — bundled country database table
           3. Verification Monitor  — three-level (county / municipality / city)
                                      verification table with per-item conflict
                                      result, action popup, and Save button
-          4. Help                  — usage guidance (stub)
+          4. GPS Keyword Converter — reverse-geocodes selected/folder/all photos
+                                     and applies matching city-level keywords
+          5. Help                  — usage guidance (stub)
 ]]
 
 local LrView            = import 'LrView'
@@ -22,11 +24,16 @@ local LrPathUtils       = import 'LrPathUtils'
 local LrPrefs           = import 'LrPrefs'
 local LrHttp            = import 'LrHttp'
 local LrTasks           = import 'LrTasks'
+local LrApplication     = import 'LrApplication'
+local LrStringUtils     = import 'LrStringUtils'
 
 -- ── Bundled data files ────────────────────────────────────────────────────────
 
 local pluginPath = _PLUGIN.path
 local dataDir    = LrPathUtils.child( pluginPath, "data" )
+
+-- GPS Keyword Converter module (standalone, reusable)
+local GPSConverter = dofile( LrPathUtils.child( pluginPath, "GPSConverter.lua" ) )
 
 local norwayData = dofile( LrPathUtils.child( dataDir, "Norway.lua"       ) )
 local swedenData = dofile( LrPathUtils.child( dataDir, "Sweden.lua"       ) )
@@ -555,7 +562,7 @@ local function fetchWikidataNames( cid, level )
 end
 
 -- Stable string identifiers for the four tabs.
-local TAB_IDS = { INTRO = "intro", KB = "builder", OV = "overview", MN = "monitor", HLP = "help" }
+local TAB_IDS = { INTRO = "intro", KB = "builder", OV = "overview", MN = "monitor", GPS = "gps", HLP = "help" }
 
 -- ── Column widths for List Overview ──────────────────────────────────────────
 
@@ -1443,6 +1450,11 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                         switchTab( props.activeTabId )
                 end
         end )
+
+        -- GPS Keyword Converter state (persists across tab rebuilds)
+        local gpsConflicts  = {}   -- list of conflict records (built during Generate)
+        local gpsSuccesses  = {}   -- list of {photo, match} records to apply on Save
+        local gpsIsRunning  = false
 
 
         ------------------------------------------------------------------------
@@ -2803,6 +2815,452 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
         end  -- buildBuilderPanel
 
         ------------------------------------------------------------------------
+        -- Tab — GPS Keyword Converter
+        ------------------------------------------------------------------------
+
+        local function buildGPSPanel()
+
+          -- ── Helpers ──────────────────────────────────────────────────────────────
+
+          -- Build flat list of all LR catalog folders: { {title="…", value="folder_obj"}, … }
+          local folderItems = { { title = "— select folder —", value = "" } }
+          local function addFolders(folder, indent)
+            local name = (indent or "") .. folder:getName()
+            table.insert(folderItems, { title = name, value = folder })
+            for _, child in ipairs(folder:getChildren() or {}) do
+              addFolders(child, (indent or "") .. "  ")
+            end
+          end
+          local catalog = LrApplication.activeCatalog()
+          for _, fld in ipairs(catalog:getFolders() or {}) do
+            addFolders(fld)
+          end
+
+          -- Build enabledSet from props
+          local enabledSet = {}
+          for _, c in ipairs(COUNTRIES) do
+            if props[c.id .. "_enabled"] then enabledSet[c.id] = true end
+          end
+
+          -- ── Description ──────────────────────────────────────────────────────────
+
+          local descText = f:static_text {
+            title = "GPS Keyword Converter reads the GPS coordinates from selected images and looks up "
+                  .. "the geographic location (country, state, city) using reverse geocoding. "
+                  .. "It then searches only the enabled keyword lists in this plugin for a matching "
+                  .. "city-level keyword and applies it to the photo in Lightroom. "
+                  .. "Only city-level keywords are matched — not parent or child levels. "
+                  .. "Conflicts (no match found, or duplicate matches) are listed below for manual review.",
+            width           = CONTENT_W,
+            height_in_lines = 4,
+          }
+
+          -- ── Scope selector ───────────────────────────────────────────────────────
+          -- props.gps_scope: "selected" | "folder" | "all"
+          if props.gps_scope == nil then props.gps_scope = "selected" end
+
+          local scopeSection = f:group_box {
+            title = "Scope",
+            fill_horizontal = 1,
+            f:column {
+              spacing = f:control_spacing(),
+              f:radio_button {
+                title = "Selected Images",
+                value = LrView.bind("gps_scope"),
+                checked_value = "selected",
+              },
+              f:row {
+                f:radio_button {
+                  title = "Folder:",
+                  value = LrView.bind("gps_scope"),
+                  checked_value = "folder",
+                },
+                f:popup_menu {
+                  items   = folderItems,
+                  value   = LrView.bind("gps_folder_obj"),
+                  enabled = LrView.bind { key = "gps_scope", transform = function(v) return v == "folder" end },
+                  width   = 400,
+                },
+              },
+              f:radio_button {
+                title = "All Images in Catalog (with GPS data)",
+                value = LrView.bind("gps_scope"),
+                checked_value = "all",
+              },
+            },
+          }
+
+          -- ── Generate button ───────────────────────────────────────────────────────
+
+          local generateBtn = f:push_button {
+            title   = "Generate Keywords",
+            enabled = LrView.bind { key = "gps_running", transform = function(v) return not v end },
+            action  = function()
+              LrTasks.startAsyncTask(function()
+                gpsConflicts = {}
+                gpsSuccesses = {}
+                props.gps_running       = true
+                props.gps_success_count = 0
+                props.gps_conflict_count = 0
+                props.gps_cur_filename  = ""
+                props.gps_cur_size      = ""
+                props.gps_cur_folder    = ""
+                props.gps_cur_gps       = ""
+                props.gps_cur_path      = ""
+                props.gps_status        = "Running…"
+
+                -- Collect photos to process
+                local photos = {}
+                local scope  = props.gps_scope
+                if scope == "selected" then
+                  photos = catalog:getTargetPhotos()
+                elseif scope == "folder" then
+                  local folderObj = props.gps_folder_obj
+                  if folderObj and folderObj ~= "" then
+                    photos = folderObj:getPhotos()
+                  end
+                elseif scope == "all" then
+                  photos = catalog:getAllPhotos()
+                end
+
+                -- Process each photo
+                for _, photo in ipairs(photos or {}) do
+                  local gpsData = photo:getRawMetadata("gps")
+                  if gpsData and gpsData.latitude and gpsData.longitude then
+                    local lat, lon  = gpsData.latitude, gpsData.longitude
+                    local path      = photo:getRawMetadata("path") or ""
+                    local filename  = LrPathUtils.leafName(path)
+                    local folder    = LrPathUtils.parent(path)
+                    local sizeStr   = GPSConverter.getPhotoFileSize(photo)
+                    local dmsStr    = GPSConverter.formatDMS(lat, lon)
+
+                    props.gps_cur_filename = filename
+                    props.gps_cur_size     = sizeStr
+                    props.gps_cur_folder   = folder
+                    props.gps_cur_gps      = dmsStr
+                    props.gps_cur_path     = "Searching…"
+
+                    -- Reverse geocode
+                    local geo = GPSConverter.reverseGeocode(lat, lon)
+                    LrTasks.yield()
+
+                    if not geo or geo.city == "" then
+                      props.gps_cur_path = "(no GPS result)"
+                      local sc = props.gps_conflict_count or 0
+                      props.gps_conflict_count = sc + 1
+                      table.insert(gpsConflicts, {
+                        filename = filename, size = sizeStr, folder = folder,
+                        gpsStr = dmsStr, keywordPath = "–",
+                        conflictType = "No GPS result", matchCount = 0,
+                        matches = {}, photo = photo,
+                      })
+                    else
+                      local matches = GPSConverter.findCityMatches(geo, COUNTRIES, enabledSet)
+                      local kwPath  = #matches > 0 and GPSConverter.formatKeywordPath(matches[1]) or "–"
+                      props.gps_cur_path = kwPath
+
+                      if #matches == 0 then
+                        local sc = props.gps_conflict_count or 0
+                        props.gps_conflict_count = sc + 1
+                        table.insert(gpsConflicts, {
+                          filename = filename, size = sizeStr, folder = folder,
+                          gpsStr = dmsStr, keywordPath = "–",
+                          conflictType = "No keyword found", matchCount = 0,
+                          matches = {}, photo = photo, geo = geo,
+                        })
+                      elseif #matches > 1 then
+                        local sc = props.gps_conflict_count or 0
+                        props.gps_conflict_count = sc + 1
+                        table.insert(gpsConflicts, {
+                          filename = filename, size = sizeStr, folder = folder,
+                          gpsStr = dmsStr, keywordPath = kwPath,
+                          conflictType = "Duplicate keyword found (" .. #matches .. ")", matchCount = #matches,
+                          matches = matches, photo = photo, geo = geo,
+                        })
+                      else
+                        local sc = props.gps_success_count or 0
+                        props.gps_success_count = sc + 1
+                        table.insert(gpsSuccesses, { photo = photo, match = matches[1], path = kwPath })
+                      end
+                    end
+                    LrTasks.yield()
+                  end
+                end
+
+                props.gps_status  = "Done. " .. (props.gps_success_count or 0) .. " converted, "
+                                  .. (props.gps_conflict_count or 0) .. " conflicts."
+                props.gps_running = false
+                -- Force GPS tab rebuild to show conflict rows:
+                switchTab(TAB_IDS.GPS)
+              end)
+            end,
+          }
+
+          -- ── Current-image display ─────────────────────────────────────────────────
+
+          local currentImageSection = f:group_box {
+            title = "Current Image",
+            fill_horizontal = 1,
+            f:column {
+              spacing = 2,
+              f:row {
+                spacing = 12,
+                f:static_text { title = "File:",   font = "<system/bold>", width = 50 },
+                f:static_text { value = LrView.bind("gps_cur_filename"), width = 250 },
+                f:static_text { title = "Size:",   font = "<system/bold>", width = 30 },
+                f:static_text { value = LrView.bind("gps_cur_size"),     width = 70 },
+                f:static_text { title = "Folder:", font = "<system/bold>", width = 50 },
+                f:static_text { value = LrView.bind("gps_cur_folder"),   width = 400, height_in_lines = 1 },
+              },
+              f:row {
+                spacing = 12,
+                f:static_text { title = "GPS:",     font = "<system/bold>", width = 50 },
+                f:static_text { value = LrView.bind("gps_cur_gps"),  width = 280 },
+                f:static_text { title = "→",        width = 15 },
+                f:static_text { value = LrView.bind("gps_cur_path"), width = 500, height_in_lines = 1 },
+              },
+            },
+          }
+
+          -- ── Counters ─────────────────────────────────────────────────────────────
+
+          local countersRow = f:row {
+            spacing = 20,
+            f:static_text {
+              title = "✓ Converted: ",
+              font  = "<system/bold>",
+            },
+            f:static_text {
+              value = LrView.bind { key = "gps_success_count",
+                transform = function(v) return tostring(v or 0) end },
+              width = 40,
+            },
+            f:static_text { title = "⚠ Conflicts: ", font = "<system/bold>" },
+            f:static_text {
+              value = LrView.bind { key = "gps_conflict_count",
+                transform = function(v) return tostring(v or 0) end },
+              width = 40,
+            },
+            f:static_text {
+              value = LrView.bind("gps_status"),
+              fill_horizontal = 1,
+            },
+          }
+
+          -- ── Conflict table ─────────────────────────────────────────────────────
+
+          -- Column widths for conflict table
+          local CW_FILE    = 140
+          local CW_SIZE    = 55
+          local CW_FOLDER  = 160
+          local CW_GPS     = 175
+          local CW_PATH    = 175
+          local CW_CONF    = 130
+          local CW_ACTION  = 80
+
+          local conflictHeader = f:row {
+            spacing = 4,
+            f:static_text { title = "Filename",     width = CW_FILE,   font = "<system/bold>" },
+            f:static_text { title = "Size (MB)",    width = CW_SIZE,   font = "<system/bold>" },
+            f:static_text { title = "Folder",       width = CW_FOLDER, font = "<system/bold>" },
+            f:static_text { title = "GPS",          width = CW_GPS,    font = "<system/bold>" },
+            f:static_text { title = "Keyword path", width = CW_PATH,   font = "<system/bold>" },
+            f:static_text { title = "Conflict",     width = CW_CONF,   font = "<system/bold>" },
+            f:static_text { title = "Action",       width = CW_ACTION, font = "<system/bold>" },
+          }
+
+          -- Build conflict rows from gpsConflicts (closure var, populated by Generate)
+          local conflictRows = {}
+          for i, entry in ipairs(gpsConflicts) do
+            local actionBtn
+            if entry.conflictType == "No keyword found" or entry.conflictType == "No GPS result" then
+              actionBtn = f:push_button {
+                title  = "Add Keyword",
+                width  = CW_ACTION,
+                action = function()
+                  LrTasks.startAsyncTask(function()
+                    if entry.conflictType == "No GPS result" then
+                      LrDialogs.message("No GPS Result",
+                        "Could not determine location for:\n" .. entry.filename ..
+                        "\n\nCheck that the image has valid GPS coordinates.", "info")
+                      return
+                    end
+                    local geo = entry.geo or {}
+                    local msg = "No keyword was found for:\n\n"
+                              .. "  Image:   " .. entry.filename .. "\n"
+                              .. "  GPS:     " .. entry.gpsStr .. "\n"
+                              .. "  Country: " .. (geo.country or "?") .. "\n"
+                              .. "  State:   " .. (geo.state or "?") .. "\n"
+                              .. "  City:    " .. (geo.city or "?") .. "\n\n"
+                              .. "To add this location, enable the country in List Overview\n"
+                              .. "and re-run Generate, or create the keyword manually in LR."
+                    LrDialogs.message("No Keyword Found — " .. entry.filename, msg, "info")
+                  end)
+                end,
+              }
+            else
+              -- Duplicate: let user pick which match to use
+              local capturedEntry = entry
+              actionBtn = f:push_button {
+                title  = "Resolve",
+                width  = CW_ACTION,
+                action = function()
+                  LrTasks.startAsyncTask(function()
+                    local lines = { "Multiple keyword matches found for city: " .. (capturedEntry.geo and capturedEntry.geo.city or "?") .. "\n" }
+                    for idx, m in ipairs(capturedEntry.matches) do
+                      lines[#lines+1] = idx .. ".  " .. GPSConverter.formatKeywordPath(m)
+                    end
+                    lines[#lines+1] = "\nPress OK to use the FIRST match, or Cancel to skip."
+                    local r = LrDialogs.confirm(
+                      "Resolve Duplicate — " .. capturedEntry.filename,
+                      table.concat(lines, "\n"),
+                      "Use First Match", "Cancel"
+                    )
+                    if r == "ok" then
+                      -- Mark this entry as resolved (use first match)
+                      capturedEntry._resolved     = true
+                      capturedEntry._resolvedMatch = capturedEntry.matches[1]
+                      table.insert(gpsSuccesses, {
+                        photo = capturedEntry.photo,
+                        match = capturedEntry.matches[1],
+                        path  = GPSConverter.formatKeywordPath(capturedEntry.matches[1]),
+                      })
+                      local sc = props.gps_success_count or 0
+                      props.gps_success_count = sc + 1
+                      local cc = props.gps_conflict_count or 0
+                      if cc > 0 then props.gps_conflict_count = cc - 1 end
+                      LrDialogs.message("Resolved", "Match applied:\n" .. GPSConverter.formatKeywordPath(capturedEntry.matches[1]), "info")
+                    end
+                  end)
+                end,
+              }
+            end
+
+            local row = f:row {
+              spacing = 4,
+              f:static_text { title = entry.filename,     width = CW_FILE,   height_in_lines = 1 },
+              f:static_text { title = entry.size,         width = CW_SIZE },
+              f:static_text { title = entry.folder,       width = CW_FOLDER, height_in_lines = 1 },
+              f:static_text { title = entry.gpsStr,       width = CW_GPS,    height_in_lines = 1 },
+              f:static_text { title = entry.keywordPath,  width = CW_PATH,   height_in_lines = 1 },
+              f:static_text { title = entry.conflictType, width = CW_CONF,   height_in_lines = 1 },
+              actionBtn,
+            }
+            table.insert(conflictRows, row)
+          end
+
+          local noConflictsNote = f:static_text {
+            title  = #gpsConflicts == 0 and "No conflicts — run Generate to populate this list." or "",
+            width  = CONTENT_W - 20,
+            font   = "<system/small>",
+          }
+
+          local conflictScrollView = f:scrolled_view {
+            width  = CONTENT_W,
+            height = 200,
+            f:column {
+              spacing = 2,
+              noConflictsNote,
+              table.unpack(conflictRows),
+            },
+          }
+
+          local conflictSection = f:group_box {
+            title = "Conflicts",
+            fill_horizontal = 1,
+            f:column {
+              spacing = 4,
+              conflictHeader,
+              conflictScrollView,
+            },
+          }
+
+          -- ── Save / Close buttons ─────────────────────────────────────────────────
+
+          local saveBtn = f:push_button {
+            title  = "Save — Apply Keywords to Photos",
+            action = function()
+              LrTasks.startAsyncTask(function()
+                if #gpsSuccesses == 0 then
+                  LrDialogs.message("Nothing to Save",
+                    "No successfully matched photos to apply keywords to.\n\nRun Generate first.", "info")
+                  return
+                end
+                local applied = 0
+                local failed  = 0
+                catalog:withWriteAccessDo("GPS Keyword Converter — apply keywords", function(context)
+                  for _, entry in ipairs(gpsSuccesses) do
+                    local cityName = entry.match.cityName
+                    -- Find keyword in LR catalog
+                    local kw = nil
+                    for kwObj in catalog:findKeyword(cityName) do
+                      -- Accept first match (user can resolve duplicates with Resolve button first)
+                      kw = kwObj
+                      break
+                    end
+                    if kw then
+                      entry.photo:addKeyword(kw)
+                      applied = applied + 1
+                    else
+                      -- Keyword not in LR catalog — create it at top level with the correct path note
+                      local created = catalog:createKeyword(cityName, {}, true, nil, true)
+                      if created then
+                        entry.photo:addKeyword(created)
+                        applied = applied + 1
+                      else
+                        failed = failed + 1
+                      end
+                    end
+                  end
+                end)
+                local msg = applied .. " keyword(s) applied to photos."
+                if failed > 0 then
+                  msg = msg .. "\n" .. failed .. " could not be applied (keyword creation failed)."
+                end
+                LrDialogs.message("Keywords Saved", msg, "info")
+              end)
+            end,
+          }
+
+          local closeBtn = f:push_button {
+            title  = "Close",
+            action = function()
+              switchTab( TAB_IDS.INTRO )
+            end,
+          }
+
+          local bottomRow = f:row {
+            spacing = 12,
+            saveBtn,
+            closeBtn,
+          }
+
+          -- ── Assemble panel ───────────────────────────────────────────────────────
+
+          return f:column {
+            bind_to_object = props,
+            spacing        = f:control_spacing(),
+            f:spacer { height = 6 },
+            descText,
+            f:spacer { height = 4 },
+            scopeSection,
+            f:spacer { height = 4 },
+            f:row {
+              f:spacer { fill_horizontal = 1 },
+              generateBtn,
+              f:spacer { fill_horizontal = 1 },
+            },
+            f:spacer { height = 4 },
+            currentImageSection,
+            countersRow,
+            f:spacer { height = 4 },
+            conflictSection,
+            f:spacer { height = 8 },
+            bottomRow,
+          }
+        end  -- buildGPSPanel
+
+        ------------------------------------------------------------------------
         -- Tab 0 — Intro  (world-map welcome panel)
         ------------------------------------------------------------------------
 
@@ -2918,6 +3376,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                 local panelKB    = ( currentDialog == TAB_IDS.KB    ) and buildBuilderPanel() or placeholder
                 local panelOV  = ( currentDialog == TAB_IDS.OV  ) and buildOverviewPanel() or placeholder
                 local panelMN  = ( currentDialog == TAB_IDS.MN  ) and buildMonitorPanel()  or placeholder
+                local panelGPS = ( currentDialog == TAB_IDS.GPS ) and buildGPSPanel()     or placeholder
                 local panelHLP = ( currentDialog == TAB_IDS.HLP ) and buildHelpPanel()     or placeholder
 
                 -- Show Save button only when the Monitor is active and a country is selected.
@@ -2947,6 +3406,11 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                 identifier = TAB_IDS.MN,
                                 -- Monitor tab is wider (3 full-width groups side by side).
                                 f:column { width = CONTENT_W_MN, spacing = f:control_spacing(), panelMN },
+                        },
+                        f:tab_view_item {
+                                title      = "GPS Keyword Converter",
+                                identifier = TAB_IDS.GPS,
+                                f:column { width = CONTENT_W, spacing = f:control_spacing(), panelGPS },
                         },
                         f:tab_view_item {
                                 title      = "Help",
@@ -2979,7 +3443,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                         accessoryView = footer,
                 }
 
-                if result == TAB_IDS.INTRO or result == TAB_IDS.KB or result == TAB_IDS.OV or result == TAB_IDS.MN or result == TAB_IDS.HLP then
+                if result == TAB_IDS.INTRO or result == TAB_IDS.KB or result == TAB_IDS.OV or result == TAB_IDS.MN or result == TAB_IDS.GPS or result == TAB_IDS.HLP then
                         -- Tab switch triggered by observer or switchTab() call.
                         -- If leaving the Monitor tab, flush any unsaved action popup changes
                         -- to prefs so Update can read them even if Save was not clicked.

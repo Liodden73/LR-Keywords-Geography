@@ -1,3 +1,14 @@
+## [0.9.191] – 2026-09-04
+### Added
+- **Ny fane: GPS Keyword Converter**: En ny femte fane (plassert mellom «Verification Monitor» og «Help») som leser GPS-koordinatene fra bilder, slår opp geografisk plassering (land, delstat/fylke, by) via omvendt geokoding (Nominatim) og legger automatisk til det matchende by-nøkkelordet på bildet i Lightroom.
+  - **Områdevalg (Scope)**: Velg mellom «Selected Images» (valgte bilder), «Folder» (en katalog fra katalogtreet via nedtrekksmeny) eller «All Images in Catalog» (alle bilder med GPS-data).
+  - **Kun by-nivå matches**: Søket matcher utelukkende nøkkelord på by-nivå i de aktiverte listene i pluginen – ikke overordnede eller underordnede nivåer.
+  - **Live visning av gjeldende bilde**: Viser filnavn, filstørrelse, mappe, GPS-koordinater (DMS) og den funne nøkkelord-stien mens jobben kjører.
+  - **Tellere**: Løpende visning av antall konverterte (✓) og antall konflikter (⚠), samt statuslinje.
+  - **Rullbar konflikttabell (200 px)**: Lister opp bilder uten treff eller med flere treff. Hver rad har en handlingsknapp: «Add Keyword» (viser detaljer for manuell håndtering) eller «Resolve» (velg blant flere treff).
+  - **Save og Close**: «Save — Apply Keywords to Photos» skriver de matchede nøkkelordene til Lightroom-katalogen (finner eksisterende nøkkelord eller oppretter det ved behov). «Close» går tilbake til Intro-fanen.
+  - **GPSConverter.lua** er en frittstående, gjenbrukbar modul med hjelpefunksjoner for DMS-formatering, omvendt geokoding, by-matching, nøkkelord-sti-formatering og filstørrelse.
+
 ## [0.9.190] – 2026-09-04
 ### Changed
 - **Intro tab — map caption is now dynamic**: The caption below the world map now shows the actual country counts, e.g. "Map of 93 countries with geographic keywords available  —  Red: 45 countries currently enabled (On)  —  Blue: supported countries". Both numbers update automatically when the panel is opened.
