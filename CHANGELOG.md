@@ -1,3 +1,7 @@
+## [0.9.192] – 2026-09-04
+### Fixed
+- **GPS Keyword Converter krasjet ved åpning ("We can only wait from within a task")**: Fanen bygde mappelisten ved å lese katalogtreet (`catalog:getFolders()` / `folder:getChildren()`) synkront under panel-bygging. Disse SDK-kallene «venter» (yield) og må kjøre inne i en task — ellers kaster Lightroom «We can only wait from within a task» straks fanen åpnes. Mappe-opptellingen er nå lat-lastet: en ny knapp «Load Folders» ved siden av mappe-menyen henter katalogtreet inne i en `LrTasks.startAsyncTask` og bygger fanen på nytt slik at menyen fylles. Ingen ytende SDK-kall kjører lenger under synkron panel-bygging.
+
 ## [0.9.191] – 2026-09-04
 ### Added
 - **Ny fane: GPS Keyword Converter**: En ny femte fane (plassert mellom «Verification Monitor» og «Help») som leser GPS-koordinatene fra bilder, slår opp geografisk plassering (land, delstat/fylke, by) via omvendt geokoding (Nominatim) og legger automatisk til det matchende by-nøkkelordet på bildet i Lightroom.

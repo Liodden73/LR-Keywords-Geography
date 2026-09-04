@@ -1455,6 +1455,10 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
         local gpsConflicts  = {}   -- list of conflict records (built during Generate)
         local gpsSuccesses  = {}   -- list of {photo, match} records to apply on Save
         local gpsIsRunning  = false
+        -- Folder list is enumerated lazily inside an async task (catalog:getFolders()
+        -- and folder:getChildren() are yielding calls and MUST NOT run during the
+        -- synchronous panel build, or LR throws "We can only wait from within a task").
+        local gpsFolderItems = nil  -- nil until user clicks "Load Folders"
 
 
         ------------------------------------------------------------------------
@@ -2822,18 +2826,17 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
 
           -- ── Helpers ──────────────────────────────────────────────────────────────
 
-          -- Build flat list of all LR catalog folders: { {title="…", value="folder_obj"}, … }
-          local folderItems = { { title = "— select folder —", value = "" } }
-          local function addFolders(folder, indent)
-            local name = (indent or "") .. folder:getName()
-            table.insert(folderItems, { title = name, value = folder })
-            for _, child in ipairs(folder:getChildren() or {}) do
-              addFolders(child, (indent or "") .. "  ")
-            end
-          end
+          -- Folder items are read from the cache (gpsFolderItems). They are populated
+          -- lazily by the "Load Folders" button below, which enumerates the catalog
+          -- inside an async task (getFolders/getChildren are yielding SDK calls and
+          -- cannot run during this synchronous panel build, or LR throws
+          -- "We can only wait from within a task").
           local catalog = LrApplication.activeCatalog()
-          for _, fld in ipairs(catalog:getFolders() or {}) do
-            addFolders(fld)
+          local folderItems
+          if gpsFolderItems then
+            folderItems = gpsFolderItems
+          else
+            folderItems = { { title = "— click 'Load Folders' first —", value = "" } }
           end
 
           -- Build enabledSet from props
@@ -2880,6 +2883,28 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                   value   = LrView.bind("gps_folder_obj"),
                   enabled = LrView.bind { key = "gps_scope", transform = function(v) return v == "folder" end },
                   width   = 400,
+                },
+                f:push_button {
+                  title  = gpsFolderItems and "Reload Folders" or "Load Folders",
+                  action = function()
+                    -- Enumerate the catalog folder tree inside an async task, then
+                    -- cache the result and rebuild the GPS tab so the popup is filled.
+                    LrTasks.startAsyncTask(function()
+                      local items = { { title = "— select folder —", value = "" } }
+                      local function addFolders(folder, indent)
+                        local name = (indent or "") .. folder:getName()
+                        table.insert(items, { title = name, value = folder })
+                        for _, child in ipairs(folder:getChildren() or {}) do
+                          addFolders(child, (indent or "") .. "    ")
+                        end
+                      end
+                      for _, fld in ipairs(catalog:getFolders() or {}) do
+                        addFolders(fld)
+                      end
+                      gpsFolderItems = items
+                      switchTab(TAB_IDS.GPS)   -- rebuild so popup shows the folders
+                    end)
+                  end,
                 },
               },
               f:radio_button {
