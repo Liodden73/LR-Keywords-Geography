@@ -1,3 +1,7 @@
+## [0.9.194] – 2026-09-04
+### Fixed
+- **GPS Keyword Converter krasjet med «attempt to call field 'unpack' (a nil value)»**: Konflikttabellen ble bygd med `table.unpack(...)`. Lightroom kjører Lua 5.1, der `unpack` er en global funksjon og `table.unpack` ikke finnes (den kom først i Lua 5.2). Kallet er endret til den globale `unpack(...)`, slik at GPS-fanen kan kjøre «Generate Keywords» uten å krasje.
+
 ## [0.9.193] – 2026-09-04
 ### Changed
 - **Kraftig reduksjon av datastørrelse (~5,8 MB → ~3,9 MB, ca. 33 %)**: Pluginen lastet tregt fordi de medfølgende landdataene hadde vokst til 93 land. Datamengden er nå redusert med to grep som er dokumentert på Help-fanen:

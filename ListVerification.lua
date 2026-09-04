@@ -3245,7 +3245,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
             f:column {
               spacing = 2,
               noConflictsNote,
-              table.unpack(conflictRows),
+              unpack(conflictRows),
             },
           }
 
