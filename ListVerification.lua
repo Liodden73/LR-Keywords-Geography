@@ -2809,9 +2809,14 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
         local function buildIntroPanel()
                 -- Generate (or retrieve cached) world-map PNG with current enabled colours.
                 local enabledSet = {}
+                local enabledCount = 0
                 for _, c in ipairs( COUNTRIES ) do
-                        if props[ c.id .. "_enabled" ] then enabledSet[ c.id ] = true end
+                        if props[ c.id .. "_enabled" ] then
+                                enabledSet[ c.id ] = true
+                                enabledCount = enabledCount + 1
+                        end
                 end
+                local totalCount = #COUNTRIES
                 local mapPath = WorldMap.generate( enabledSet )
 
                 local mapItem
@@ -2840,7 +2845,9 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                         f:row {
                                 f:spacer { fill_horizontal = 1 },
                                 f:static_text {
-                                        title = "Map of country geography keywords - Red: currently enabled (On) - Blue: supported countries",
+                                        title = "Map of " .. totalCount .. " countries with geographic keywords available"
+                                              .. "  —  Red: " .. enabledCount .. " countries currently enabled (On)"
+                                              .. "  —  Blue: supported countries",
                                         font  = "<system/small>",
                                 },
                                 f:spacer { fill_horizontal = 1 },
@@ -2862,12 +2869,6 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                                 .. "(Verification Monitor), or read the documentation (Help).",
                                 width           = CONTENT_W,
                                 height_in_lines = 4,
-                        },
-                        f:spacer { height = 2 },
-                        f:static_text {
-                                title           = "Click below to open a fully interactive map in your browser.",
-                                width           = CONTENT_W,
-                                height_in_lines = 1,
                         },
                         f:spacer { height = 6 },
                         f:row {

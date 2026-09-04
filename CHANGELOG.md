@@ -1,3 +1,8 @@
+## [0.9.190] – 2026-09-04
+### Changed
+- **Intro tab — map caption is now dynamic**: The caption below the world map now shows the actual country counts, e.g. "Map of 93 countries with geographic keywords available  —  Red: 45 countries currently enabled (On)  —  Blue: supported countries". Both numbers update automatically when the panel is opened.
+- **Removed "Click below…" sentence**: The redundant instruction above the "Show Interactive Map in Browser" button has been removed; the button label is self-explanatory.
+
 ## [0.9.189] – 2026-09-03
 ### Added
 - **10 nye land i Afrika**: Egypt, Marokko, Tunisia (Nord-Afrika), Nigeria, Ghana, Senegal (Vest-Afrika), Tanzania, Etiopia, Uganda (Øst-Afrika) og Namibia (Sørlige Afrika). Alle bruker plugin-standardens befolkningsfilter ≥ 1000 innbyggere for byer (administrative sentre PPLA*/PPLC inkluderes alltid) og hierarkisk struktur (ADM1 → ADM2 → by).
