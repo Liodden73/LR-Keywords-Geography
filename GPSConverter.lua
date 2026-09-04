@@ -33,7 +33,8 @@
 --
 -- DEPENDENCY
 --   LrHttp must be available via the Lightroom SDK, i.e. the host plugin
---   must be able to do:  local LrHttp = import "LrHttp"
+--   must be able to do:  local LrHttp  = import "LrHttp"
+local LrTasks = import "LrTasks"
 --   This module imports it internally. No other external dependency:
 --   a minimal JSON decoder is bundled inline (dkjson is NOT assumed,
 --   since other plugins may not ship it).
@@ -321,22 +322,28 @@ function M.reverseGeocode(lat, lon)
         { field = "User-Agent", value = "LR-Geography-Builder/1.0 (Lightroom Plugin)" },
     }
 
-    local ok, body, respHeaders = pcall(function()
+    -- IMPORTANT: LrHttp.get yields internally. In Lua 5.1 you cannot yield
+    -- across a standard pcall() C-call boundary, so LrTasks.pcall MUST be used
+    -- here — a plain pcall() makes every request fail silently ("No GPS result").
+    local ok, body, respHeaders = LrTasks.pcall(function()
         return LrHttp.get(url, headers)
     end)
 
-    if not ok or type(body) ~= "string" or body == "" then
-        return nil
+    if not ok then
+        return nil, "http_error: " .. tostring(body)
+    end
+    if type(body) ~= "string" or body == "" then
+        return nil, "empty_response"
     end
 
-    local data = jsonDecode(body)
+    local data, jerr = jsonDecode(body)
     if type(data) ~= "table" then
-        return nil
+        return nil, "json_error: " .. tostring(jerr)
     end
 
     -- Nominatim returns { error = "..." } on failure
     if data.error ~= nil then
-        return nil
+        return nil, "nominatim_error: " .. tostring(data.error)
     end
 
     local addr = data.address
@@ -357,6 +364,10 @@ function M.reverseGeocode(lat, lon)
         displayName = data.display_name or "",
         rawAddress  = addr,
     }
+
+    if city == "" then
+        return result, "no_city_in_response"
+    end
 
     return result
 end

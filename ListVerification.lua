@@ -3009,8 +3009,8 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                     props.gps_cur_gps      = dmsStr
                     props.gps_cur_path     = "Searching…"
 
-                    -- Reverse geocode
-                    local geo = GPSConverter.reverseGeocode(lat, lon)
+                    -- Reverse geocode (second return value is a diagnostic reason on failure)
+                    local geo, geoReason = GPSConverter.reverseGeocode(lat, lon)
                     LrTasks.yield()
 
                     if not geo or geo.city == "" then
@@ -3021,6 +3021,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                         filename = filename, size = sizeStr, folder = folderDisplay,
                         gpsStr = dmsStr, keywordPath = "–",
                         conflictType = "No GPS result", matchCount = 0,
+                        geoReason = geoReason, lat = lat, lon = lon,
                         matches = {}, photo = photo,
                       })
                     else
@@ -3219,7 +3220,6 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
           -- Column widths for conflict table
           local CW_FILE    = 140
           local CW_SIZE    = 55
-          local CW_FOLDER  = 160
           local CW_GPS     = 175
           local CW_CONF    = 130
           local CW_ACTION  = 80
@@ -3228,7 +3228,6 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
             spacing = 4,
             f:static_text { title = "Filename",     width = CW_FILE,   font = "<system/bold>" },
             f:static_text { title = "Size (MB)",    width = CW_SIZE,   font = "<system/bold>" },
-            f:static_text { title = "Folder",       width = CW_FOLDER, font = "<system/bold>" },
             f:static_text { title = "GPS",          width = CW_GPS,    font = "<system/bold>" },
             f:static_text { title = "Conflict",     width = CW_CONF,   font = "<system/bold>" },
             f:static_text { title = "Action",       width = CW_ACTION, font = "<system/bold>" },
@@ -3245,9 +3244,22 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                 action = function()
                   LrTasks.startAsyncTask(function()
                     if entry.conflictType == "No GPS result" then
-                      LrDialogs.message("No GPS Result",
-                        "Could not determine location for:\n" .. entry.filename ..
-                        "\n\nCheck that the image has valid GPS coordinates.", "info")
+                      local diag = "Could not determine location for:\n" .. entry.filename
+                      if entry.lat and entry.lon then
+                        diag = diag .. string.format("\n\nCoordinates sent: %.6f, %.6f", entry.lat, entry.lon)
+                      end
+                      if entry.geoReason then
+                        diag = diag .. "\n\nReason: " .. tostring(entry.geoReason)
+                        if tostring(entry.geoReason):find("^http_error") then
+                          diag = diag .. "\n\nThe reverse-geocoding request to OpenStreetMap failed."
+                                      .. "\nCheck that Lightroom has internet access and try again."
+                        elseif tostring(entry.geoReason):find("^no_city") then
+                          diag = diag .. "\n\nOpenStreetMap found no city/town/village for this point."
+                        end
+                      else
+                        diag = diag .. "\n\nCheck that the image has valid GPS coordinates."
+                      end
+                      LrDialogs.message("No GPS Result", diag, "info")
                       return
                     end
                     local geo = entry.geo or {}
@@ -3305,7 +3317,6 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
               spacing = 4,
               f:static_text { title = entry.filename,     width = CW_FILE,   height_in_lines = 1 },
               f:static_text { title = entry.size,         width = CW_SIZE },
-              f:static_text { title = entry.folder,       width = CW_FOLDER, height_in_lines = 1 },
               f:static_text { title = entry.gpsStr,       width = CW_GPS,    height_in_lines = 1 },
               f:static_text { title = entry.conflictType, width = CW_CONF,   height_in_lines = 1 },
               actionBtn,

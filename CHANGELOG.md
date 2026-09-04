@@ -1,3 +1,11 @@
+## [0.9.197] – 2026-09-04
+### Fixed
+- **GPS Keyword Converter fant ALDRI en plassering («No GPS result» for alle bilder – rotårsak funnet)**: Selve omvendt-geokodingen mot OpenStreetMap (Nominatim) feilet stille for hvert eneste bilde. Årsaken var at nettverkskallet `LrHttp.get(...)` var pakket inn i en vanlig Lua `pcall(...)`. Lightroom kjører Lua 5.1, der `LrHttp.get` internt «yield-er» mens den venter på nettverkssvar – og Lua 5.1 tillater IKKE yield på tvers av en vanlig `pcall`-grense («attempt to yield across C-call boundary»). Feilen ble fanget av `pcall` og gjorde at funksjonen alltid returnerte `nil`, tolket som «No GPS result». Kallet bruker nå `LrTasks.pcall(...)`, som er Lightrooms coroutine-bevisste variant og tillater yield. URL-en er verifisert korrekt (curl-test mot Nominatim gir riktig by).
+- **Diagnostikk ved «No GPS result»**: Når et bilde ikke gir treff, viser «Add»-dialogen nå den faktiske årsaken (f.eks. `http_error`, `empty_response`, `json_error`, `nominatim_error` eller `no_city_in_response`) sammen med koordinatene som ble sendt. Dette gjør det mulig å skille mellom nettverksfeil og manglende stedsdata.
+
+### Changed
+- **GPS Keyword Converter konflikttabell: «Folder»-kolonnen fjernet** – Kolonnen er tatt bort fra tabellen for en renere oversikt (mappe vises fortsatt i «Current Image»-seksjonen).
+
 ## [0.9.196] – 2026-09-04
 ### Fixed
 - **GPS Keyword Converter: «No GPS result» for bilder med gyldige GPS-koordinater**: Nominatim-API-kallet brukte `zoom=10` som begrenser resultatet til bynivå og kan mangle adressefelter for mange norske og rurale koordinater. Parameteren er fjernet slik at Nominatim returnerer full adressehierarki. I tillegg er koordinatene nå formatert med eksplisitt desimalformat (`%.7f`) fremfor `tostring()` for å unngå eventuelle formateringsproblemer.
