@@ -2959,8 +2959,14 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
 
           -- ── Generate button ───────────────────────────────────────────────────────
 
+          -- Initialise gps_running BEFORE the button is defined so the enabled
+          -- binding evaluates to true (active) on first render instead of nil.
+          if props.gps_running == nil then props.gps_running = false end
+
           local generateBtn = f:push_button {
-            title   = "Generate Keywords",
+            title   = "  ▶  Generate Keywords  ",
+            width   = 260,
+            font    = "<system/bold>",
             enabled = LrView.bind { key = "gps_running", transform = function(v) return not v end },
             action  = function()
               LrTasks.startAsyncTask(function()
@@ -3068,7 +3074,8 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
 
           -- ── Scope selector ───────────────────────────────────────────────────────
           -- props.gps_scope: "selected" | "folder" | "all"
-          if props.gps_scope == nil then props.gps_scope = "selected" end
+          if props.gps_scope   == nil then props.gps_scope   = "selected" end
+          if props.gps_running == nil then props.gps_running = false     end
 
           local scopeSection = f:group_box {
             title = "Scope",

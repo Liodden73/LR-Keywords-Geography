@@ -1,3 +1,10 @@
+## [0.9.198] – 2026-09-04
+### Fixed
+- **GPS Keyword Converter: «Generate Keywords»-knappen var grå/deaktivert ved oppstart** – Knappen er bundet til `enabled = not gps_running`, men prop-verdien `gps_running` var ikke initialisert (`nil`) når knappen ble bygd, slik at bindingen kunne evaluere feil og gråne ut knappen. `gps_running` initialiseres nå til `false` *før* knappen defineres, slik at knappen er aktiv med en gang fanen åpnes og bare grås ut mens en kjøring faktisk pågår.
+
+### Changed
+- **GPS Keyword Converter: «Generate Keywords»-knappen er større og mer fremtredende** – Knappen er breddet til 260 px, bruker halvfet skrift og har fått et ▶-symbol foran teksten. Merk: Lightroom-SDK-en tillater ikke egendefinert farge (blå) på innebygde knapper – de tegnes alltid i operativsystemets standardstil – så knappen er gjort mer synlig gjennom størrelse og fet skrift i stedet.
+
 ## [0.9.197] – 2026-09-04
 ### Fixed
 - **GPS Keyword Converter fant ALDRI en plassering («No GPS result» for alle bilder – rotårsak funnet)**: Selve omvendt-geokodingen mot OpenStreetMap (Nominatim) feilet stille for hvert eneste bilde. Årsaken var at nettverkskallet `LrHttp.get(...)` var pakket inn i en vanlig Lua `pcall(...)`. Lightroom kjører Lua 5.1, der `LrHttp.get` internt «yield-er» mens den venter på nettverkssvar – og Lua 5.1 tillater IKKE yield på tvers av en vanlig `pcall`-grense («attempt to yield across C-call boundary»). Feilen ble fanget av `pcall` og gjorde at funksjonen alltid returnerte `nil`, tolket som «No GPS result». Kallet bruker nå `LrTasks.pcall(...)`, som er Lightrooms coroutine-bevisste variant og tillater yield. URL-en er verifisert korrekt (curl-test mot Nominatim gir riktig by).
