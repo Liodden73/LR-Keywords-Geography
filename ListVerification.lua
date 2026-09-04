@@ -1458,7 +1458,9 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
         -- Folder list is enumerated lazily inside an async task (catalog:getFolders()
         -- and folder:getChildren() are yielding calls and MUST NOT run during the
         -- synchronous panel build, or LR throws "We can only wait from within a task").
-        local gpsFolderItems = nil  -- nil until user clicks "Load Folders"
+        local gpsFolderItems    = nil  -- nil until user clicks "Load Folders"
+        local gpsRootKwObjects  = nil  -- nil until Load is clicked; array of {name,kw} top-level LR keywords
+        local gpsRootItems      = nil  -- popup items for the Keyword List selector
 
 
         ------------------------------------------------------------------------
@@ -2917,59 +2919,40 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
             height_in_lines = 4,
           }
 
-          -- ── Scope selector ───────────────────────────────────────────────────────
-          -- props.gps_scope: "selected" | "folder" | "all"
-          if props.gps_scope == nil then props.gps_scope = "selected" end
 
-          local scopeSection = f:group_box {
-            title = "Scope",
+          -- ── Keyword List selector ────────────────────────────────────────────────────────────────────────
+
+          -- Root keyword items are populated by the same "Load Folders" async task
+          -- that enumerates the catalog folder tree.
+          if props.gps_kw_root_idx == nil then props.gps_kw_root_idx = 0 end
+          local kwListItems
+          if gpsRootItems then
+            kwListItems = gpsRootItems
+          else
+            kwListItems = { { title = "— click 'Load Folders' in Scope to populate —", value = 0 } }
+          end
+
+          local kwListSection = f:group_box {
+            title = "Keyword List",
             fill_horizontal = 1,
             f:column {
               spacing = f:control_spacing(),
-              f:radio_button {
-                title = "Selected Images",
-                value = LrView.bind("gps_scope"),
-                checked_value = "selected",
+              f:static_text {
+                title           = "If you have multiple geography keyword lists imported in Lightroom, "
+                                .. "select which root keyword to target here. "
+                                .. "Click 'Load Folders' in Scope below to populate the list.",
+                width           = CONTENT_W,
+                height_in_lines = 2,
+                font            = "<system/small>",
               },
               f:row {
-                f:radio_button {
-                  title = "Folder:",
-                  value = LrView.bind("gps_scope"),
-                  checked_value = "folder",
-                },
+                spacing = 8,
+                f:static_text { title = "Root keyword:", font = "<system/bold>", width = 100 },
                 f:popup_menu {
-                  items   = folderItems,
-                  value   = LrView.bind("gps_folder_obj"),
-                  enabled = LrView.bind { key = "gps_scope", transform = function(v) return v == "folder" end },
-                  width   = 400,
+                  items = kwListItems,
+                  value = LrView.bind("gps_kw_root_idx"),
+                  width = 300,
                 },
-                f:push_button {
-                  title  = gpsFolderItems and "Reload Folders" or "Load Folders",
-                  action = function()
-                    -- Enumerate the catalog folder tree inside an async task, then
-                    -- cache the result and rebuild the GPS tab so the popup is filled.
-                    LrTasks.startAsyncTask(function()
-                      local items = { { title = "— select folder —", value = "" } }
-                      local function addFolders(folder, indent)
-                        local name = (indent or "") .. folder:getName()
-                        table.insert(items, { title = name, value = folder })
-                        for _, child in ipairs(folder:getChildren() or {}) do
-                          addFolders(child, (indent or "") .. "    ")
-                        end
-                      end
-                      for _, fld in ipairs(catalog:getFolders() or {}) do
-                        addFolders(fld)
-                      end
-                      gpsFolderItems = items
-                      switchTab(TAB_IDS.GPS)   -- rebuild so popup shows the folders
-                    end)
-                  end,
-                },
-              },
-              f:radio_button {
-                title = "All Images in Catalog (with GPS data)",
-                value = LrView.bind("gps_scope"),
-                checked_value = "all",
               },
             },
           }
@@ -3080,6 +3063,104 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
             end,
           }
 
+          -- ── Scope selector ───────────────────────────────────────────────────────
+          -- props.gps_scope: "selected" | "folder" | "all"
+          if props.gps_scope == nil then props.gps_scope = "selected" end
+
+          local scopeSection = f:group_box {
+            title = "Scope",
+            fill_horizontal = 1,
+            f:column {
+              spacing = f:control_spacing(),
+              f:radio_button {
+                title = "Selected Images",
+                value = LrView.bind("gps_scope"),
+                checked_value = "selected",
+              },
+              f:row {
+                f:radio_button {
+                  title = "Folder:",
+                  value = LrView.bind("gps_scope"),
+                  checked_value = "folder",
+                },
+                f:popup_menu {
+                  items   = folderItems,
+                  value   = LrView.bind("gps_folder_obj"),
+                  enabled = LrView.bind { key = "gps_scope", transform = function(v) return v == "folder" end },
+                  width   = 400,
+                },
+                f:push_button {
+                  title  = gpsFolderItems and "Reload Folders" or "Load Folders",
+                  action = function()
+                    -- Enumerate catalog folder tree AND top-level keywords inside an
+                    -- async task. getFolders/getChildren/getKeywords/getName all yield
+                    -- and must NOT run during synchronous panel build.
+                    LrTasks.startAsyncTask(function()
+
+                      -- ── Folders (alphabetically sorted at each level) ──
+                      local items = { { title = "— select folder —", value = "" } }
+                      local function addFolders(folder, indent)
+                        local name = (indent or "") .. folder:getName()
+                        table.insert(items, { title = name, value = folder })
+                        local children = folder:getChildren() or {}
+                        -- Pre-fetch child names into plain Lua strings BEFORE sorting.
+                        -- getName() yields; calling it inside a sort comparator crosses
+                        -- a C boundary and crashes LR.
+                        local sorted = {}
+                        for _, c in ipairs(children) do
+                          sorted[#sorted+1] = { child = c, name = c:getName() }
+                        end
+                        table.sort(sorted, function(a, b) return a.name < b.name end)
+                        for _, s in ipairs(sorted) do
+                          addFolders(s.child, (indent or "") .. "    ")
+                        end
+                      end
+                      local rootFolders = catalog:getFolders() or {}
+                      local sortedRoots = {}
+                      for _, fld in ipairs(rootFolders) do
+                        sortedRoots[#sortedRoots+1] = { folder = fld, name = fld:getName() }
+                      end
+                      table.sort(sortedRoots, function(a, b) return a.name < b.name end)
+                      for _, r in ipairs(sortedRoots) do
+                        addFolders(r.folder)
+                      end
+                      gpsFolderItems = items
+
+                      -- ── Root keyword list (for "Keyword List" selector) ──
+                      -- catalog:getKeywords() returns all top-level LrKeyword objects
+                      -- (SDK 3.0+; must be called from an async task).
+                      local rootKws = catalog:getKeywords() or {}
+                      local kwObjects = {}
+                      for _, kw in ipairs(rootKws) do
+                        kwObjects[#kwObjects+1] = { name = kw:getName(), kw = kw }
+                      end
+                      table.sort(kwObjects, function(a, b) return a.name < b.name end)
+                      gpsRootKwObjects = kwObjects
+                      local kwItems = { { title = "— All keyword lists —", value = 0 } }
+                      for i, rko in ipairs(kwObjects) do
+                        kwItems[#kwItems+1] = { title = rko.name, value = i }
+                      end
+                      gpsRootItems = kwItems
+
+                      switchTab(TAB_IDS.GPS)   -- rebuild so both popups are filled
+                    end)
+                  end,
+                },
+              },
+              f:radio_button {
+                title = "All Images in Catalog (with GPS data)",
+                value = LrView.bind("gps_scope"),
+                checked_value = "all",
+              },
+              f:separator { fill_horizontal = 1 },
+              f:row {
+                f:spacer { fill_horizontal = 1 },
+                generateBtn,
+                f:spacer { fill_horizontal = 1 },
+              },
+            },
+          }
+
           -- ── Current-image display ─────────────────────────────────────────────────
 
           local currentImageSection = f:group_box {
@@ -3089,19 +3170,19 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
               spacing = 2,
               f:row {
                 spacing = 12,
-                f:static_text { title = "File:",   font = "<system/bold>", width = 50 },
-                f:static_text { value = LrView.bind("gps_cur_filename"), width = 250 },
-                f:static_text { title = "Size:",   font = "<system/bold>", width = 30 },
-                f:static_text { value = LrView.bind("gps_cur_size"),     width = 70 },
-                f:static_text { title = "Folder:", font = "<system/bold>", width = 50 },
-                f:static_text { value = LrView.bind("gps_cur_folder"),   width = 400, height_in_lines = 1 },
+                f:static_text { title = "File:",   font = "<system/small>", width = 50 },
+                f:static_text { value = LrView.bind("gps_cur_filename"), width = 250 , font = "<system/small>" },
+                f:static_text { title = "Size:",   font = "<system/small>", width = 30 },
+                f:static_text { value = LrView.bind("gps_cur_size"),     width = 70 , font = "<system/small>" },
+                f:static_text { title = "Folder:", font = "<system/small>", width = 50 },
+                f:static_text { value = LrView.bind("gps_cur_folder"),   width = 400, height_in_lines = 1 , font = "<system/small>" },
               },
               f:row {
                 spacing = 12,
-                f:static_text { title = "GPS:",     font = "<system/bold>", width = 50 },
-                f:static_text { value = LrView.bind("gps_cur_gps"),  width = 280 },
+                f:static_text { title = "GPS:",     font = "<system/small>", width = 50 },
+                f:static_text { value = LrView.bind("gps_cur_gps"),  width = 280 , font = "<system/small>" },
                 f:static_text { title = "→",        width = 15 },
-                f:static_text { value = LrView.bind("gps_cur_path"), width = 500, height_in_lines = 1 },
+                f:static_text { value = LrView.bind("gps_cur_path"), width = 500, height_in_lines = 1 , font = "<system/small>" },
               },
             },
           }
@@ -3272,15 +3353,28 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                 end
                 local applied = 0
                 local failed  = 0
+                local rootIdx      = props.gps_kw_root_idx or 0
+                local selectedRoot = (rootIdx > 0 and gpsRootKwObjects and gpsRootKwObjects[rootIdx])
+                                      and gpsRootKwObjects[rootIdx].kw or nil
+                local function isUnderRoot(kw, root)
+                  if root == nil then return true end
+                  local parent = kw:getParent()
+                  while parent ~= nil do
+                    if parent == root then return true end
+                    parent = parent:getParent()
+                  end
+                  return false
+                end
                 catalog:withWriteAccessDo("GPS Keyword Converter — apply keywords", function(context)
                   for _, entry in ipairs(gpsSuccesses) do
                     local cityName = entry.match.cityName
                     -- Find keyword in LR catalog
                     local kw = nil
                     for kwObj in catalog:findKeyword(cityName) do
-                      -- Accept first match (user can resolve duplicates with Resolve button first)
-                      kw = kwObj
-                      break
+                      if isUnderRoot(kwObj, selectedRoot) then
+                        kw = kwObj
+                        break
+                      end
                     end
                     if kw then
                       entry.photo:addKeyword(kw)
@@ -3327,13 +3421,9 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
             f:spacer { height = 6 },
             descText,
             f:spacer { height = 4 },
-            scopeSection,
+            kwListSection,
             f:spacer { height = 4 },
-            f:row {
-              f:spacer { fill_horizontal = 1 },
-              generateBtn,
-              f:spacer { fill_horizontal = 1 },
-            },
+            scopeSection,
             f:spacer { height = 4 },
             currentImageSection,
             countersRow,

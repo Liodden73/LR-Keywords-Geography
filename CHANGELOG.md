@@ -1,3 +1,10 @@
+## [0.9.195] – 2026-09-04
+### Added
+- **GPS-fanen: Velger for nøkkellordliste** – Et nytt nedtrekksfelt øverst i GPS Keyword Converter lar brukeren velge hvilken Geography-rotnøkkelordliste som skal brukes ved matching og lagring. Dette er nyttig hvis man har importert flere lister i Lightroom. «All lists» (standardvalg) gir samme oppførsel som tidligere.
+- **GPS-fanen: Mappemeny sortert alfabetisk** – Mappene i «Folder»-menyen ble tidligere listet i en tilfeldig rekkefølge som gjorde det vanskelig å finne riktig mappe. Menyene er nå sortert alfabetisk på hvert nivå. Navnene hentes ut av Lightroom SDK-en *før* sorteringen, slik at ingen «yield»-feil oppstår i sammenligningsfunksjonen.
+- **GPS-fanen: «Generate Keywords»-knappen er nå inne i Scope-gruppen** – Knappen er flyttet til bunnen av «Scope»-boksens kolonne, adskilt fra de øvrige scopevalgene med en separator. Dette gjør det visuelt klart at knappen starter genereringen for det valgte scopet.
+- **GPS-fanen: Mindre skriftstørrelse i «Current Image»-seksjonen** – Filnavn, GPS-koordinater, mappe og bane vises nå i `<system/small>`-fonten for å ta opp mindre plass og gi bedre oversikt.
+
 ## [0.9.194] – 2026-09-04
 ### Fixed
 - **GPS Keyword Converter krasjet med «attempt to call field 'unpack' (a nil value)»**: Konflikttabellen ble bygd med `table.unpack(...)`. Lightroom kjører Lua 5.1, der `unpack` er en global funksjon og `table.unpack` ikke finnes (den kom først i Lua 5.2). Kallet er endret til den globale `unpack(...)`, slik at GPS-fanen kan kjøre «Generate Keywords» uten å krasje.
