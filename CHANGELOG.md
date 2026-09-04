@@ -1,3 +1,9 @@
+## [0.9.196] – 2026-09-04
+### Fixed
+- **GPS Keyword Converter: «No GPS result» for bilder med gyldige GPS-koordinater**: Nominatim-API-kallet brukte `zoom=10` som begrenser resultatet til bynivå og kan mangle adressefelter for mange norske og rurale koordinater. Parameteren er fjernet slik at Nominatim returnerer full adressehierarki. I tillegg er koordinatene nå formatert med eksplisitt desimalformat (`%.7f`) fremfor `tostring()` for å unngå eventuelle formateringsproblemer.
+- **GPS Keyword Converter konflikttabell: «Folder»-kolonnen viste `/Volumes/`-prefikset**: macOS monterer eksterne disker under `/Volumes/`. Dette prefikset er nå fjernet fra visningen slik at f.eks. `/Volumes/LaCie-28TB2/Photos/2025` vises som `LaCie-28TB2/Photos/2025`.
+- **GPS Keyword Converter konflikttabell: «Keyword path»-kolonnen fjernet**: Kolonnen ble for lang og uleselig. Den er fjernet fra tabellen.
+
 ## [0.9.195] – 2026-09-04
 ### Added
 - **GPS-fanen: Velger for nøkkellordliste** – Et nytt nedtrekksfelt øverst i GPS Keyword Converter lar brukeren velge hvilken Geography-rotnøkkelordliste som skal brukes ved matching og lagring. Dette er nyttig hvis man har importert flere lister i Lightroom. «All lists» (standardvalg) gir samme oppførsel som tidligere.

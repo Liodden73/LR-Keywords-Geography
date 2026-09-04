@@ -2998,6 +2998,8 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                     local path      = photo:getRawMetadata("path") or ""
                     local filename  = LrPathUtils.leafName(path)
                     local folder    = LrPathUtils.parent(path)
+                    -- Strip macOS /Volumes/ mount prefix for display
+                    local folderDisplay = folder:gsub("^/[Vv]olumes/", "")
                     local sizeStr   = GPSConverter.getPhotoFileSize(photo)
                     local dmsStr    = GPSConverter.formatDMS(lat, lon)
 
@@ -3016,7 +3018,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                       local sc = props.gps_conflict_count or 0
                       props.gps_conflict_count = sc + 1
                       table.insert(gpsConflicts, {
-                        filename = filename, size = sizeStr, folder = folder,
+                        filename = filename, size = sizeStr, folder = folderDisplay,
                         gpsStr = dmsStr, keywordPath = "–",
                         conflictType = "No GPS result", matchCount = 0,
                         matches = {}, photo = photo,
@@ -3030,7 +3032,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                         local sc = props.gps_conflict_count or 0
                         props.gps_conflict_count = sc + 1
                         table.insert(gpsConflicts, {
-                          filename = filename, size = sizeStr, folder = folder,
+                          filename = filename, size = sizeStr, folder = folderDisplay,
                           gpsStr = dmsStr, keywordPath = "–",
                           conflictType = "No keyword found", matchCount = 0,
                           matches = {}, photo = photo, geo = geo,
@@ -3039,7 +3041,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                         local sc = props.gps_conflict_count or 0
                         props.gps_conflict_count = sc + 1
                         table.insert(gpsConflicts, {
-                          filename = filename, size = sizeStr, folder = folder,
+                          filename = filename, size = sizeStr, folder = folderDisplay,
                           gpsStr = dmsStr, keywordPath = kwPath,
                           conflictType = "Duplicate keyword found (" .. #matches .. ")", matchCount = #matches,
                           matches = matches, photo = photo, geo = geo,
@@ -3219,7 +3221,6 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
           local CW_SIZE    = 55
           local CW_FOLDER  = 160
           local CW_GPS     = 175
-          local CW_PATH    = 175
           local CW_CONF    = 130
           local CW_ACTION  = 80
 
@@ -3229,7 +3230,6 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
             f:static_text { title = "Size (MB)",    width = CW_SIZE,   font = "<system/bold>" },
             f:static_text { title = "Folder",       width = CW_FOLDER, font = "<system/bold>" },
             f:static_text { title = "GPS",          width = CW_GPS,    font = "<system/bold>" },
-            f:static_text { title = "Keyword path", width = CW_PATH,   font = "<system/bold>" },
             f:static_text { title = "Conflict",     width = CW_CONF,   font = "<system/bold>" },
             f:static_text { title = "Action",       width = CW_ACTION, font = "<system/bold>" },
           }
@@ -3307,7 +3307,6 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
               f:static_text { title = entry.size,         width = CW_SIZE },
               f:static_text { title = entry.folder,       width = CW_FOLDER, height_in_lines = 1 },
               f:static_text { title = entry.gpsStr,       width = CW_GPS,    height_in_lines = 1 },
-              f:static_text { title = entry.keywordPath,  width = CW_PATH,   height_in_lines = 1 },
               f:static_text { title = entry.conflictType, width = CW_CONF,   height_in_lines = 1 },
               actionBtn,
             }

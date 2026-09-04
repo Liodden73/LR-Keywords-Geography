@@ -314,8 +314,8 @@ function M.reverseGeocode(lat, lon)
     end
 
     local url = string.format(
-        "https://nominatim.openstreetmap.org/reverse?lat=%s&lon=%s&format=json&accept-language=en&zoom=10",
-        tostring(lat), tostring(lon))
+        "https://nominatim.openstreetmap.org/reverse?lat=%.7f&lon=%.7f&format=json&accept-language=en",
+        lat, lon)
 
     local headers = {
         { field = "User-Agent", value = "LR-Geography-Builder/1.0 (Lightroom Plugin)" },
