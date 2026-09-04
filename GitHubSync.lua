@@ -54,15 +54,26 @@ function M.verifiedPath( countryId )
         return cfg().prefix .. "/" .. countryId .. ".json"
 end
 
+-- True when owner/repo are resolved (enough to READ a public repo, even
+-- without a token).
+function M.isReadable()
+        local c = cfg()
+        return c.owner ~= nil and c.owner ~= "" and c.repo ~= nil and c.repo ~= ""
+end
+
 -- Standard API headers.  `accept` overrides the default JSON accept
 -- (e.g. "application/vnd.github.raw" to fetch raw file bytes).
+-- The Authorization header is only added when a token is present, so read
+-- calls work anonymously against a public repository.
 local function apiHeaders( c, accept, withContentType )
         local h = {
-                { field = "Authorization", value = "token " .. ( c.token or "" ) },
                 { field = "Accept",        value = accept or "application/vnd.github+json" },
                 { field = "User-Agent",    value = "LR-Geography-Builder" },
                 { field = "X-GitHub-Api-Version", value = "2022-11-28" },
         }
+        if c.token and c.token ~= "" then
+                table.insert( h, 1, { field = "Authorization", value = "token " .. c.token } )
+        end
         if withContentType then
                 h[ #h + 1 ] = { field = "Content-Type", value = "application/json" }
         end
@@ -70,21 +81,34 @@ local function apiHeaders( c, accept, withContentType )
 end
 
 -- Ping the repo. Returns (true, "owner/repo") or (false, errorString).
-function M.test()
-        local c = cfg()
-        if not M.isConfigured() then
-                return false, "No token set. Enter a GitHub token in Plug-in Manager."
+-- Works anonymously on a public repo; a token additionally confirms write access.
+-- Pass an optional cfgOverride table (same keys as cfg()) to bypass LrPrefs —
+-- useful when calling from a dialog where props may not yet be flushed to prefs.
+function M.test( cfgOverride )
+        local c = cfgOverride or cfg()
+        if not ( c.owner and c.owner ~= "" and c.repo and c.repo ~= "" ) then
+                return false, "Owner/repository not set. Enter them in Plug-in Manager."
         end
         local url = "https://api.github.com/repos/" .. c.owner .. "/" .. c.repo
         local body, hdrs = LrHttp.get( url, apiHeaders( c ) )
         local status = hdrs and hdrs.status
         if status == 200 then
                 local obj = body and dkjson.decode( body )
-                return true, ( obj and obj.full_name ) or ( c.owner .. "/" .. c.repo )
+                local name = ( obj and obj.full_name ) or ( c.owner .. "/" .. c.repo )
+                local hasToken = ( c.token and c.token ~= "" )
+                local canWrite = obj and obj.permissions and obj.permissions.push
+                if hasToken then
+                        if canWrite then
+                                return true, name .. " (read/write — token OK)"
+                        else
+                                return true, name .. " (read only — token lacks write access)"
+                        end
+                end
+                return true, name .. " (read only — no token; Save/push disabled)"
         elseif status == 401 then
                 return false, "Unauthorized (401) — token is invalid or expired."
         elseif status == 404 then
-                return false, "Repo not found (404) — check owner/repo, or grant the token access to this private repo."
+                return false, "Repo not found (404) — check owner/repo (private repos need a token)."
         end
         return false, "HTTP " .. tostring( status ) .. ( body and ( ": " .. tostring( body ) ) or "" )
 end

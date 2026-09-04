@@ -2430,13 +2430,72 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                         f:static_text { title = "Help", font = "<system/bold>" },
                         f:spacer { height = 5 },
                         f:static_text {
-                                title           = "How to use the Geography Keyword Builder — Data Management window.",
+                                title           = "This window builds a geography keyword hierarchy (continent > country > "
+                                                .. "region > city, plus nature features) that you can import into "
+                                                .. "Lightroom Classic.",
                                 width           = CONTENT_W,
                                 height_in_lines = 2,
                         },
                         f:separator { fill_horizontal = 1 },
-                        f:spacer { height = 5 },
-                        f:static_text { title = "Help content is not yet implemented." },
+                        f:spacer { height = 8 },
+
+                        ----------------------------------------------------------------
+                        -- Data limits
+                        ----------------------------------------------------------------
+                        f:static_text { title = "Data limits", font = "<system/bold>" },
+                        f:spacer { height = 3 },
+                        f:static_text {
+                                title           = "To keep the plug-in fast to load and the keyword tree manageable, "
+                                                .. "the bundled country data is capped. The limits below are applied "
+                                                .. "to the data files that ship with the plug-in.",
+                                width           = CONTENT_W,
+                                height_in_lines = 3,
+                        },
+                        f:spacer { height = 6 },
+
+                        ----------------------------------------------------------------
+                        -- Nature caps
+                        ----------------------------------------------------------------
+                        f:static_text { title = "Nature features", font = "<system/bold>" },
+                        f:spacer { height = 3 },
+                        f:static_text {
+                                title           = "Each country keeps at most 100 of each of the following:\n"
+                                                .. "   \226\128\162 Mountains \226\128\148 the 100 highest, ranked by elevation.\n"
+                                                .. "   \226\128\162 Lakes \226\128\148 the 100 most prominent.\n"
+                                                .. "   \226\128\162 Rivers \226\128\148 the 100 most prominent.\n"
+                                                .. "   \226\128\162 Islands \226\128\148 the 100 most prominent.\n"
+                                                .. "Prominence is estimated from how widely a feature is referenced "
+                                                .. "(number of known name variants), so the best-known lakes, rivers "
+                                                .. "and islands are kept.\n"
+                                                .. "National parks and nature reserves are NOT capped \226\128\148 all of "
+                                                .. "them are included.",
+                                width           = CONTENT_W,
+                                height_in_lines = 9,
+                        },
+                        f:spacer { height = 6 },
+
+                        ----------------------------------------------------------------
+                        -- City thresholds
+                        ----------------------------------------------------------------
+                        f:static_text { title = "Cities", font = "<system/bold>" },
+                        f:spacer { height = 3 },
+                        f:static_text {
+                                title           = "Cities are filtered by population. A higher threshold is used for "
+                                                .. "the most city-dense countries so their keyword trees stay usable:\n"
+                                                .. "   \226\128\162 Large countries \226\128\148 population 5000 or more.\n"
+                                                .. "   \226\128\162 All other countries \226\128\148 population 1000 or more.\n"
+                                                .. "Administrative seats (capitals and regional/municipal seats) are "
+                                                .. "ALWAYS included, regardless of population.",
+                                width           = CONTENT_W,
+                                height_in_lines = 5,
+                        },
+                        f:spacer { height = 3 },
+                        f:static_text {
+                                title           = "Large countries (population 5000+): United States, Mexico, Brazil, "
+                                                .. "Turkey, Panama, Peru, Canada, Sweden, Colombia, United Kingdom.",
+                                width           = CONTENT_W,
+                                height_in_lines = 2,
+                        },
                 }
         end
 

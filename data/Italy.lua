@@ -5,7 +5,7 @@
 return {
 
     meta = {
-        version     = "0.1.3",
+        version     = "0.1.0",
         country     = "Italy",
         native_name = "Italia",
         continent   = "Europe",
@@ -857,7 +857,7 @@ return {
                     cities = { "Bari", "Altamura", "Molfetta", "Bitonto", "Corato", "Gravina in Puglia", "Monopoli", "Modugno" },
                 },
                 {
-                    name = "Trani",
+                    name = "Barletta - Andria - Trani",
                     primary_city = "Andria",
                     cities = { "Andria", "Barletta", "Bisceglie", "Trani", "Canosa di Puglia", "Trinitapoli", "San Ferdinando di Puglia" },
                 },

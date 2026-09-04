@@ -27,29 +27,32 @@ local provider = {}
 function provider.sectionsForTopOfDialog( f, props )
         local prefs = LrPrefs.prefsForPlugin()
 
-        -- Seed the observable dialog props from stored prefs (with defaults).
-        props.gh_token      = prefs.gh_token      or ""
-        props.gh_owner      = prefs.gh_owner      or "Liodden73"
-        props.gh_repo       = prefs.gh_repo       or "LR-Keywords-Geography"
-        props.gh_branch     = prefs.gh_branch     or "main"
-        props.gh_pathPrefix = prefs.gh_pathPrefix or "verified"
-        props.gh_status     = GitHubSync.isConfigured()
-                                 and "Token stored on this machine."
-                                 or  "No token set — sync disabled."
-
-        -- Persist each field back to prefs as it changes.
-        local function persist( key )
-                props:addObserver( key, function()
-                        local v = props[ key ]
-                        if v == "" then v = nil end
-                        prefs[ key ] = v
-                end )
+        -- Helper: treat nil AND empty string as missing.
+        local function orDefault( v, default )
+                if v == nil or v == "" then return default end
+                return v
         end
-        persist( "gh_token" )
-        persist( "gh_owner" )
-        persist( "gh_repo" )
-        persist( "gh_branch" )
-        persist( "gh_pathPrefix" )
+
+        -- In Plugin Manager sections, bind "key" reads/writes plugin PREFS, not props.
+        -- So we seed the PREFS (not props) with defaults for fields the user hasn't set.
+        if prefs.gh_owner == nil or prefs.gh_owner == "" then
+                prefs.gh_owner = "Liodden73"
+        end
+        if prefs.gh_repo == nil or prefs.gh_repo == "" then
+                prefs.gh_repo = "LR-Keywords-Geography"
+        end
+        if prefs.gh_branch == nil or prefs.gh_branch == "" then
+                prefs.gh_branch = "main"
+        end
+        if prefs.gh_pathPrefix == nil or prefs.gh_pathPrefix == "" then
+                prefs.gh_pathPrefix = "verified"
+        end
+
+        -- Status label uses an explicit props binding (we set it ourselves;
+        -- it is NOT a user-typed field, so we don't want it in prefs).
+        props.gh_status = GitHubSync.isConfigured()
+                                 and "Token stored on this machine — read & write enabled."
+                                 or  "No token — read-only (Save/push disabled)."
 
         local bind = LrView.bind
 
@@ -58,35 +61,57 @@ function provider.sectionsForTopOfDialog( f, props )
                         title = "GitHub Sync",
 
                         f:static_text {
-                                title = "Enter a GitHub personal-access token (with repo scope) to " ..
-                                        "read and write verification files. The token is stored only " ..
-                                        "on this machine and is never included in the distributed plugin.",
+                                title = "Reading verification files from a PUBLIC repo works without a token. " ..
+                                        "A GitHub personal-access token (with repo / Contents: write scope) is " ..
+                                        "only required to SAVE (push) changes back to GitHub — writing always " ..
+                                        "needs a token, even on a public repo. The token is stored only on this " ..
+                                        "machine and is never included in the distributed plugin.",
                                 width = 640,
-                                height_in_lines = 2,
+                                height_in_lines = 3,
                         },
 
+                        -- All edit_fields bind DIRECTLY to prefs (the real target in
+                        -- Plugin Manager).  immediate=true flushes each keystroke to
+                        -- prefs so the Test button always sees the current value.
                         f:row {
                                 f:static_text { title = "Token:", width = 90 },
-                                f:password_field {
-                                        value = bind "gh_token",
+                                f:edit_field {
+                                        value          = bind { object = prefs, key = "gh_token" },
                                         width_in_chars = 44,
+                                        immediate      = true,
                                 },
                         },
                         f:row {
                                 f:static_text { title = "Owner:", width = 90 },
-                                f:edit_field { value = bind "gh_owner", width_in_chars = 30 },
+                                f:edit_field {
+                                        value          = bind { object = prefs, key = "gh_owner" },
+                                        width_in_chars = 30,
+                                        immediate      = true,
+                                },
                         },
                         f:row {
                                 f:static_text { title = "Repository:", width = 90 },
-                                f:edit_field { value = bind "gh_repo", width_in_chars = 30 },
+                                f:edit_field {
+                                        value          = bind { object = prefs, key = "gh_repo" },
+                                        width_in_chars = 30,
+                                        immediate      = true,
+                                },
                         },
                         f:row {
                                 f:static_text { title = "Branch:", width = 90 },
-                                f:edit_field { value = bind "gh_branch", width_in_chars = 16 },
+                                f:edit_field {
+                                        value          = bind { object = prefs, key = "gh_branch" },
+                                        width_in_chars = 16,
+                                        immediate      = true,
+                                },
                         },
                         f:row {
                                 f:static_text { title = "Folder:", width = 90 },
-                                f:edit_field { value = bind "gh_pathPrefix", width_in_chars = 16 },
+                                f:edit_field {
+                                        value          = bind { object = prefs, key = "gh_pathPrefix" },
+                                        width_in_chars = 16,
+                                        immediate      = true,
+                                },
                                 f:static_text { title = "(path in the repo for verified/<Country>.json)" },
                         },
 
@@ -94,8 +119,18 @@ function provider.sectionsForTopOfDialog( f, props )
                                 f:push_button {
                                         title  = "Test connection",
                                         action = function()
+                                                -- prefs IS the binding target, so it always has the
+                                                -- latest values (updated on every keystroke by immediate=true).
+                                                -- Read from prefs inside the async task — no pre-capture needed.
                                                 LrTasks.startAsyncTask( function()
-                                                        local ok, msg = GitHubSync.test()
+                                                        local snap = {
+                                                                token  = prefs.gh_token,
+                                                                owner  = orDefault( prefs.gh_owner,      "Liodden73" ),
+                                                                repo   = orDefault( prefs.gh_repo,       "LR-Keywords-Geography" ),
+                                                                branch = orDefault( prefs.gh_branch,     "main" ),
+                                                                prefix = orDefault( prefs.gh_pathPrefix, "verified" ),
+                                                        }
+                                                        local ok, msg = GitHubSync.test( snap )
                                                         if ok then
                                                                 props.gh_status = "Connected: " .. tostring( msg )
                                                                 LrDialogs.message( "GitHub connection OK",
@@ -109,7 +144,7 @@ function provider.sectionsForTopOfDialog( f, props )
                                         end,
                                 },
                                 f:static_text {
-                                        title = bind "gh_status",
+                                        title           = bind { object = props, key = "gh_status" },
                                         fill_horizontal = 1,
                                 },
                         },

@@ -1,3 +1,13 @@
+## [0.9.193] – 2026-09-04
+### Changed
+- **Kraftig reduksjon av datastørrelse (~5,8 MB → ~3,9 MB, ca. 33 %)**: Pluginen lastet tregt fordi de medfølgende landdataene hadde vokst til 93 land. Datamengden er nå redusert med to grep som er dokumentert på Help-fanen:
+  - **Naturelementer begrenset til maks 100 per type per land**: Fjell (de 100 høyeste etter høyde), innsjøer (de 100 mest fremtredende), elver (de 100 mest fremtredende) og øyer (de 100 mest fremtredende). Fremtredenhet er anslått ut fra hvor mange kjente navnevarianter et element har, slik at de mest kjente elementene beholdes. **Nasjonalparker og naturreservater er IKKE begrenset** – alle beholdes.
+  - **Differensiert befolkningsterskel for byer**: De mest by-tette landene (USA, Mexico, Brasil, Tyrkia, Panama, Peru, Canada, Sverige, Colombia, Storbritannia) bruker nå terskel på befolkning ≥ 5000, mens alle øvrige land beholder ≥ 1000. Administrative sentra (hovedsteder og regionale/kommunale sentra) beholdes alltid uansett folketall.
+- **Ny Help-fane med dokumentasjon**: Help-fanen (tidligere en tom plassholder) beskriver nå datagrensene over, slik at det er tydelig hvilke elementer som er tatt med og hvorfor.
+
+### Fixed
+- **Fjernet duplikat datafil for Bosnia-Hercegovina**: En ubrukt fil med små bokstav (`BosniaandHerzegovina.lua`) lå igjen ved siden av den korrekte `BosniaAndHerzegovina.lua`. Den ubrukte filen er slettet.
+
 ## [0.9.192] – 2026-09-04
 ### Fixed
 - **GPS Keyword Converter krasjet ved åpning ("We can only wait from within a task")**: Fanen bygde mappelisten ved å lese katalogtreet (`catalog:getFolders()` / `folder:getChildren()`) synkront under panel-bygging. Disse SDK-kallene «venter» (yield) og må kjøre inne i en task — ellers kaster Lightroom «We can only wait from within a task» straks fanen åpnes. Mappe-opptellingen er nå lat-lastet: en ny knapp «Load Folders» ved siden av mappe-menyen henter katalogtreet inne i en `LrTasks.startAsyncTask` og bygger fanen på nytt slik at menyen fylles. Ingen ytende SDK-kall kjører lenger under synkron panel-bygging.
