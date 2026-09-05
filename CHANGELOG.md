@@ -1,3 +1,7 @@
+## [0.9.204] – 2026-09-05
+### Fixed
+- **GPS Keyword Converter: den faktiske kode-rettelsen for `primary_city`-matching er nå med i pakken.** Endringslogg-teksten for 0.9.202 beskrev rettelsen, men selve kodeendringen i `GPSConverter.lua` (som legger til søk i `muni.primary_city`) var ved en feil ikke inkludert i den bygde pakken for 0.9.202/0.9.203. Den er nå på plass, slik at primærbyer som Oslo faktisk gjenkjennes ved «Generate Keywords».
+
 ## [0.9.203] – 2026-09-05
 ### Changed
 - **GPS Keyword Converter: «Generate Keywords»-knappen gjort markert større** – Bredden er økt fra 260 px til 600 px slik at knappen dominerer Scope-seksjonens bunnen og er lett å se. Merk: Adobe Lightroom SDK tillater ikke egendefinert farge på innebygde knapper, så blå farge er ikke mulig – størrelse og halvfet skrift er det sterkeste visuelle signalet som er tilgjengelig via SDK-en.

@@ -404,6 +404,21 @@ function M.findCityMatches(geo, countries, enabledSet)
                     -- Hierarchical structure: counties -> municipalities -> cities
                     if type(county.municipalities) == "table" then
                         for _, muni in ipairs(county.municipalities) do
+                            -- Match the municipality's PRIMARY city. In the data,
+                            -- the main city of a municipality is stored in
+                            -- `primary_city` (e.g. "Oslo"), NOT in the `cities`
+                            -- list (which holds only secondary cities and is often
+                            -- empty). Without this check, primary cities never match.
+                            if type(muni.primary_city) == "string"
+                               and string.lower(trim(muni.primary_city)) == targetLower then
+                                matches[#matches + 1] = {
+                                    countryId   = country.id,
+                                    countryName = country.name or country.id,
+                                    countyName  = countyName,
+                                    muniName    = muni.name,
+                                    cityName    = muni.primary_city,
+                                }
+                            end
                             if type(muni.cities) == "table" then
                                 for _, cityName in ipairs(muni.cities) do
                                     if string.lower(trim(cityName)) == targetLower then
