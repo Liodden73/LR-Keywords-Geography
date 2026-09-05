@@ -2911,18 +2911,18 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
             font  = GPS_TITLE,
             fill_horizontal = 1,
             f:column {
-              spacing = f:control_spacing(),
+              spacing = 8,
               f:static_text {
                 title           = "If you have multiple geography keyword lists imported in Lightroom, "
                                 .. "select which root keyword to target here. "
-                                .. "Click 'Load Folders' in Scope below to populate the list.",
+                                .. "Click 'Load Folders' in Scope above to populate the list.",
                 width           = CONTENT_W_MN,
                 height_in_lines = 2,
                 font            = GPS_FONT,
               },
               f:row {
                 spacing = 8,
-                f:static_text { title = "Root keyword:", font = "<system/bold>", width = 100 },
+                f:static_text { title = "Root keyword:", font = GPS_FONT, width = 100 },
                 f:popup_menu {
                   items = kwListItems,
                   value = LrView.bind("gps_kw_root_idx"),
@@ -3000,6 +3000,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                     -- Reverse geocode (second return value is a diagnostic reason on failure)
                     local geo, geoReason = lazyGPS().reverseGeocode(lat, lon)
                     LrTasks.yield()
+                    LrTasks.sleep(1.0)  -- Nominatim rate limit: max 1 req/sec
 
                     if not geo or geo.city == "" then
                       props.gps_cur_path = "(no GPS result)"
@@ -3064,7 +3065,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
             font  = GPS_TITLE,
             fill_horizontal = 1,
             f:column {
-              spacing = f:control_spacing(),
+              spacing = 8,
               f:radio_button {
                 title = "Selected Images",
                 value = LrView.bind("gps_scope"),
@@ -3072,7 +3073,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
               },
               f:row {
                 f:radio_button {
-                  title = "Folder:",
+                   title = "Folder:",  font = GPS_FONT,
                   value = LrView.bind("gps_scope"),
                   checked_value = "folder",
                 },
@@ -3084,6 +3085,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                 },
                 f:push_button {
                   title  = gpsFolderItems and "Reload Folders" or "Load Folders",
+                   font   = GPS_FONT,
                   action = function()
                     -- Enumerate catalog folder tree AND top-level keywords inside an
                     -- async task. getFolders/getChildren/getKeywords/getName all yield
@@ -3145,12 +3147,6 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                 value = LrView.bind("gps_scope"),
                 checked_value = "all",
               },
-              f:separator { fill_horizontal = 1 },
-              f:row {
-                f:spacer { fill_horizontal = 1 },
-                generateBtn,
-                f:spacer { fill_horizontal = 1 },
-              },
             },
           }
 
@@ -3165,18 +3161,18 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
               f:row {
                 spacing = 12,
                 f:static_text { title = "File:",   width = 50, font = GPS_FONT },
-                f:static_text { value = LrView.bind("gps_cur_filename"), width = 250, font = GPS_FONT },
+                f:static_text { title = LrView.bind("gps_cur_filename"), width = 250, font = GPS_FONT },
                 f:static_text { title = "Size:",   width = 30, font = GPS_FONT },
-                f:static_text { value = LrView.bind("gps_cur_size"),     width = 70, font = GPS_FONT },
+                f:static_text { title = LrView.bind("gps_cur_size"),     width = 70, font = GPS_FONT },
                 f:static_text { title = "Folder:", width = 50, font = GPS_FONT },
-                f:static_text { value = LrView.bind("gps_cur_folder"),   width = 400, height_in_lines = 1, font = GPS_FONT },
+                f:static_text { title = LrView.bind("gps_cur_folder"),   width = 400, height_in_lines = 1, font = GPS_FONT },
               },
               f:row {
                 spacing = 12,
                 f:static_text { title = "GPS:",    width = 50, font = GPS_FONT },
-                f:static_text { value = LrView.bind("gps_cur_gps"),  width = 280, font = GPS_FONT },
+                f:static_text { title = LrView.bind("gps_cur_gps"),  width = 280, font = GPS_FONT },
                 f:static_text { title = "→",       width = 15, font = GPS_FONT },
-                f:static_text { value = LrView.bind("gps_cur_path"), width = 500, height_in_lines = 1, font = GPS_FONT },
+                f:static_text { title = LrView.bind("gps_cur_path"), width = 500, height_in_lines = 1, font = GPS_FONT },
               },
             },
           }
@@ -3309,7 +3305,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
               f:static_text { title = entry.filename,     width = CW_FILE,   height_in_lines = 1 },
               f:static_text { title = entry.size,         width = CW_SIZE },
               f:static_text { title = entry.gpsStr,       width = CW_GPS,    height_in_lines = 1 },
-              f:static_text { title = entry.conflictType, width = CW_CONF,   height_in_lines = 1 },
+              f:static_text { title = entry.conflictType .. (entry.geoReason and " (" .. entry.geoReason .. ")" or ""), width = CW_CONF, height_in_lines = 1 },
               actionBtn,
             }
             table.insert(conflictRows, row)
@@ -3423,9 +3419,15 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
             f:spacer { height = 6 },
             descText,
             f:spacer { height = 4 },
+            scopeSection,
+            f:spacer { height = 4 },
             kwListSection,
             f:spacer { height = 4 },
-            scopeSection,
+            f:row {
+              f:spacer { fill_horizontal = 1 },
+              generateBtn,
+              f:spacer { fill_horizontal = 1 },
+            },
             f:spacer { height = 4 },
             currentImageSection,
             countersRow,

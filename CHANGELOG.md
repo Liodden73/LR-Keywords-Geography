@@ -1,3 +1,13 @@
+## [0.9.205] – 2026-09-05
+### Fixed
+- **GPS Keyword Converter: «Current Image» viste ingen informasjon under kjøring** – Feltene (filnavn, størrelse, mappe, GPS-koordinat, resultatsti) var bundet med `value = LrView.bind(...)`. For `static_text` i LR SDK er korrekt nøkkel `title`, ikke `value`, slik at teksten faktisk oppdateres i sanntid mens Generate kjører.
+- **GPS Keyword Converter: Nominatim-grensesnittfeil («No GPS result» for alle bilder)** – Kallet til Nominatim OpenStreetMap kjørte uten pause mellom bildene, noe som brøt tjenestens krav om maks 1 forespørsel per sekund. Det er nå lagt inn 1 sekunds pause (`LrTasks.sleep(1.0)`) etter hvert kall. I tillegg vises den spesifikke feilgrunnen direkte i Conflicts-tabellen (f.eks. `http_error`, `json_error`, `nominatim_error`, `no_city_in_response`), slik at det er lettere å diagnostisere eventuelle gjenværende feil.
+
+### Changed
+- **GPS Keyword Converter: rekkefølge på seksjoner endret** – Logisk rekkefølge er nå: «Scope» (velg bilder/mappe) → «Keyword List» (velg søkeordliste) → «Generate Keywords»-knappen. Beskrivelsesteksten er oppdatert tilsvarende («in Scope above» i stedet for «below»).
+- **GPS Keyword Converter: fjernet bold-skrift fra etiketter inne i boksene** – «Root keyword:»-etiketten, «Folder:»-radioknappen og «Reload Folders»/«Load Folders»-knappen bruker nå normal vekt (GPS_FONT 14 px) i stedet for halvfet skrift. Seksjonstitlene (gruppebokstitler) er fortsatt halvfet 15 px.
+- **GPS Keyword Converter: litt mer luft inne i «Scope»- og «Keyword List»-boksene** – Intern radavstand økt fra standard til 8 px.
+
 ## [0.9.204] – 2026-09-05
 ### Fixed
 - **GPS Keyword Converter: den faktiske kode-rettelsen for `primary_city`-matching er nå med i pakken.** Endringslogg-teksten for 0.9.202 beskrev rettelsen, men selve kodeendringen i `GPSConverter.lua` (som legger til søk i `muni.primary_city`) var ved en feil ikke inkludert i den bygde pakken for 0.9.202/0.9.203. Den er nå på plass, slik at primærbyer som Oslo faktisk gjenkjennes ved «Generate Keywords».
