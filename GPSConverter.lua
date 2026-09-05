@@ -562,12 +562,49 @@ function M.findCityMatches(geo, countries, enabledSet)
 end
 
 -- ==========================================================
+-- pointInPolygon(lat, lon, points)
+-- Ray-casting (even-odd rule). `points` is an array of { lat=, lon= }.
+-- Treats lon as X and lat as Y. Polygon may be open or closed
+-- (first point need not repeat at the end). Returns boolean.
+-- ==========================================================
+local function pointInPolygon(lat, lon, points)
+    if type(points) ~= "table" then return false end
+    local n = #points
+    if n < 3 then return false end
+
+    local inside = false
+    local j = n
+    for i = 1, n do
+        local pi = points[i]
+        local pj = points[j]
+        if type(pi) == "table" and type(pj) == "table"
+           and pi.lat and pi.lon and pj.lat and pj.lon then
+            local yi, xi = pi.lat, pi.lon
+            local yj, xj = pj.lat, pj.lon
+            if ((yi > lat) ~= (yj > lat)) then
+                local xint = (xj - xi) * (lat - yi) / (yj - yi) + xi
+                if lon < xint then
+                    inside = not inside
+                end
+            end
+        end
+        j = i
+    end
+    return inside
+end
+M.pointInPolygon = pointInPolygon
+
+-- ==========================================================
 -- M.findBoundingBoxMatch(lat, lon, countries, enabledSet)
--- Curated lat/lon rectangles for polar/remote places where normal geonames /
--- reverse-geocoding return nothing usable (e.g. pack ice, tiny islands).
--- Returns a single match table (Country > Svalbard > <box name>) or nil.
+-- Curated regions for polar/remote places where normal geonames /
+-- reverse-geocoding return nothing usable (e.g. pack ice, fjords, tiny
+-- islands). Two shapes are supported, both under data.svalbard:
+--   * polygons      = { { name=, points = { {lat=,lon=}, ... } }, ... }
+--   * bounding_boxes = { { name=, south=, north=, west=, east= }, ... }
+-- Returns a single match table (Country > Svalbard > <name>) or nil.
 -- Checked BEFORE Nominatim so it works even when reverse-geocoding fails.
--- Boxes are tested in listed order: put small/specific areas before broad ones.
+-- POLYGONS are tested first (they are the precise shapes); boxes act as
+-- broad catch-alls. Within each list, order matters: specific before broad.
 -- ==========================================================
 function M.findBoundingBoxMatch(lat, lon, countries, enabledSet)
     lat = tonumber(lat)
@@ -577,22 +614,39 @@ function M.findBoundingBoxMatch(lat, lon, countries, enabledSet)
     end
     enabledSet = enabledSet or {}
 
+    local function mk(country, name)
+        return {
+            countryId     = country.id,
+            countryName   = country.name or country.id,
+            continentName = country.continent,
+            countyName    = "Svalbard",
+            muniName      = nil,
+            cityName      = name,
+        }
+    end
+
     for _, country in ipairs(countries) do
         if country and country.id and enabledSet[country.id] then
             local data = country.data
-            if type(data) == "table" and type(data.svalbard) == "table"
-               and type(data.svalbard.bounding_boxes) == "table" then
-                for _, box in ipairs(data.svalbard.bounding_boxes) do
-                    if lat >= box.south and lat <= box.north
-                       and lon >= box.west and lon <= box.east then
-                        return {
-                            countryId     = country.id,
-                            countryName   = country.name or country.id,
-                            continentName = country.continent,
-                            countyName    = "Svalbard",
-                            muniName      = nil,
-                            cityName      = box.name,
-                        }
+            if type(data) == "table" and type(data.svalbard) == "table" then
+                local sv = data.svalbard
+
+                -- Precise polygons first
+                if type(sv.polygons) == "table" then
+                    for _, poly in ipairs(sv.polygons) do
+                        if pointInPolygon(lat, lon, poly.points) then
+                            return mk(country, poly.name)
+                        end
+                    end
+                end
+
+                -- Rectangular catch-alls
+                if type(sv.bounding_boxes) == "table" then
+                    for _, box in ipairs(sv.bounding_boxes) do
+                        if lat >= box.south and lat <= box.north
+                           and lon >= box.west and lon <= box.east then
+                            return mk(country, box.name)
+                        end
                     end
                 end
             end

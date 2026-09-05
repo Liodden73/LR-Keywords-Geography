@@ -3453,6 +3453,59 @@ return {
                         "Nybyen",
                         "Olonkinbyen",
                 },
+                -- Curated POLYGONS for named fjords / straits / islands. These are
+                -- precise shapes (point-in-polygon) and are tested BEFORE the
+                -- rectangular bounding_boxes below. Points are { lat, lon } and the
+                -- ring is auto-closed. Keyword becomes
+                -- Geography > World > Europe > Norway > Svalbard > <name>.
+                -- NOTE: initial coordinates are ROUGH rectangles-as-polygons — refine
+                -- them with the interactive map editor, then paste the export here.
+                polygons = {
+                        -- Hornsund — southern Spitsbergen fjord (~76.90–77.05°N, 15.0–16.7°E)
+                        { name = "Hornsund", points = {
+                                { lat = 77.05, lon = 15.00 },
+                                { lat = 77.05, lon = 16.70 },
+                                { lat = 76.90, lon = 16.70 },
+                                { lat = 76.90, lon = 15.00 },
+                        } },
+                        -- Kongsfjorden — NW Spitsbergen, Ny-Ålesund (~78.85–79.05°N, 11.3–12.9°E)
+                        { name = "Kongsfjorden", points = {
+                                { lat = 79.05, lon = 11.30 },
+                                { lat = 79.05, lon = 12.90 },
+                                { lat = 78.85, lon = 12.90 },
+                                { lat = 78.85, lon = 11.30 },
+                        } },
+                        -- Raudfjorden — N Spitsbergen (~79.60–79.86°N, 11.6–12.6°E)
+                        { name = "Raudfjorden", points = {
+                                { lat = 79.86, lon = 11.60 },
+                                { lat = 79.86, lon = 12.60 },
+                                { lat = 79.60, lon = 12.60 },
+                                { lat = 79.60, lon = 11.60 },
+                        } },
+                        -- Hinlopen — strait between Spitsbergen and Nordaustlandet
+                        --            (~78.9–80.05°N, 17.3–21.8°E)
+                        { name = "Hinlopen", points = {
+                                { lat = 80.05, lon = 18.00 },
+                                { lat = 80.05, lon = 21.80 },
+                                { lat = 78.90, lon = 20.50 },
+                                { lat = 78.90, lon = 17.30 },
+                        } },
+                        -- Storfjorden — between Spitsbergen and Barentsøya/Edgeøya
+                        --               (~77.2–78.6°N, 17.8–21.6°E)
+                        { name = "Storfjorden", points = {
+                                { lat = 78.60, lon = 18.50 },
+                                { lat = 78.60, lon = 21.60 },
+                                { lat = 77.20, lon = 20.50 },
+                                { lat = 77.20, lon = 17.80 },
+                        } },
+                        -- Kvitøya — isolated island far NE (~80.0–80.22°N, 31.3–33.6°E)
+                        { name = "Kvitøya", points = {
+                                { lat = 80.22, lon = 31.30 },
+                                { lat = 80.22, lon = 33.60 },
+                                { lat = 80.00, lon = 33.60 },
+                                { lat = 80.00, lon = 31.30 },
+                        } },
+                },
                 -- Curated lat/lon rectangles for remote places where GPS/reverse
                 -- geocoding return nothing usable. Keyword becomes
                 -- Geography > World > Europe > Norway > Svalbard > <name>.

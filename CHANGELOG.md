@@ -1,3 +1,10 @@
+## 0.9.212 — 2026-09-05
+### Lagt til (GPS Keyword Converter — Svalbard-polygoner)
+- **Polygon-støtte for Svalbard-områder** – GPS-konverteringen støtter nå presise *polygoner* (punkt-i-polygon), ikke bare rektangulære bounding-bokser. Polygoner passer uregelmessige fjorder/sund/øyer langt bedre. Ved oppslag sjekkes polygoner *først* (presise former), deretter bounding-bokser (grove fangst-områder), begge før Nominatim.
+- **6 nye Svalbard-områder lagt inn** (i `data/Norway.lua`, som polygoner under `svalbard.polygons`): **Hornsund**, **Kongsfjorden**, **Raudfjorden**, **Hinlopen**, **Storfjorden** og **Kvitøya**. Treff gir søkeordet `Geography > World > Europe > Norway > Svalbard > <navn>`.
+- Ny funksjon `GPSConverter.pointInPolygon(lat, lon, points)` (ray-casting, even-odd). `findBoundingBoxMatch` sjekker nå både `svalbard.polygons` og `svalbard.bounding_boxes`.
+- **Merk:** startkoordinatene for de 6 polygonene er grove (rektangel-lignende) og bør finjusteres i den medfølgende interaktive kart-editoren (`svalbard_polygon_editor.html`) — dra i hjørnene, eksporter Lua, og lim inn i `data/Norway.lua`.
+
 ## 0.9.211 — 2026-09-05
 ### Lagt til / endret (GPS Keyword Converter — vanskelige steder)
 - **Oslo o.l. dobbeltledd kollapses** – der byen er identisk med kommunen (f.eks. Oslo fylke › Oslo kommune › Oslo by) droppes det overflødige by-leddet, slik at søkeordet blir `Geography > World > Europe > Norway > Oslo > Oslo` (to Oslo-ledd, i tråd med katalogens struktur Country › County › Municipality). For flat-strukturerte land droppes by-leddet når det er likt fylket.
