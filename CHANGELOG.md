@@ -1,3 +1,7 @@
+## 0.9.213 — 2026-09-05
+### Forbedret (GPS Keyword Converter — Svalbard-polygoner)
+- **Oppdaterte polygon-koordinater for Svalbard** – de 6 Svalbard-regionene (Hornsund, Kongsfjorden, Raudfjorden, Hinlopen, Storfjorden, Kvitøya) har nå finjusterte polygon-former som følger den faktiske geografien langt bedre. Tidligere versjons grove rektangel-polygoner er erstattet med presise former tilpasset fjorder, sund og øygrenser, verifisert mot satellittbilder og faktisk fotolokalisering.
+
 ## 0.9.212 — 2026-09-05
 ### Lagt til (GPS Keyword Converter — Svalbard-polygoner)
 - **Polygon-støtte for Svalbard-områder** – GPS-konverteringen støtter nå presise *polygoner* (punkt-i-polygon), ikke bare rektangulære bounding-bokser. Polygoner passer uregelmessige fjorder/sund/øyer langt bedre. Ved oppslag sjekkes polygoner *først* (presise former), deretter bounding-bokser (grove fangst-områder), begge før Nominatim.

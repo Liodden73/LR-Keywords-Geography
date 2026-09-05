@@ -3461,64 +3461,63 @@ return {
                 -- NOTE: initial coordinates are ROUGH rectangles-as-polygons — refine
                 -- them with the interactive map editor, then paste the export here.
                 polygons = {
-                        -- Hornsund — southern Spitsbergen fjord (~76.90–77.05°N, 15.0–16.7°E)
                         { name = "Hornsund", points = {
-                                { lat = 77.05, lon = 15.00 },
-                                { lat = 77.05, lon = 16.70 },
-                                { lat = 76.90, lon = 16.70 },
-                                { lat = 76.90, lon = 15.00 },
+                                { lat = 77.0098, lon = 15.3369 },
+                                { lat = 77.1180, lon = 16.6333 },
+                                { lat = 76.9000, lon = 16.7000 },
+                                { lat = 76.8708, lon = 15.6445 },
                         } },
-                        -- Kongsfjorden — NW Spitsbergen, Ny-Ålesund (~78.85–79.05°N, 11.3–12.9°E)
                         { name = "Kongsfjorden", points = {
-                                { lat = 79.05, lon = 11.30 },
-                                { lat = 79.05, lon = 12.90 },
-                                { lat = 78.85, lon = 12.90 },
-                                { lat = 78.85, lon = 11.30 },
+                                { lat = 79.0384, lon = 11.7334 },
+                                { lat = 79.0050, lon = 12.5903 },
+                                { lat = 78.8500, lon = 12.9000 },
+                                { lat = 78.8912, lon = 11.7334 },
                         } },
-                        -- Raudfjorden — N Spitsbergen (~79.60–79.86°N, 11.6–12.6°E)
                         { name = "Raudfjorden", points = {
-                                { lat = 79.86, lon = 11.60 },
-                                { lat = 79.86, lon = 12.60 },
-                                { lat = 79.60, lon = 12.60 },
-                                { lat = 79.60, lon = 11.60 },
+                                { lat = 79.8433, lon = 11.6895 },
+                                { lat = 79.8472, lon = 12.1948 },
+                                { lat = 79.6438, lon = 12.4805 },
+                                { lat = 79.6280, lon = 11.9312 },
                         } },
-                        -- Hinlopen — strait between Spitsbergen and Nordaustlandet
-                        --            (~78.9–80.05°N, 17.3–21.8°E)
                         { name = "Hinlopen", points = {
-                                { lat = 80.05, lon = 18.00 },
-                                { lat = 80.05, lon = 21.80 },
-                                { lat = 78.90, lon = 20.50 },
-                                { lat = 78.90, lon = 17.30 },
+                                { lat = 80.0200, lon = 17.9077 },
+                                { lat = 79.9129, lon = 18.0615 },
+                                { lat = 79.7617, lon = 18.5229 },
+                                { lat = 79.7029, lon = 19.0283 },
+                                { lat = 79.5725, lon = 19.5117 },
+                                { lat = 79.3230, lon = 20.6982 },
+                                { lat = 79.3393, lon = 21.3574 },
+                                { lat = 79.3026, lon = 22.0605 },
+                                { lat = 79.1424, lon = 19.8853 },
+                                { lat = 79.3189, lon = 19.0503 },
+                                { lat = 79.5406, lon = 18.9185 },
+                                { lat = 79.7734, lon = 18.0615 },
+                                { lat = 79.9551, lon = 17.3145 },
                         } },
-                        -- Storfjorden — between Spitsbergen and Barentsøya/Edgeøya
-                        --               (~77.2–78.6°N, 17.8–21.6°E)
                         { name = "Storfjorden", points = {
-                                { lat = 78.60, lon = 18.50 },
-                                { lat = 78.60, lon = 21.60 },
-                                { lat = 77.20, lon = 20.50 },
-                                { lat = 77.20, lon = 17.80 },
+                                { lat = 78.4818, lon = 19.4238 },
+                                { lat = 78.5823, lon = 19.9072 },
+                                { lat = 78.6732, lon = 20.5664 },
+                                { lat = 78.5996, lon = 21.2915 },
+                                { lat = 78.5212, lon = 20.0391 },
+                                { lat = 78.1209, lon = 20.6104 },
+                                { lat = 77.8650, lon = 21.2695 },
+                                { lat = 77.5374, lon = 20.6543 },
+                                { lat = 77.5231, lon = 18.2813 },
+                                { lat = 77.9157, lon = 18.6548 },
+                                { lat = 78.0665, lon = 19.1602 },
                         } },
-                        -- Kvitøya — isolated island far NE (~80.0–80.22°N, 31.3–33.6°E)
                         { name = "Kvitøya", points = {
-                                { lat = 80.22, lon = 31.30 },
-                                { lat = 80.22, lon = 33.60 },
-                                { lat = 80.00, lon = 33.60 },
-                                { lat = 80.00, lon = 31.30 },
+                                { lat = 80.1937, lon = 31.1572 },
+                                { lat = 80.3901, lon = 33.2666 },
+                                { lat = 80.1299, lon = 33.8159 },
+                                { lat = 79.9819, lon = 31.4648 },
                         } },
                 },
-                -- Curated lat/lon rectangles for remote places where GPS/reverse
-                -- geocoding return nothing usable. Keyword becomes
-                -- Geography > World > Europe > Norway > Svalbard > <name>.
-                -- Order matters: small/specific islands FIRST, broad areas LAST
-                -- (findBoundingBoxMatch returns the first box that contains the point).
                 bounding_boxes = {
-                        -- Moffen (walrus island just north of 80°N) ≈ 80.023°N 14.511°E
-                        { name = "Moffen",          south = 79.98, north = 80.06, west = 14.35, east = 14.70 },
-                        -- Karl XII Island (Karl XII-øya, NE Svalbard)  ≈ 80.656°N 25.002°E
-                        { name = "Karl XII Island", south = 80.62, north = 80.70, west = 24.80, east = 25.25 },
-                        -- Pack ice / drift ice north of the archipelago (broad catch-all).
-                        -- Approximate — tune south/east bounds to taste.
-                        { name = "Pack ice",        south = 80.30, north = 85.00, west =  5.00, east = 40.00 },
+                        { name = "Moffen", south = 79.9800, north = 80.0600, west = 14.3500, east = 14.7000 },
+                        { name = "Karl XII Island", south = 80.6200, north = 80.7000, west = 24.8000, east = 25.2500 },
+                        { name = "Pack ice", south = 80.3000, north = 85.0000, west = 5.0000, east = 40.0000 },
                 },
         },
 
