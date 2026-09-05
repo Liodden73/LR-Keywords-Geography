@@ -3388,102 +3388,96 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                   return full
                 end
 
-                -- Find an existing direct child of parentKw (or a top-level keyword when
-                -- parentKw is nil) whose name matches. getChildren()/getKeywords() are
-                -- reads and MUST NOT be called inside withWriteAccessDo (calling a
-                -- yielding SDK method across the write-gate C boundary triggers an
-                -- internal Lightroom error). We are inside an async task here, so it is
-                -- safe to call them BEFORE opening the write gate.
-                local function findChild(parentKw, name)
-                  local children = parentKw and (parentKw:getChildren() or {})
-                                    or (catalog:getKeywords() or {})
-                  for _, ch in ipairs(children) do
-                    if ch:getName() == name then return ch end
+                -- Resolve (or create) the keyword hierarchy for each photo, then apply
+                -- the deepest keyword. Lightroom propagates the parent levels
+                -- automatically, so only the leaf needs to be added to the photo.
+                --
+                -- CRITICAL SDK constraint (the cause of the earlier "only the top
+                -- keyword was applied" bug): a keyword returned by createKeyword() is
+                -- NOT accessible — neither as the parent of another createKeyword call
+                -- nor via getChildren()/addKeyword() — until the withWriteAccessDo gate
+                -- that produced it has RETURNED. Chaining createKeyword calls inside a
+                -- single write gate therefore silently fails after the first level.
+                -- getChildren() on the captured root keyword also does not enumerate
+                -- reliably from this task, so we do NOT descend the tree that way.
+                --
+                -- Instead each level is resolved in ITS OWN write gate:
+                --   createKeyword(name, {}, true, parent, true)
+                -- With returnExisting=true this returns the EXISTING child of `parent`
+                -- with that name when one exists (so nothing is duplicated in the
+                -- user's already-imported hierarchy), otherwise it creates it. Because
+                -- every call sits in its own gate, the returned keyword is fully
+                -- accessible by the time it becomes the parent of the next level.
+                -- addKeyword() then runs in a final, separate gate.
+
+                local resolveErr = nil
+                local leafCache  = {}   -- "seg1>seg2>…" → resolved leaf keyword (accessible)
+
+                -- Resolve a full segment list to its leaf keyword, one write gate per
+                -- level, reusing the cache so repeated locations cost nothing extra.
+                local function resolveLeaf(segments)
+                  local key = table.concat(segments, ">")
+                  if leafCache[key] ~= nil then return leafCache[key] end
+                  local parent = selectedRoot   -- accessible (captured earlier); nil ⇒ top level
+                  local leaf   = nil
+                  for _, segName in ipairs(segments) do
+                    local created = nil
+                    local okSeg, err = LrTasks.pcall(function()
+                      catalog:withWriteAccessDo(
+                        "GPS Keyword Converter — resolve keyword",
+                        function(context)
+                          created = catalog:createKeyword(segName, {}, true, parent, true)
+                        end)
+                    end)
+                    if not okSeg then
+                      resolveErr = resolveErr or tostring(err)
+                      return nil
+                    end
+                    if not created then return nil end
+                    -- The gate has returned ⇒ `created` is now safe to use as parent.
+                    parent = created
+                    leaf   = created
                   end
-                  return nil
+                  leafCache[key] = leaf
+                  return leaf
                 end
 
-                -- ── Phase 1: PLAN (outside the write gate) ──────────────────────────
-                -- For every photo, descend the EXISTING keyword tree as far as it goes
-                -- and record (a) the deepest keyword that already exists and (b) the
-                -- list of segment names that still need to be created underneath it.
-                local plans = {}          -- { photo, existingLeaf, toCreate = {names...} }
                 for _, entry in ipairs(gpsSuccesses) do
                   local segments = buildSegments(entry.match, selectedRoot)
-                  local parent   = selectedRoot   -- nil ⇒ descend from top level
-                  local toCreate = {}
-                  local descend  = true
-                  for _, segName in ipairs(segments) do
-                    local kw = descend and findChild(parent, segName) or nil
-                    if kw then
-                      parent = kw
+                  local leaf     = (#segments > 0) and resolveLeaf(segments) or nil
+                  if leaf then
+                    local okApply, err2 = LrTasks.pcall(function()
+                      catalog:withWriteAccessDo(
+                        "GPS Keyword Converter — apply keyword",
+                        function(context)
+                          entry.photo:addKeyword(leaf)
+                        end)
+                    end)
+                    if okApply then
+                      applied = applied + 1
                     else
-                      -- Once a segment is missing, everything below it is missing too.
-                      descend = false
-                      toCreate[#toCreate + 1] = segName
+                      failed = failed + 1
+                      resolveErr = resolveErr or tostring(err2)
                     end
+                  else
+                    failed = failed + 1
                   end
-                  plans[#plans + 1] = {
-                    photo        = entry.photo,
-                    existingLeaf = parent,     -- may be selectedRoot / nil if nothing exists
-                    toCreate     = toCreate,
-                  }
                 end
 
-                -- ── Phase 2: CREATE missing keywords (single write gate) ────────────
-                -- createKeyword() needs write access. We only ever create keywords here
-                -- and chain each returned object as the parent of the next one — we do
-                -- NOT traverse a freshly-created keyword's children (that object is not
-                -- fully available until this gate returns), so no yielding reads happen
-                -- inside the gate.
-                local leaves    = {}      -- parallel to plans: resolved leaf keyword
-                local okCreate, createErr = LrTasks.pcall(function()
-                  catalog:withWriteAccessDo("GPS Keyword Converter — create keywords", function(context)
-                    for i, plan in ipairs(plans) do
-                      local parent = plan.existingLeaf
-                      local leaf   = plan.existingLeaf
-                      for _, segName in ipairs(plan.toCreate) do
-                        -- createKeyword(name, synonyms, includeOnExport, parent, returnExisting)
-                        local kw = catalog:createKeyword(segName, {}, true, parent, true)
-                        if not kw then break end
-                        parent = kw
-                        leaf   = kw
-                      end
-                      leaves[i] = leaf
-                    end
-                  end)
-                end)
-
-                -- ── Phase 3: APPLY keywords to photos (separate write gate) ─────────
-                -- Keywords created in Phase 2 are only fully available after that gate
-                -- has returned, so addKeyword() runs in its own write gate.
-                local okApply, applyErr = LrTasks.pcall(function()
-                  catalog:withWriteAccessDo("GPS Keyword Converter — apply keywords", function(context)
-                    for i, plan in ipairs(plans) do
-                      local leaf = leaves[i]
-                      if leaf and leaf ~= selectedRoot then
-                        plan.photo:addKeyword(leaf)
-                        applied = applied + 1
-                      else
-                        failed = failed + 1
-                      end
-                    end
-                  end)
-                end)
-
-                if not okCreate or not okApply then
-                  -- Surface the real error text so it can be diagnosed rather than
-                  -- letting Lightroom show a generic "internal error" dialog.
-                  local diag = "Some keywords could not be saved.\n"
-                  if not okCreate then diag = diag .. "\nCreate step: " .. tostring(createErr) end
-                  if not okApply  then diag = diag .. "\nApply step: "  .. tostring(applyErr)  end
-                  LrDialogs.message("Keyword Save Error", diag, "warning")
+                if resolveErr then
+                  -- Surface the real error text instead of Lightroom's generic
+                  -- "internal error" dialog, so any remaining issue can be diagnosed.
+                  LrDialogs.message(
+                    "Keyword Save — error",
+                    applied .. " keyword(s) applied, " .. failed .. " failed.\n\n"
+                      .. "First error:\n" .. resolveErr,
+                    "warning")
                   return
                 end
 
                 local msg = applied .. " keyword(s) applied to photos."
                 if failed > 0 then
-                  msg = msg .. "\n" .. failed .. " could not be applied (keyword creation failed)."
+                  msg = msg .. "\n" .. failed .. " could not be applied."
                 end
                 LrDialogs.message("Keywords Saved", msg, "info")
               end)
