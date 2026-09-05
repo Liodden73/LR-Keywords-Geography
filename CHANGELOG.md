@@ -1966,3 +1966,9 @@ Versioning follows `MAJOR.MINOR.REVISION`:
   Rivers, Viewpoints, Administrative (county → municipality → city → district).
 - Sliders for mountain elevation cutoffs (mainland / Svalbard) and max counts for
   Fjords / Lakes / Rivers; per-county checkboxes plus Svalbard and Jan Mayen.
+
+## [0.9.201] — 2026-09-05
+### Changed
+- GPS Keyword Converter: removed `<system/small>` font from all labels and
+  value fields in the "Current Image" section — text now renders at the
+  default system size instead of the smaller variant.
