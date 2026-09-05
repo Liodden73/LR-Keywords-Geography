@@ -19,7 +19,10 @@
         Returns a module table.
 ]]
 
-local LrHttp      = import 'LrHttp'
+-- NOTE: LrHttp is imported lazily inside each network-using function (not at
+-- module load time). Importing it at top level initialises the HTTP stack
+-- (proxy detection, socket setup) when the plugin is first registered, which
+-- caused a ~60 s delay in Plugin Manager add-time.
 local LrPrefs     = import 'LrPrefs'
 local LrPathUtils = import 'LrPathUtils'
 
@@ -85,6 +88,7 @@ end
 -- Pass an optional cfgOverride table (same keys as cfg()) to bypass LrPrefs —
 -- useful when calling from a dialog where props may not yet be flushed to prefs.
 function M.test( cfgOverride )
+        local LrHttp = import 'LrHttp'
         local c = cfgOverride or cfg()
         if not ( c.owner and c.owner ~= "" and c.repo and c.repo ~= "" ) then
                 return false, "Owner/repository not set. Enter them in Plug-in Manager."
@@ -116,6 +120,7 @@ end
 -- Fetch a file's raw text content. Returns (content, nil) on success,
 -- (nil, "not found") for 404, or (nil, errorString) otherwise.
 function M.readFile( path )
+        local LrHttp = import 'LrHttp'
         local c = cfg()
         local url = "https://api.github.com/repos/" .. c.owner .. "/" .. c.repo ..
                     "/contents/" .. path .. "?ref=" .. c.branch
@@ -134,6 +139,7 @@ end
 -- Get the blob SHA of an existing file (needed to update it). Returns sha
 -- string, or nil if the file does not exist yet.
 local function getSha( c, path )
+        local LrHttp = import 'LrHttp'
         local url = "https://api.github.com/repos/" .. c.owner .. "/" .. c.repo ..
                     "/contents/" .. path .. "?ref=" .. c.branch
         local body, hdrs = LrHttp.get( url, apiHeaders( c ) )
@@ -146,6 +152,7 @@ end
 
 -- Create or update a file. Returns (true, commitUrl) or (false, errorString).
 function M.writeFile( path, content, message )
+        local LrHttp = import 'LrHttp'
         local c = cfg()
         if not M.isConfigured() then
                 return false, "No token set."

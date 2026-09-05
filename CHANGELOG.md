@@ -1,3 +1,13 @@
+## [0.9.200] — 2026-09-05
+### Fixed
+- Plugin Manager add-time delay (~60 s): `LrHttp` is now imported lazily
+  inside network-using functions in `GitHubSync.lua` instead of at module
+  load time. This prevents the HTTP stack from initialising (proxy detection,
+  socket setup) when the plugin is first registered.
+- `GPSConverter.lua`, `Generator.lua`, and `WorldMap.lua` are now lazy-loaded
+  in `ListVerification.lua` — they are `dofile()`d on first use, not at
+  plugin startup, further reducing startup cost.
+
 ## [0.9.199] – 2026-09-05
 ### Changed
 - **Kraftig raskere oppstart – landdata lastes nå «lazy» (ved behov) i stedet for ved oppstart** – Tidligere `dofile()`-et pluginen alle ~90 landdatafilene under `data/` synkront på toppnivå med én gang lista ble åpnet, noe som ga en oppstartspause på rundt 60 sekunder før grensesnittet kom opp. Datafilen for et land lastes nå først den gangen landet faktisk trengs (når det åpnes i Verification Monitor, når nøkkelord genereres, eller når versjon/geodata slås opp), og resultatet caches slik at hver fil bare leses én gang. Oppstart går dermed nesten momentant, og bare det først aktive landet (Norge) lastes inn med det samme.

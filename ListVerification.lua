@@ -32,13 +32,30 @@ local LrStringUtils     = import 'LrStringUtils'
 local pluginPath = _PLUGIN.path
 local dataDir    = LrPathUtils.child( pluginPath, "data" )
 
--- GPS Keyword Converter module (standalone, reusable)
-local GPSConverter = dofile( LrPathUtils.child( pluginPath, "GPSConverter.lua" ) )
+-- ── Lazy-loaded heavy modules ─────────────────────────────────────────────────
+-- Loaded only on first use so Plugin Manager add-time stays fast.
+local _GPSConverter, _Generator, _WorldMap = nil, nil, nil
 
+local function lazyGPS()
+    if _GPSConverter == nil then
+        _GPSConverter = dofile( LrPathUtils.child( pluginPath, "GPSConverter.lua" ) )
+    end
+    return _GPSConverter
+end
 
-local genPath   = LrPathUtils.child( pluginPath, "Generator.lua" )
-local Generator = dofile( genPath )
-local WorldMap  = dofile( LrPathUtils.child( pluginPath, "WorldMap.lua" ) )
+local function lazyGen()
+    if _Generator == nil then
+        _Generator = dofile( LrPathUtils.child( pluginPath, "Generator.lua" ) )
+    end
+    return _Generator
+end
+
+local function lazyMap()
+    if _WorldMap == nil then
+        _WorldMap = dofile( LrPathUtils.child( pluginPath, "WorldMap.lua" ) )
+    end
+    return _WorldMap
+end
 
 local function makeCountyNames( data )
         local names = {}
@@ -1054,7 +1071,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                 end
                         end
                         if genPrefs then
-                                local output    = Generator.generate( getData( country ), genPrefs )
+                                local output    = lazyGen().generate( getData( country ), genPrefs )
                                 local lineCount = 0
                                 for _ in output:gmatch( "[^\n]+" ) do lineCount = lineCount + 1 end
                                 if lineCount > 1 then
@@ -2955,8 +2972,8 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                     local folder    = LrPathUtils.parent(path)
                     -- Strip macOS /Volumes/ mount prefix for display
                     local folderDisplay = folder:gsub("^/[Vv]olumes/", "")
-                    local sizeStr   = GPSConverter.getPhotoFileSize(photo)
-                    local dmsStr    = GPSConverter.formatDMS(lat, lon)
+                    local sizeStr   = lazyGPS().getPhotoFileSize(photo)
+                    local dmsStr    = lazyGPS().formatDMS(lat, lon)
 
                     props.gps_cur_filename = filename
                     props.gps_cur_size     = sizeStr
@@ -2965,7 +2982,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                     props.gps_cur_path     = "Searching…"
 
                     -- Reverse geocode (second return value is a diagnostic reason on failure)
-                    local geo, geoReason = GPSConverter.reverseGeocode(lat, lon)
+                    local geo, geoReason = lazyGPS().reverseGeocode(lat, lon)
                     LrTasks.yield()
 
                     if not geo or geo.city == "" then
@@ -2980,8 +2997,8 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                         matches = {}, photo = photo,
                       })
                     else
-                      local matches = GPSConverter.findCityMatches(geo, COUNTRIES, enabledSet)
-                      local kwPath  = #matches > 0 and GPSConverter.formatKeywordPath(matches[1]) or "–"
+                      local matches = lazyGPS().findCityMatches(geo, COUNTRIES, enabledSet)
+                      local kwPath  = #matches > 0 and lazyGPS().formatKeywordPath(matches[1]) or "–"
                       props.gps_cur_path = kwPath
 
                       if #matches == 0 then
@@ -3241,7 +3258,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                   LrTasks.startAsyncTask(function()
                     local lines = { "Multiple keyword matches found for city: " .. (capturedEntry.geo and capturedEntry.geo.city or "?") .. "\n" }
                     for idx, m in ipairs(capturedEntry.matches) do
-                      lines[#lines+1] = idx .. ".  " .. GPSConverter.formatKeywordPath(m)
+                      lines[#lines+1] = idx .. ".  " .. lazyGPS().formatKeywordPath(m)
                     end
                     lines[#lines+1] = "\nPress OK to use the FIRST match, or Cancel to skip."
                     local r = LrDialogs.confirm(
@@ -3256,13 +3273,13 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                       table.insert(gpsSuccesses, {
                         photo = capturedEntry.photo,
                         match = capturedEntry.matches[1],
-                        path  = GPSConverter.formatKeywordPath(capturedEntry.matches[1]),
+                        path  = lazyGPS().formatKeywordPath(capturedEntry.matches[1]),
                       })
                       local sc = props.gps_success_count or 0
                       props.gps_success_count = sc + 1
                       local cc = props.gps_conflict_count or 0
                       if cc > 0 then props.gps_conflict_count = cc - 1 end
-                      LrDialogs.message("Resolved", "Match applied:\n" .. GPSConverter.formatKeywordPath(capturedEntry.matches[1]), "info")
+                      LrDialogs.message("Resolved", "Match applied:\n" .. lazyGPS().formatKeywordPath(capturedEntry.matches[1]), "info")
                     end
                   end)
                 end,
@@ -3415,7 +3432,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                         end
                 end
                 local totalCount = #COUNTRIES
-                local mapPath = WorldMap.generate( enabledSet )
+                local mapPath = lazyMap().generate( enabledSet )
 
                 local mapItem
                 if mapPath then
@@ -3481,7 +3498,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                                                         currentEnabled[ c.id ] = true
                                                                 end
                                                         end
-                                                        local htmlPath = WorldMap.generateHTML( currentEnabled )
+                                                        local htmlPath = lazyMap().generateHTML( currentEnabled )
                                                         if htmlPath then
                                                                 local url
                                                                 if WIN_ENV then
