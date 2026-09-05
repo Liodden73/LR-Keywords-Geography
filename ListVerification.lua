@@ -2937,6 +2937,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                   items = kwListItems,
                   value = LrView.bind("gps_kw_root_idx"),
                   width = 300,
+                  font  = GPS_FONT,
                 },
               },
             },
@@ -2949,8 +2950,9 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
           if props.gps_running == nil then props.gps_running = false end
 
           local generateBtn = f:push_button {
-            title   = "  ▶   Generate Keywords   ▶",
-            width   = 600,
+            title   = "Generate Keywords",
+            width   = 350,
+            height  = 36,
             font    = "<system/bold>",
             enabled = LrView.bind { key = "gps_running", transform = function(v) return not v end },
             action  = function()
@@ -3078,6 +3080,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
               spacing = 8,
               f:radio_button {
                 title = "Selected Images",
+                font  = GPS_FONT,
                 value = LrView.bind("gps_scope"),
                 checked_value = "selected",
               },
@@ -3092,6 +3095,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                   value   = LrView.bind("gps_folder_obj"),
                   enabled = LrView.bind { key = "gps_scope", transform = function(v) return v == "folder" end },
                   width   = 400,
+                  font    = GPS_FONT,
                 },
                 f:push_button {
                   title  = gpsFolderItems and "Reload Folders" or "Load Folders",
@@ -3154,6 +3158,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
               },
               f:radio_button {
                 title = "All Images in Catalog (with GPS data)",
+                font  = GPS_FONT,
                 value = LrView.bind("gps_scope"),
                 checked_value = "all",
               },
@@ -3170,18 +3175,22 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
               spacing = 2,
               f:row {
                 spacing = 12,
-                f:static_text { title = "File:",   width = 50, font = GPS_FONT },
-                f:static_text { title = LrView.bind("gps_cur_filename"), width = 250, font = GPS_FONT },
-                f:static_text { title = "Size:",   width = 30, font = GPS_FONT },
-                f:static_text { title = LrView.bind("gps_cur_size"),     width = 70, font = GPS_FONT },
-                f:static_text { title = "Folder:", width = 50, font = GPS_FONT },
-                f:static_text { title = LrView.bind("gps_cur_folder"),   width = 400, height_in_lines = 1, font = GPS_FONT },
+                f:static_text { title = "File:",   width = 70, font = GPS_FONT },
+                f:static_text { title = LrView.bind("gps_cur_filename"), width = 500, font = GPS_FONT },
               },
               f:row {
                 spacing = 12,
-                f:static_text { title = "GPS:",    width = 50, font = GPS_FONT },
-                f:static_text { title = LrView.bind("gps_cur_gps"),  width = 280, font = GPS_FONT },
-                f:static_text { title = "→",       width = 15, font = GPS_FONT },
+                f:static_text { title = "Folder:", width = 70, font = GPS_FONT },
+                f:static_text { title = LrView.bind("gps_cur_folder"),   width = 500, height_in_lines = 1, font = GPS_FONT },
+              },
+              f:row {
+                spacing = 12,
+                f:static_text { title = "GPS:",    width = 70, font = GPS_FONT },
+                f:static_text { title = LrView.bind("gps_cur_gps"),  width = 400, font = GPS_FONT },
+              },
+              f:row {
+                spacing = 12,
+                f:static_text { title = "",        width = 70 },
                 f:static_text { title = LrView.bind("gps_cur_path"), width = 500, height_in_lines = 1, font = GPS_FONT },
               },
             },
@@ -3493,9 +3502,9 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
           }
 
           local bottomRow = f:row {
-            spacing = 12,
+            fill_horizontal = 1,
+            f:spacer { fill_horizontal = 1 },
             saveBtn,
-            closeBtn,
           }
 
           -- ── Assemble panel ───────────────────────────────────────────────────────

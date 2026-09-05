@@ -1,3 +1,10 @@
+## 0.9.210 — 2026-09-05
+- GPS-fanen: "Selected Images" og "All Images in Catalog" vises nå uten bold skrift
+- GPS-fanen: Rullegardinmenyene under "Folder" og "Root keyword" bruker nå normal skrift
+- GPS-fanen: "Generate Keywords"-knappen er smalere og høyere, uten piler
+- GPS-fanen: "Current Image"-seksjonen viser nå File, Folder og GPS på separate rader; Size er fjernet; Folder-verdi og søkeord-streng starter horisontalt på samme sted
+- GPS-fanen: "Save"-knappen er høyrejustert; "Close"-knappen på samme rad er fjernet
+
 ## [0.9.209] – 2026-09-05
 ### Fixed
 - **GPS Keyword Converter: «Save» la søkeordet på feil rotnivå (manglende kontinent-nivå)** – Save-rutinen bygde søkeordstien som `Geography > World > Norway > …` i stedet for `Geography > World > Europe > Norway > …`, noe som gjorde at Lightroom opprettet et nytt `Norway`-rotsøkeord utenfor den eksisterende listen. Hvert land-objekt har allerede et `continent`-felt i plugin-dataene; dette feltet sendes nå videre som `continentName` i match-resultatet fra `findCityMatches()` og settes inn mellom «World» og landet i både `buildSegments` (Save) og `formatKeywordPath` (visning). Resultatet er at søkeordet nå plasseres direkte i den riktige posisjonen i den eksisterende søkeordlisten.
