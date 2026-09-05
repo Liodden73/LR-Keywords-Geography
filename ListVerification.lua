@@ -2851,6 +2851,13 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
 
         local function buildGPSPanel()
 
+          -- Font sizes for this tab: body text in the gray fields is a bit larger
+          -- than the SDK default, and the group-box section titles are two notches
+          -- larger still. The { name, size } table form is honoured by the LR SDK
+          -- (see the footer/version text elsewhere in this file).
+          local GPS_FONT  = { name = "<system>",      size = 14 }
+          local GPS_TITLE = { name = "<system/bold>", size = 15 }
+
           -- ── Helpers ──────────────────────────────────────────────────────────────
 
           -- Folder items are read from the cache (gpsFolderItems). They are populated
@@ -2881,8 +2888,9 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                   .. "city-level keyword and applies it to the photo in Lightroom. "
                   .. "Only city-level keywords are matched — not parent or child levels. "
                   .. "Conflicts (no match found, or duplicate matches) are listed below for manual review.",
-            width           = CONTENT_W,
+            width           = CONTENT_W_MN,
             height_in_lines = 4,
+            font            = GPS_FONT,
           }
 
 
@@ -2900,6 +2908,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
 
           local kwListSection = f:group_box {
             title = "Keyword List",
+            font  = GPS_TITLE,
             fill_horizontal = 1,
             f:column {
               spacing = f:control_spacing(),
@@ -2907,9 +2916,9 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                 title           = "If you have multiple geography keyword lists imported in Lightroom, "
                                 .. "select which root keyword to target here. "
                                 .. "Click 'Load Folders' in Scope below to populate the list.",
-                width           = CONTENT_W,
+                width           = CONTENT_W_MN,
                 height_in_lines = 2,
-                font            = "<system/small>",
+                font            = GPS_FONT,
               },
               f:row {
                 spacing = 8,
@@ -2930,8 +2939,8 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
           if props.gps_running == nil then props.gps_running = false end
 
           local generateBtn = f:push_button {
-            title   = "  ▶  Generate Keywords  ",
-            width   = 260,
+            title   = "  ▶   Generate Keywords   ▶",
+            width   = 600,
             font    = "<system/bold>",
             enabled = LrView.bind { key = "gps_running", transform = function(v) return not v end },
             action  = function()
@@ -2947,6 +2956,13 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                 props.gps_cur_gps       = ""
                 props.gps_cur_path      = ""
                 props.gps_status        = "Running…"
+
+                -- Country data is now lazy-loaded (getData). findCityMatches reads
+                -- country.data directly, so ensure every enabled country's data is
+                -- loaded before matching — otherwise all lookups return no match.
+                for _, c in ipairs(COUNTRIES) do
+                  if enabledSet[c.id] then getData(c) end
+                end
 
                 -- Collect photos to process
                 local photos = {}
@@ -3045,6 +3061,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
 
           local scopeSection = f:group_box {
             title = "Scope",
+            font  = GPS_TITLE,
             fill_horizontal = 1,
             f:column {
               spacing = f:control_spacing(),
@@ -3141,24 +3158,25 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
 
           local currentImageSection = f:group_box {
             title = "Current Image",
+            font  = GPS_TITLE,
             fill_horizontal = 1,
             f:column {
               spacing = 2,
               f:row {
                 spacing = 12,
-                f:static_text { title = "File:",   width = 50 },
-                f:static_text { value = LrView.bind("gps_cur_filename"), width = 250 },
-                f:static_text { title = "Size:",   width = 30 },
-                f:static_text { value = LrView.bind("gps_cur_size"),     width = 70 },
-                f:static_text { title = "Folder:", width = 50 },
-                f:static_text { value = LrView.bind("gps_cur_folder"),   width = 400, height_in_lines = 1 },
+                f:static_text { title = "File:",   width = 50, font = GPS_FONT },
+                f:static_text { value = LrView.bind("gps_cur_filename"), width = 250, font = GPS_FONT },
+                f:static_text { title = "Size:",   width = 30, font = GPS_FONT },
+                f:static_text { value = LrView.bind("gps_cur_size"),     width = 70, font = GPS_FONT },
+                f:static_text { title = "Folder:", width = 50, font = GPS_FONT },
+                f:static_text { value = LrView.bind("gps_cur_folder"),   width = 400, height_in_lines = 1, font = GPS_FONT },
               },
               f:row {
                 spacing = 12,
-                f:static_text { title = "GPS:",    width = 50 },
-                f:static_text { value = LrView.bind("gps_cur_gps"),  width = 280 },
-                f:static_text { title = "→",       width = 15 },
-                f:static_text { value = LrView.bind("gps_cur_path"), width = 500, height_in_lines = 1 },
+                f:static_text { title = "GPS:",    width = 50, font = GPS_FONT },
+                f:static_text { value = LrView.bind("gps_cur_gps"),  width = 280, font = GPS_FONT },
+                f:static_text { title = "→",       width = 15, font = GPS_FONT },
+                f:static_text { value = LrView.bind("gps_cur_path"), width = 500, height_in_lines = 1, font = GPS_FONT },
               },
             },
           }
@@ -3299,12 +3317,12 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
 
           local noConflictsNote = f:static_text {
             title  = #gpsConflicts == 0 and "No conflicts — run Generate to populate this list." or "",
-            width  = CONTENT_W - 20,
-            font   = "<system/small>",
+            width  = CONTENT_W_MN - 20,
+            font   = GPS_FONT,
           }
 
           local conflictScrollView = f:scrolled_view {
-            width  = CONTENT_W,
+            width  = CONTENT_W_MN,
             height = 200,
             f:column {
               spacing = 2,
@@ -3315,6 +3333,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
 
           local conflictSection = f:group_box {
             title = "Conflicts",
+            font  = GPS_TITLE,
             fill_horizontal = 1,
             f:column {
               spacing = 4,
@@ -3567,7 +3586,9 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                         f:tab_view_item {
                                 title      = "GPS Keyword Converter",
                                 identifier = TAB_IDS.GPS,
-                                f:column { width = CONTENT_W, spacing = f:control_spacing(), panelGPS },
+                                -- Match the widest tab (Monitor) so the GPS content fills
+                                -- the window with ≤10 px right margin instead of ~70 px.
+                                f:column { width = CONTENT_W_MN, spacing = f:control_spacing(), panelGPS },
                         },
                         f:tab_view_item {
                                 title      = "Help",

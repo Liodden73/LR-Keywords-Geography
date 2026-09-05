@@ -1,3 +1,17 @@
+## [0.9.203] – 2026-09-05
+### Changed
+- **GPS Keyword Converter: «Generate Keywords»-knappen gjort markert større** – Bredden er økt fra 260 px til 600 px slik at knappen dominerer Scope-seksjonens bunnen og er lett å se. Merk: Adobe Lightroom SDK tillater ikke egendefinert farge på innebygde knapper, så blå farge er ikke mulig – størrelse og halvfet skrift er det sterkeste visuelle signalet som er tilgjengelig via SDK-en.
+
+## [0.9.202] – 2026-09-05
+### Fixed
+- **GPS Keyword Converter: «Generate Keywords» ga «No keyword found» for ALLE bilder – to rotårsaker funnet og fikset.**
+  1. *Regresjon fra lazy-lasting:* `GPSConverter.findCityMatches` leser `country.data` direkte, men etter at landdata ble gjort «lazy» (v0.9.199) var denne `nil` inntil landet var åpnet. Nå lastes datafilen for hvert aktivert land eksplisitt (`getData()`) rett før matchingen kjøres, slik at oppslagene faktisk har data å søke i.
+  2. *Datastruktur-feil:* Hovedbyen i en kommune ligger i feltet `primary_city` (f.eks. «Oslo»), IKKE i `cities`-lista (som bare inneholder sekundærbyer og ofte er tom). `findCityMatches` sjekket tidligere kun `cities`-listene, så primærbyer som Oslo ble aldri funnet. Matchingen sjekker nå også `primary_city` for hver kommune.
+
+### Changed
+- **GPS Keyword Converter: vinduet bruker nå full bredde.** Kolonnebredden i GPS-fanen er økt til samme bredde som «Verification Monitor» (den bredeste fanen), slik at det store mellomrommet mellom feltene og høyre ytterkant forsvinner.
+- **GPS Keyword Converter: større og mer lesbar tekst.** Brødtekst i feltene bruker nå 14 px systemskrift, og seksjonstitlene («Keyword List», «Scope», «Current Image», «Conflicts») bruker halvfet 15 px – to hakk større enn før.
+
 ## [0.9.200] — 2026-09-05
 ### Fixed
 - Plugin Manager add-time delay (~60 s): `LrHttp` is now imported lazily
