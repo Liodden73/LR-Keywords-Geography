@@ -22,7 +22,6 @@ local LrDialogs         = import 'LrDialogs'
 local LrFunctionContext = import 'LrFunctionContext'
 local LrPathUtils       = import 'LrPathUtils'
 local LrPrefs           = import 'LrPrefs'
-local LrHttp            = import 'LrHttp'
 local LrTasks           = import 'LrTasks'
 local LrApplication     = import 'LrApplication'
 local LrStringUtils     = import 'LrStringUtils'
@@ -31,6 +30,17 @@ local LrStringUtils     = import 'LrStringUtils'
 
 local pluginPath = _PLUGIN.path
 local dataDir    = LrPathUtils.child( pluginPath, "data" )
+
+-- ── Lazy LrHttp ───────────────────────────────────────────────────────────────
+-- Importing LrHttp at top level initialises the HTTP stack (proxy detection,
+-- socket setup) the moment this file runs — i.e. every time the dialog opens —
+-- which added a ~60 s delay before the window appeared. Import it lazily instead,
+-- so the cost is only paid the first time a network call is actually made.
+local _LrHttp = nil
+local function http()
+    if _LrHttp == nil then _LrHttp = import 'LrHttp' end
+    return _LrHttp
+end
 
 -- ── Lazy-loaded heavy modules ─────────────────────────────────────────────────
 -- Loaded only on first use so Plugin Manager add-time stays fast.
@@ -485,7 +495,7 @@ local function fetchWikidataNames( cid, level )
                 { field = "Accept",     value = "application/sparql-results+json" },
         }
 
-        local body = LrHttp.get( url, headers, 30 )
+        local body = http().get( url, headers, 30 )
         if not body or body == "" then return nil end
 
         local data, _pos, decErr = dkjson.decode( body )
@@ -3379,8 +3389,11 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                 end
 
                 -- Find an existing direct child of parentKw (or a top-level keyword when
-                -- parentKw is nil) whose name matches; getChildren()/getKeywords() are
-                -- yielding SDK calls but we are already inside an async task here.
+                -- parentKw is nil) whose name matches. getChildren()/getKeywords() are
+                -- reads and MUST NOT be called inside withWriteAccessDo (calling a
+                -- yielding SDK method across the write-gate C boundary triggers an
+                -- internal Lightroom error). We are inside an async task here, so it is
+                -- safe to call them BEFORE opening the write gate.
                 local function findChild(parentKw, name)
                   local children = parentKw and (parentKw:getChildren() or {})
                                     or (catalog:getKeywords() or {})
@@ -3390,31 +3403,84 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                   return nil
                 end
 
-                catalog:withWriteAccessDo("GPS Keyword Converter — apply keywords", function(context)
-                  for _, entry in ipairs(gpsSuccesses) do
-                    local segments = buildSegments(entry.match, selectedRoot)
-                    local parent   = selectedRoot   -- nil ⇒ descend from top level
-                    local leaf     = nil
-                    local ok       = true
-                    for _, segName in ipairs(segments) do
-                      local kw = findChild(parent, segName)
-                      if not kw then
-                        -- Not present in the catalog — create it under the current parent.
-                        -- createKeyword(name, synonyms, includeOnExport, parent, returnExisting)
-                        kw = catalog:createKeyword(segName, {}, true, parent, true)
-                      end
-                      if not kw then ok = false break end
+                -- ── Phase 1: PLAN (outside the write gate) ──────────────────────────
+                -- For every photo, descend the EXISTING keyword tree as far as it goes
+                -- and record (a) the deepest keyword that already exists and (b) the
+                -- list of segment names that still need to be created underneath it.
+                local plans = {}          -- { photo, existingLeaf, toCreate = {names...} }
+                for _, entry in ipairs(gpsSuccesses) do
+                  local segments = buildSegments(entry.match, selectedRoot)
+                  local parent   = selectedRoot   -- nil ⇒ descend from top level
+                  local toCreate = {}
+                  local descend  = true
+                  for _, segName in ipairs(segments) do
+                    local kw = descend and findChild(parent, segName) or nil
+                    if kw then
                       parent = kw
-                      leaf   = kw
-                    end
-                    if ok and leaf then
-                      entry.photo:addKeyword(leaf)
-                      applied = applied + 1
                     else
-                      failed = failed + 1
+                      -- Once a segment is missing, everything below it is missing too.
+                      descend = false
+                      toCreate[#toCreate + 1] = segName
                     end
                   end
+                  plans[#plans + 1] = {
+                    photo        = entry.photo,
+                    existingLeaf = parent,     -- may be selectedRoot / nil if nothing exists
+                    toCreate     = toCreate,
+                  }
+                end
+
+                -- ── Phase 2: CREATE missing keywords (single write gate) ────────────
+                -- createKeyword() needs write access. We only ever create keywords here
+                -- and chain each returned object as the parent of the next one — we do
+                -- NOT traverse a freshly-created keyword's children (that object is not
+                -- fully available until this gate returns), so no yielding reads happen
+                -- inside the gate.
+                local leaves    = {}      -- parallel to plans: resolved leaf keyword
+                local okCreate, createErr = LrTasks.pcall(function()
+                  catalog:withWriteAccessDo("GPS Keyword Converter — create keywords", function(context)
+                    for i, plan in ipairs(plans) do
+                      local parent = plan.existingLeaf
+                      local leaf   = plan.existingLeaf
+                      for _, segName in ipairs(plan.toCreate) do
+                        -- createKeyword(name, synonyms, includeOnExport, parent, returnExisting)
+                        local kw = catalog:createKeyword(segName, {}, true, parent, true)
+                        if not kw then break end
+                        parent = kw
+                        leaf   = kw
+                      end
+                      leaves[i] = leaf
+                    end
+                  end)
                 end)
+
+                -- ── Phase 3: APPLY keywords to photos (separate write gate) ─────────
+                -- Keywords created in Phase 2 are only fully available after that gate
+                -- has returned, so addKeyword() runs in its own write gate.
+                local okApply, applyErr = LrTasks.pcall(function()
+                  catalog:withWriteAccessDo("GPS Keyword Converter — apply keywords", function(context)
+                    for i, plan in ipairs(plans) do
+                      local leaf = leaves[i]
+                      if leaf and leaf ~= selectedRoot then
+                        plan.photo:addKeyword(leaf)
+                        applied = applied + 1
+                      else
+                        failed = failed + 1
+                      end
+                    end
+                  end)
+                end)
+
+                if not okCreate or not okApply then
+                  -- Surface the real error text so it can be diagnosed rather than
+                  -- letting Lightroom show a generic "internal error" dialog.
+                  local diag = "Some keywords could not be saved.\n"
+                  if not okCreate then diag = diag .. "\nCreate step: " .. tostring(createErr) end
+                  if not okApply  then diag = diag .. "\nApply step: "  .. tostring(applyErr)  end
+                  LrDialogs.message("Keyword Save Error", diag, "warning")
+                  return
+                end
+
                 local msg = applied .. " keyword(s) applied to photos."
                 if failed > 0 then
                   msg = msg .. "\n" .. failed .. " could not be applied (keyword creation failed)."
@@ -3553,7 +3619,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                                                 else
                                                                         url = "file://" .. htmlPath
                                                                 end
-                                                                LrHttp.openUrlInBrowser( url )
+                                                                http().openUrlInBrowser( url )
                                                         end
                                                 end )
                                         end,

@@ -40,7 +40,17 @@ local LrTasks = import "LrTasks"
 --   since other plugins may not ship it).
 -- ==========================================================
 
-local LrHttp = import "LrHttp"
+-- LrHttp is imported lazily. Importing it at module load time initializes the
+-- Lightroom HTTP stack (~60s on some systems), which would delay every dialog
+-- that requires this module. We only need it when a reverse-geocode request
+-- actually runs, so defer the import until first use.
+local _LrHttp = nil
+local function http()
+    if _LrHttp == nil then
+        _LrHttp = import "LrHttp"
+    end
+    return _LrHttp
+end
 
 local M = {}
 
@@ -326,7 +336,7 @@ function M.reverseGeocode(lat, lon)
     -- across a standard pcall() C-call boundary, so LrTasks.pcall MUST be used
     -- here — a plain pcall() makes every request fail silently ("No GPS result").
     local ok, body, respHeaders = LrTasks.pcall(function()
-        return LrHttp.get(url, headers)
+        return http().get(url, headers)
     end)
 
     if not ok then
