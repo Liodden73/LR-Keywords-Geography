@@ -1,3 +1,10 @@
+## 0.9.211 — 2026-09-05
+### Lagt til / endret (GPS Keyword Converter — vanskelige steder)
+- **Oslo o.l. dobbeltledd kollapses** – der byen er identisk med kommunen (f.eks. Oslo fylke › Oslo kommune › Oslo by) droppes det overflødige by-leddet, slik at søkeordet blir `Geography > World > Europe > Norway > Oslo > Oslo` (to Oslo-ledd, i tråd med katalogens struktur Country › County › Municipality). For flat-strukturerte land droppes by-leddet når det er likt fylket.
+- **Svalbard- og Jan Mayen-tettsteder matches nå** – bosettinger som Longyearbyen, Barentsburg, Ny-Ålesund osv. (som ligger i egne datablokker utenom fylkestreet) søkes nå gjennom og plasseres direkte under et syntetisk region-ledd: `... > Norway > Svalbard > Longyearbyen`.
+- **Region-fallback** – finnes ingen by/tettsted-treff, men reverse-geokodingens *state/county* navngir en kjent region (fylke, Svalbard eller Jan Mayen), tagges bildet på region-nivå (f.eks. `... > Norway > Svalbard`) i stedet for å bli en «No keyword found»-konflikt.
+- **Bounding-box for avsidesliggende Svalbard-steder** – tre kuraterte lat/lon-rektangler i `Norway.lua` fanger opp steder der GPS/geonames ikke gir noe brukbart: **Moffen**, **Karl XII Island** og **Pack ice** (drivis nord for øygruppen). Sjekkes *før* Nominatim, så de virker også når reverse-geokoding returnerer ingenting (typisk for pakkis). Treffer et av rektanglene, blir søkeordet `... > Norway > Svalbard > <navn>`. Merk: «Pack ice»-boksen er et grovt anslag nord for øygruppen og kan finjusteres i `data/Norway.lua`.
+
 ## 0.9.210 — 2026-09-05
 - GPS-fanen: "Selected Images" og "All Images in Catalog" vises nå uten bold skrift
 - GPS-fanen: Rullegardinmenyene under "Folder" og "Root keyword" bruker nå normal skrift

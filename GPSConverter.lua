@@ -373,6 +373,8 @@ function M.reverseGeocode(lat, lon)
         city        = city,
         displayName = data.display_name or "",
         rawAddress  = addr,
+        lat         = lat,
+        lon         = lon,
     }
 
     if city == "" then
@@ -396,78 +398,208 @@ function M.findCityMatches(geo, countries, enabledSet)
         return matches
     end
 
-    local targetCity = trim(geo.city)
-    if targetCity == "" then
-        return matches
-    end
-    local targetLower = string.lower(targetCity)
-
     enabledSet = enabledSet or {}
 
-    for _, country in ipairs(countries) do
-        if country and country.id and enabledSet[country.id] then
-            local data = country.data
-            if type(data) == "table" and type(data.counties) == "table" then
-                for _, county in ipairs(data.counties) do
-                    local countyName = county.name
+    local targetCity  = trim(geo.city or "")
+    local targetLower = string.lower(targetCity)
+    local stateLower  = string.lower(trim(geo.state or ""))
+    local countyLower = string.lower(trim(geo.county or ""))
 
-                    -- Hierarchical structure: counties -> municipalities -> cities
-                    if type(county.municipalities) == "table" then
-                        for _, muni in ipairs(county.municipalities) do
-                            -- Match the municipality's PRIMARY city. In the data,
-                            -- the main city of a municipality is stored in
-                            -- `primary_city` (e.g. "Oslo"), NOT in the `cities`
-                            -- list (which holds only secondary cities and is often
-                            -- empty). Without this check, primary cities never match.
-                            if type(muni.primary_city) == "string"
-                               and string.lower(trim(muni.primary_city)) == targetLower then
-                                matches[#matches + 1] = {
-                                    countryId     = country.id,
-                                    countryName   = country.name or country.id,
-                                    continentName = country.continent,
-                                    countyName    = countyName,
-                                    muniName      = muni.name,
-                                    cityName      = muni.primary_city,
-                                }
-                            end
-                            if type(muni.cities) == "table" then
-                                for _, cityName in ipairs(muni.cities) do
-                                    if string.lower(trim(cityName)) == targetLower then
-                                        matches[#matches + 1] = {
-                                            countryId     = country.id,
-                                            countryName   = country.name or country.id,
-                                            continentName = country.continent,
-                                            countyName    = countyName,
-                                            muniName      = muni.name,
-                                            cityName      = cityName,
-                                        }
+    -- ── City-level matching (only when Nominatim gave us a place name) ──────────
+    if targetLower ~= "" then
+        for _, country in ipairs(countries) do
+            if country and country.id and enabledSet[country.id] then
+                local data = country.data
+                if type(data) == "table" and type(data.counties) == "table" then
+                    for _, county in ipairs(data.counties) do
+                        local countyName = county.name
+
+                        -- Hierarchical structure: counties -> municipalities -> cities
+                        if type(county.municipalities) == "table" then
+                            for _, muni in ipairs(county.municipalities) do
+                                -- Match the municipality's PRIMARY city. In the data,
+                                -- the main city of a municipality is stored in
+                                -- `primary_city` (e.g. "Oslo"), NOT in the `cities`
+                                -- list (which holds only secondary cities and is often
+                                -- empty). Without this check, primary cities never match.
+                                if type(muni.primary_city) == "string"
+                                   and string.lower(trim(muni.primary_city)) == targetLower then
+                                    matches[#matches + 1] = {
+                                        countryId     = country.id,
+                                        countryName   = country.name or country.id,
+                                        continentName = country.continent,
+                                        countyName    = countyName,
+                                        muniName      = muni.name,
+                                        cityName      = muni.primary_city,
+                                    }
+                                end
+                                if type(muni.cities) == "table" then
+                                    for _, cityName in ipairs(muni.cities) do
+                                        if string.lower(trim(cityName)) == targetLower then
+                                            matches[#matches + 1] = {
+                                                countryId     = country.id,
+                                                countryName   = country.name or country.id,
+                                                continentName = country.continent,
+                                                countyName    = countyName,
+                                                muniName      = muni.name,
+                                                cityName      = cityName,
+                                            }
+                                        end
                                     end
                                 end
                             end
                         end
-                    end
 
-                    -- Flat structure: counties -> cities directly
-                    if type(county.cities) == "table" then
-                        for _, cityName in ipairs(county.cities) do
-                            if string.lower(trim(cityName)) == targetLower then
-                                matches[#matches + 1] = {
-                                    countryId     = country.id,
-                                    countryName   = country.name or country.id,
-                                    continentName = country.continent,
-                                    countyName    = countyName,
-                                    muniName      = nil,
-                                    cityName      = cityName,
-                                }
+                        -- Flat structure: counties -> cities directly
+                        if type(county.cities) == "table" then
+                            for _, cityName in ipairs(county.cities) do
+                                if string.lower(trim(cityName)) == targetLower then
+                                    matches[#matches + 1] = {
+                                        countryId     = country.id,
+                                        countryName   = country.name or country.id,
+                                        continentName = country.continent,
+                                        countyName    = countyName,
+                                        muniName      = nil,
+                                        cityName      = cityName,
+                                    }
+                                end
                             end
                         end
+                    end
+                end
+
+                -- Special settlement blocks that live OUTSIDE the counties tree
+                -- (Svalbard, Jan Mayen). These sit directly under a synthetic
+                -- region so photos become  ... > Norway > Svalbard > Longyearbyen.
+                if type(data) == "table" then
+                    local function scanSettlements(block, regionName)
+                        if type(block) == "table" and type(block.settlements) == "table" then
+                            for _, s in ipairs(block.settlements) do
+                                if string.lower(trim(s)) == targetLower then
+                                    matches[#matches + 1] = {
+                                        countryId     = country.id,
+                                        countryName   = country.name or country.id,
+                                        continentName = country.continent,
+                                        countyName    = regionName,
+                                        muniName      = nil,
+                                        cityName      = s,
+                                    }
+                                end
+                            end
+                        end
+                    end
+                    scanSettlements(data.svalbard,  "Svalbard")
+                    scanSettlements(data.jan_mayen, "Jan Mayen")
+                end
+            end
+        end
+    end
+
+    -- ── Region-level fallback ──────────────────────────────────────────────────
+    -- No city/settlement matched, but the reverse-geocode state/county names a
+    -- region we know. Tag the photo at region level so it still lands inside the
+    -- keyword tree (e.g. Norway > Svalbard) instead of being a dead conflict.
+    if #matches == 0 and (stateLower ~= "" or countyLower ~= "") then
+        for _, country in ipairs(countries) do
+            if country and country.id and enabledSet[country.id] then
+                local data = country.data
+                if type(data) == "table" then
+                    local function regionHit(name)
+                        local n = string.lower(name)
+                        return n == stateLower or n == countyLower
+                            or (stateLower  ~= "" and stateLower:find(n, 1, true)  ~= nil)
+                            or (countyLower ~= "" and countyLower:find(n, 1, true) ~= nil)
+                    end
+                    local regionName = nil
+                    if type(data.svalbard) == "table" and regionHit("svalbard") then
+                        regionName = "Svalbard"
+                    elseif type(data.jan_mayen) == "table" and regionHit("jan mayen") then
+                        regionName = "Jan Mayen"
+                    elseif type(data.counties) == "table" then
+                        for _, county in ipairs(data.counties) do
+                            if type(county.name) == "string" then
+                                local cn = string.lower(county.name)
+                                if cn == stateLower or cn == countyLower then
+                                    regionName = county.name
+                                    break
+                                end
+                            end
+                        end
+                    end
+                    if regionName then
+                        matches[#matches + 1] = {
+                            countryId     = country.id,
+                            countryName   = country.name or country.id,
+                            continentName = country.continent,
+                            countyName    = regionName,
+                            muniName      = nil,
+                            cityName      = nil,
+                        }
+                        break
                     end
                 end
             end
         end
     end
 
+    -- ── Collapse a leaf that merely duplicates its parent ──────────────────────
+    -- Their catalog stops at municipality level, so "Oslo (county) > Oslo (muni)
+    -- > Oslo (city)" must become "Oslo (county) > Oslo (muni)". Drop the city
+    -- segment when it equals the municipality (or the county for flat data).
+    for _, m in ipairs(matches) do
+        if m.cityName then
+            local cl = string.lower(trim(m.cityName))
+            if m.muniName and string.lower(trim(m.muniName)) == cl then
+                m.cityName = nil
+            elseif (not m.muniName) and m.countyName
+                   and string.lower(trim(m.countyName)) == cl then
+                m.cityName = nil
+            end
+        end
+    end
+
     return matches
+end
+
+-- ==========================================================
+-- M.findBoundingBoxMatch(lat, lon, countries, enabledSet)
+-- Curated lat/lon rectangles for polar/remote places where normal geonames /
+-- reverse-geocoding return nothing usable (e.g. pack ice, tiny islands).
+-- Returns a single match table (Country > Svalbard > <box name>) or nil.
+-- Checked BEFORE Nominatim so it works even when reverse-geocoding fails.
+-- Boxes are tested in listed order: put small/specific areas before broad ones.
+-- ==========================================================
+function M.findBoundingBoxMatch(lat, lon, countries, enabledSet)
+    lat = tonumber(lat)
+    lon = tonumber(lon)
+    if lat == nil or lon == nil or type(countries) ~= "table" then
+        return nil
+    end
+    enabledSet = enabledSet or {}
+
+    for _, country in ipairs(countries) do
+        if country and country.id and enabledSet[country.id] then
+            local data = country.data
+            if type(data) == "table" and type(data.svalbard) == "table"
+               and type(data.svalbard.bounding_boxes) == "table" then
+                for _, box in ipairs(data.svalbard.bounding_boxes) do
+                    if lat >= box.south and lat <= box.north
+                       and lon >= box.west and lon <= box.east then
+                        return {
+                            countryId     = country.id,
+                            countryName   = country.name or country.id,
+                            continentName = country.continent,
+                            countyName    = "Svalbard",
+                            muniName      = nil,
+                            cityName      = box.name,
+                        }
+                    end
+                end
+            end
+        end
+    end
+
+    return nil
 end
 
 -- ==========================================================

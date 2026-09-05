@@ -3009,12 +3009,17 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                     props.gps_cur_gps      = dmsStr
                     props.gps_cur_path     = "Searching…"
 
+                    -- Curated bounding-box override (highest priority). Checked
+                    -- BEFORE Nominatim so remote places with no usable geoname
+                    -- (pack ice, tiny islands) still get tagged.
+                    local bboxMatch = lazyGPS().findBoundingBoxMatch(lat, lon, COUNTRIES, enabledSet)
+
                     -- Reverse geocode (second return value is a diagnostic reason on failure)
                     local geo, geoReason = lazyGPS().reverseGeocode(lat, lon)
                     LrTasks.yield()
                     LrTasks.sleep(1.0)  -- Nominatim rate limit: max 1 req/sec
 
-                    if not geo or geo.city == "" then
+                    if not bboxMatch and not geo then
                       props.gps_cur_path = "(no GPS result)"
                       local sc = props.gps_conflict_count or 0
                       props.gps_conflict_count = sc + 1
@@ -3026,7 +3031,8 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                         matches = {}, photo = photo,
                       })
                     else
-                      local matches = lazyGPS().findCityMatches(geo, COUNTRIES, enabledSet)
+                      local matches = bboxMatch and { bboxMatch }
+                                      or lazyGPS().findCityMatches(geo, COUNTRIES, enabledSet)
                       local kwPath  = #matches > 0 and lazyGPS().formatKeywordPath(matches[1]) or "–"
                       props.gps_cur_path = kwPath
 

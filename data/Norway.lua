@@ -3453,6 +3453,20 @@ return {
                         "Nybyen",
                         "Olonkinbyen",
                 },
+                -- Curated lat/lon rectangles for remote places where GPS/reverse
+                -- geocoding return nothing usable. Keyword becomes
+                -- Geography > World > Europe > Norway > Svalbard > <name>.
+                -- Order matters: small/specific islands FIRST, broad areas LAST
+                -- (findBoundingBoxMatch returns the first box that contains the point).
+                bounding_boxes = {
+                        -- Moffen (walrus island just north of 80°N) ≈ 80.023°N 14.511°E
+                        { name = "Moffen",          south = 79.98, north = 80.06, west = 14.35, east = 14.70 },
+                        -- Karl XII Island (Karl XII-øya, NE Svalbard)  ≈ 80.656°N 25.002°E
+                        { name = "Karl XII Island", south = 80.62, north = 80.70, west = 24.80, east = 25.25 },
+                        -- Pack ice / drift ice north of the archipelago (broad catch-all).
+                        -- Approximate — tune south/east bounds to taste.
+                        { name = "Pack ice",        south = 80.30, north = 85.00, west =  5.00, east = 40.00 },
+                },
         },
 
         jan_mayen = {
