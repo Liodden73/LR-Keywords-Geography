@@ -35,99 +35,6 @@ local dataDir    = LrPathUtils.child( pluginPath, "data" )
 -- GPS Keyword Converter module (standalone, reusable)
 local GPSConverter = dofile( LrPathUtils.child( pluginPath, "GPSConverter.lua" ) )
 
-local norwayData = dofile( LrPathUtils.child( dataDir, "Norway.lua"       ) )
-local swedenData = dofile( LrPathUtils.child( dataDir, "Sweden.lua"       ) )
-local panamaData = dofile( LrPathUtils.child( dataDir, "Panama.lua"       ) )
-local usData     = dofile( LrPathUtils.child( dataDir, "UnitedStates.lua" ) )
-local chileData  = dofile( LrPathUtils.child( dataDir, "Chile.lua"        ) )
-local kenyaData  = dofile( LrPathUtils.child( dataDir, "Kenya.lua"        ) )
-local nzData          = dofile( LrPathUtils.child( dataDir, "NewZealand.lua"   ) )
-local greenlandData   = dofile( LrPathUtils.child( dataDir, "Greenland.lua"    ) )
-local finlandData     = dofile( LrPathUtils.child( dataDir, "Finland.lua"      ) )
-local ukData          = dofile( LrPathUtils.child( dataDir, "UnitedKingdom.lua") )
-local indiaData       = dofile( LrPathUtils.child( dataDir, "India.lua"        ) )
-local argentinaData   = dofile( LrPathUtils.child( dataDir, "Argentina.lua"    ) )
-local antarcticaData  = dofile( LrPathUtils.child( dataDir, "Antarctica.lua"   ) )
-local australiaData   = dofile( LrPathUtils.child( dataDir, "Australia.lua"    ) )
-local rwandaData      = dofile( LrPathUtils.child( dataDir, "Rwanda.lua"       ) )
-local southAfricaData = dofile( LrPathUtils.child( dataDir, "SouthAfrica.lua"  ) )
-local ecuadorData     = dofile( LrPathUtils.child( dataDir, "Ecuador.lua"      ) )
-local botswanaData    = dofile( LrPathUtils.child( dataDir, "Botswana.lua"     ) )
-local hungaryData     = dofile( LrPathUtils.child( dataDir, "Hungary.lua"      ) )
-local netherlandsData = dofile( LrPathUtils.child( dataDir, "Netherlands.lua"  ) )
-local chinaData       = dofile( LrPathUtils.child( dataDir, "China.lua"        ) )
-local russiaData      = dofile( LrPathUtils.child( dataDir, "Russia.lua"       ) )
-local franceData      = dofile( LrPathUtils.child( dataDir, "France.lua"       ) )
-local denmarkData     = dofile( LrPathUtils.child( dataDir, "Denmark.lua"      ) )
-local icelandData     = dofile( LrPathUtils.child( dataDir, "Iceland.lua"      ) )
-local germanyData     = dofile( LrPathUtils.child( dataDir, "Germany.lua"      ) )
-local spainData       = dofile( LrPathUtils.child( dataDir, "Spain.lua"        ) )
-local portugalData    = dofile( LrPathUtils.child( dataDir, "Portugal.lua"     ) )
-local italyData       = dofile( LrPathUtils.child( dataDir, "Italy.lua"        ) )
-local austriaData     = dofile( LrPathUtils.child( dataDir, "Austria.lua"      ) )
-local belgiumData     = dofile( LrPathUtils.child( dataDir, "Belgium.lua"      ) )
-local switzerlandData = dofile( LrPathUtils.child( dataDir, "Switzerland.lua"  ) )
-local irelandData     = dofile( LrPathUtils.child( dataDir, "Ireland.lua"      ) )
-local polandData      = dofile( LrPathUtils.child( dataDir, "Poland.lua"       ) )
-local greeceData      = dofile( LrPathUtils.child( dataDir, "Greece.lua"       ) )
-local czechData       = dofile( LrPathUtils.child( dataDir, "CzechRepublic.lua") )
-local romaniaData     = dofile( LrPathUtils.child( dataDir, "Romania.lua"      ) )
-local ukraineData     = dofile( LrPathUtils.child( dataDir, "Ukraine.lua"      ) )
-local croatiaData     = dofile( LrPathUtils.child( dataDir, "Croatia.lua"      ) )
-local sloveniaData    = dofile( LrPathUtils.child( dataDir, "Slovenia.lua"     ) )
-local bulgariaData    = dofile( LrPathUtils.child( dataDir, "Bulgaria.lua"     ) )
-local serbiaData      = dofile( LrPathUtils.child( dataDir, "Serbia.lua"       ) )
-local slovakiaData    = dofile( LrPathUtils.child( dataDir, "Slovakia.lua"     ) )
-local estoniaData     = dofile( LrPathUtils.child( dataDir, "Estonia.lua"      ) )
-local latviaData      = dofile( LrPathUtils.child( dataDir, "Latvia.lua"       ) )
-local lithuaniaData   = dofile( LrPathUtils.child( dataDir, "Lithuania.lua"    ) )
-local albaniaData     = dofile( LrPathUtils.child( dataDir, "Albania.lua"      ) )
-local bosniaData      = dofile( LrPathUtils.child( dataDir, "BosniaAndHerzegovina.lua" ) )
-local montenegroData  = dofile( LrPathUtils.child( dataDir, "Montenegro.lua"   ) )
-local northMacedoniaData = dofile( LrPathUtils.child( dataDir, "NorthMacedonia.lua" ) )
-local moldovaData       = dofile( LrPathUtils.child( dataDir, "Moldova.lua"       ) )
-local belarusData       = dofile( LrPathUtils.child( dataDir, "Belarus.lua"       ) )
-local turkeyData        = dofile( LrPathUtils.child( dataDir, "Turkey.lua"        ) )
-local luxembourgData    = dofile( LrPathUtils.child( dataDir, "Luxembourg.lua"    ) )
-local maltaData         = dofile( LrPathUtils.child( dataDir, "Malta.lua"         ) )
-local cyprusData        = dofile( LrPathUtils.child( dataDir, "Cyprus.lua"        ) )
-local andorraData       = dofile( LrPathUtils.child( dataDir, "Andorra.lua"       ) )
-local monacoData        = dofile( LrPathUtils.child( dataDir, "Monaco.lua"        ) )
-local sanMarinoData     = dofile( LrPathUtils.child( dataDir, "SanMarino.lua"     ) )
-local liechtensteinData = dofile( LrPathUtils.child( dataDir, "Liechtenstein.lua" ) )
-local vaticanData       = dofile( LrPathUtils.child( dataDir, "Vatican.lua"       ) )
-local canadaData        = dofile( LrPathUtils.child( dataDir, "Canada.lua"        ) )
-local mexicoData        = dofile( LrPathUtils.child( dataDir, "Mexico.lua"        ) )
-local hondurasData      = dofile( LrPathUtils.child( dataDir, "Honduras.lua"      ) )
-local costaRicaData     = dofile( LrPathUtils.child( dataDir, "CostaRica.lua"     ) )
-local venezuelaData     = dofile( LrPathUtils.child( dataDir, "Venezuela.lua"     ) )
-local brazilData        = dofile( LrPathUtils.child( dataDir, "Brazil.lua"        ) )
-local paraguayData      = dofile( LrPathUtils.child( dataDir, "Paraguay.lua"      ) )
-local uruguayData       = dofile( LrPathUtils.child( dataDir, "Uruguay.lua"       ) )
-local colombiaData      = dofile( LrPathUtils.child( dataDir, "Colombia.lua"      ) )
-local peruData          = dofile( LrPathUtils.child( dataDir, "Peru.lua"          ) )
-local cubaData          = dofile( LrPathUtils.child( dataDir, "Cuba.lua"          ) )
-local guatemalaData     = dofile( LrPathUtils.child( dataDir, "Guatemala.lua"     ) )
-local belizeData        = dofile( LrPathUtils.child( dataDir, "Belize.lua"        ) )
-local elSalvadorData    = dofile( LrPathUtils.child( dataDir, "ElSalvador.lua"    ) )
-local nicaraguaData     = dofile( LrPathUtils.child( dataDir, "Nicaragua.lua"     ) )
-local boliviaData       = dofile( LrPathUtils.child( dataDir, "Bolivia.lua"       ) )
-local jamaicaData       = dofile( LrPathUtils.child( dataDir, "Jamaica.lua"       ) )
-local haitiData         = dofile( LrPathUtils.child( dataDir, "Haiti.lua"         ) )
-local dominicanRepData  = dofile( LrPathUtils.child( dataDir, "DominicanRepublic.lua" ) )
-local bahamasData       = dofile( LrPathUtils.child( dataDir, "Bahamas.lua"       ) )
-local guyanaData        = dofile( LrPathUtils.child( dataDir, "Guyana.lua"        ) )
-local surinamData       = dofile( LrPathUtils.child( dataDir, "Surinam.lua"       ) )
-local egyptData         = dofile( LrPathUtils.child( dataDir, "Egypt.lua"         ) )
-local moroccoData       = dofile( LrPathUtils.child( dataDir, "Morocco.lua"       ) )
-local tunisiaData       = dofile( LrPathUtils.child( dataDir, "Tunisia.lua"       ) )
-local nigeriaData       = dofile( LrPathUtils.child( dataDir, "Nigeria.lua"       ) )
-local ghanaData         = dofile( LrPathUtils.child( dataDir, "Ghana.lua"         ) )
-local senegalData       = dofile( LrPathUtils.child( dataDir, "Senegal.lua"       ) )
-local tanzaniaData      = dofile( LrPathUtils.child( dataDir, "Tanzania.lua"      ) )
-local ethiopiaData      = dofile( LrPathUtils.child( dataDir, "Ethiopia.lua"      ) )
-local ugandaData        = dofile( LrPathUtils.child( dataDir, "Uganda.lua"        ) )
-local namibiaData       = dofile( LrPathUtils.child( dataDir, "Namibia.lua"       ) )
 
 local genPath   = LrPathUtils.child( pluginPath, "Generator.lua" )
 local Generator = dofile( genPath )
@@ -142,19 +49,42 @@ local function makeCountyNames( data )
         return names
 end
 
---- Compute slider maxes from actual data lengths.
---- NP/NR: full count (no cap).
---- FJ/LK/RV/IS/VP: capped at 100 (top-100 policy).
+--- Compute slider maxes from a loaded data table and cache them on `country`.
+--- NP/NR: full count (no cap). FJ/LK/RV/IS/VP: capped at 100 (top-100 policy).
+local function computeMaxes( country, d )
+        country.np_max      = #( d.national_parks  or {} )
+        country.nr_max      = #( d.nature_reserves or {} )
+        country.fj_max      = math.min( #( d.fjords     or {} ), 100 )
+        country.lk_max      = math.min( #( d.lakes      or {} ), 100 )
+        country.rv_max      = math.min( #( d.rivers     or {} ), 100 )
+        country.is_max      = math.min( #( d.islands    or {} ), 100 )
+        country.vp_max      = math.min( #( d.viewpoints or {} ), 100 )
+        country.countyNames = makeCountyNames( d )
+end
+
+--- Lazy data loader. Country data files are loaded on first access, not at
+--- startup — this avoids a ~60 s stall from dofile()-ing ~90 files up front.
+--- getData( country ) loads country.data on demand and caches maxes/countyNames.
+local function getData( country )
+        if country.data == nil then
+                country.data = dofile( LrPathUtils.child( dataDir, country.filename ) )
+                computeMaxes( country, country.data )
+        end
+        return country.data
+end
+
+--- addCountry sets placeholder values; real maxes/countyNames are filled in
+--- lazily the first time getData() is called for this country.
 local function addCountry( t )
-        local d = t.data
-        t.np_max      = #( d.national_parks  or {} )
-        t.nr_max      = #( d.nature_reserves or {} )
-        t.fj_max      = math.min( #( d.fjords     or {} ), 100 )
-        t.lk_max      = math.min( #( d.lakes      or {} ), 100 )
-        t.rv_max      = math.min( #( d.rivers     or {} ), 100 )
-        t.is_max      = math.min( #( d.islands    or {} ), 100 )
-        t.vp_max      = math.min( #( d.viewpoints or {} ), 100 )
-        t.countyNames = makeCountyNames( d )
+        t.np_max      = 0
+        t.nr_max      = 0
+        t.fj_max      = 0
+        t.lk_max      = 0
+        t.rv_max      = 0
+        t.is_max      = 0
+        t.vp_max      = 0
+        t.countyNames = {}
+        t.data        = nil
         return t
 end
 
@@ -166,38 +96,38 @@ local dkjson = dofile( LrPathUtils.child( pluginPath, "dkjson.lua" ) )
 local GitHubSync = dofile( LrPathUtils.child( pluginPath, "GitHubSync.lua" ) )
 
 local COUNTRIES = {
-        addCountry { id = "Norway",       name = "Norway",        code = "NO-578", filename = "Norway.lua",       continent = "Europe",        admin_label = "Counties & Areas",  mountain_max = 2469, data = norwayData, remoteIslandNames = { "Bouvetøya", "Dronning Mauds Land", "Jan Mayen", "Peter 1. Island", "Svalbard" } },
-        addCountry { id = "Sweden",       name = "Sweden",        code = "SE-752", filename = "Sweden.lua",       continent = "Europe",        admin_label = "Counties & Areas",  mountain_max = 2097, data = swedenData, remoteIslandNames = {} },
-        addCountry { id = "Panama",       name = "Panama",        code = "PA-591", filename = "Panama.lua",       continent = "North America", admin_label = "Provinces & Areas", mountain_max = 3474, data = panamaData, remoteIslandNames = {} },
-        addCountry { id = "UnitedStates", name = "United States", code = "US-840", filename = "UnitedStates.lua", continent = "North America", admin_label = "States & Areas",    mountain_max = 6194, data = usData,     remoteIslandNames = { "American Samoa", "Guam", "Northern Mariana Islands", "Puerto Rico", "US Virgin Islands" } },
-        addCountry { id = "Chile",        name = "Chile",         code = "CL-152", filename = "Chile.lua",        continent = "South America", admin_label = "Regions & Areas",   mountain_max = 6893, data = chileData,  remoteIslandNames = { "Archipiélago Juan Fernández", "Isla de Pascua" } },
-        addCountry { id = "Venezuela",    name = "Venezuela",     code = "VE-862", filename = "Venezuela.lua",    continent = "South America", admin_label = "States & Areas",      mountain_max = 4981, data = venezuelaData,  remoteIslandNames = {} },
-        addCountry { id = "Brazil",       name = "Brazil",        code = "BR-076", filename = "Brazil.lua",       continent = "South America", admin_label = "States & Areas",      mountain_max = 2973, data = brazilData,     remoteIslandNames = {} },
-        addCountry { id = "Paraguay",     name = "Paraguay",      code = "PY-600", filename = "Paraguay.lua",     continent = "South America", admin_label = "Departments & Areas", mountain_max = 842,  data = paraguayData,   remoteIslandNames = {} },
-        addCountry { id = "Uruguay",      name = "Uruguay",       code = "UY-858", filename = "Uruguay.lua",      continent = "South America", admin_label = "Departments & Areas", mountain_max = 514,  data = uruguayData,    remoteIslandNames = {} },
-        addCountry { id = "Colombia",     name = "Colombia",      code = "CO-170", filename = "Colombia.lua",     continent = "South America", admin_label = "Departments & Areas", mountain_max = 5775, data = colombiaData,   remoteIslandNames = {} },
-        addCountry { id = "Peru",         name = "Peru",          code = "PE-604", filename = "Peru.lua",         continent = "South America", admin_label = "Departments & Areas", mountain_max = 6768, data = peruData,       remoteIslandNames = {} },
-        addCountry { id = "Cuba",         name = "Cuba",          code = "CU-192", filename = "Cuba.lua",         continent = "North America", admin_label = "Provinces & Areas",   mountain_max = 1974, data = cubaData,       remoteIslandNames = {} },
-        addCountry { id = "Guatemala",    name = "Guatemala",     code = "GT-320", filename = "Guatemala.lua",    continent = "North America", admin_label = "Departments & Areas", mountain_max = 4220, data = guatemalaData,  remoteIslandNames = {} },
-        addCountry { id = "Belize",       name = "Belize",        code = "BZ-084", filename = "Belize.lua",       continent = "North America", admin_label = "Districts & Areas",   mountain_max = 1124, data = belizeData,     remoteIslandNames = {} },
-        addCountry { id = "ElSalvador",   name = "El Salvador",   code = "SV-222", filename = "ElSalvador.lua",   continent = "North America", admin_label = "Departments & Areas", mountain_max = 2381, data = elSalvadorData, remoteIslandNames = {} },
-        addCountry { id = "Nicaragua",    name = "Nicaragua",     code = "NI-558", filename = "Nicaragua.lua",    continent = "North America", admin_label = "Departments & Areas", mountain_max = 2438, data = nicaraguaData,  remoteIslandNames = {} },
-        addCountry { id = "Bolivia",      name = "Bolivia",       code = "BO-068", filename = "Bolivia.lua",      continent = "South America", admin_label = "Departments & Areas", mountain_max = 6542, data = boliviaData,    remoteIslandNames = {} },
-        addCountry { id = "Jamaica",      name = "Jamaica",       code = "JM-388", filename = "Jamaica.lua",      continent = "North America", admin_label = "Parishes & Areas",    mountain_max = 2256, data = jamaicaData,    remoteIslandNames = {} },
-        addCountry { id = "Haiti",        name = "Haiti",         code = "HT-332", filename = "Haiti.lua",        continent = "North America", admin_label = "Departments & Areas", mountain_max = 2674, data = haitiData,      remoteIslandNames = {} },
-        addCountry { id = "DominicanRepublic", name = "Dominican Republic", code = "DO-214", filename = "DominicanRepublic.lua", continent = "North America", admin_label = "Provinces & Areas", mountain_max = 3098, data = dominicanRepData, remoteIslandNames = {} },
-        addCountry { id = "Bahamas",      name = "Bahamas",       code = "BS-044", filename = "Bahamas.lua",      continent = "North America", admin_label = "Districts & Areas",   mountain_max = 63,   data = bahamasData,    remoteIslandNames = {} },
-        addCountry { id = "Guyana",       name = "Guyana",        code = "GY-328", filename = "Guyana.lua",       continent = "South America", admin_label = "Regions & Areas",     mountain_max = 2775, data = guyanaData,     remoteIslandNames = {} },
-        addCountry { id = "Surinam",      name = "Surinam",       code = "SR-740", filename = "Surinam.lua",      continent = "South America", admin_label = "Districts & Areas",   mountain_max = 1280, data = surinamData,    remoteIslandNames = {} },
-        addCountry { id = "Kenya",        name = "Kenya",         code = "KE-404", filename = "Kenya.lua",        continent = "Africa",        admin_label = "Counties & Areas",  mountain_max = 5199, data = kenyaData,  remoteIslandNames = {} },
-        addCountry { id = "NewZealand",   name = "New Zealand",   code = "NZ-554", filename = "NewZealand.lua",   continent = "Oceania",       admin_label = "Regions & Areas",   mountain_max = 3724, data = nzData,          remoteIslandNames = { "Auckland Islands", "Bounty Islands", "Campbell Island", "Chatham Islands", "Great Barrier Island", "Kermadec Islands", "Poor Knights Islands", "The Antipodes Islands", "The Snares" } },
-        addCountry { id = "Greenland",    name = "Greenland",     code = "GL-304", filename = "Greenland.lua",    continent = "North America", admin_label = "Municipalities & Areas", mountain_max = 3694, data = greenlandData,  remoteIslandNames = {} },
-        addCountry { id = "Canada",       name = "Canada",        code = "CA-124", filename = "Canada.lua",       continent = "North America", admin_label = "Provinces & Areas", mountain_max = 5959, data = canadaData,    remoteIslandNames = {} },
-        addCountry { id = "Mexico",       name = "Mexico",        code = "MX-484", filename = "Mexico.lua",       continent = "North America", admin_label = "States & Areas",    mountain_max = 5636, data = mexicoData,    remoteIslandNames = {} },
-        addCountry { id = "Honduras",     name = "Honduras",      code = "HN-340", filename = "Honduras.lua",     continent = "North America", admin_label = "Departments & Areas", mountain_max = 2849, data = hondurasData, remoteIslandNames = {} },
-        addCountry { id = "CostaRica",    name = "Costa Rica",    code = "CR-188", filename = "CostaRica.lua",    continent = "North America", admin_label = "Provinces & Areas", mountain_max = 3820, data = costaRicaData,  remoteIslandNames = {} },
-        addCountry { id = "Finland",      name = "Finland",       code = "FI-246", filename = "Finland.lua",      continent = "Europe",        admin_label = "Regions & Areas",        mountain_max = 1328, data = finlandData,    remoteIslandNames = { "Åland Islands" } },
-        addCountry { id = "UnitedKingdom",name = "United Kingdom",code = "GB-826", filename = "UnitedKingdom.lua",continent = "Europe",        admin_label = "Countries & Areas",      mountain_max = 1345, data = ukData,         remoteIslandNames = {
+        addCountry { id = "Norway",       name = "Norway",        code = "NO-578", filename = "Norway.lua",       continent = "Europe",        admin_label = "Counties & Areas",  mountain_max = 2469, remoteIslandNames = { "Bouvetøya", "Dronning Mauds Land", "Jan Mayen", "Peter 1. Island", "Svalbard" } },
+        addCountry { id = "Sweden",       name = "Sweden",        code = "SE-752", filename = "Sweden.lua",       continent = "Europe",        admin_label = "Counties & Areas",  mountain_max = 2097, remoteIslandNames = {} },
+        addCountry { id = "Panama",       name = "Panama",        code = "PA-591", filename = "Panama.lua",       continent = "North America", admin_label = "Provinces & Areas", mountain_max = 3474, remoteIslandNames = {} },
+        addCountry { id = "UnitedStates", name = "United States", code = "US-840", filename = "UnitedStates.lua", continent = "North America", admin_label = "States & Areas",    mountain_max = 6194, remoteIslandNames = { "American Samoa", "Guam", "Northern Mariana Islands", "Puerto Rico", "US Virgin Islands" } },
+        addCountry { id = "Chile",        name = "Chile",         code = "CL-152", filename = "Chile.lua",        continent = "South America", admin_label = "Regions & Areas",   mountain_max = 6893, remoteIslandNames = { "Archipiélago Juan Fernández", "Isla de Pascua" } },
+        addCountry { id = "Venezuela",    name = "Venezuela",     code = "VE-862", filename = "Venezuela.lua",    continent = "South America", admin_label = "States & Areas",      mountain_max = 4981, remoteIslandNames = {} },
+        addCountry { id = "Brazil",       name = "Brazil",        code = "BR-076", filename = "Brazil.lua",       continent = "South America", admin_label = "States & Areas",      mountain_max = 2973, remoteIslandNames = {} },
+        addCountry { id = "Paraguay",     name = "Paraguay",      code = "PY-600", filename = "Paraguay.lua",     continent = "South America", admin_label = "Departments & Areas", mountain_max = 842,  remoteIslandNames = {} },
+        addCountry { id = "Uruguay",      name = "Uruguay",       code = "UY-858", filename = "Uruguay.lua",      continent = "South America", admin_label = "Departments & Areas", mountain_max = 514,  remoteIslandNames = {} },
+        addCountry { id = "Colombia",     name = "Colombia",      code = "CO-170", filename = "Colombia.lua",     continent = "South America", admin_label = "Departments & Areas", mountain_max = 5775, remoteIslandNames = {} },
+        addCountry { id = "Peru",         name = "Peru",          code = "PE-604", filename = "Peru.lua",         continent = "South America", admin_label = "Departments & Areas", mountain_max = 6768, remoteIslandNames = {} },
+        addCountry { id = "Cuba",         name = "Cuba",          code = "CU-192", filename = "Cuba.lua",         continent = "North America", admin_label = "Provinces & Areas",   mountain_max = 1974, remoteIslandNames = {} },
+        addCountry { id = "Guatemala",    name = "Guatemala",     code = "GT-320", filename = "Guatemala.lua",    continent = "North America", admin_label = "Departments & Areas", mountain_max = 4220, remoteIslandNames = {} },
+        addCountry { id = "Belize",       name = "Belize",        code = "BZ-084", filename = "Belize.lua",       continent = "North America", admin_label = "Districts & Areas",   mountain_max = 1124, remoteIslandNames = {} },
+        addCountry { id = "ElSalvador",   name = "El Salvador",   code = "SV-222", filename = "ElSalvador.lua",   continent = "North America", admin_label = "Departments & Areas", mountain_max = 2381, remoteIslandNames = {} },
+        addCountry { id = "Nicaragua",    name = "Nicaragua",     code = "NI-558", filename = "Nicaragua.lua",    continent = "North America", admin_label = "Departments & Areas", mountain_max = 2438, remoteIslandNames = {} },
+        addCountry { id = "Bolivia",      name = "Bolivia",       code = "BO-068", filename = "Bolivia.lua",      continent = "South America", admin_label = "Departments & Areas", mountain_max = 6542, remoteIslandNames = {} },
+        addCountry { id = "Jamaica",      name = "Jamaica",       code = "JM-388", filename = "Jamaica.lua",      continent = "North America", admin_label = "Parishes & Areas",    mountain_max = 2256, remoteIslandNames = {} },
+        addCountry { id = "Haiti",        name = "Haiti",         code = "HT-332", filename = "Haiti.lua",        continent = "North America", admin_label = "Departments & Areas", mountain_max = 2674, remoteIslandNames = {} },
+        addCountry { id = "DominicanRepublic", name = "Dominican Republic", code = "DO-214", filename = "DominicanRepublic.lua", continent = "North America", admin_label = "Provinces & Areas", mountain_max = 3098, remoteIslandNames = {} },
+        addCountry { id = "Bahamas",      name = "Bahamas",       code = "BS-044", filename = "Bahamas.lua",      continent = "North America", admin_label = "Districts & Areas",   mountain_max = 63,   remoteIslandNames = {} },
+        addCountry { id = "Guyana",       name = "Guyana",        code = "GY-328", filename = "Guyana.lua",       continent = "South America", admin_label = "Regions & Areas",     mountain_max = 2775, remoteIslandNames = {} },
+        addCountry { id = "Surinam",      name = "Surinam",       code = "SR-740", filename = "Surinam.lua",      continent = "South America", admin_label = "Districts & Areas",   mountain_max = 1280, remoteIslandNames = {} },
+        addCountry { id = "Kenya",        name = "Kenya",         code = "KE-404", filename = "Kenya.lua",        continent = "Africa",        admin_label = "Counties & Areas",  mountain_max = 5199, remoteIslandNames = {} },
+        addCountry { id = "NewZealand",   name = "New Zealand",   code = "NZ-554", filename = "NewZealand.lua",   continent = "Oceania",       admin_label = "Regions & Areas",   mountain_max = 3724, remoteIslandNames = { "Auckland Islands", "Bounty Islands", "Campbell Island", "Chatham Islands", "Great Barrier Island", "Kermadec Islands", "Poor Knights Islands", "The Antipodes Islands", "The Snares" } },
+        addCountry { id = "Greenland",    name = "Greenland",     code = "GL-304", filename = "Greenland.lua",    continent = "North America", admin_label = "Municipalities & Areas", mountain_max = 3694, remoteIslandNames = {} },
+        addCountry { id = "Canada",       name = "Canada",        code = "CA-124", filename = "Canada.lua",       continent = "North America", admin_label = "Provinces & Areas", mountain_max = 5959, remoteIslandNames = {} },
+        addCountry { id = "Mexico",       name = "Mexico",        code = "MX-484", filename = "Mexico.lua",       continent = "North America", admin_label = "States & Areas",    mountain_max = 5636, remoteIslandNames = {} },
+        addCountry { id = "Honduras",     name = "Honduras",      code = "HN-340", filename = "Honduras.lua",     continent = "North America", admin_label = "Departments & Areas", mountain_max = 2849, remoteIslandNames = {} },
+        addCountry { id = "CostaRica",    name = "Costa Rica",    code = "CR-188", filename = "CostaRica.lua",    continent = "North America", admin_label = "Provinces & Areas", mountain_max = 3820, remoteIslandNames = {} },
+        addCountry { id = "Finland",      name = "Finland",       code = "FI-246", filename = "Finland.lua",      continent = "Europe",        admin_label = "Regions & Areas",        mountain_max = 1328, remoteIslandNames = { "Åland Islands" } },
+        addCountry { id = "UnitedKingdom",name = "United Kingdom",code = "GB-826", filename = "UnitedKingdom.lua",continent = "Europe",        admin_label = "Countries & Areas",      mountain_max = 1345, remoteIslandNames = {
                 "Anguilla",
                 "Ascension Island",
                 "Bermuda",
@@ -217,67 +147,67 @@ local COUNTRIES = {
                 "Tristan da Cunha",
                 "Turks and Caicos Islands",
         } },
-        addCountry { id = "India",        name = "India",         code = "IN-356", filename = "India.lua",        continent = "Asia",          admin_label = "States & Areas",         mountain_max = 8586, data = indiaData,      remoteIslandNames = { "Andaman and Nicobar Islands", "Lakshadweep" } },
-        addCountry { id = "Argentina",   name = "Argentina",    code = "AR-032", filename = "Argentina.lua",   continent = "South America", admin_label = "Provinces & Areas",  mountain_max = 6961, data = argentinaData,   remoteIslandNames = { "Isla de los Estados", "Tierra del Fuego" } },
-        addCountry { id = "Ecuador",     name = "Ecuador",      code = "EC-218", filename = "Ecuador.lua",     continent = "South America", admin_label = "Provinces & Areas",  mountain_max = 6268, data = ecuadorData,     remoteIslandNames = { "Galápagos Islands" } },
-        addCountry { id = "Rwanda",      name = "Rwanda",       code = "RW-646", filename = "Rwanda.lua",      continent = "Africa",        admin_label = "Provinces & Areas",  mountain_max = 4507, data = rwandaData,      remoteIslandNames = {} },
-        addCountry { id = "Botswana",    name = "Botswana",     code = "BW-072", filename = "Botswana.lua",    continent = "Africa",        admin_label = "Districts & Areas",  mountain_max = 1491, data = botswanaData,    remoteIslandNames = {} },
-        addCountry { id = "SouthAfrica", name = "South Africa", code = "ZA-710", filename = "SouthAfrica.lua", continent = "Africa",        admin_label = "Provinces & Areas",  mountain_max = 3482, data = southAfricaData, remoteIslandNames = { "Marion Island", "Prince Edward Island" } },
-        addCountry { id = "Egypt",       name = "Egypt",        code = "EG-818", filename = "Egypt.lua",       continent = "Africa",        admin_label = "Governorates & Areas", mountain_max = 2629, data = egyptData,      remoteIslandNames = {} },
-        addCountry { id = "Morocco",     name = "Morocco",      code = "MA-504", filename = "Morocco.lua",     continent = "Africa",        admin_label = "Regions & Areas",    mountain_max = 4167, data = moroccoData,    remoteIslandNames = {} },
-        addCountry { id = "Tunisia",     name = "Tunisia",      code = "TN-788", filename = "Tunisia.lua",     continent = "Africa",        admin_label = "Governorates & Areas", mountain_max = 1544, data = tunisiaData,    remoteIslandNames = {} },
-        addCountry { id = "Nigeria",     name = "Nigeria",      code = "NG-566", filename = "Nigeria.lua",     continent = "Africa",        admin_label = "States & Areas",     mountain_max = 2419, data = nigeriaData,    remoteIslandNames = {} },
-        addCountry { id = "Ghana",       name = "Ghana",        code = "GH-288", filename = "Ghana.lua",       continent = "Africa",        admin_label = "Regions & Areas",    mountain_max = 885,  data = ghanaData,      remoteIslandNames = {} },
-        addCountry { id = "Senegal",     name = "Senegal",      code = "SN-686", filename = "Senegal.lua",     continent = "Africa",        admin_label = "Regions & Areas",    mountain_max = 648,  data = senegalData,    remoteIslandNames = {} },
-        addCountry { id = "Tanzania",    name = "Tanzania",     code = "TZ-834", filename = "Tanzania.lua",    continent = "Africa",        admin_label = "Regions & Areas",    mountain_max = 5895, data = tanzaniaData,   remoteIslandNames = {} },
-        addCountry { id = "Ethiopia",    name = "Ethiopia",     code = "ET-231", filename = "Ethiopia.lua",    continent = "Africa",        admin_label = "Regions & Areas",    mountain_max = 4550, data = ethiopiaData,   remoteIslandNames = {} },
-        addCountry { id = "Uganda",      name = "Uganda",       code = "UG-800", filename = "Uganda.lua",      continent = "Africa",        admin_label = "Regions & Areas",    mountain_max = 5109, data = ugandaData,     remoteIslandNames = {} },
-        addCountry { id = "Namibia",     name = "Namibia",      code = "NA-516", filename = "Namibia.lua",     continent = "Africa",        admin_label = "Regions & Areas",    mountain_max = 2606, data = namibiaData,    remoteIslandNames = {} },
-        addCountry { id = "Australia",   name = "Australia",    code = "AU-036", filename = "Australia.lua",   continent = "Oceania",       admin_label = "States & Areas",     mountain_max = 2228, data = australiaData,   remoteIslandNames = { "Christmas Island", "Cocos Islands", "Heard Island", "Lord Howe Island", "Macquarie Island", "Norfolk Island" } },
-        addCountry { id = "Hungary",     name = "Hungary",      code = "HU-348", filename = "Hungary.lua",     continent = "Europe",        admin_label = "Counties & Areas",   mountain_max = 1014, data = hungaryData,     remoteIslandNames = {} },
-        addCountry { id = "Netherlands", name = "Netherlands",  code = "NL-528", filename = "Netherlands.lua", continent = "Europe",        admin_label = "Provinces & Areas",  mountain_max = 323,  data = netherlandsData, remoteIslandNames = { "Aruba", "Bonaire", "Curaçao", "Saba", "Sint Eustatius", "Sint Maarten" } },
-        addCountry { id = "China",        name = "China",         code = "CN-156", filename = "China.lua",        continent = "Asia",          admin_label = "Provinces & Areas",       mountain_max = 8849, data = chinaData,       remoteIslandNames = {} },
-        addCountry { id = "Russia",      name = "Russia",       code = "RU-643", filename = "Russia.lua",      continent = "Europe",        admin_label = "Federal Subjects & Areas", mountain_max = 5642, data = russiaData,      remoteIslandNames = {} },
-        addCountry { id = "France",      name = "France",       code = "FR-250", filename = "France.lua",      continent = "Europe",        admin_label = "Regions & Areas",    mountain_max = 4808, data = franceData,      remoteIslandNames = { "Amsterdam Island", "Clipperton Island", "Crozet Islands", "French Guiana", "French Polynesia", "Guadeloupe", "Kerguelen Islands", "Martinique", "Mayotte", "New Caledonia", "Réunion", "Saint Barthélemy", "Saint Martin", "Saint Pierre and Miquelon", "Saint-Paul Island", "Wallis and Futuna" } },
-        addCountry { id = "Denmark",     name = "Denmark",      code = "DK-208", filename = "Denmark.lua",     continent = "Europe",        admin_label = "Regions & Areas",    mountain_max = 171,  data = denmarkData,     remoteIslandNames = { "Faroe Islands" } },
-        addCountry { id = "Iceland",     name = "Iceland",      code = "IS-352", filename = "Iceland.lua",     continent = "Europe",        admin_label = "Regions & Areas",    mountain_max = 2110, data = icelandData,     remoteIslandNames = {} },
-        addCountry { id = "Germany",     name = "Germany",      code = "DE-276", filename = "Germany.lua",     continent = "Europe",        admin_label = "States & Areas",     mountain_max = 2962, data = germanyData,     remoteIslandNames = {} },
-        addCountry { id = "Spain",       name = "Spain",        code = "ES-724", filename = "Spain.lua",       continent = "Europe",        admin_label = "Communities & Areas", mountain_max = 3715, data = spainData,       remoteIslandNames = {} },
-        addCountry { id = "Portugal",    name = "Portugal",     code = "PT-620", filename = "Portugal.lua",    continent = "Europe",        admin_label = "Districts & Areas",     mountain_max = 2351, data = portugalData,    remoteIslandNames = { "Azores", "Madeira" } },
-        addCountry { id = "Italy",       name = "Italy",        code = "IT-380", filename = "Italy.lua",       continent = "Europe",        admin_label = "Regions & Areas",       mountain_max = 4810, data = italyData,       remoteIslandNames = {} },
-        addCountry { id = "Austria",     name = "Austria",      code = "AT-040", filename = "Austria.lua",     continent = "Europe",        admin_label = "States & Areas",        mountain_max = 3798, data = austriaData,     remoteIslandNames = {} },
-        addCountry { id = "Belgium",     name = "Belgium",      code = "BE-056", filename = "Belgium.lua",     continent = "Europe",        admin_label = "Regions & Areas",       mountain_max = 694,  data = belgiumData,     remoteIslandNames = {} },
-        addCountry { id = "Bulgaria",    name = "Bulgaria",     code = "BG-100", filename = "Bulgaria.lua",    continent = "Europe",        admin_label = "Provinces & Areas",     mountain_max = 2925, data = bulgariaData,    remoteIslandNames = {} },
-        addCountry { id = "Switzerland", name = "Switzerland",  code = "CH-756", filename = "Switzerland.lua", continent = "Europe",        admin_label = "Cantons & Areas",       mountain_max = 4634, data = switzerlandData, remoteIslandNames = {} },
-        addCountry { id = "Croatia",     name = "Croatia",      code = "HR-191", filename = "Croatia.lua",     continent = "Europe",        admin_label = "Counties & Areas",      mountain_max = 1830, data = croatiaData,     remoteIslandNames = {} },
-        addCountry { id = "Ireland",     name = "Ireland",      code = "IE-372", filename = "Ireland.lua",     continent = "Europe",        admin_label = "Counties & Areas",      mountain_max = 1038, data = irelandData,     remoteIslandNames = {} },
-        addCountry { id = "Poland",      name = "Poland",       code = "PL-616", filename = "Poland.lua",      continent = "Europe",        admin_label = "Voivodeships & Areas",  mountain_max = 2499, data = polandData,      remoteIslandNames = {} },
-        addCountry { id = "Greece",      name = "Greece",       code = "GR-300", filename = "Greece.lua",      continent = "Europe",        admin_label = "Regions & Areas",       mountain_max = 2918, data = greeceData,      remoteIslandNames = {} },
-        addCountry { id = "CzechRepublic", name = "Czech Republic", code = "CZ-203", filename = "CzechRepublic.lua", continent = "Europe",  admin_label = "Regions & Areas",       mountain_max = 1603, data = czechData,       remoteIslandNames = {} },
-        addCountry { id = "Romania",     name = "Romania",      code = "RO-642", filename = "Romania.lua",     continent = "Europe",        admin_label = "Counties & Areas",      mountain_max = 2544, data = romaniaData,     remoteIslandNames = {} },
-        addCountry { id = "Serbia",      name = "Serbia",       code = "RS-688", filename = "Serbia.lua",      continent = "Europe",        admin_label = "Regions & Areas",       mountain_max = 2174, data = serbiaData,      remoteIslandNames = {} },
-        addCountry { id = "Slovakia",    name = "Slovakia",     code = "SK-703", filename = "Slovakia.lua",    continent = "Europe",        admin_label = "Regions & Areas",       mountain_max = 2655, data = slovakiaData,    remoteIslandNames = {} },
-        addCountry { id = "Slovenia",    name = "Slovenia",     code = "SI-705", filename = "Slovenia.lua",    continent = "Europe",        admin_label = "Municipalities & Areas", mountain_max = 2740, data = sloveniaData,    remoteIslandNames = {} },
-        addCountry { id = "Estonia",     name = "Estonia",      code = "EE-233", filename = "Estonia.lua",     continent = "Europe",        admin_label = "Counties & Areas",      mountain_max = 320,  data = estoniaData,     remoteIslandNames = {} },
-        addCountry { id = "Latvia",      name = "Latvia",       code = "LV-428", filename = "Latvia.lua",      continent = "Europe",        admin_label = "Municipalities & Areas", mountain_max = 320,  data = latviaData,      remoteIslandNames = {} },
-        addCountry { id = "Lithuania",   name = "Lithuania",    code = "LT-440", filename = "Lithuania.lua",   continent = "Europe",        admin_label = "Counties & Areas",      mountain_max = 300,  data = lithuaniaData,   remoteIslandNames = {} },
-        addCountry { id = "Ukraine",     name = "Ukraine",      code = "UA-804", filename = "Ukraine.lua",     continent = "Europe",        admin_label = "Oblasts & Areas",       mountain_max = 2061, data = ukraineData,     remoteIslandNames = {} },
-        addCountry { id = "Albania",     name = "Albania",      code = "AL-008", filename = "Albania.lua",     continent = "Europe",        admin_label = "Counties & Areas",      mountain_max = 2700, data = albaniaData,     remoteIslandNames = {} },
-        addCountry { id = "BosniaAndHerzegovina", name = "Bosnia and Herzegovina", code = "BA-070", filename = "BosniaAndHerzegovina.lua", continent = "Europe", admin_label = "Entities & Areas", mountain_max = 2400, data = bosniaData, remoteIslandNames = {} },
-        addCountry { id = "Montenegro",  name = "Montenegro",   code = "ME-499", filename = "Montenegro.lua",  continent = "Europe",        admin_label = "Municipalities & Areas", mountain_max = 2530, data = montenegroData,  remoteIslandNames = {} },
-        addCountry { id = "NorthMacedonia", name = "North Macedonia", code = "MK-807", filename = "NorthMacedonia.lua", continent = "Europe", admin_label = "Municipalities & Areas", mountain_max = 2770, data = northMacedoniaData, remoteIslandNames = {} },
-        addCountry { id = "Moldova",     name = "Moldova",      code = "MD-498", filename = "Moldova.lua",     continent = "Europe",        admin_label = "Districts & Areas",     mountain_max = 428,  data = moldovaData,     remoteIslandNames = {} },
-        addCountry { id = "Belarus",     name = "Belarus",      code = "BY-112", filename = "Belarus.lua",     continent = "Europe",        admin_label = "Regions & Areas",       mountain_max = 345,  data = belarusData,     remoteIslandNames = {} },
-        addCountry { id = "Turkey",      name = "Turkey",       code = "TR-792", filename = "Turkey.lua",      continent = "Europe",        admin_label = "Provinces & Areas",     mountain_max = 5137, data = turkeyData,      remoteIslandNames = {} },
-        addCountry { id = "Luxembourg",  name = "Luxembourg",   code = "LU-442", filename = "Luxembourg.lua",  continent = "Europe",        admin_label = "Cantons & Areas",       mountain_max = 560,  data = luxembourgData,  remoteIslandNames = {} },
-        addCountry { id = "Malta",       name = "Malta",        code = "MT-470", filename = "Malta.lua",       continent = "Europe",        admin_label = "Local Councils & Areas", mountain_max = 253, data = maltaData,       remoteIslandNames = {} },
-        addCountry { id = "Cyprus",      name = "Cyprus",       code = "CY-196", filename = "Cyprus.lua",      continent = "Europe",        admin_label = "Districts & Areas",     mountain_max = 1952, data = cyprusData,      remoteIslandNames = {} },
-        addCountry { id = "Andorra",     name = "Andorra",      code = "AD-020", filename = "Andorra.lua",     continent = "Europe",        admin_label = "Parishes & Areas",      mountain_max = 2942, data = andorraData,     remoteIslandNames = {} },
-        addCountry { id = "Monaco",      name = "Monaco",       code = "MC-492", filename = "Monaco.lua",      continent = "Europe",        admin_label = "Wards & Areas",         mountain_max = 161,  data = monacoData,      remoteIslandNames = {} },
-        addCountry { id = "SanMarino",   name = "San Marino",   code = "SM-674", filename = "SanMarino.lua",   continent = "Europe",        admin_label = "Municipalities & Areas", mountain_max = 739, data = sanMarinoData,   remoteIslandNames = {} },
-        addCountry { id = "Liechtenstein", name = "Liechtenstein", code = "LI-438", filename = "Liechtenstein.lua", continent = "Europe", admin_label = "Municipalities & Areas", mountain_max = 2599, data = liechtensteinData, remoteIslandNames = {} },
-        addCountry { id = "Vatican",     name = "Vatican City", code = "VA-336", filename = "Vatican.lua",     continent = "Europe",        admin_label = "Areas",                 mountain_max = 75,   data = vaticanData,     remoteIslandNames = {} },
-        addCountry { id = "Antarctica",  name = "Antarctica",   code = "AQ-010", filename = "Antarctica.lua",  continent = "Antarctica",    admin_label = "Regions & Areas",    mountain_max = 4892, data = antarcticaData,  remoteIslandNames = {} },
+        addCountry { id = "India",        name = "India",         code = "IN-356", filename = "India.lua",        continent = "Asia",          admin_label = "States & Areas",         mountain_max = 8586, remoteIslandNames = { "Andaman and Nicobar Islands", "Lakshadweep" } },
+        addCountry { id = "Argentina",   name = "Argentina",    code = "AR-032", filename = "Argentina.lua",   continent = "South America", admin_label = "Provinces & Areas",  mountain_max = 6961, remoteIslandNames = { "Isla de los Estados", "Tierra del Fuego" } },
+        addCountry { id = "Ecuador",     name = "Ecuador",      code = "EC-218", filename = "Ecuador.lua",     continent = "South America", admin_label = "Provinces & Areas",  mountain_max = 6268, remoteIslandNames = { "Galápagos Islands" } },
+        addCountry { id = "Rwanda",      name = "Rwanda",       code = "RW-646", filename = "Rwanda.lua",      continent = "Africa",        admin_label = "Provinces & Areas",  mountain_max = 4507, remoteIslandNames = {} },
+        addCountry { id = "Botswana",    name = "Botswana",     code = "BW-072", filename = "Botswana.lua",    continent = "Africa",        admin_label = "Districts & Areas",  mountain_max = 1491, remoteIslandNames = {} },
+        addCountry { id = "SouthAfrica", name = "South Africa", code = "ZA-710", filename = "SouthAfrica.lua", continent = "Africa",        admin_label = "Provinces & Areas",  mountain_max = 3482, remoteIslandNames = { "Marion Island", "Prince Edward Island" } },
+        addCountry { id = "Egypt",       name = "Egypt",        code = "EG-818", filename = "Egypt.lua",       continent = "Africa",        admin_label = "Governorates & Areas", mountain_max = 2629, remoteIslandNames = {} },
+        addCountry { id = "Morocco",     name = "Morocco",      code = "MA-504", filename = "Morocco.lua",     continent = "Africa",        admin_label = "Regions & Areas",    mountain_max = 4167, remoteIslandNames = {} },
+        addCountry { id = "Tunisia",     name = "Tunisia",      code = "TN-788", filename = "Tunisia.lua",     continent = "Africa",        admin_label = "Governorates & Areas", mountain_max = 1544, remoteIslandNames = {} },
+        addCountry { id = "Nigeria",     name = "Nigeria",      code = "NG-566", filename = "Nigeria.lua",     continent = "Africa",        admin_label = "States & Areas",     mountain_max = 2419, remoteIslandNames = {} },
+        addCountry { id = "Ghana",       name = "Ghana",        code = "GH-288", filename = "Ghana.lua",       continent = "Africa",        admin_label = "Regions & Areas",    mountain_max = 885,  remoteIslandNames = {} },
+        addCountry { id = "Senegal",     name = "Senegal",      code = "SN-686", filename = "Senegal.lua",     continent = "Africa",        admin_label = "Regions & Areas",    mountain_max = 648,  remoteIslandNames = {} },
+        addCountry { id = "Tanzania",    name = "Tanzania",     code = "TZ-834", filename = "Tanzania.lua",    continent = "Africa",        admin_label = "Regions & Areas",    mountain_max = 5895, remoteIslandNames = {} },
+        addCountry { id = "Ethiopia",    name = "Ethiopia",     code = "ET-231", filename = "Ethiopia.lua",    continent = "Africa",        admin_label = "Regions & Areas",    mountain_max = 4550, remoteIslandNames = {} },
+        addCountry { id = "Uganda",      name = "Uganda",       code = "UG-800", filename = "Uganda.lua",      continent = "Africa",        admin_label = "Regions & Areas",    mountain_max = 5109, remoteIslandNames = {} },
+        addCountry { id = "Namibia",     name = "Namibia",      code = "NA-516", filename = "Namibia.lua",     continent = "Africa",        admin_label = "Regions & Areas",    mountain_max = 2606, remoteIslandNames = {} },
+        addCountry { id = "Australia",   name = "Australia",    code = "AU-036", filename = "Australia.lua",   continent = "Oceania",       admin_label = "States & Areas",     mountain_max = 2228, remoteIslandNames = { "Christmas Island", "Cocos Islands", "Heard Island", "Lord Howe Island", "Macquarie Island", "Norfolk Island" } },
+        addCountry { id = "Hungary",     name = "Hungary",      code = "HU-348", filename = "Hungary.lua",     continent = "Europe",        admin_label = "Counties & Areas",   mountain_max = 1014, remoteIslandNames = {} },
+        addCountry { id = "Netherlands", name = "Netherlands",  code = "NL-528", filename = "Netherlands.lua", continent = "Europe",        admin_label = "Provinces & Areas",  mountain_max = 323,  remoteIslandNames = { "Aruba", "Bonaire", "Curaçao", "Saba", "Sint Eustatius", "Sint Maarten" } },
+        addCountry { id = "China",        name = "China",         code = "CN-156", filename = "China.lua",        continent = "Asia",          admin_label = "Provinces & Areas",       mountain_max = 8849, remoteIslandNames = {} },
+        addCountry { id = "Russia",      name = "Russia",       code = "RU-643", filename = "Russia.lua",      continent = "Europe",        admin_label = "Federal Subjects & Areas", mountain_max = 5642, remoteIslandNames = {} },
+        addCountry { id = "France",      name = "France",       code = "FR-250", filename = "France.lua",      continent = "Europe",        admin_label = "Regions & Areas",    mountain_max = 4808, remoteIslandNames = { "Amsterdam Island", "Clipperton Island", "Crozet Islands", "French Guiana", "French Polynesia", "Guadeloupe", "Kerguelen Islands", "Martinique", "Mayotte", "New Caledonia", "Réunion", "Saint Barthélemy", "Saint Martin", "Saint Pierre and Miquelon", "Saint-Paul Island", "Wallis and Futuna" } },
+        addCountry { id = "Denmark",     name = "Denmark",      code = "DK-208", filename = "Denmark.lua",     continent = "Europe",        admin_label = "Regions & Areas",    mountain_max = 171,  remoteIslandNames = { "Faroe Islands" } },
+        addCountry { id = "Iceland",     name = "Iceland",      code = "IS-352", filename = "Iceland.lua",     continent = "Europe",        admin_label = "Regions & Areas",    mountain_max = 2110, remoteIslandNames = {} },
+        addCountry { id = "Germany",     name = "Germany",      code = "DE-276", filename = "Germany.lua",     continent = "Europe",        admin_label = "States & Areas",     mountain_max = 2962, remoteIslandNames = {} },
+        addCountry { id = "Spain",       name = "Spain",        code = "ES-724", filename = "Spain.lua",       continent = "Europe",        admin_label = "Communities & Areas", mountain_max = 3715, remoteIslandNames = {} },
+        addCountry { id = "Portugal",    name = "Portugal",     code = "PT-620", filename = "Portugal.lua",    continent = "Europe",        admin_label = "Districts & Areas",     mountain_max = 2351, remoteIslandNames = { "Azores", "Madeira" } },
+        addCountry { id = "Italy",       name = "Italy",        code = "IT-380", filename = "Italy.lua",       continent = "Europe",        admin_label = "Regions & Areas",       mountain_max = 4810, remoteIslandNames = {} },
+        addCountry { id = "Austria",     name = "Austria",      code = "AT-040", filename = "Austria.lua",     continent = "Europe",        admin_label = "States & Areas",        mountain_max = 3798, remoteIslandNames = {} },
+        addCountry { id = "Belgium",     name = "Belgium",      code = "BE-056", filename = "Belgium.lua",     continent = "Europe",        admin_label = "Regions & Areas",       mountain_max = 694,  remoteIslandNames = {} },
+        addCountry { id = "Bulgaria",    name = "Bulgaria",     code = "BG-100", filename = "Bulgaria.lua",    continent = "Europe",        admin_label = "Provinces & Areas",     mountain_max = 2925, remoteIslandNames = {} },
+        addCountry { id = "Switzerland", name = "Switzerland",  code = "CH-756", filename = "Switzerland.lua", continent = "Europe",        admin_label = "Cantons & Areas",       mountain_max = 4634, remoteIslandNames = {} },
+        addCountry { id = "Croatia",     name = "Croatia",      code = "HR-191", filename = "Croatia.lua",     continent = "Europe",        admin_label = "Counties & Areas",      mountain_max = 1830, remoteIslandNames = {} },
+        addCountry { id = "Ireland",     name = "Ireland",      code = "IE-372", filename = "Ireland.lua",     continent = "Europe",        admin_label = "Counties & Areas",      mountain_max = 1038, remoteIslandNames = {} },
+        addCountry { id = "Poland",      name = "Poland",       code = "PL-616", filename = "Poland.lua",      continent = "Europe",        admin_label = "Voivodeships & Areas",  mountain_max = 2499, remoteIslandNames = {} },
+        addCountry { id = "Greece",      name = "Greece",       code = "GR-300", filename = "Greece.lua",      continent = "Europe",        admin_label = "Regions & Areas",       mountain_max = 2918, remoteIslandNames = {} },
+        addCountry { id = "CzechRepublic", name = "Czech Republic", code = "CZ-203", filename = "CzechRepublic.lua", continent = "Europe",  admin_label = "Regions & Areas",       mountain_max = 1603, remoteIslandNames = {} },
+        addCountry { id = "Romania",     name = "Romania",      code = "RO-642", filename = "Romania.lua",     continent = "Europe",        admin_label = "Counties & Areas",      mountain_max = 2544, remoteIslandNames = {} },
+        addCountry { id = "Serbia",      name = "Serbia",       code = "RS-688", filename = "Serbia.lua",      continent = "Europe",        admin_label = "Regions & Areas",       mountain_max = 2174, remoteIslandNames = {} },
+        addCountry { id = "Slovakia",    name = "Slovakia",     code = "SK-703", filename = "Slovakia.lua",    continent = "Europe",        admin_label = "Regions & Areas",       mountain_max = 2655, remoteIslandNames = {} },
+        addCountry { id = "Slovenia",    name = "Slovenia",     code = "SI-705", filename = "Slovenia.lua",    continent = "Europe",        admin_label = "Municipalities & Areas", mountain_max = 2740, remoteIslandNames = {} },
+        addCountry { id = "Estonia",     name = "Estonia",      code = "EE-233", filename = "Estonia.lua",     continent = "Europe",        admin_label = "Counties & Areas",      mountain_max = 320,  remoteIslandNames = {} },
+        addCountry { id = "Latvia",      name = "Latvia",       code = "LV-428", filename = "Latvia.lua",      continent = "Europe",        admin_label = "Municipalities & Areas", mountain_max = 320,  remoteIslandNames = {} },
+        addCountry { id = "Lithuania",   name = "Lithuania",    code = "LT-440", filename = "Lithuania.lua",   continent = "Europe",        admin_label = "Counties & Areas",      mountain_max = 300,  remoteIslandNames = {} },
+        addCountry { id = "Ukraine",     name = "Ukraine",      code = "UA-804", filename = "Ukraine.lua",     continent = "Europe",        admin_label = "Oblasts & Areas",       mountain_max = 2061, remoteIslandNames = {} },
+        addCountry { id = "Albania",     name = "Albania",      code = "AL-008", filename = "Albania.lua",     continent = "Europe",        admin_label = "Counties & Areas",      mountain_max = 2700, remoteIslandNames = {} },
+        addCountry { id = "BosniaAndHerzegovina", name = "Bosnia and Herzegovina", code = "BA-070", filename = "BosniaAndHerzegovina.lua", continent = "Europe", admin_label = "Entities & Areas", mountain_max = 2400, remoteIslandNames = {} },
+        addCountry { id = "Montenegro",  name = "Montenegro",   code = "ME-499", filename = "Montenegro.lua",  continent = "Europe",        admin_label = "Municipalities & Areas", mountain_max = 2530, remoteIslandNames = {} },
+        addCountry { id = "NorthMacedonia", name = "North Macedonia", code = "MK-807", filename = "NorthMacedonia.lua", continent = "Europe", admin_label = "Municipalities & Areas", mountain_max = 2770, remoteIslandNames = {} },
+        addCountry { id = "Moldova",     name = "Moldova",      code = "MD-498", filename = "Moldova.lua",     continent = "Europe",        admin_label = "Districts & Areas",     mountain_max = 428,  remoteIslandNames = {} },
+        addCountry { id = "Belarus",     name = "Belarus",      code = "BY-112", filename = "Belarus.lua",     continent = "Europe",        admin_label = "Regions & Areas",       mountain_max = 345,  remoteIslandNames = {} },
+        addCountry { id = "Turkey",      name = "Turkey",       code = "TR-792", filename = "Turkey.lua",      continent = "Europe",        admin_label = "Provinces & Areas",     mountain_max = 5137, remoteIslandNames = {} },
+        addCountry { id = "Luxembourg",  name = "Luxembourg",   code = "LU-442", filename = "Luxembourg.lua",  continent = "Europe",        admin_label = "Cantons & Areas",       mountain_max = 560,  remoteIslandNames = {} },
+        addCountry { id = "Malta",       name = "Malta",        code = "MT-470", filename = "Malta.lua",       continent = "Europe",        admin_label = "Local Councils & Areas", mountain_max = 253, remoteIslandNames = {} },
+        addCountry { id = "Cyprus",      name = "Cyprus",       code = "CY-196", filename = "Cyprus.lua",      continent = "Europe",        admin_label = "Districts & Areas",     mountain_max = 1952, remoteIslandNames = {} },
+        addCountry { id = "Andorra",     name = "Andorra",      code = "AD-020", filename = "Andorra.lua",     continent = "Europe",        admin_label = "Parishes & Areas",      mountain_max = 2942, remoteIslandNames = {} },
+        addCountry { id = "Monaco",      name = "Monaco",       code = "MC-492", filename = "Monaco.lua",      continent = "Europe",        admin_label = "Wards & Areas",         mountain_max = 161,  remoteIslandNames = {} },
+        addCountry { id = "SanMarino",   name = "San Marino",   code = "SM-674", filename = "SanMarino.lua",   continent = "Europe",        admin_label = "Municipalities & Areas", mountain_max = 739, remoteIslandNames = {} },
+        addCountry { id = "Liechtenstein", name = "Liechtenstein", code = "LI-438", filename = "Liechtenstein.lua", continent = "Europe", admin_label = "Municipalities & Areas", mountain_max = 2599, remoteIslandNames = {} },
+        addCountry { id = "Vatican",     name = "Vatican City", code = "VA-336", filename = "Vatican.lua",     continent = "Europe",        admin_label = "Areas",                 mountain_max = 75,   remoteIslandNames = {} },
+        addCountry { id = "Antarctica",  name = "Antarctica",   code = "AQ-010", filename = "Antarctica.lua",  continent = "Antarctica",    admin_label = "Regions & Areas",    mountain_max = 4892, remoteIslandNames = {} },
 }
 
 -- Fixed continent order — shown in Country column regardless of whether
@@ -292,10 +222,9 @@ local CONTINENT_ORDER = {
         "Antarctica",
 }
 
-local maxCounties = 0
-for _, c in ipairs( COUNTRIES ) do
-        if #c.countyNames > maxCounties then maxCounties = #c.countyNames end
-end
+-- Hardcoded because country data is now lazy-loaded (countyNames are empty at
+-- startup). 800 comfortably covers the current maximum (India: 763 districts).
+local maxCounties = 800
 
 local maxRemoteIslands = 0
 for _, c in ipairs( COUNTRIES ) do
@@ -635,10 +564,20 @@ local function extractGeoData( cdata )
         return counties, munis, cities
 end
 
+-- GEO is populated lazily: the geo data for a country is extracted the first
+-- time getGEO() is called for it (which triggers getData() to load the file).
 local GEO = {}
-for _, c in ipairs( COUNTRIES ) do
-        local cos, mus, cis = extractGeoData( c.data )
-        GEO[ c.id ] = { counties = cos, munis = mus, cities = cis }
+local function getGEO( cid )
+        if not GEO[ cid ] then
+                for _, c in ipairs( COUNTRIES ) do
+                        if c.id == cid then
+                                local cos, mus, cis = extractGeoData( getData( c ) )
+                                GEO[ cid ] = { counties = cos, munis = mus, cities = cis }
+                                break
+                        end
+                end
+        end
+        return GEO[ cid ] or { counties = {}, munis = {}, cities = {} }
 end
 
 -- ── Helper functions ──────────────────────────────────────────────────────────
@@ -684,7 +623,7 @@ local function computeNextVersion( cid, prefs )
         if not current then
                 for _, c in ipairs( COUNTRIES ) do
                         if c.id == cid then
-                                current = getVersion( c.data )
+                                current = getVersion( getData( c ) )
                                 break
                         end
                 end
@@ -715,10 +654,13 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
         for _, c in ipairs( COUNTRIES ) do
                 props[ "verified_"    .. c.id ] = prefs[ "verified_"    .. c.id ] or "—"
                 props[ "updated_"     .. c.id ] = prefs[ "updated_"     .. c.id ] or "—"
-                props[ "listname_"    .. c.id ] = prefs[ "listname_"    .. c.id ] or getListName( c.data )
+                -- Data files are lazy-loaded, so at startup we fall back to "?" instead
+                -- of reading the (unloaded) data file. The real listname/version are
+                -- filled in from prefs after the first Save, or when the country is opened.
+                props[ "listname_"    .. c.id ] = prefs[ "listname_"    .. c.id ] or "?"
                 -- list_version_: the version label shown in List Overview; may have been
                 -- bumped beyond the data file's meta.version via a Save in the Monitor.
-                props[ "list_version_" .. c.id ] = prefs[ "list_version_" .. c.id ] or getVersion( c.data )
+                props[ "list_version_" .. c.id ] = prefs[ "list_version_" .. c.id ] or "?"
         end
 
         -- Which country is currently open in the Verification Monitor.
@@ -901,6 +843,9 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
 
         local function loadCountryState( cid, country )
                 loading = true
+                -- Ensure the country's data file is loaded (populates maxes,
+                -- countyNames and country.data) before we read any of them.
+                getData( country )
                 local state = countryState[ cid ] or kbDefaultState( country )
                 local names = country.countyNames
                 props.active_np_max            = country.np_max
@@ -1095,6 +1040,9 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                 local skipped    = {}
                 for _, country in ipairs( COUNTRIES ) do
                         local cid      = country.id
+                        -- Load the country's data file before building prefs, which read
+                        -- country.countyNames / remoteIslandNames (populated by getData).
+                        getData( country )
                         local genPrefs = nil
                         if props[ cid .. "_include" ] then
                                 genPrefs = buildCustomPrefs( country )
@@ -1106,7 +1054,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                 end
                         end
                         if genPrefs then
-                                local output    = Generator.generate( country.data, genPrefs )
+                                local output    = Generator.generate( getData( country ), genPrefs )
                                 local lineCount = 0
                                 for _ in output:gmatch( "[^\n]+" ) do lineCount = lineCount + 1 end
                                 if lineCount > 1 then
@@ -1292,7 +1240,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
         local function initVerPropsForCountry( cid )
                 if verInited[ cid ] then return end
                 verInited[ cid ] = true
-                local geo = GEO[ cid ]
+                local geo = getGEO( cid )
                 if not geo then return end
                 local savedCo = prefs[ "ver_" .. cid .. "_co" ] or {}
                 local savedMu = prefs[ "ver_" .. cid .. "_mu" ] or {}
@@ -1318,7 +1266,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
         -- for a country to prefs.  Captures action changes made via the popup
         -- after a Verify run (which otherwise would only live in props).
         local function persistVerToPrefs( cid )
-                local geo = GEO[ cid ]
+                local geo = getGEO( cid )
                 if not geo then return end
                 local function grab( names, vcPfx, vaPfx )
                         local saved = {}
@@ -1339,7 +1287,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
         -- in-memory verification state.  Entries with a real conflict suggestion
         -- or a non-default action (change / change_manual / delete) are included.
         local function buildVerifiedJson( cid, ver )
-                local geo = GEO[ cid ]
+                local geo = getGEO( cid )
                 local function levelArr( names, vcPfx, vaPfx )
                         local arr = {}
                         for i = 1, #names do
@@ -1379,7 +1327,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
         -- Entries are matched by name (with an index fallback), so the mapping
         -- survives small reorderings of the underlying data.
         local function applyVerifiedJson( cid, obj )
-                local geo = GEO[ cid ]
+                local geo = getGEO( cid )
                 if not geo or not obj or not obj.levels then return end
                 local function applyLevel( names, vcPfx, vaPfx, arr )
                         if type( arr ) ~= "table" then return end
@@ -1502,7 +1450,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                         local updKey  = "updated_"      .. country.id
                         local lvKey   = "list_version_" .. country.id
                         local cname   = country.name
-                        local geo     = GEO[ country.id ]
+                        local geo     = getGEO( country.id )
                         local nTotal  = ( geo and ( #geo.counties + #geo.munis + #geo.cities ) or 0 )
                         rowViews[ #rowViews + 1 ] = f:row {
                                 spacing = 6,
@@ -1551,7 +1499,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                         action = function()
                                                 LrTasks.startAsyncTask( function()
                                                 local cid    = country.id
-                                                local geo    = GEO[ cid ]
+                                                local geo    = getGEO( cid )
                                                 local labels = LABELS[ cid ] or DEFAULT_LABELS
 
                                                 -- Flush any action popup changes that were made after
@@ -1730,7 +1678,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                                                 "DELETE " .. labels.city .. ":  \"" .. ch.old .. "\""
                                                 end
                                                 local currentVer = prefs[ "list_version_" .. cid ]
-                                                                   or getVersion( country.data )
+                                                                   or getVersion( getData( country ) )
                                                 local newVer     = nextPatchVersion( currentVer )
 
                                                 local answer = LrDialogs.confirm(
@@ -1937,6 +1885,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                                 for _, c in ipairs( COUNTRIES ) do
                                                         if c.id == cid then
                                                                 c.data = newData
+                                                                computeMaxes( c, newData )
                                                                 break
                                                         end
                                                 end
@@ -2069,7 +2018,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                         if c.id == cid then cname = c.name; break end
                 end
 
-                local geo    = GEO[ cid ]
+                local geo    = getGEO( cid )
                 local labels = LABELS[ cid ] or DEFAULT_LABELS
                 local nextVer = computeNextVersion( cid, prefs )
 

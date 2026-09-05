@@ -1,3 +1,10 @@
+## [0.9.199] – 2026-09-05
+### Changed
+- **Kraftig raskere oppstart – landdata lastes nå «lazy» (ved behov) i stedet for ved oppstart** – Tidligere `dofile()`-et pluginen alle ~90 landdatafilene under `data/` synkront på toppnivå med én gang lista ble åpnet, noe som ga en oppstartspause på rundt 60 sekunder før grensesnittet kom opp. Datafilen for et land lastes nå først den gangen landet faktisk trengs (når det åpnes i Verification Monitor, når nøkkelord genereres, eller når versjon/geodata slås opp), og resultatet caches slik at hver fil bare leses én gang. Oppstart går dermed nesten momentant, og bare det først aktive landet (Norge) lastes inn med det samme.
+
+### Fixed
+- **Skyvekontroll-maks og fylkesnavn fylles inn ved behov** – Fordi datafilene ikke lenger er lastet ved oppstart, settes maksverdier for skyvekontroller, fylkesnavn og geodata (`GEO`) nå opp lazy per land via en ny `getData()`/`getGEO()`-mekanisme. Maksimalt antall fylkesrader er hardkodet til 800 (dekker dagens største liste – India med 763 distrikter). I «List Overview» vises listenavn/-versjon som `?` inntil landet åpnes eller lagres første gang, siden verdiene ellers ville krevd at alle filene ble lest ved oppstart.
+
 ## [0.9.198] – 2026-09-04
 ### Fixed
 - **GPS Keyword Converter: «Generate Keywords»-knappen var grå/deaktivert ved oppstart** – Knappen er bundet til `enabled = not gps_running`, men prop-verdien `gps_running` var ikke initialisert (`nil`) når knappen ble bygd, slik at bindingen kunne evaluere feil og gråne ut knappen. `gps_running` initialiseres nå til `false` *før* knappen defineres, slik at knappen er aktiv med en gang fanen åpnes og bare grås ut mens en kjøring faktisk pågår.
