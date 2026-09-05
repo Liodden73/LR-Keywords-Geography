@@ -20,7 +20,16 @@ local LrDialogs = import 'LrDialogs'
 local LrTasks   = import 'LrTasks'
 local LrPathUtils = import 'LrPathUtils'
 
-local GitHubSync = dofile( LrPathUtils.child( _PLUGIN.path, "GitHubSync.lua" ) )
+-- GitHubSync is loaded lazily only when the Plugin Manager dialog is opened,
+-- not at plugin registration time. This avoids loading Base64.lua and dkjson.lua
+-- (and any dependent operations) during plugin add, which was blocking for ~60 seconds.
+local _GitHubSync = nil
+local function lazyGH()
+  if _GitHubSync == nil then
+    _GitHubSync = dofile( LrPathUtils.child( _PLUGIN.path, "GitHubSync.lua" ) )
+  end
+  return _GitHubSync
+end
 
 local provider = {}
 
@@ -50,7 +59,7 @@ function provider.sectionsForTopOfDialog( f, props )
 
         -- Status label uses an explicit props binding (we set it ourselves;
         -- it is NOT a user-typed field, so we don't want it in prefs).
-        props.gh_status = GitHubSync.isConfigured()
+        props.gh_status = lazyGH().isConfigured()
                                  and "Token stored on this machine — read & write enabled."
                                  or  "No token — read-only (Save/push disabled)."
 
@@ -130,7 +139,7 @@ function provider.sectionsForTopOfDialog( f, props )
                                                                 branch = orDefault( prefs.gh_branch,     "main" ),
                                                                 prefix = orDefault( prefs.gh_pathPrefix, "verified" ),
                                                         }
-                                                        local ok, msg = GitHubSync.test( snap )
+                                                        local ok, msg = lazyGH().test( snap )
                                                         if ok then
                                                                 props.gh_status = "Connected: " .. tostring( msg )
                                                                 LrDialogs.message( "GitHub connection OK",

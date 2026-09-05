@@ -422,22 +422,24 @@ function M.findCityMatches(geo, countries, enabledSet)
                             if type(muni.primary_city) == "string"
                                and string.lower(trim(muni.primary_city)) == targetLower then
                                 matches[#matches + 1] = {
-                                    countryId   = country.id,
-                                    countryName = country.name or country.id,
-                                    countyName  = countyName,
-                                    muniName    = muni.name,
-                                    cityName    = muni.primary_city,
+                                    countryId     = country.id,
+                                    countryName   = country.name or country.id,
+                                    continentName = country.continent,
+                                    countyName    = countyName,
+                                    muniName      = muni.name,
+                                    cityName      = muni.primary_city,
                                 }
                             end
                             if type(muni.cities) == "table" then
                                 for _, cityName in ipairs(muni.cities) do
                                     if string.lower(trim(cityName)) == targetLower then
                                         matches[#matches + 1] = {
-                                            countryId   = country.id,
-                                            countryName = country.name or country.id,
-                                            countyName  = countyName,
-                                            muniName    = muni.name,
-                                            cityName    = cityName,
+                                            countryId     = country.id,
+                                            countryName   = country.name or country.id,
+                                            continentName = country.continent,
+                                            countyName    = countyName,
+                                            muniName      = muni.name,
+                                            cityName      = cityName,
                                         }
                                     end
                                 end
@@ -450,11 +452,12 @@ function M.findCityMatches(geo, countries, enabledSet)
                         for _, cityName in ipairs(county.cities) do
                             if string.lower(trim(cityName)) == targetLower then
                                 matches[#matches + 1] = {
-                                    countryId   = country.id,
-                                    countryName = country.name or country.id,
-                                    countyName  = countyName,
-                                    muniName    = nil,
-                                    cityName    = cityName,
+                                    countryId     = country.id,
+                                    countryName   = country.name or country.id,
+                                    continentName = country.continent,
+                                    countyName    = countyName,
+                                    muniName      = nil,
+                                    cityName      = cityName,
                                 }
                             end
                         end
@@ -476,10 +479,11 @@ function M.formatKeywordPath(match)
     if type(match) ~= "table" then return "" end
 
     local segments = { "Geography", "World" }
-    if match.countryName then segments[#segments + 1] = match.countryName end
-    if match.countyName then segments[#segments + 1] = match.countyName end
-    if match.muniName then segments[#segments + 1] = match.muniName end
-    if match.cityName then segments[#segments + 1] = match.cityName end
+    if match.continentName then segments[#segments + 1] = match.continentName end
+    if match.countryName   then segments[#segments + 1] = match.countryName   end
+    if match.countyName    then segments[#segments + 1] = match.countyName    end
+    if match.muniName      then segments[#segments + 1] = match.muniName      end
+    if match.cityName      then segments[#segments + 1] = match.cityName      end
 
     return table.concat(segments, " > ")
 end

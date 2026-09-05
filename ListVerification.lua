@@ -3371,10 +3371,11 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                 -- so drop every leading segment up to and including the root's own name.
                 local function buildSegments(match, rootKw)
                   local full = { "Geography", "World" }
-                  if match.countryName then full[#full + 1] = match.countryName end
-                  if match.countyName  then full[#full + 1] = match.countyName  end
-                  if match.muniName    then full[#full + 1] = match.muniName    end
-                  if match.cityName    then full[#full + 1] = match.cityName    end
+                  if match.continentName then full[#full + 1] = match.continentName end
+                  if match.countryName   then full[#full + 1] = match.countryName   end
+                  if match.countyName    then full[#full + 1] = match.countyName    end
+                  if match.muniName      then full[#full + 1] = match.muniName      end
+                  if match.cityName      then full[#full + 1] = match.cityName      end
                   if rootKw then
                     local rootName = rootKw:getName()
                     for i, seg in ipairs(full) do
