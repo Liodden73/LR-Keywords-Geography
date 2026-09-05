@@ -3186,18 +3186,18 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
               font  = "<system/bold>",
             },
             f:static_text {
-              value = LrView.bind { key = "gps_success_count",
+              title = LrView.bind { key = "gps_success_count",
                 transform = function(v) return tostring(v or 0) end },
               width = 40,
             },
             f:static_text { title = "⚠ Conflicts: ", font = "<system/bold>" },
             f:static_text {
-              value = LrView.bind { key = "gps_conflict_count",
+              title = LrView.bind { key = "gps_conflict_count",
                 transform = function(v) return tostring(v or 0) end },
               width = 40,
             },
             f:static_text {
-              value = LrView.bind("gps_status"),
+              title = LrView.bind("gps_status"),
               fill_horizontal = 1,
             },
           }
@@ -3354,38 +3354,64 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                 local rootIdx      = props.gps_kw_root_idx or 0
                 local selectedRoot = (rootIdx > 0 and gpsRootKwObjects and gpsRootKwObjects[rootIdx])
                                       and gpsRootKwObjects[rootIdx].kw or nil
-                local function isUnderRoot(kw, root)
-                  if root == nil then return true end
-                  local parent = kw:getParent()
-                  while parent ~= nil do
-                    if parent == root then return true end
-                    parent = parent:getParent()
-                  end
-                  return false
-                end
-                catalog:withWriteAccessDo("GPS Keyword Converter — apply keywords", function(context)
-                  for _, entry in ipairs(gpsSuccesses) do
-                    local cityName = entry.match.cityName
-                    -- Find keyword in LR catalog
-                    local kw = nil
-                    for kwObj in catalog:findKeyword(cityName) do
-                      if isUnderRoot(kwObj, selectedRoot) then
-                        kw = kwObj
-                        break
+
+                -- Build the ordered keyword-path segments to descend for a match.
+                -- Full hierarchy is: Geography > World > Country > County > [Muni] > City.
+                -- When a root keyword is selected (e.g. "Geography"), we descend from it,
+                -- so drop every leading segment up to and including the root's own name.
+                local function buildSegments(match, rootKw)
+                  local full = { "Geography", "World" }
+                  if match.countryName then full[#full + 1] = match.countryName end
+                  if match.countyName  then full[#full + 1] = match.countyName  end
+                  if match.muniName    then full[#full + 1] = match.muniName    end
+                  if match.cityName    then full[#full + 1] = match.cityName    end
+                  if rootKw then
+                    local rootName = rootKw:getName()
+                    for i, seg in ipairs(full) do
+                      if seg == rootName then
+                        local rest = {}
+                        for j = i + 1, #full do rest[#rest + 1] = full[j] end
+                        return rest
                       end
                     end
-                    if kw then
-                      entry.photo:addKeyword(kw)
+                  end
+                  return full
+                end
+
+                -- Find an existing direct child of parentKw (or a top-level keyword when
+                -- parentKw is nil) whose name matches; getChildren()/getKeywords() are
+                -- yielding SDK calls but we are already inside an async task here.
+                local function findChild(parentKw, name)
+                  local children = parentKw and (parentKw:getChildren() or {})
+                                    or (catalog:getKeywords() or {})
+                  for _, ch in ipairs(children) do
+                    if ch:getName() == name then return ch end
+                  end
+                  return nil
+                end
+
+                catalog:withWriteAccessDo("GPS Keyword Converter — apply keywords", function(context)
+                  for _, entry in ipairs(gpsSuccesses) do
+                    local segments = buildSegments(entry.match, selectedRoot)
+                    local parent   = selectedRoot   -- nil ⇒ descend from top level
+                    local leaf     = nil
+                    local ok       = true
+                    for _, segName in ipairs(segments) do
+                      local kw = findChild(parent, segName)
+                      if not kw then
+                        -- Not present in the catalog — create it under the current parent.
+                        -- createKeyword(name, synonyms, includeOnExport, parent, returnExisting)
+                        kw = catalog:createKeyword(segName, {}, true, parent, true)
+                      end
+                      if not kw then ok = false break end
+                      parent = kw
+                      leaf   = kw
+                    end
+                    if ok and leaf then
+                      entry.photo:addKeyword(leaf)
                       applied = applied + 1
                     else
-                      -- Keyword not in LR catalog — create it at top level with the correct path note
-                      local created = catalog:createKeyword(cityName, {}, true, nil, true)
-                      if created then
-                        entry.photo:addKeyword(created)
-                        applied = applied + 1
-                      else
-                        failed = failed + 1
-                      end
+                      failed = failed + 1
                     end
                   end
                 end)

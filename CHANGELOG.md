@@ -1,3 +1,8 @@
+## [0.9.206] – 2026-09-05
+### Fixed
+- **GPS Keyword Converter: bildene ble ikke tagget ved «Save» selv om GPS-data og riktig søkeord ble funnet** – «Save — Apply Keywords to Photos» brukte `catalog:findKeyword(...)` som en iterator, men dette er ikke en gyldig metode i LR-katalogen. Kallet feilet på det første bildet, hele `withWriteAccessDo`-transaksjonen ble avbrutt, og ingen søkeord ble lagt til. Save bygger nå i stedet hele søkeordstien (Geography > World > Land > Fylke > Kommune > By) ved å gå nedover hierarkiet fra valgt rot-søkeord med `getChildren()`/`getName()`, og oppretter manglende nivåer med `createKeyword(navn, {}, true, forelder, true)`. Det dypeste (mest spesifikke) søkeordet legges på bildet, slik at Lightroom automatisk arver foreldrenivåene.
+- **GPS Keyword Converter: tellerne «Converted» og «Conflicts» viste ingen tall** – De tre tellerfeltene (antall konvertert, antall konflikter og statusteksten) var bundet med `value = LrView.bind(...)`. For `static_text` i LR SDK er korrekt nøkkel `title`, ikke `value`. Feltene viser nå riktige tall i sanntid mens Generate kjører (samme feiltype som ble rettet for «Current Image» i 0.9.205, men disse tre feltene ble oversett).
+
 ## [0.9.205] – 2026-09-05
 ### Fixed
 - **GPS Keyword Converter: «Current Image» viste ingen informasjon under kjøring** – Feltene (filnavn, størrelse, mappe, GPS-koordinat, resultatsti) var bundet med `value = LrView.bind(...)`. For `static_text` i LR SDK er korrekt nøkkel `title`, ikke `value`, slik at teksten faktisk oppdateres i sanntid mens Generate kjører.
