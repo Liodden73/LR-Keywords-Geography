@@ -1,3 +1,14 @@
+## 0.9.216 — 2026-09-06
+### Forbedret (GPS Keyword Converter — Svalbard-polygoner og bounding-bokser)
+- **80 Svalbard-polygoner totalt** – 21 nye polygoner lagt til og eksisterende koordinater finjustert. Svalbard-dekningen er nå komplett med presise punkt-i-polygon-former for alle viktige fjorder, sund, bukter, breer, øyer og isbreer.
+- **Nye polygoner:** Negribreen, Sonklarbreen, Kapp Lee, Edgeøya, Hochstetterbreen, Kiepertøya, Wahlbergøya, Torellneset, Hinlopenstretet, Murchisonfjorden, Gimlebreen, Storøya, Foynøya, Brochøya, Lågøya, Lady Franklinfjorden, Brennvinsfjorden, Sjuøyane, Rijpfjorden, Duvefjorden — samt ny **Dunérbukta** (ny lokasjon) og **Mohnbukta** (omdøpt fra tidligere «Dunérbukta»).
+- **Oppdaterte koordinater:** Storfjorden (35 pts), Alkefjellet, Vibebukta, Barentsøya, Wahlenbergfjorden, Lomfjorden — alle med reviderte og mer presise polygonformer.
+- **Pack ice konvertert til polygon** – «Pack ice» er nå definert som polygon (7 punkter) i stedet for bounding-boks, for bedre geografisk presisjon rundt den nordlige isdekken.
+- **Bounding-bokser forenklet** – kun **Moffen** og **Karl XII Island** er igjen som bounding-bokser (Pack ice fjernet).
+- **Hinlopen fjernet** – erstattet av Hinlopenstretet og de nye polygonene for den nordre Svalbard-regionen.
+- **Svalbard polygon-editoren oppdatert** – `svalbard_polygon_editor.html` reflekterer nå alle 80 polygoner og 2 bounding-bokser som standard-data (trykk «↺ Tilbakestill» for å laste inn de nye dataene).
+
+
 ## 0.9.215 — 2026-09-06
 ### Lagt til (GPS Keyword Converter — Svalbard-utvidelse)
 - **14 nye Svalbard-polygoner** – GPS-konverteringen dekker nå 59 polygoner totalt for Svalbard. Nye områder inkluderer: **Tempelfjorden**, **Longyearbyen**, **Barentsburg**, **Isfjord Radio**, **Isfjorden**, **Van Keulenfjorden**, **Svea**, **Van Mijenfjorden**, **Akseløya**, **Bellsund**, **Isbukta**, **Inglefjeldbreen**, **Agardhbukta**, **Dunérbukta**. Disse dekker primært Isfjorden-systemet og Van Mijenfjorden-området på vestkysten av Spitsbergen, og kompletterer dekningen fra v0.9.214.
