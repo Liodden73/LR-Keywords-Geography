@@ -67,6 +67,14 @@ local function lazyMap()
     return _WorldMap
 end
 
+local _Extensions = nil
+local function lazyExt()
+    if _Extensions == nil then
+        _Extensions = dofile( LrPathUtils.child( pluginPath, "Extensions.lua" ) )
+    end
+    return _Extensions
+end
+
 local function makeCountyNames( data )
         local names = {}
         for _, c in ipairs( data.counties or {} ) do
@@ -518,7 +526,7 @@ local function fetchWikidataNames( cid, level )
 end
 
 -- Stable string identifiers for the four tabs.
-local TAB_IDS = { INTRO = "intro", KB = "builder", OV = "overview", MN = "monitor", GPS = "gps", HLP = "help" }
+local TAB_IDS = { INTRO = "intro", KB = "builder", OV = "overview", MN = "monitor", GPS = "gps", EXT = "extensions", HLP = "help" }
 
 -- ── Column widths for List Overview ──────────────────────────────────────────
 
@@ -3657,6 +3665,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                 local panelOV  = ( currentDialog == TAB_IDS.OV  ) and buildOverviewPanel() or placeholder
                 local panelMN  = ( currentDialog == TAB_IDS.MN  ) and buildMonitorPanel()  or placeholder
                 local panelGPS = ( currentDialog == TAB_IDS.GPS ) and buildGPSPanel()     or placeholder
+                local panelEXT = ( currentDialog == TAB_IDS.EXT ) and lazyExt().buildPanel(f, props, prefs, pluginPath, switchTab, TAB_IDS) or placeholder
                 local panelHLP = ( currentDialog == TAB_IDS.HLP ) and buildHelpPanel()     or placeholder
 
                 -- Show Save button only when the Monitor is active and a country is selected.
@@ -3695,6 +3704,12 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                 f:column { width = CONTENT_W_MN, spacing = f:control_spacing(), panelGPS },
                         },
                         f:tab_view_item {
+                                title      = "Extensions",
+                                identifier = TAB_IDS.EXT,
+                                -- Match the widest tab (Monitor) for the 4-column table.
+                                f:column { width = CONTENT_W_MN, spacing = f:control_spacing(), panelEXT },
+                        },
+                        f:tab_view_item {
                                 title      = "Help",
                                 identifier = TAB_IDS.HLP,
                                 f:column { width = CONTENT_W, spacing = f:control_spacing(), panelHLP },
@@ -3725,7 +3740,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                         accessoryView = footer,
                 }
 
-                if result == TAB_IDS.INTRO or result == TAB_IDS.KB or result == TAB_IDS.OV or result == TAB_IDS.MN or result == TAB_IDS.GPS or result == TAB_IDS.HLP then
+                if result == TAB_IDS.INTRO or result == TAB_IDS.KB or result == TAB_IDS.OV or result == TAB_IDS.MN or result == TAB_IDS.GPS or result == TAB_IDS.EXT or result == TAB_IDS.HLP then
                         -- Tab switch triggered by observer or switchTab() call.
                         -- If leaving the Monitor tab, flush any unsaved action popup changes
                         -- to prefs so Update can read them even if Save was not clicked.

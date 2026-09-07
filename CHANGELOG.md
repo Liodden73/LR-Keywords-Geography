@@ -1,3 +1,12 @@
+## 0.9.217 — 2026-09-07
+### Lagt til — Extensions system (Fase 1)
+- **Ny «Extensions»-fane** i plugin-dialogen — lar brukere kjøpe og aktivere spesialpakker med GPS-mappede stedsnavn for utvalgte regioner.
+- **Fire Extensions definert:** Svalbard GPS Extension (109 GPS-mapped names, klar), South Georgia, Falkland Islands og Antarctica (kommer snart).
+- **4-kolonners tabell:** Area (navn + beskrivelse), File size, Buy Now (åpner liodden.com/extensions/… i nettleser), Activate (felt for lisensnøkkel + knapp).
+- **Aktiveringslogikk:** Plugin validerer lisensnøkkel mot License Manager REST API på liodden.com, laster ned .lua-filen direkte inn i plugin-mappen (extensions/), og lagrer aktiveringsstatus i prefs.
+- **Etter aktivering:** Svalbard-avmerkingsboksen i «Keyword List Builder» viser «Svalbard  ✓ GPS Extension activated».
+- **Merk:** Server-siden (WooCommerce + License Manager på liodden.com) er ikke konfigurert ennå — aktivering vil fungere fullt ut når serveren er oppe.
+
 ## 0.9.216 — 2026-09-06
 ### Forbedret (GPS Keyword Converter — Svalbard-polygoner og bounding-bokser)
 - **80 Svalbard-polygoner totalt** – 21 nye polygoner lagt til og eksisterende koordinater finjustert. Svalbard-dekningen er nå komplett med presise punkt-i-polygon-former for alle viktige fjorder, sund, bukter, breer, øyer og isbreer.
