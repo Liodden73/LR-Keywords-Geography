@@ -1,3 +1,10 @@
+## 0.9.218 — 2026-09-07
+### Forbedret (GPS Keyword Converter — Svalbard-polygoner)
+- **98 Svalbard-stedsnavn totalt** (96 polygoner + 2 bounding-bokser) — opp fra 80.
+- 18 nye polygoner lagt til inkl. Austfonna, Nordaustlandet, Sorgfjorden, Bochfjorden, Amsterdamøya, Danskeøya, Klovningen, Indre Norskøya, Fuglesongen, Blomstrandhalvøya, Prins Karls Forland, Spitsbergen, Wilhelmøya, Kong Karls Land, Hopen, Bjørnøya og flere.
+- Eksisterende koordinater finjustert for en rekke fjorder, bukter og breer.
+- Extensions.lua oppdatert: Svalbard GPS Extension beskriver nå 98 GPS-mapped names.
+
 ## 0.9.217 — 2026-09-07
 ### Lagt til — Extensions system (Fase 1)
 - **Ny «Extensions»-fane** i plugin-dialogen — lar brukere kjøpe og aktivere spesialpakker med GPS-mappede stedsnavn for utvalgte regioner.
