@@ -18,13 +18,22 @@
 --]]
 
 local LrView            = import 'LrView'
-local LrHttp            = import 'LrHttp'
 local LrTasks           = import 'LrTasks'
 local LrDialogs         = import 'LrDialogs'
 local LrColor           = import 'LrColor'
 local LrPathUtils       = import 'LrPathUtils'
 local LrFileUtils       = import 'LrFileUtils'
 local LrStringUtils     = import 'LrStringUtils'
+
+-- ── Lazy LrHttp ──────────────────────────────────────────────────────────────
+-- Importing LrHttp at top level initialises the HTTP stack (proxy detection,
+-- socket setup) during plugin registration, causing a ~60–76 second delay.
+-- Defer the import until a network call is actually needed.
+local _LrHttp = nil
+local function http()
+    if _LrHttp == nil then _LrHttp = import 'LrHttp' end
+    return _LrHttp
+end
 
 local Extensions = {}
 
@@ -69,7 +78,7 @@ local function activateExtension( ext, props, prefs, pluginPath, switchTab, TAB_
                         { field = "Content-Type",  value = "application/json" },
                 }
 
-                local body, respHeaders = LrHttp.post( url, "", headers )
+                local body, respHeaders = http().post( url, "", headers )
 
                 -- 5. HTTP / transport error
                 if not body then
@@ -112,7 +121,7 @@ local function activateExtension( ext, props, prefs, pluginPath, switchTab, TAB_
                                 LrFileUtils.createDirectory( extDir )
                         end
 
-                        local fileBytes, getHeaders = LrHttp.get( download )
+                        local fileBytes, getHeaders = http().get( download )
                         local getStatus = getHeaders and getHeaders.status or nil
 
                         if fileBytes and ( not getStatus or getStatus == 200 ) then
@@ -192,7 +201,7 @@ local function buildRow( f, ext, props, prefs, pluginPath, switchTab, TAB_IDS )
                         title  = "Buy Now",
                         width  = COL_BUY,
                         action = function()
-                                LrHttp.openUrlInBrowser( ext.buy_url )
+                                http().openUrlInBrowser( ext.buy_url )
                         end,
                 }
         end

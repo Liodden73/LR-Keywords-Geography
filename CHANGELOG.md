@@ -1,3 +1,8 @@
+## 0.9.219 — 2026-09-14
+### Fiks — Treg innlasting (Extensions.lua / LrHttp)
+- **Rot til ~76 sekunders forsinkelse funnet og fikset:** `Extensions.lua` importerte `LrHttp` på toppnivå (`local LrHttp = import 'LrHttp'`). Dette initialiserte HTTP-stakken (proxy-deteksjon, socket-oppsett) allerede ved plugin-lasting, og forårsaket ~76 sekunders forsinkelse første gang Extensions-fanen ble åpnet.
+- **Løsning:** `LrHttp` er nå pakket inn i en lat `http()`-funksjon (identisk mønster som `ListVerification.lua` og `GPSConverter.lua`). HTTP-stakken initialiseres kun når et nettverkskall faktisk utføres (aktivering, nedlasting, eller «Buy Now»-knapp).
+
 ## 0.9.218 — 2026-09-07
 ### Forbedret (GPS Keyword Converter — Svalbard-polygoner)
 - **98 Svalbard-stedsnavn totalt** (96 polygoner + 2 bounding-bokser) — opp fra 80.
