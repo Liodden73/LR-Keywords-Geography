@@ -1,3 +1,10 @@
+## 0.9.221 — 2026-09-14
+### Fiks — Treg «Add» i Plugin Manager (~75 sekunder) — ENDELIG LØSNING
+- **Rot til forsinkelsen funnet (for alvor):** `GitHubSettings.lua` kalte `lazyGH().isConfigured()` ved render av Plugin Manager-siden (linje 62) — dette skjedde **ved «Add»**, ikke kun når brukeren åpner dialogen. Det tvang lasting av hele `GitHubSync.lua` → `dkjson.lua` → `require "lpeg"` synkront på hovedtråden, og lpeg-initialiseringen tok ~75 sekunder.
+- **Løsning:** Fjernet `lazyGH().isConfigured()`-kallet fra render-tid. Status-feltet settes nå til en statisk streng (`"GitHub Sync ready — click 'Test connection' to verify."`) ved første render. `GitHubSync` (og dkjson + lpeg) lastes kun når brukeren faktisk klikker «Test connection»-knappen — aldri ved «Add».
+- **Resultat:** «Add» i Plugin Manager skal nå gå på **under 1 sekund** (bekreftet i diagnose-test uten InfoProvider).
+- v0.9.220 fjernet 483 `.logs`-søppelfiler (en god opprydding), men det var ikke årsaken til forsinkelsen — filantallet påvirket ikke lastetiden.
+
 ## 0.9.220 — 2026-09-14
 ### Fiks — Treg «Add» i Plugin Manager (~75 sekunder)
 - **Rot til forsinkelsen funnet:** Den distribuerte plugin-mappen inneholdt **483 unødvendige `.logs`-filer** (`.err`/`.out`/`.retcode` — build-artefakter) som ved en feil ble pakket med i ZIP-en. Ved «Add» traverserer Lightroom (på macOS med per-fil-sjekk) hele bunten, og de 483 ekstra filene sto for nesten hele forsinkelsen (~483 filer × ~155 ms ≈ 75 s).

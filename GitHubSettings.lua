@@ -59,9 +59,13 @@ function provider.sectionsForTopOfDialog( f, props )
 
         -- Status label uses an explicit props binding (we set it ourselves;
         -- it is NOT a user-typed field, so we don't want it in prefs).
-        props.gh_status = lazyGH().isConfigured()
-                                 and "Token stored on this machine — read & write enabled."
-                                 or  "No token — read-only (Save/push disabled)."
+        -- PERFORMANCE: Set initial status to a static string (do NOT call lazyGH()
+        -- at render-time, as it loads GitHubSync + dkjson + requires lpeg, causing
+        -- ~75 s delay at Plugin Manager Add). Status updates only when user clicks
+        -- "Test connection" — that's when we actually need GitHubSync loaded.
+        if props.gh_status == nil then
+                props.gh_status = "GitHub Sync ready — click 'Test connection' to verify."
+        end
 
         local bind = LrView.bind
 
