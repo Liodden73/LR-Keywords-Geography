@@ -1,3 +1,10 @@
+## 0.9.220 — 2026-09-14
+### Fiks — Treg «Add» i Plugin Manager (~75 sekunder)
+- **Rot til forsinkelsen funnet:** Den distribuerte plugin-mappen inneholdt **483 unødvendige `.logs`-filer** (`.err`/`.out`/`.retcode` — build-artefakter) som ved en feil ble pakket med i ZIP-en. Ved «Add» traverserer Lightroom (på macOS med per-fil-sjekk) hele bunten, og de 483 ekstra filene sto for nesten hele forsinkelsen (~483 filer × ~155 ms ≈ 75 s).
+- **Løsning:** Fjernet hele `.logs/` og `data/.logs/` fra pluginen. Filantallet er redusert fra 625 til 142 filer (104 `.lua` + 33 `.json` + noen få). «Add» i Plugin Manager skal nå gå raskt.
+- **Forebygging:** Lagt til `.gitignore` og strammet inn ZIP-bygging slik at build-artefakter aldri havner i den distribuerte pluginen igjen.
+- Ingen endring i funksjonell Lua-kode — kun opprydding.
+
 ## 0.9.219 — 2026-09-14
 ### Fiks — Treg innlasting (Extensions.lua / LrHttp)
 - **Rot til ~76 sekunders forsinkelse funnet og fikset:** `Extensions.lua` importerte `LrHttp` på toppnivå (`local LrHttp = import 'LrHttp'`). Dette initialiserte HTTP-stakken (proxy-deteksjon, socket-oppsett) allerede ved plugin-lasting, og forårsaket ~76 sekunders forsinkelse første gang Extensions-fanen ble åpnet.
