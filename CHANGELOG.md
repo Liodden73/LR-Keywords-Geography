@@ -1,3 +1,14 @@
+## 0.9.225 — 2026-09-15
+### LØST — 75-sekunders-forsinkelsen (EKTE rotårsak, bevist av din tidslogg)
+- **Rotårsak, endelig bevist:** Din `LR-Geography-Builder-timing.log` viste at modul-lastingen tok **under 1 sekund**, mens **selve panelbyggingen tok 78 sekunder** ved første åpning — og bare da. Det var altså aldri nettverk, proxy, dkjson eller lpeg (alle de teoriene var feil og er forkastet). Synderen er **verdenskart-generatoren** (`WorldMap.generate`), som kalles fra intro-panelet: den tegner et 900×450 PNG med en ren-Lua polygon-fyll- og zlib/PNG-koder (over 400 000 piksler, byte-for-byte). Det er tung CPU-jobb i Lightrooms Lua-tolk = ~75 sekunder.
+- **Hvorfor det kom tilbake hver økt:** Kartet ble mellomlagret, men bare i **minnet**. Hver ny Lightroom-økt lastes modulen på nytt, minnet nullstilles, og kartet ble derfor **regenerert (75 s)** første gang dialogen ble åpnet i hver økt.
+- **Løsningen (dette fjerner forsinkelsen, den flyttes ikke):**
+  1. **Vedvarende cache på tvers av økter.** Kartets «hash» (hvilke land som er på) lagres nå i en sidecar-fil (`lr_geography_map_cache_900.hash`) ved siden av PNG-en. Ved åpning gjenbrukes det ferdige kartet **umiddelbart** hvis valget er uendret — også etter omstart av Lightroom. Kartet regenereres kun når du faktisk **endrer hvilke land som er aktivert** (sjelden, og du gjør det bevisst).
+  2. **Ferdiglaget standardkart følger med.** Et forhåndsgenerert kart for standardoppsettet (ingen land aktivert) leveres med pluginen, så aller første åpning etter installasjon også er umiddelbar.
+  3. **Raskere koder.** PNG-koderen er optimalisert (Adler-32-moduloen utsettes til én gang per rad i stedet for per fargekanal — ~2,4 millioner færre operasjoner per kart, bit-identisk resultat), så de sjeldne regenereringene også går raskere.
+- **«Test connection» / GitHub Sync:** uendret — ligger fortsatt i **File ▸ Plug-in Manager**, akkurat som i 0.9.224.
+- **Ærlig forbehold:** Jeg kan verifisere logikken og at PNG-en er gyldig her, men jeg kan ikke måle den reelle tiden inne i Lightrooms egen Lua-tolk fra mitt miljø. Test gjerne: første åpning etter installasjon skal være rask, og den skal forbli rask ved hver ny Lightroom-økt (så lenge du ikke endrer landvalget). Tidsloggen skrives fortsatt, så vi kan bekrefte det svart på hvitt.
+
 ## 0.9.224 — 2026-09-15
 ### Reversering — «Test connection» tilbake i Plugin Manager + forsinkelsen tilbake til (den mindre plagsomme) Add-tidspunktet
 - **Hva som var galt:** v0.9.222 fjernet `LrPluginInfoProvider` og flyttet GitHub Sync til Extensions-fanen. Det gjorde «Add» rask, men flyttet 75-sekunders-forsinkelsen til **første åpning av pluginen hver økt** — som er langt verre, fordi det skjer hver gang du starter Lightroom på nytt, ikke bare én gang ved installasjon. I tillegg ble «Test connection» gjemt bort i den siste fanen. v0.9.223 (dkjson/lpeg-teorien) fjernet ikke forsinkelsen — den teorien var feil og er forkastet.

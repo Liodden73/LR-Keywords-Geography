@@ -154,8 +154,9 @@ end
 -- ─────────────────────────────────────────────────────────────────────────────
 -- Cache
 -- ─────────────────────────────────────────────────────────────────────────────
-local _cachedHash = nil
-local _cachedPath = nil
+local _cachedHash     = nil
+local _cachedPath     = nil
+local _cachedHashPath = nil
 
 local function enabledHash( enabledSet )
         local ids = {}
@@ -178,10 +179,32 @@ function WorldMap.generate( enabledSet )
         if not _cachedPath then
                 _cachedPath = LrPathUtils.child( _PLUGIN.path, "lr_geography_map_cache_900.png" )
         end
+        if not _cachedHashPath then
+                _cachedHashPath = LrPathUtils.child( _PLUGIN.path, "lr_geography_map_cache_900.hash" )
+        end
         local outPath = _cachedPath
 
         local hash = enabledHash( enabledSet )
+
+        -- (1) In-memory cache — same Lightroom session, unchanged selection.
         if hash == _cachedHash and fileExists( outPath ) then return outPath end
+
+        -- (2) Cross-session persistent cache.
+        -- The 900x450 map is pure-Lua rendered (heavy). Previously the in-memory
+        -- cache reset on every new Lightroom session, so the map was regenerated
+        -- (tens of seconds) the first time the plugin dialog was opened each session.
+        -- We now persist the enabled-set hash in a sidecar file next to the PNG, so
+        -- an existing map is reused across restarts whenever the selection is unchanged.
+        if fileExists( outPath ) then
+                local hf = io.open( _cachedHashPath, "rb" )
+                if hf then
+                        local saved = hf:read( "*a" ); hf:close()
+                        if saved == hash then
+                                _cachedHash = hash
+                                return outPath
+                        end
+                end
+        end
 
         local W, H = 900, 450
         local sx, sy = 1.5, 1.5
@@ -229,21 +252,29 @@ function WorldMap.generate( enabledSet )
         local hdrL   = string.char( 1, lenLo, lenHi, nlenLo, nlenHi )
 
         local blocks = {}
+        local sc = string.char
 
         for y = 0, H - 1 do
-                s2 = (s2 + s1) % 65521    -- filter byte 0
+                s2 = s2 + s1              -- filter byte 0 (value 0: s1 unchanged)
                 local parts = {"\0"}
+                local pn    = 1
                 local base  = y * W * 3
                 for x = 0, W - 1 do
                         local o  = base + x * 3 + 1
                         local rv = pix[o]
                         local gv = pix[o+1]
                         local bv = pix[o+2]
-                        parts[#parts+1] = string.char( rv, gv, bv )
-                        s1=(s1+rv)%65521; s2=(s2+s1)%65521
-                        s1=(s1+gv)%65521; s2=(s2+s1)%65521
-                        s1=(s1+bv)%65521; s2=(s2+s1)%65521
+                        pn = pn + 1
+                        parts[pn] = sc( rv, gv, bv )
+                        s1 = s1 + rv; s2 = s2 + s1
+                        s1 = s1 + gv; s2 = s2 + s1
+                        s1 = s1 + bv; s2 = s2 + s1
                 end
+                -- Defer the Adler-32 modulo to once per row instead of per channel.
+                -- One row is 2701 bytes, so the running sums stay far below 2^53 and
+                -- the result is bit-identical — this removes ~2.4M modulo ops per map.
+                s1 = s1 % 65521
+                s2 = s2 % 65521
                 local rowStr = table.concat( parts )
                 if y == H - 1 then
                         blocks[#blocks+1] = hdrL .. rowStr
@@ -269,7 +300,15 @@ function WorldMap.generate( enabledSet )
                 fh:close()
         end)
 
-        if ok then _cachedHash = hash; return outPath end
+        if ok then
+                _cachedHash = hash
+                -- Persist the sidecar hash so the cache survives Lightroom restarts.
+                pcall(function()
+                        local hf = io.open( _cachedHashPath, "wb" )
+                        if hf then hf:write( hash ); hf:close() end
+                end)
+                return outPath
+        end
         return nil
 
 end  -- WorldMap.generate
