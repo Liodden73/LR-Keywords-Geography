@@ -1,3 +1,12 @@
+## 0.9.236 — 2026-09-15
+### FIKS: flytter de tunge `ver_*`-dataene UT av preferansefila (angriper rotårsaken)
+- **Bekreftet av loggen din (timing 4):** De **79 sekundene** (22:59:43 A0 → 23:01:02 A1) ligger i sin helhet inne i `LrPrefs.prefsForPlugin()`. Markøren `[t] A1b` viste **159 `ver_*`-nøkler / ~116 KB** lagret i preferansene, og `[t] C` viste 43 avhukede land. Lightroom leser HELE preferansefila ved kald oppstart, og det er den mengden verifiseringsdata som gjør lesingen treg. Alt etter A1 skjer fortsatt på samme sekund.
+- **Hva som er endret:** Verifiseringsstatusen (`ver_*`-blobene) lagres ikke lenger i Lightrooms preferansefil. Den ligger nå i en **egen sidecar-fil** (`LR-GeoBuilder-verification.lua` i appData), som bare leses når Verifiserings-fanen faktisk brukes — ikke ved hver oppstart av pluginen.
+- **Engangs-migrering:** Første gang du åpner v0.9.236 flyttes eventuelle eksisterende `ver_*`-nøkler automatisk ut av preferansene og inn i sidecar-fila, og slettes fra preferansene. Loggen viser `[t] A1b: migration — moved N ver_* keys from prefs to sidecar`. Etter dette er preferansefila liten.
+- **Forventet resultat:** Første åpning etter oppgradering kjører migreringen (kan ta litt tid siden den fortsatt leser den gamle, store prefs-fila én siste gang). **Andre kalde oppstart** — avslutt Lightroom helt, vent, start på nytt og åpne pluginen — skal vise `[t] A1` nesten umiddelbart.
+- **Sluttbruker-utgaven** brukte aldri `ver_*`-dataene, men arvet dem fra den gamle felles pluginen. Migreringen rydder dem bort også der. Manager-utgaven fortsetter å fungere som før — den leser/skriver nå bare mot sidecar-fila i stedet for preferansene.
+- **Merk:** Jeg kan ikke kjøre Lightroom/Lua i mitt miljø, så selve tidsgevinsten må bekreftes med en ny logg fra deg.
+
 ## 0.9.235 — 2026-09-15
 ### GJENNOMBRUDD: forsinkelsen ligger i lesing av preferansefila — ikke i data-filene
 - **Loggen din (timing 3) er entydig:** Hele forsinkelsen på **77 sekunder** (22:42:00 → 22:43:17) ligger mellom `module load DONE` og `[t] A1: LrPrefs.prefsForPlugin() returned`. ALT etter A1 (A2, B, C, D) skjer på **samme sekund**. Med andre ord: det er **lesingen av Lightrooms preferansefil for pluginen** som er treg — ikke innlesing av landdataene (Norway.lua osv.), ikke 800-løkkene, ikke panel-byggingen.

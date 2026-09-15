@@ -77,7 +77,7 @@ local function tlog( msg )
                 end
         end )
 end
-tlog( "── ListVerification.lua module load START (dialog opening) — plugin v0.9.235 ──" )
+tlog( "── ListVerification.lua module load START (dialog opening) — plugin v0.9.236 ──" )
 
 -- ── Lazy-loaded heavy modules ─────────────────────────────────────────────────
 -- Loaded only on first use so Plugin Manager add-time stays fast.
@@ -730,6 +730,91 @@ local function checkName( name )
         return nil
 end
 
+-- ── Verification-state sidecar storage ────────────────────────────────────────
+-- Verification results (conflict + action for every county/muni/city of every
+-- verified country) used to be stored in LrPrefs.  With many countries verified
+-- these blobs grew to 100+ KB and — because Lightroom deserializes the ENTIRE
+-- plugin prefs file on cold start — made LrPrefs.prefsForPlugin() take ~75-80 s
+-- the first time the dialog opened in a fresh session (confirmed via timing log
+-- 0.9.235: 79 s spent inside prefsForPlugin, 159 ver_* keys / ~116 KB present).
+--
+-- These blobs are only needed by the Manager edition's Verification Monitor, and
+-- only when a specific country is opened.  We therefore keep them in a SIDECAR
+-- file (loaded lazily, never at cold start) instead of LrPrefs.  A one-time
+-- migration (below, in the entry point) moves any existing ver_* keys out of
+-- prefs and deletes them, which shrinks the prefs file and removes the stall for
+-- existing installs too.
+local _verStatePath = LrPathUtils.child(
+        LrPathUtils.getStandardFilePath( "appData" ),
+        "LR-GeoBuilder-verification.lua" )
+local _verState = nil   -- lazily loaded table; nil = not yet read from disk
+
+-- Minimal Lua serializer for the verification-state shape (nested tables of
+-- strings / numbers / booleans, string- or integer-keyed).
+local function _serializeLua( v )
+        local t = type( v )
+        if t == "string" then
+                return string.format( "%q", v )
+        elseif t == "number" or t == "boolean" then
+                return tostring( v )
+        elseif t == "table" then
+                local parts = {}
+                local isArray = true
+                local n = 0
+                for k in pairs( v ) do
+                        n = n + 1
+                        if type( k ) ~= "number" then isArray = false end
+                end
+                if isArray then
+                        for i = 1, n do
+                                parts[ #parts + 1 ] = _serializeLua( v[ i ] )
+                        end
+                else
+                        for k, val in pairs( v ) do
+                                local key
+                                if type( k ) == "string" then
+                                        key = "[" .. string.format( "%q", k ) .. "]"
+                                else
+                                        key = "[" .. tostring( k ) .. "]"
+                                end
+                                parts[ #parts + 1 ] = key .. "=" .. _serializeLua( val )
+                        end
+                end
+                return "{" .. table.concat( parts, "," ) .. "}"
+        end
+        return "nil"
+end
+
+local function _loadVerState()
+        local fh = io.open( _verStatePath, "r" )
+        if not fh then return {} end
+        local content = fh:read( "*a" )
+        fh:close()
+        if not content or content == "" then return {} end
+        local ok, fn = pcall( loadstring, "return " .. content )
+        if ok and fn then
+                local ok2, t = pcall( fn )
+                if ok2 and type( t ) == "table" then return t end
+        end
+        return {}
+end
+
+-- Lazily return the whole verification-state table.
+local function verAll()
+        if _verState == nil then _verState = _loadVerState() end
+        return _verState
+end
+local function verGet( key ) return verAll()[ key ] end
+local function verSet( key, val ) verAll()[ key ] = val end
+local function verFlush()
+        local ok, err = pcall( function()
+                local body = "return " .. _serializeLua( verAll() )
+                local fh = io.open( _verStatePath, "w" )
+                if fh then fh:write( body ); fh:close() end
+        end )
+        return ok
+end
+
 -- ── Main entry point ──────────────────────────────────────────────────────────
 
 tlog( "module load DONE (COUNTRIES built) — entering main entry point" )
@@ -738,27 +823,30 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
         tlog( "  [t] A0: entered callWithContext (before LrPrefs)" )
         local prefs = LrPrefs.prefsForPlugin()
         tlog( "  [t] A1: LrPrefs.prefsForPlugin() returned" )
-        -- Probe: measure the serialized size of a few known-large verification
-        -- blobs in prefs. If these are huge, they explain a slow cold prefs read.
+
+        -- ── One-time migration: move heavy ver_* blobs OUT of LrPrefs ──────────
+        -- Verification results used to live in LrPrefs, bloating the prefs file to
+        -- 100+ KB and causing the ~75-80 s cold-start stall in prefsForPlugin().
+        -- Move any existing ver_* keys into the sidecar file and DELETE them from
+        -- prefs.  After this runs once, the prefs file is small and cold starts
+        -- are fast.  Cheap and safe: no-op when there is nothing left to migrate.
         do
-                local ok, probe = pcall( function()
-                        local total, n = 0, 0
-                        for _, c in ipairs( COUNTRIES ) do
-                                for _, suf in ipairs( { "_co", "_mu", "_ci" } ) do
-                                        local v = prefs[ "ver_" .. c.id .. suf ]
-                                        if type( v ) == "table" then
-                                                n = n + 1
-                                                total = total + #v
-                                        elseif type( v ) == "string" then
-                                                n = n + 1
-                                                total = total + #v
-                                        end
+                local migrated = 0
+                for _, c in ipairs( COUNTRIES ) do
+                        for _, suf in ipairs( { "_co", "_mu", "_ci" } ) do
+                                local key = "ver_" .. c.id .. suf
+                                local v = prefs[ key ]
+                                if v ~= nil then
+                                        if verGet( key ) == nil then verSet( key, v ) end
+                                        prefs[ key ] = nil   -- remove from prefs → shrinks the file
+                                        migrated = migrated + 1
                                 end
                         end
-                        return string.format( "ver_* prefs present: %d keys, ~%d total entries/bytes", n, total )
-                end )
-                tlog( "  [t] A1b: prefs probe — " .. ( ok and tostring( probe ) or ( "error: " .. tostring( probe ) ) ) )
+                end
+                if migrated > 0 then verFlush() end
+                tlog( "  [t] A1b: migration — moved " .. migrated .. " ver_* keys from prefs to sidecar" )
         end
+
         local f     = LrView.osFactory()
         local props = LrBinding.makePropertyTable( context )
         tlog( "  [t] A2: view factory + property table ready" )
@@ -1371,9 +1459,9 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                 verInited[ cid ] = true
                 local geo = getGEO( cid )
                 if not geo then return end
-                local savedCo = prefs[ "ver_" .. cid .. "_co" ] or {}
-                local savedMu = prefs[ "ver_" .. cid .. "_mu" ] or {}
-                local savedCi = prefs[ "ver_" .. cid .. "_ci" ] or {}
+                local savedCo = verGet( "ver_" .. cid .. "_co" ) or {}
+                local savedMu = verGet( "ver_" .. cid .. "_mu" ) or {}
+                local savedCi = verGet( "ver_" .. cid .. "_ci" ) or {}
                 -- Sanitise saved action value: "change", "change_manual", "delete" are
                 -- preserved; everything else (old "dash", nil, unknown) → "none".
                 local validAction = sanitizeAction
@@ -1407,9 +1495,10 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                         end
                         return saved
                 end
-                prefs[ "ver_" .. cid .. "_co" ] = grab( geo.counties, "vcco_", "vaco_" )
-                prefs[ "ver_" .. cid .. "_mu" ] = grab( geo.munis,    "vcmu_", "vamu_" )
-                prefs[ "ver_" .. cid .. "_ci" ] = grab( geo.cities,   "vcci_", "vaci_" )
+                verSet( "ver_" .. cid .. "_co", grab( geo.counties, "vcco_", "vaco_" ) )
+                verSet( "ver_" .. cid .. "_mu", grab( geo.munis,    "vcmu_", "vamu_" ) )
+                verSet( "ver_" .. cid .. "_ci", grab( geo.cities,   "vcci_", "vaci_" ) )
+                verFlush()
         end
 
         -- Build the verified/<Country>.json payload (Lua table) from the current
@@ -1642,9 +1731,9 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                                 persistVerToPrefs( cid )
 
                                                 -- Collect all non-default actions from prefs.
-                                                local savedCo = prefs[ "ver_" .. cid .. "_co" ] or {}
-                                                local savedMu = prefs[ "ver_" .. cid .. "_mu" ] or {}
-                                                local savedCi = prefs[ "ver_" .. cid .. "_ci" ] or {}
+                                                local savedCo = verGet( "ver_" .. cid .. "_co" ) or {}
+                                                local savedMu = verGet( "ver_" .. cid .. "_mu" ) or {}
+                                                local savedCi = verGet( "ver_" .. cid .. "_ci" ) or {}
 
                                                 -- coChanges / muChanges / ciChanges: rename (change or change_manual)
                                                 -- coDeletes / muDeletes / ciDeletes: remove entry from data file
@@ -1972,7 +2061,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                                 props[ "updated_" .. cid ]      = prefs[ "updated_" .. cid ]
 
                                                 -- Clear applied actions in prefs so next Verify starts clean.
-                                                local coSaved = prefs[ "ver_" .. cid .. "_co" ] or {}
+                                                local coSaved = verGet( "ver_" .. cid .. "_co" ) or {}
                                                 for _, ch in ipairs( coChanges ) do
                                                         if coSaved[ ch.idx ] then
                                                                 coSaved[ ch.idx ].a = "none"
@@ -1983,9 +2072,9 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                                                 coSaved[ ch.idx ].a = "none"
                                                         end
                                                 end
-                                                prefs[ "ver_" .. cid .. "_co" ] = coSaved
+                                                verSet( "ver_" .. cid .. "_co", coSaved )
 
-                                                local muSaved = prefs[ "ver_" .. cid .. "_mu" ] or {}
+                                                local muSaved = verGet( "ver_" .. cid .. "_mu" ) or {}
                                                 for _, ch in ipairs( muChanges ) do
                                                         if muSaved[ ch.idx ] then
                                                                 muSaved[ ch.idx ].a = "none"
@@ -1996,9 +2085,9 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                                                 muSaved[ ch.idx ].a = "none"
                                                         end
                                                 end
-                                                prefs[ "ver_" .. cid .. "_mu" ] = muSaved
+                                                verSet( "ver_" .. cid .. "_mu", muSaved )
 
-                                                local ciSaved = prefs[ "ver_" .. cid .. "_ci" ] or {}
+                                                local ciSaved = verGet( "ver_" .. cid .. "_ci" ) or {}
                                                 for _, ch in ipairs( ciChanges ) do
                                                         if ciSaved[ ch.idx ] then
                                                                 ciSaved[ ch.idx ].a = "none"
@@ -2009,7 +2098,8 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                                                 ciSaved[ ch.idx ].a = "none"
                                                         end
                                                 end
-                                                prefs[ "ver_" .. cid .. "_ci" ] = ciSaved
+                                                verSet( "ver_" .. cid .. "_ci", ciSaved )
+                                                verFlush()
 
                                                 -- Reload data file in memory so Verification Monitor
                                                 -- sees the updated names immediately (no plugin reload needed
@@ -2322,7 +2412,8 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                                         a = props[ vaPfx .. cid .. "_" .. i ],
                                                 }
                                         end
-                                        prefs[ "ver_" .. cid .. "_" .. prefKey ] = saved
+                                        verSet( "ver_" .. cid .. "_" .. prefKey, saved )
+                                        verFlush()
                                         -- Refresh Last-verified stamp.
                                         props[ "verified_" .. cid ] = today
                                         prefs[ "verified_" .. cid ] = today
