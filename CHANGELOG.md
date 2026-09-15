@@ -1,3 +1,14 @@
+## 0.9.224 — 2026-09-15
+### Reversering — «Test connection» tilbake i Plugin Manager + forsinkelsen tilbake til (den mindre plagsomme) Add-tidspunktet
+- **Hva som var galt:** v0.9.222 fjernet `LrPluginInfoProvider` og flyttet GitHub Sync til Extensions-fanen. Det gjorde «Add» rask, men flyttet 75-sekunders-forsinkelsen til **første åpning av pluginen hver økt** — som er langt verre, fordi det skjer hver gang du starter Lightroom på nytt, ikke bare én gang ved installasjon. I tillegg ble «Test connection» gjemt bort i den siste fanen. v0.9.223 (dkjson/lpeg-teorien) fjernet ikke forsinkelsen — den teorien var feil og er forkastet.
+- **Reversering (dette er en ekte reversering av koden, ikke bare versjonsnummer):**
+  - `Info.lua`: `LrPluginInfoProvider = "GitHubSettings.lua"` **gjenopprettet**. GitHub Sync (Token, Owner, Repo, Branch, Folder, «Test connection») er igjen i **File ▸ Plug-in Manager**, der den hører hjemme.
+  - `Extensions.lua`: GitHub-seksjonen fjernet fra Extensions-fanen (den ble lagt dit i v0.9.222).
+  - `ListVerification.lua`: de 4 brukermeldingene peker igjen til «File ▸ Plug-in Manager» (ikke «the Extensions tab»).
+- **Resultat:** «Test connection» er tilbake i Plugin Manager, og forsinkelsen er tilbake til Add-tidspunktet (én gang per installasjon) — som du har sagt er klart å foretrekke. Første åpning av pluginen er rask igjen, siden nettverks-stacken varmes opp ved «Add».
+- **Beholdt fra v0.9.223 (ufarlig):** `dkjson.lua` bruker fortsatt ren-Lua (ingen `require "lpeg"`), og en lett diagnose-tidslogg (`<Dokumenter>/LR-Geography-Builder-timing.log`) skrives ved åpning. Kan fjernes senere.
+- **Videre undersøkelse (for å fjerne selv Add-forsinkelsen):** 75,0 sekunder er nøyaktig macOS' standard TCP-connect-timeout. Det peker sterkt mot at Lightrooms nettverks-init prøver å nå en vert som ikke svarer — typisk **automatisk proxy-oppdagelse (WPAD)** eller «Automatisk proxy-konfigurasjon» i macOS' nettverksinnstillinger. Se meldingen i chatten for en rask test som kan fjerne forsinkelsen helt.
+
 ## 0.9.223 — 2026-09-15
 ### Fiks — Treg FØRSTE åpning av plugin-dialogen (~75 sekunder) — EKTE ROTÅRSAK
 - **Bakgrunn:** v0.9.222 fjernet `LrPluginInfoProvider`, som gjorde «Add» rask — men forsinkelsen flyttet seg bare til **første gang plugin-dialogen åpnes** i en Lightroom-økt (deretter raskt). Det bekreftet at fjerning av InfoProvider ikke fjernet selve rotårsaken; den ble bare betalt på et annet tidspunkt.
