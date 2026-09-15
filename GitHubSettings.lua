@@ -12,18 +12,31 @@
         sync features disabled.
 
         Registered from Info.lua via LrPluginInfoProvider.
+
+        ── v0.9.229 DIAGNOSTIC: lazy imports at module load ──────────────────────
+        Timing log (4) proved the ~78 s Plugin-Manager delay happens at MODULE
+        LOAD of this file (the "Add"/registration path), NOT at dialog open. To
+        find out WHAT in this module costs those seconds, this version imports NO
+        Lightroom SDK module at the top level except LrPathUtils (a pure path
+        utility, used only for the timing log). LrView / LrPrefs / LrTasks /
+        LrDialogs are now imported lazily inside the functions that need them.
+
+          • If "Add" is now FAST → one of those top-level imports triggered a
+            synchronous init (e.g. socket/proxy) at registration. We can then keep
+            GitHub Sync in Plug-in Manager with no delay (goal C achieved).
+          • If "Add" is STILL ~78 s → the delay is caused by the mere presence of
+            LrPluginInfoProvider itself (Lightroom's own handling), independent of
+            this file's contents — and we must choose another placement.
+
+        The [PluginMgr] markers below timestamp both module load and the page
+        render so the next timing log pinpoints exactly where any delay remains.
 ]]
 
-local LrView    = import 'LrView'
-local LrPrefs   = import 'LrPrefs'
-local LrDialogs = import 'LrDialogs'
-local LrTasks   = import 'LrTasks'
+-- Only a pure path utility at top level (needed for the timing log). No LrView /
+-- LrPrefs / LrTasks / LrDialogs / LrHttp here — all deferred into functions.
 local LrPathUtils = import 'LrPathUtils'
 
 -- ── Diagnostic timing log (shared with ListVerification.lua) ──────────────────
--- Timestamps the Plugin Manager / registration path so we can tell whether any
--- delay happens at "Add"/registration time (this file) versus dialog-open time
--- (ListVerification.lua). Writes to <Documents>/LR-Geography-Builder-timing.log.
 local _tLog = LrPathUtils.child(
         LrPathUtils.getStandardFilePath( "documents" ),
         "LR-Geography-Builder-timing.log" )
@@ -36,11 +49,9 @@ local function tlog( msg )
                 end
         end )
 end
-tlog( "GitHubSettings.lua module load (LrPluginInfoProvider registration)" )
+tlog( "GitHubSettings.lua module load START — DIAGNOSTIC (lazy imports; only LrPathUtils at top level)" )
 
--- GitHubSync is loaded lazily only when the Plugin Manager dialog is opened,
--- not at plugin registration time. This avoids loading Base64.lua and dkjson.lua
--- (and any dependent operations) during plugin add, which was blocking for ~60 seconds.
+-- GitHubSync is loaded lazily only when the user clicks "Test connection".
 local _GitHubSync = nil
 local function lazyGH()
   if _GitHubSync == nil then
@@ -52,6 +63,12 @@ end
 local provider = {}
 
 function provider.sectionsForTopOfDialog( f, props )
+        tlog( "sectionsForTopOfDialog START (Plugin Manager page render)" )
+
+        -- Imported here (not at module load) so registration/"Add" stays cheap.
+        local LrView  = import 'LrView'
+        local LrPrefs = import 'LrPrefs'
+
         local prefs = LrPrefs.prefsForPlugin()
 
         -- Helper: treat nil AND empty string as missing.
@@ -75,19 +92,13 @@ function provider.sectionsForTopOfDialog( f, props )
                 prefs.gh_pathPrefix = "verified"
         end
 
-        -- Status label uses an explicit props binding (we set it ourselves;
-        -- it is NOT a user-typed field, so we don't want it in prefs).
-        -- PERFORMANCE: Set initial status to a static string (do NOT call lazyGH()
-        -- at render-time, as it loads GitHubSync + dkjson + requires lpeg, causing
-        -- ~75 s delay at Plugin Manager Add). Status updates only when user clicks
-        -- "Test connection" — that's when we actually need GitHubSync loaded.
         if props.gh_status == nil then
                 props.gh_status = "GitHub Sync ready — click 'Test connection' to verify."
         end
 
         local bind = LrView.bind
 
-        return {
+        local section = {
                 {
                         title = "GitHub Sync",
 
@@ -150,9 +161,9 @@ function provider.sectionsForTopOfDialog( f, props )
                                 f:push_button {
                                         title  = "Test connection",
                                         action = function()
-                                                -- prefs IS the binding target, so it always has the
-                                                -- latest values (updated on every keystroke by immediate=true).
-                                                -- Read from prefs inside the async task — no pre-capture needed.
+                                                -- Imported here so registration stays cheap.
+                                                local LrTasks   = import 'LrTasks'
+                                                local LrDialogs = import 'LrDialogs'
                                                 LrTasks.startAsyncTask( function()
                                                         local snap = {
                                                                 token  = prefs.gh_token,
@@ -181,6 +192,11 @@ function provider.sectionsForTopOfDialog( f, props )
                         },
                 },
         }
+
+        tlog( "sectionsForTopOfDialog DONE (Plugin Manager page render)" )
+        return section
 end
+
+tlog( "GitHubSettings.lua module load DONE — DIAGNOSTIC" )
 
 return provider

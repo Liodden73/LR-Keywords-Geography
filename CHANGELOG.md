@@ -1,3 +1,14 @@
+## 0.9.229 — 2026-09-15
+### Diagnose-bygg (Alternativ C) + velkomstkart og "Update map" fjernet
+- **Velkomstkartet fjernet.** Det ferdig-rendrede PNG-kartet (~1,2 MB) på forsiden, bildeteksten under det, statuslinjen og knappen **"Update map"** er tatt bort — de var aldri årsaken til forsinkelsen, og du ba om å droppe dem. Pluginen er nå ~4,9 MB (ned fra ~6,1 MB). "Show Interactive Map in Browser" er beholdt (åpner d3-kartet på forespørsel, koster ingen lastetid).
+- **Rettet forståelse — Lightroom leser INGENTING fra GitHub ved "Add".** Jeg leste `GitHubSettings.lua` linje for linje: ved registrering kaller den ingen nettverksfunksjon, laster ingen data fra GitHub og leser ingen `.lua`-filer. GitHub-kontakt skjer kun når du trykker "Test connection". Så "å være mer spesifikk på hva som leses fra GitHub" kan ikke hjelpe — det leses ingenting.
+- **Hva loggen (`timing (4).log`) beviste:** De ~78 sekundene skjer ved **modul-lasting** av `GitHubSettings.lua` (dvs. selve "Add"/registreringen), ikke ved dialog-åpning. Dialog-åpningen er nå rask (<1s) i loggen.
+- **Alternativ C — diagnose-bygg:** `Info.lua` beholder `LrPluginInfoProvider = "GitHubSettings.lua"` (GitHub blir i Plugin Manager), MEN `GitHubSettings.lua` importerer nå **ingen** Lightroom-SDK-modul på toppnivå bortsett fra `LrPathUtils` (ren sti-hjelper, kun for tidsloggen). `LrView`, `LrPrefs`, `LrTasks` og `LrDialogs` importeres nå **lazily** inne i funksjonene som trenger dem.
+  - **Hvis "Add" nå er rask** → en av toppnivå-importene utløste en synkron init (f.eks. socket/proxy) ved registrering. Da kan vi beholde GitHub Sync i Plugin Manager **uten** forsinkelse (målet i Alternativ C nådd).
+  - **Hvis "Add" fortsatt er ~78s** → forsinkelsen kommer av at `LrPluginInfoProvider` i det hele tatt er til stede (Lightroom sin egen håndtering), uavhengig av innholdet i fila — og da må vi velge en annen plassering (Alternativ A eller B).
+- **Nye tidsmarkører:** `[PluginMgr]` stemples nå ved modul-lasting START/DONE og ved rendering av Plugin Manager-siden START/DONE, så neste logg viser nøyaktig hvor eventuell forsinkelse ligger.
+- **Hva jeg trenger fra deg:** Installer 0.9.229, klikk "Add"/"Reload plug-in", og send meg den nye `LR-Geography-Builder-timing.log`. Merk med klokka hvor lang tid "Add" tar. Da vet vi svaret.
+
 ## 0.9.228 — 2026-09-15
 ### To ting rettet etter din tilbakemelding + nytt forsøk på selve åpnings-forsinkelsen
 - **GitHub Sync tilbake i Plugin Manager (unnskyld).** I 0.9.227 flyttet jeg GitHub Sync / "Test connection" til Extensions-fanen uten at vi var enige om det. Det var feil, og jeg har nå **fullstendig reversert** det: GitHub-seksjonen ligger igjen i **File ▸ Plug-in Manager** (registrert via `LrPluginInfoProvider = "GitHubSettings.lua"`). Jeg flytter ikke ting rundt uten at vi er enige om det.

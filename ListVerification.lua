@@ -86,35 +86,6 @@ local function lazyMap()
     return _WorldMap
 end
 
--- ── Cached-map path lookup WITHOUT loading WorldMap.lua ────────────────────────
--- WorldMap.lua is ~86 KB, dominated by a single ~38 000-character polygon table
--- literal (~18 000 numeric entries). Parsing that in Lightroom's PUC-Lua 5.1
--- interpreter is expensive, and it happened on EVERY first dialog open because
--- buildIntroPanel() called lazyMap().getCachedPath() just to look up the cached
--- PNG. We now compute the expected PNG path inline (identical slug logic to
--- WorldMap.mapPathFor) and check the file directly, so opening the dialog NEVER
--- loads WorldMap.lua. The heavy module is only parsed when the user actually
--- clicks "Update map" / "Show Interactive Map".
-local function mapEnabledHash( enabledSet )
-    local ids = {}
-    for id in pairs( enabledSet ) do ids[ #ids + 1 ] = id end
-    table.sort( ids )
-    return table.concat( ids, "," )
-end
-local function mapSlugOf( s )
-    local h = 5381
-    for i = 1, #s do
-        h = ( h * 33 + s:byte( i ) ) % 4294967296
-    end
-    return string.format( "%08x", h )
-end
-local function cachedMapPath( enabledSet )
-    local slug = mapSlugOf( mapEnabledHash( enabledSet ) )
-    local p = LrPathUtils.child( pluginPath, "lr_geography_map_900_" .. slug .. ".png" )
-    local fh = io.open( p, "rb" )
-    if fh then fh:close(); return p end
-    return nil
-end
 
 local _Extensions = nil
 local function lazyExt()
@@ -3618,91 +3589,17 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
         ------------------------------------------------------------------------
 
         local function buildIntroPanel()
-                -- Generate (or retrieve cached) world-map PNG with current enabled colours.
-                local enabledSet = {}
-                local enabledCount = 0
-                for _, c in ipairs( COUNTRIES ) do
-                        if props[ c.id .. "_enabled" ] then
-                                enabledSet[ c.id ] = true
-                                enabledCount = enabledCount + 1
-                        end
-                end
+                -- The intro panel intentionally renders NO map and does not load
+                -- WorldMap.lua. The welcome-map PNG, its caption, the status line and
+                -- the "Update map" button were removed in v0.9.229: the log proved the
+                -- map was never the cause of the load delay, and the plugin author asked
+                -- to drop them. An on-demand interactive (browser) map remains below.
                 local totalCount = #COUNTRIES
-
-                -- IMPORTANT: never render the map — nor even LOAD WorldMap.lua — on
-                -- dialog open. The 900x450 map is rendered in pure Lua (~75 s in
-                -- Lightroom's interpreter), and merely dofile()'ing WorldMap.lua (86 KB,
-                -- a ~38 000-char polygon table) is itself slow in PUC-Lua 5.1. Both were
-                -- on the open path via lazyMap().getCachedPath(). We now look up the
-                -- cached PNG inline (cachedMapPath) without touching WorldMap.lua.
-                -- Regeneration (and the WorldMap.lua load) happens solely when the user
-                -- clicks "Update map" / "Show Interactive Map" below.
-                tlog( "buildIntroPanel: START cached-map lookup" )
-                local cachedPath = cachedMapPath( enabledSet )
-                local isCurrent  = cachedPath ~= nil
-                -- Fall back to the shipped default (empty-selection, all-grey) map so
-                -- first-time users — who have not enabled any country — see something.
-                local shownPath  = cachedPath or cachedMapPath( {} )
-                tlog( "buildIntroPanel: DONE cached-map lookup (isCurrent=" .. tostring( isCurrent ) .. ")" )
-
-                props.introMapPath   = shownPath or ""
-                props.introMapBusy   = false
-                if isCurrent then
-                        props.introMapStatus = ""
-                elseif enabledCount == 0 then
-                        props.introMapStatus = ""
-                else
-                        props.introMapStatus = "The map above does not yet reflect your current selection — "
-                                            .. "click \"Update map\" to render it (Lightroom may appear frozen for up to ~90 seconds)."
-                end
-
-                local mapItem
-                if shownPath then
-                        mapItem = f:picture {
-                                value  = LrView.bind( "introMapPath" ),
-                                width  = 900,
-                                height = 450,
-                        }
-                else
-                        mapItem = f:static_text {
-                                title = "(No map yet — click \"Update map\" below)",
-                                width = 900,
-                        }
-                end
 
                 return f:column {
                         bind_to_object = props,
                         spacing        = f:control_spacing(),
                         f:spacer { height = 8 },
-                        f:row {
-                                f:spacer { fill_horizontal = 1 },
-                                mapItem,
-                                f:spacer { fill_horizontal = 1 },
-                        },
-                        f:row {
-                                f:spacer { fill_horizontal = 1 },
-                                f:static_text {
-                                        title = "Map of " .. totalCount .. " countries with geographic keywords available"
-                                              .. "  —  Red: " .. enabledCount .. " countries currently enabled (On)"
-                                              .. "  —  Blue: supported countries",
-                                        font  = "<system/small>",
-                                },
-                                f:spacer { fill_horizontal = 1 },
-                        },
-                        f:row {
-                                f:spacer { fill_horizontal = 1 },
-                                f:static_text {
-                                        title       = LrView.bind( "introMapStatus" ),
-                                        font        = "<system/small>",
-                                        text_color  = LrColor( 0.75, 0.45, 0.0 ),
-                                        width       = CONTENT_W,
-                                        alignment   = "center",
-                                },
-                                f:spacer { fill_horizontal = 1 },
-                        },
-                        f:spacer { height = 6 },
-                        f:separator { fill_horizontal = 1 },
-                        f:spacer { height = 4 },
                         f:static_text {
                                 title = "Geography Keyword Builder",
                                 font  = "<system/bold>",
@@ -3721,35 +3618,6 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                         f:spacer { height = 6 },
                         f:row {
                                 f:spacer { fill_horizontal = 1 },
-                                f:push_button {
-                                        title    = "Update map",
-                                        enabled  = LrView.bind {
-                                                key       = "introMapBusy",
-                                                transform = function( v ) return not v end,
-                                        },
-                                        action = function()
-                                                LrTasks.startAsyncTask( function()
-                                                        props.introMapBusy   = true
-                                                        props.introMapStatus = "Generating map… Lightroom may appear frozen for up to ~90 seconds. The image updates automatically when done."
-                                                        LrTasks.yield()   -- let the status text repaint before the heavy render
-                                                        local currentEnabled = {}
-                                                        for _, c in ipairs( COUNTRIES ) do
-                                                                if props[ c.id .. "_enabled" ] then
-                                                                        currentEnabled[ c.id ] = true
-                                                                end
-                                                        end
-                                                        local newPath = lazyMap().generate( currentEnabled )
-                                                        if newPath then
-                                                                props.introMapPath   = newPath
-                                                                props.introMapStatus = ""
-                                                        else
-                                                                props.introMapStatus = "Map could not be generated."
-                                                        end
-                                                        props.introMapBusy = false
-                                                end )
-                                        end,
-                                },
-                                f:spacer { width = 12 },
                                 f:push_button {
                                         title = "Show Interactive Map in Browser",
                                         action = function()
