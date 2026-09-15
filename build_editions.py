@@ -107,10 +107,13 @@ def copy_tree(dest, *, is_manager):
         fh.write(info)
 
 
-def make_zip(plugin_dir, version):
+def make_zip(plugin_dir, version, is_manager):
     """Create a versioned zip file from the plugin directory."""
     # Extract base name without .lrplugin extension
     base = os.path.basename(plugin_dir).replace(".lrplugin", "")
+    # Manager edition: rename to Geography-Keyword-Manager (drop "Builder")
+    if is_manager:
+        base = base.replace("Geography-Keyword-Builder-Manager", "Geography-Keyword-Manager")
     zip_name = f"{base}-v{version}.zip"
     zip_path = os.path.join(DIST, zip_name)
     
@@ -156,7 +159,7 @@ def main():
               % (name, "manager" if is_manager else "end-user", nfiles))
         
         # Create versioned zip
-        zip_name, size_kb = make_zip(dest, version)
+        zip_name, size_kb = make_zip(dest, version, is_manager)
         print("   →  %-45s (%d KB)" % (zip_name, size_kb))
 
 
