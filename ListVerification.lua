@@ -77,7 +77,7 @@ local function tlog( msg )
                 end
         end )
 end
-tlog( "── ListVerification.lua module load START (dialog opening) — plugin v0.9.234 ──" )
+tlog( "── ListVerification.lua module load START (dialog opening) — plugin v0.9.235 ──" )
 
 -- ── Lazy-loaded heavy modules ─────────────────────────────────────────────────
 -- Loaded only on first use so Plugin Manager add-time stays fast.
@@ -735,8 +735,30 @@ end
 tlog( "module load DONE (COUNTRIES built) — entering main entry point" )
 LrFunctionContext.callWithContext( "ListVerification", function( context )
 
+        tlog( "  [t] A0: entered callWithContext (before LrPrefs)" )
         local prefs = LrPrefs.prefsForPlugin()
         tlog( "  [t] A1: LrPrefs.prefsForPlugin() returned" )
+        -- Probe: measure the serialized size of a few known-large verification
+        -- blobs in prefs. If these are huge, they explain a slow cold prefs read.
+        do
+                local ok, probe = pcall( function()
+                        local total, n = 0, 0
+                        for _, c in ipairs( COUNTRIES ) do
+                                for _, suf in ipairs( { "_co", "_mu", "_ci" } ) do
+                                        local v = prefs[ "ver_" .. c.id .. suf ]
+                                        if type( v ) == "table" then
+                                                n = n + 1
+                                                total = total + #v
+                                        elseif type( v ) == "string" then
+                                                n = n + 1
+                                                total = total + #v
+                                        end
+                                end
+                        end
+                        return string.format( "ver_* prefs present: %d keys, ~%d total entries/bytes", n, total )
+                end )
+                tlog( "  [t] A1b: prefs probe — " .. ( ok and tostring( probe ) or ( "error: " .. tostring( probe ) ) ) )
+        end
         local f     = LrView.osFactory()
         local props = LrBinding.makePropertyTable( context )
         tlog( "  [t] A2: view factory + property table ready" )

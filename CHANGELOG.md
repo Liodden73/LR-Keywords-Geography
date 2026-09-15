@@ -1,3 +1,12 @@
+## 0.9.235 — 2026-09-15
+### GJENNOMBRUDD: forsinkelsen ligger i lesing av preferansefila — ikke i data-filene
+- **Loggen din (timing 3) er entydig:** Hele forsinkelsen på **77 sekunder** (22:42:00 → 22:43:17) ligger mellom `module load DONE` og `[t] A1: LrPrefs.prefsForPlugin() returned`. ALT etter A1 (A2, B, C, D) skjer på **samme sekund**. Med andre ord: det er **lesingen av Lightrooms preferansefil for pluginen** som er treg — ikke innlesing av landdataene (Norway.lua osv.), ikke 800-løkkene, ikke panel-byggingen.
+- **Din hypotese stemte langt på vei:** Markør `[t] C` viser **43 land avhuket**. Forsinkelsen henger sammen med hvor mye som er lagret i preferansene — ikke direkte antall avhukede land, men mengden lagrede verifiseringsdata (`ver_*`-nøkler) som har hopet seg opp i preferansefila over tid.
+- **To nye diagnose-markører** for å bekrefte og måle årsaken presist:
+  - `[t] A0` logges rett etter at vi går inn i `callWithContext`, FØR `LrPrefs.prefsForPlugin()`. Da ser vi svart på hvitt om de 77 sekundene ligger i selve prefs-lesingen (A0 → A1) eller et annet sted.
+  - `[t] A1b` måler hvor mange og hvor store `ver_*`-blober som ligger i preferansene. Dette er trolig synderen: gamle verifiseringsresultater (fylke/kommune/by-data for mange land) som blåser opp prefs-fila slik at Lightroom bruker 77 sek på å lese den ved kald oppstart.
+- **Neste steg etter denne loggen:** Når vi vet sikkert at det er prefs-lesingen, er fiksen å slutte å lagre de tunge `ver_*`-blobene i preferansene (sluttbruker-utgaven bruker dem ikke i det hele tatt) og/eller rydde bort de eksisterende. Det angriper rotårsaken i stedet for å flytte den.
+
 ## 0.9.234 — 2026-09-15
 ### Versjonsstempel i loggen + finere måling av oppstart (A1/A2)
 - **Viktig oppdagelse fra loggen din (timing 2):** Den utsatte `loadCountryState` (dofile av Norway.lua) kjørte på **samme sekund** (14:28:59 START→DONE). Det betyr at det å parse en data-fil IKKE tar 75 sekunder i seg selv — min forklaring i 0.9.232 var altså **feil**, og jeg sier det rett ut.
