@@ -77,7 +77,7 @@ local function tlog( msg )
                 end
         end )
 end
-tlog( "── ListVerification.lua module load START (dialog opening) ──" )
+tlog( "── ListVerification.lua module load START (dialog opening) — plugin v0.9.234 ──" )
 
 -- ── Lazy-loaded heavy modules ─────────────────────────────────────────────────
 -- Loaded only on first use so Plugin Manager add-time stays fast.
@@ -736,9 +736,10 @@ tlog( "module load DONE (COUNTRIES built) — entering main entry point" )
 LrFunctionContext.callWithContext( "ListVerification", function( context )
 
         local prefs = LrPrefs.prefsForPlugin()
+        tlog( "  [t] A1: LrPrefs.prefsForPlugin() returned" )
         local f     = LrView.osFactory()
         local props = LrBinding.makePropertyTable( context )
-        tlog( "  [t] A: prefs+factory+propertyTable ready" )
+        tlog( "  [t] A2: view factory + property table ready" )
 
         -- Restore per-country props from prefs.
         for _, c in ipairs( COUNTRIES ) do

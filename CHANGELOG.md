@@ -1,3 +1,10 @@
+## 0.9.234 — 2026-09-15
+### Versjonsstempel i loggen + finere måling av oppstart (A1/A2)
+- **Viktig oppdagelse fra loggen din (timing 2):** Den utsatte `loadCountryState` (dofile av Norway.lua) kjørte på **samme sekund** (14:28:59 START→DONE). Det betyr at det å parse en data-fil IKKE tar 75 sekunder i seg selv — min forklaring i 0.9.232 var altså **feil**, og jeg sier det rett ut.
+- **Loggen din var fra 0.9.232, ikke 0.9.233:** Den inneholdt ingen `[t]`-markører. Lightroom kjørte fortsatt den gamle koden. Derfor stempler jeg nå **versjonsnummeret rett inn i loggens "module load START"-linje** (`plugin v0.9.234`), slik at vi alltid ser hvilken versjon som lagde loggen.
+- **Forsinkelsen er ikke-deterministisk:** I samme logg var åpningen 76 sek (14:26), så **øyeblikkelig** (14:33), så 79 sek (14:54) — med samme land avhuket. De trege åpningene kom etter lengre pauser. Det peker mot en **kald lesing fra disk** (OS-cache tømt etter inaktivitet), ikke bare mot antall avhukede land.
+- **Ny finmåling:** Markør `[t] A1` logges rett etter `LrPrefs.prefsForPlugin()` og `[t] A2` etter view-factory/property-tabell. Slik ser vi om de 75 sekundene ligger i **innlesing av preferansefila** (min nåværende hovedmistanke — den kan bli stor når mange land er lagret) eller et annet sted.
+
 ## 0.9.233 — 2026-09-15
 ### DIAGNOSE: presise tidsmarkører for å finne den EKTE årsaken til 75-sekunders forsinkelsen
 - **Ærlig status:** Tidsloggen fra 0.9.232 viser at forsinkelsen IKKE ble løst — `loadCountryState` er nå øyeblikkelig (samme sekund), men de ~75 sekundene sitter fortsatt mellom "module load DONE" og "entry: props/countryState setup DONE". Det betyr at `loadCountryState`/`dofile(Norway.lua)` IKKE var den egentlige synderen. Jeg har tatt feil to ganger (først `LrPluginInfoProvider`, så `loadCountryState`) — denne versjonen slutter å gjette og MÅLER i stedet.
