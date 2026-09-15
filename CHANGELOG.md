@@ -1,3 +1,13 @@
+## 0.9.223 — 2026-09-15
+### Fiks — Treg FØRSTE åpning av plugin-dialogen (~75 sekunder) — EKTE ROTÅRSAK
+- **Bakgrunn:** v0.9.222 fjernet `LrPluginInfoProvider`, som gjorde «Add» rask — men forsinkelsen flyttet seg bare til **første gang plugin-dialogen åpnes** i en Lightroom-økt (deretter raskt). Det bekreftet at fjerning av InfoProvider ikke fjernet selve rotårsaken; den ble bare betalt på et annet tidspunkt.
+- **Ekte rotårsak funnet:** `dkjson.lua` hadde `always_try_using_lpeg = true`, som kaller `require "lpeg"` når modulen lastes. lpeg følger **ikke** med Lightrooms Lua-runtime, så kallet feiler alltid — men på enkelte macOS-oppsett **henger** det feilende `require`-kallet i ~75 sekunder (modul-søket treffer en nettverks-/DFS-sti eller en treg søker og treffer macOS' TCP-timeout) den første gangen dkjson lastes i en økt. Da `LrPluginInfoProvider` var registrert, tvang Lightroom en fyldigere lasting av pluginen ved «Add» — som traff dette `require`-kallet der (75 s ved «Add»). Uten InfoProvider skjer første lasting ved dialog-åpning i stedet (75 s der).
+- **Løsning:**
+  - `dkjson.lua`: satt `always_try_using_lpeg = false`. Den innebygde ren-Lua koderen/dekoderen er fullt funksjonell uten lpeg (bekreftet med encode/decode round-trip-test). `require "lpeg"` kalles nå aldri — forsinkelsen elimineres uansett hvor/når dkjson lastes.
+  - `ListVerification.lua`: `dkjson` og `GitHubSync` lastes nå **lat** (kun ved faktisk bruk — Save/push), ikke lenger ved dialog-åpning. Dialogen åpner dermed umiddelbart. (Samme lat-lastings-mønster som GPSConverter/Generator/WorldMap/Extensions allerede bruker.)
+  - Lagt til en lett diagnose-tidslogg (`<Dokumenter>/LR-Geography-Builder-timing.log`) som tidsstempler nøkkelsteg ved dialog-åpning — slik at hvis en forsinkelse noen gang dukker opp igjen, ser vi nøyaktig hvilket steg som er tregt i stedet for å gjette. Kan fjernes senere.
+- **Merk om «Test connection»:** Den er ikke borte — den ligger nederst i **Extensions-fanen** (flyttet dit i v0.9.222). Åpne pluginen ▸ Extensions-fanen ▸ rull ned til «GitHub Sync».
+
 ## 0.9.222 — 2026-09-15
 ### Fiks — Treg «Add» i Plugin Manager (~75 sekunder) — DEFINITIV LØSNING
 - **Rot til forsinkelsen endelig bekreftet via biseksjon:** Det er selve tilstedeværelsen av `LrPluginInfoProvider = "GitHubSettings.lua"` i `Info.lua` som utløser en intern synkron nettverks-/socket-initialisering i Lightroom (~75 sekunders TCP-timeout), uavhengig av Lua-koden i InfoProvider-filen. Dette lar seg ikke fikse fra Lua-siden — løsningen er å fjerne `LrPluginInfoProvider` fra `Info.lua`.

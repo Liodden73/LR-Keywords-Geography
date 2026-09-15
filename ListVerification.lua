@@ -42,6 +42,25 @@ local function http()
     return _LrHttp
 end
 
+-- ── Diagnostic timing log ─────────────────────────────────────────────────────
+-- Appends millisecond timestamps to <Documents>/LR-Geography-Builder-timing.log
+-- so we can pinpoint exactly which dialog-open step is slow, should the ~75 s
+-- delay ever reappear. Cheap (one file append) and fully safe. Can be removed
+-- once the open time is confirmed fast.
+local _tLog = LrPathUtils.child(
+        LrPathUtils.getStandardFilePath( "documents" ),
+        "LR-Geography-Builder-timing.log" )
+local function tlog( msg )
+        local ok, err = pcall( function()
+                local f = io.open( _tLog, "a" )
+                if f then
+                        f:write( os.date( "%Y-%m-%d %H:%M:%S" ) .. "  " .. tostring( msg ) .. "\n" )
+                        f:close()
+                end
+        end )
+end
+tlog( "── ListVerification.lua module load START (dialog opening) ──" )
+
 -- ── Lazy-loaded heavy modules ─────────────────────────────────────────────────
 -- Loaded only on first use so Plugin Manager add-time stays fast.
 local _GPSConverter, _Generator, _WorldMap = nil, nil, nil
@@ -123,12 +142,27 @@ local function addCountry( t )
         return t
 end
 
--- Bundled pure-Lua JSON decoder (dkjson, MIT licence).
-local dkjson = dofile( LrPathUtils.child( pluginPath, "dkjson.lua" ) )
+-- Bundled pure-Lua JSON decoder (dkjson, MIT licence) and GitHub sync helper.
+-- Both are loaded lazily (on first use), NOT at dialog-open / module-load time.
+-- Loading them up front made the FIRST open of the plugin dialog take ~75 s in a
+-- fresh Lightroom session; deferring them keeps the dialog opening instantly.
+local _dkjson = nil
+local function lazyDkjson()
+    if _dkjson == nil then
+        _dkjson = dofile( LrPathUtils.child( pluginPath, "dkjson.lua" ) )
+    end
+    return _dkjson
+end
 
 -- GitHub sync helper (reads/writes verified/<Country>.json). Sync is only
--- active on a machine where a token has been entered in Plug-in Manager.
-local GitHubSync = dofile( LrPathUtils.child( pluginPath, "GitHubSync.lua" ) )
+-- active on a machine where a token has been entered in the Extensions tab.
+local _GitHubSync = nil
+local function lazyGHSync()
+    if _GitHubSync == nil then
+        _GitHubSync = dofile( LrPathUtils.child( pluginPath, "GitHubSync.lua" ) )
+    end
+    return _GitHubSync
+end
 
 local COUNTRIES = {
         addCountry { id = "Norway",       name = "Norway",        code = "NO-578", filename = "Norway.lua",       continent = "Europe",        admin_label = "Counties & Areas",  mountain_max = 2469, remoteIslandNames = { "Bouvetøya", "Dronning Mauds Land", "Jan Mayen", "Peter 1. Island", "Svalbard" } },
@@ -506,7 +540,7 @@ local function fetchWikidataNames( cid, level )
         local body = http().get( url, headers, 30 )
         if not body or body == "" then return nil end
 
-        local data, _pos, decErr = dkjson.decode( body )
+        local data, _pos, decErr = lazyDkjson().decode( body )
         if decErr or type( data ) ~= "table" then return nil end
 
         local nameSet  = {}
@@ -679,6 +713,7 @@ end
 
 -- ── Main entry point ──────────────────────────────────────────────────────────
 
+tlog( "module load DONE (COUNTRIES built) — entering main entry point" )
 LrFunctionContext.callWithContext( "ListVerification", function( context )
 
         local prefs = LrPrefs.prefsForPlugin()
@@ -1935,9 +1970,9 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                                                   ( deleted == 1 and "y" or "ies" ) .. " deleted"
                                                 end
 
-                                                if GitHubSync.isConfigured() then
+                                                if lazyGHSync().isConfigured() then
                                                         LrTasks.startAsyncTask( function()
-                                                                local ok, info = GitHubSync.writeFile(
+                                                                local ok, info = lazyGHSync().writeFile(
                                                                         "data/" .. country.filename,
                                                                         content,
                                                                         "Update " .. cid .. " data → " .. newVer )
@@ -2385,7 +2420,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                         f:static_text {
                                 title = "Click Save to store the results as version " ..
                                         nextVer .. " of the " .. cname .. " list" ..
-                                        ( GitHubSync.isConfigured()
+                                        ( lazyGHSync().isConfigured()
                                           and " and push to GitHub."
                                           or  ". To push to GitHub, add a token in the Extensions tab." ),
                                 width           = CONTENT_W_MN,
@@ -3732,6 +3767,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                 -- Enter-key default), cancelVerb = "Cancel" — both appear on the right side
                 -- of the button bar together.
                 -- On all other tabs: actionVerb = "Close", no cancel button.
+                tlog( "panel build DONE — about to present dialog window (tab=" .. tostring( currentDialog ) .. ")" )
                 local result = LrDialogs.presentModalDialog {
                         title         = "Geography Keyword Builder",
                         contents      = contents,
@@ -3763,14 +3799,14 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                 persistVerToPrefs( cid )
                                 local cname = getCountryName( cid )
 
-                                if GitHubSync.isConfigured() then
+                                if lazyGHSync().isConfigured() then
                                         -- Build the payload now (on the UI thread, where props are
                                         -- valid) then push from an async task (LrHttp requires one).
                                         local payload = buildVerifiedJson( cid, newVer )
-                                        local path    = GitHubSync.verifiedPath( cid )
-                                        local pretty  = dkjson.encode( payload, { indent = true } )
+                                        local path    = lazyGHSync().verifiedPath( cid )
+                                        local pretty  = lazyDkjson().encode( payload, { indent = true } )
                                         LrTasks.startAsyncTask( function()
-                                                local ok, info = GitHubSync.writeFile(
+                                                local ok, info = lazyGHSync().writeFile(
                                                         path, pretty,
                                                         "Verify " .. cname .. " → " .. newVer )
                                                 if ok then

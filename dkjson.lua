@@ -1,5 +1,11 @@
 -- Module options:
-local always_try_using_lpeg = true
+-- PERFORMANCE (LR-Geography-Builder): lpeg is NOT bundled with Lightroom's Lua
+-- runtime, so require "lpeg" always fails — but on some macOS setups the failing
+-- require hangs for ~75 seconds (the module search touches a network/DFS path or
+-- a slow package searcher, hitting the macOS TCP timeout) the FIRST time dkjson
+-- is loaded in a session. The pure-Lua encoder/decoder below is fully functional
+-- without lpeg, so we disable the lpeg attempt entirely.
+local always_try_using_lpeg = false
 local register_global_module_table = false
 local global_module_name = 'json'
 
