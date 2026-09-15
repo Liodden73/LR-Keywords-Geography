@@ -32,8 +32,15 @@
         render so the next timing log pinpoints exactly where any delay remains.
 ]]
 
--- Only a pure path utility at top level (needed for the timing log). No LrView /
--- LrPrefs / LrTasks / LrDialogs / LrHttp here — all deferred into functions.
+-- These SDK imports MUST be resolved at top-level module load. Deferring them into
+-- sectionsForTopOfDialog (attempted in the 0.9.229 diagnostic) made Lightroom fail
+-- with "An error occurred while attempting to load this plug-in", because Lightroom
+-- runs sectionsForTopOfDialog while rendering the Plugin Manager page and needs the
+-- imports already available. LrHttp stays lazy (loaded inside GitHubSync only).
+local LrView      = import 'LrView'
+local LrPrefs     = import 'LrPrefs'
+local LrDialogs   = import 'LrDialogs'
+local LrTasks     = import 'LrTasks'
 local LrPathUtils = import 'LrPathUtils'
 
 -- ── Diagnostic timing log (shared with ListVerification.lua) ──────────────────
@@ -49,7 +56,7 @@ local function tlog( msg )
                 end
         end )
 end
-tlog( "GitHubSettings.lua module load START — DIAGNOSTIC (lazy imports; only LrPathUtils at top level)" )
+tlog( "GitHubSettings.lua module load START" )
 
 -- GitHubSync is loaded lazily only when the user clicks "Test connection".
 local _GitHubSync = nil
@@ -64,10 +71,6 @@ local provider = {}
 
 function provider.sectionsForTopOfDialog( f, props )
         tlog( "sectionsForTopOfDialog START (Plugin Manager page render)" )
-
-        -- Imported here (not at module load) so registration/"Add" stays cheap.
-        local LrView  = import 'LrView'
-        local LrPrefs = import 'LrPrefs'
 
         local prefs = LrPrefs.prefsForPlugin()
 
@@ -161,9 +164,6 @@ function provider.sectionsForTopOfDialog( f, props )
                                 f:push_button {
                                         title  = "Test connection",
                                         action = function()
-                                                -- Imported here so registration stays cheap.
-                                                local LrTasks   = import 'LrTasks'
-                                                local LrDialogs = import 'LrDialogs'
                                                 LrTasks.startAsyncTask( function()
                                                         local snap = {
                                                                 token  = prefs.gh_token,
@@ -197,6 +197,6 @@ function provider.sectionsForTopOfDialog( f, props )
         return section
 end
 
-tlog( "GitHubSettings.lua module load DONE — DIAGNOSTIC" )
+tlog( "GitHubSettings.lua module load DONE" )
 
 return provider

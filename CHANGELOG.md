@@ -1,3 +1,11 @@
+## 0.9.230 — 2026-09-15
+### Retter innlastingsfeilen fra 0.9.229 (diagnose-bygget lot seg ikke laste)
+- **Hva som gikk galt i 0.9.229:** Diagnose-bygget flyttet `import`-kallene (`LrView`, `LrPrefs`, `LrTasks`, `LrDialogs`) ut av toppnivå og inn i funksjonene. Det fikk Lightroom til å feile med "An error occurred while attempting to load this plug-in". Årsaken: Lightroom kjører `sectionsForTopOfDialog` **mens** Plugin Manager-siden tegnes, og krever at importene allerede er løst ved modul-lasting. Diagnose-testen (Alternativ C) kjørte altså aldri — den er ikke bekreftet hverken den ene eller andre veien.
+- **Fiks:** Importene er flyttet tilbake til toppnivå (samme form som 0.9.228, som lastet fint). Pluginen skal la seg laste igjen. `LrHttp` er fortsatt lazy (kun i GitHubSync ved nettverkskall).
+- **Beholdt fra 0.9.229 (det du ba om):** Velkomstkartet (PNG ~1,2 MB), bildeteksten, statuslinjen og "Update map"-knappen er fortsatt fjernet. "Show Interactive Map in Browser" er beholdt. Pluginen er ~4,9 MB (ned fra ~6,1 MB).
+- **Ærlig status om forsinkelsen:** ~75-78s-forsinkelsen ved "Add"/registrering i Plugin Manager er **uendret** i denne versjonen. Bevisene så langt peker mot at det er Lightroom sin egen håndtering av `LrPluginInfoProvider` (ikke vår kode) som koster tid — og det kan vi ikke fjerne uten å ta GitHub-seksjonen ut av Plugin Manager. Se diskusjonen om å dele pluginen i to (Manager-plugin med GitHub + sluttbruker-plugin uten GitHub), som løser dette ved design.
+- **[PluginMgr]-tidsmarkørene beholdt** for videre diagnose.
+
 ## 0.9.229 — 2026-09-15
 ### Diagnose-bygg (Alternativ C) + velkomstkart og "Update map" fjernet
 - **Velkomstkartet fjernet.** Det ferdig-rendrede PNG-kartet (~1,2 MB) på forsiden, bildeteksten under det, statuslinjen og knappen **"Update map"** er tatt bort — de var aldri årsaken til forsinkelsen, og du ba om å droppe dem. Pluginen er nå ~4,9 MB (ned fra ~6,1 MB). "Show Interactive Map in Browser" er beholdt (åpner d3-kartet på forespørsel, koster ingen lastetid).
