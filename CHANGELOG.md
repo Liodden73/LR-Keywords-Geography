@@ -1,3 +1,10 @@
+## 0.9.232 — 2026-09-15
+### Fjerner 75-sekunders forsinkelse ved åpning av dialog + gjenopprettet kart på Intro-siden
+- **Rotårsaken bekreftet via tidslogg:** Forsinkelsen satt mellom "module load DONE" og "entry: props/countryState setup DONE" (75 sek) — dvs. i oppsettskoden, IKKE i panel-byggingen. Synderen var `loadCountryState(Norway)` som kjørte ved dialog-åpning og kalte `dofile(Norway.lua)` (268 KB Lua-data). I PUC-Lua 5.1 tar det ~75 sek å parse denne filen første gang i en ny Lightroom-sesjon.
+- **Fiksen:** `loadCountryState` er fjernet fra oppstartskoden og utsatt til første gang brukeren åpner **Keyword List Builder**-fanen. Intro-siden, List Overview, GPS og de andre fanene trenger ikke data-filen ved åpning. Første besøk til KB-fanen tar fortsatt ~75 sek (én gang per LR-sesjon), men dialog-åpningen er nå nær øyeblikkelig.
+- **Kart gjenopprettet:** Verdenskartet (`worldmap_bg.png`, 6 KB, 480×240 px) er lagt tilbake på Intro-siden. Det er fortsatt ingen status- eller oppdateringsknapp for kartet — bare det statiske bildet og "Show Interactive Map in Browser"-knappen.
+- **Tidslogg oppdatert:** Nye tlog-markører skiller nå mellom "deferred loadCountryState START/DONE" slik at fremtidige logger kan bekrefte nøyaktig når lastet skjer.
+
 ## 0.9.231 — 2026-09-15
 ### Deler pluginen i to utgaver fra ÉN felles kildekode (Manager + Sluttbruker)
 Etter det vi ble enige om bygges pluginen nå som **to utgaver** fra samme kildebase (ingen dobbeltlagring av data — landfilene i `data/` er identiske i begge):

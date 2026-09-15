@@ -1310,8 +1310,12 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                 end )
         end
 
-        loadCountryState( COUNTRIES[1].id, COUNTRIES[1] )
+        -- Defer initial country load to the first time the KB tab is opened.
+        -- Previously this dofile(Norway.lua) call happened here at dialog-open
+        -- time, causing a ~75 s stall on cold start in a fresh Lightroom session.
+        -- loadCountryState() is now called lazily below, just before buildBuilderPanel().
         activePanelCountry = COUNTRIES[1]   -- initialise shared upvalue
+        local kbStateInitialized = false     -- true after first loadCountryState() runs
 
 
         -- Track which countries have had their verification props initialised this session.
@@ -3638,6 +3642,16 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                 width           = CONTENT_W,
                                 height_in_lines = 4,
                         },
+                        f:spacer { height = 8 },
+                        f:row {
+                                f:spacer { fill_horizontal = 1 },
+                                f:picture {
+                                        value  = LrPathUtils.child( pluginPath, "worldmap_bg.png" ),
+                                        width  = CONTENT_W,
+                                        height = math.floor( CONTENT_W / 2 ),
+                                },
+                                f:spacer { fill_horizontal = 1 },
+                        },
                         f:spacer { height = 6 },
                         f:row {
                                 f:spacer { fill_horizontal = 1 },
@@ -3686,6 +3700,15 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                 tlog( "loop: START building panels (tab=" .. tostring( currentDialog ) .. ")" )
                 local panelINTRO = ( currentDialog == TAB_IDS.INTRO ) and buildIntroPanel()  or placeholder
                 tlog( "loop: DONE panelINTRO" )
+
+                -- Lazy initial country load: load Norway (the default country) only
+                -- the first time the KB tab is actually opened, not at dialog-open time.
+                if currentDialog == TAB_IDS.KB and not kbStateInitialized then
+                        tlog( "loop: deferred loadCountryState START" )
+                        loadCountryState( activePanelCountry.id, activePanelCountry )
+                        kbStateInitialized = true
+                        tlog( "loop: deferred loadCountryState DONE" )
+                end
                 local panelKB    = ( currentDialog == TAB_IDS.KB    ) and buildBuilderPanel() or placeholder
                 local panelOV  = ( currentDialog == TAB_IDS.OV  ) and buildOverviewPanel() or placeholder
                 local panelMN  = ( currentDialog == TAB_IDS.MN  ) and buildMonitorPanel()  or placeholder
