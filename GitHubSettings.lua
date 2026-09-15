@@ -20,6 +20,24 @@ local LrDialogs = import 'LrDialogs'
 local LrTasks   = import 'LrTasks'
 local LrPathUtils = import 'LrPathUtils'
 
+-- ── Diagnostic timing log (shared with ListVerification.lua) ──────────────────
+-- Timestamps the Plugin Manager / registration path so we can tell whether any
+-- delay happens at "Add"/registration time (this file) versus dialog-open time
+-- (ListVerification.lua). Writes to <Documents>/LR-Geography-Builder-timing.log.
+local _tLog = LrPathUtils.child(
+        LrPathUtils.getStandardFilePath( "documents" ),
+        "LR-Geography-Builder-timing.log" )
+local function tlog( msg )
+        pcall( function()
+                local fh = io.open( _tLog, "a" )
+                if fh then
+                        fh:write( os.date( "%Y-%m-%d %H:%M:%S" ) .. "  [PluginMgr] " .. msg .. "\n" )
+                        fh:close()
+                end
+        end )
+end
+tlog( "GitHubSettings.lua module load (LrPluginInfoProvider registration)" )
+
 -- GitHubSync is loaded lazily only when the Plugin Manager dialog is opened,
 -- not at plugin registration time. This avoids loading Base64.lua and dkjson.lua
 -- (and any dependent operations) during plugin add, which was blocking for ~60 seconds.

@@ -86,6 +86,36 @@ local function lazyMap()
     return _WorldMap
 end
 
+-- ── Cached-map path lookup WITHOUT loading WorldMap.lua ────────────────────────
+-- WorldMap.lua is ~86 KB, dominated by a single ~38 000-character polygon table
+-- literal (~18 000 numeric entries). Parsing that in Lightroom's PUC-Lua 5.1
+-- interpreter is expensive, and it happened on EVERY first dialog open because
+-- buildIntroPanel() called lazyMap().getCachedPath() just to look up the cached
+-- PNG. We now compute the expected PNG path inline (identical slug logic to
+-- WorldMap.mapPathFor) and check the file directly, so opening the dialog NEVER
+-- loads WorldMap.lua. The heavy module is only parsed when the user actually
+-- clicks "Update map" / "Show Interactive Map".
+local function mapEnabledHash( enabledSet )
+    local ids = {}
+    for id in pairs( enabledSet ) do ids[ #ids + 1 ] = id end
+    table.sort( ids )
+    return table.concat( ids, "," )
+end
+local function mapSlugOf( s )
+    local h = 5381
+    for i = 1, #s do
+        h = ( h * 33 + s:byte( i ) ) % 4294967296
+    end
+    return string.format( "%08x", h )
+end
+local function cachedMapPath( enabledSet )
+    local slug = mapSlugOf( mapEnabledHash( enabledSet ) )
+    local p = LrPathUtils.child( pluginPath, "lr_geography_map_900_" .. slug .. ".png" )
+    local fh = io.open( p, "rb" )
+    if fh then fh:close(); return p end
+    return nil
+end
+
 local _Extensions = nil
 local function lazyExt()
     if _Extensions == nil then
@@ -155,7 +185,7 @@ local function lazyDkjson()
 end
 
 -- GitHub sync helper (reads/writes verified/<Country>.json). Sync is only
--- active on a machine where a token has been entered in the Extensions tab.
+-- active on a machine where a token has been entered in File ▸ Plug-in Manager.
 local _GitHubSync = nil
 local function lazyGHSync()
     if _GitHubSync == nil then
@@ -1993,7 +2023,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                                                                 country.filename .. " (version " .. newVer ..
                                                                                 "), but the GitHub push failed:\n" ..
                                                                                 tostring( info ) ..
-                                                                                "\n\nCheck your token in the Extensions tab.\n\n" ..
+                                                                                "\n\nCheck your token in File ▸ Plug-in Manager.\n\n" ..
                                                                                 "You can run Verify again immediately. " ..
                                                                                 "To update the Keyword List Builder, " ..
                                                                                 "click 'Reload Plug-in'.",
@@ -2422,7 +2452,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                         nextVer .. " of the " .. cname .. " list" ..
                                         ( lazyGHSync().isConfigured()
                                           and " and push to GitHub."
-                                          or  ". To push to GitHub, add a token in the Extensions tab." ),
+                                          or  ". To push to GitHub, add a token in Plug-in Manager." ),
                                 width           = CONTENT_W_MN,
                                 height_in_lines = 2,
                         },
@@ -3599,16 +3629,21 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                 end
                 local totalCount = #COUNTRIES
 
-                -- IMPORTANT: never render the map on dialog open. The 900x450 map is
-                -- rendered in pure Lua (~75 s in Lightroom's interpreter), which is what
-                -- caused the long delay when the intro tab was shown. We now only SHOW an
-                -- already-rendered map (instant file lookup); regeneration happens solely
-                -- when the user clicks "Update map" below.
-                local cachedPath = lazyMap().getCachedPath( enabledSet )
+                -- IMPORTANT: never render the map — nor even LOAD WorldMap.lua — on
+                -- dialog open. The 900x450 map is rendered in pure Lua (~75 s in
+                -- Lightroom's interpreter), and merely dofile()'ing WorldMap.lua (86 KB,
+                -- a ~38 000-char polygon table) is itself slow in PUC-Lua 5.1. Both were
+                -- on the open path via lazyMap().getCachedPath(). We now look up the
+                -- cached PNG inline (cachedMapPath) without touching WorldMap.lua.
+                -- Regeneration (and the WorldMap.lua load) happens solely when the user
+                -- clicks "Update map" / "Show Interactive Map" below.
+                tlog( "buildIntroPanel: START cached-map lookup" )
+                local cachedPath = cachedMapPath( enabledSet )
                 local isCurrent  = cachedPath ~= nil
                 -- Fall back to the shipped default (empty-selection, all-grey) map so
                 -- first-time users — who have not enabled any country — see something.
-                local shownPath  = cachedPath or lazyMap().getCachedPath( {} )
+                local shownPath  = cachedPath or cachedMapPath( {} )
+                tlog( "buildIntroPanel: DONE cached-map lookup (isCurrent=" .. tostring( isCurrent ) .. ")" )
 
                 props.introMapPath   = shownPath or ""
                 props.introMapBusy   = false
@@ -3747,6 +3782,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
         -- Dialog loop
         ------------------------------------------------------------------------
 
+        tlog( "entry: props/countryState setup DONE — entering dialog loop" )
         local keepOpen = true
         while keepOpen do
 
@@ -3756,7 +3792,9 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
 
                 local placeholder = f:column { f:spacer { height = 5 } }
 
+                tlog( "loop: START building panels (tab=" .. tostring( currentDialog ) .. ")" )
                 local panelINTRO = ( currentDialog == TAB_IDS.INTRO ) and buildIntroPanel()  or placeholder
+                tlog( "loop: DONE panelINTRO" )
                 local panelKB    = ( currentDialog == TAB_IDS.KB    ) and buildBuilderPanel() or placeholder
                 local panelOV  = ( currentDialog == TAB_IDS.OV  ) and buildOverviewPanel() or placeholder
                 local panelMN  = ( currentDialog == TAB_IDS.MN  ) and buildMonitorPanel()  or placeholder
@@ -3882,7 +3920,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                                                 "Saved locally — GitHub push FAILED — " .. cname,
                                                                 "Version " .. newVer .. " was saved on this machine, " ..
                                                                 "but the GitHub push failed:\n" .. tostring( info ) ..
-                                                                "\n\nCheck your token in the Extensions tab.",
+                                                                "\n\nCheck your token in File ▸ Plug-in Manager.",
                                                                 "warning" )
                                                 end
                                         end )
@@ -3892,7 +3930,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                                 "Verification results saved.\n\n" ..
                                                 "The " .. cname .. " list is now listed as version " ..
                                                 newVer .. " in List Overview.\n\n" ..
-                                                "(GitHub sync is off — set a token in the Extensions tab to " ..
+                                                "(GitHub sync is off — set a token in Plug-in Manager to " ..
                                                 "push verification files automatically.)",
                                                 "info" )
                                 end
