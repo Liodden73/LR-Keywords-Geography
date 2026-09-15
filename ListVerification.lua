@@ -155,7 +155,7 @@ local function lazyDkjson()
 end
 
 -- GitHub sync helper (reads/writes verified/<Country>.json). Sync is only
--- active on a machine where a token has been entered in File ▸ Plug-in Manager.
+-- active on a machine where a token has been entered in the Extensions tab.
 local _GitHubSync = nil
 local function lazyGHSync()
     if _GitHubSync == nil then
@@ -1993,7 +1993,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                                                                 country.filename .. " (version " .. newVer ..
                                                                                 "), but the GitHub push failed:\n" ..
                                                                                 tostring( info ) ..
-                                                                                "\n\nCheck your token in File ▸ Plug-in Manager.\n\n" ..
+                                                                                "\n\nCheck your token in the Extensions tab.\n\n" ..
                                                                                 "You can run Verify again immediately. " ..
                                                                                 "To update the Keyword List Builder, " ..
                                                                                 "click 'Reload Plug-in'.",
@@ -2422,7 +2422,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                         nextVer .. " of the " .. cname .. " list" ..
                                         ( lazyGHSync().isConfigured()
                                           and " and push to GitHub."
-                                          or  ". To push to GitHub, add a token in Plug-in Manager." ),
+                                          or  ". To push to GitHub, add a token in the Extensions tab." ),
                                 width           = CONTENT_W_MN,
                                 height_in_lines = 2,
                         },
@@ -3882,7 +3882,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                                                 "Saved locally — GitHub push FAILED — " .. cname,
                                                                 "Version " .. newVer .. " was saved on this machine, " ..
                                                                 "but the GitHub push failed:\n" .. tostring( info ) ..
-                                                                "\n\nCheck your token in File ▸ Plug-in Manager.",
+                                                                "\n\nCheck your token in the Extensions tab.",
                                                                 "warning" )
                                                 end
                                         end )
@@ -3892,7 +3892,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                                 "Verification results saved.\n\n" ..
                                                 "The " .. cname .. " list is now listed as version " ..
                                                 newVer .. " in List Overview.\n\n" ..
-                                                "(GitHub sync is off — set a token in Plug-in Manager to " ..
+                                                "(GitHub sync is off — set a token in the Extensions tab to " ..
                                                 "push verification files automatically.)",
                                                 "info" )
                                 end

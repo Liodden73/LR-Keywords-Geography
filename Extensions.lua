@@ -412,9 +412,10 @@ function Extensions.buildPanel( f, props, prefs, pluginPath, switchTab, TAB_IDS 
                 end
         end
 
-        -- NOTE: GitHub Sync UI lives in File ▸ Plug-in Manager (GitHubSettings.lua,
-        -- registered via LrPluginInfoProvider), NOT here. It was briefly moved to this
-        -- tab in v0.9.222 but restored to Plug-in Manager in v0.9.224.
+        -- GitHub Sync section (moved from GitHubSettings.lua / LrPluginInfoProvider
+        -- to eliminate the ~75 s plugin-registration delay)
+        children[ #children + 1 ] = f:spacer { height = 20 }
+        table.insert( children, buildGitHubSection( f, props, prefs, pluginPath ) )
 
         children.spacing = f:control_spacing()
         return f:column( children )

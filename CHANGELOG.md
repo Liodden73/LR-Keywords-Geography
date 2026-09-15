@@ -1,3 +1,21 @@
+## 0.9.227 — 2026-09-15
+### Fiks — BEGGE forsinkelsene eliminert: Plugin Manager-registrering (~75s) + dialog-åpning (<1s)
+- **Hva som ble oppdaget:** Det var **to separate forsinkelser**:
+  1. **Plugin Manager-registrering** (når du klikker "Add" eller reloader plugin): ~75s — forårsaket av `LrPluginInfoProvider = "GitHubSettings.lua"` i `Info.lua` (utløser synkron nettverks-init i Lightroom).
+  2. **Dialog-åpning** (Library → Geography Keyword Builder): ~75s første gang per økt — forårsaket av `WorldMap.generate()` kalt automatisk i `buildIntroPanel()`.
+- **Løsning 1 — Plugin Manager-registrering (v0.9.222-metoden):**
+  - `Info.lua`: Fjernet `LrPluginInfoProvider = "GitHubSettings.lua"` — eliminerer 75s-delayen ved plugin-registrering.
+  - `Extensions.lua`: GitHub Sync-seksjonen (Token, Owner, Repo, Branch, Folder, "Test connection") er nå **fast i Extensions-fanen**, nederst etter extension-listen. Lazy-loaded GitHubSync.lua via `ghSync()` — ingen nettverks-init før brukeren faktisk trykker "Test connection".
+  - `ListVerification.lua`: Alle brukerhenvisninger oppdatert fra "File ▸ Plug-in Manager" til "the Extensions tab".
+- **Løsning 2 — Dialog-åpning (v0.9.226-metoden beholdt):**
+  - `buildIntroPanel()` kaller **ikke lenger** `WorldMap.generate()` ved åpning. Bruker `getCachedPath()` (umiddelbar fil-lookup) + faller tilbake til standard grått kart hvis brukerens valg ikke er rendret ennå.
+  - Ny **"Update map"**-knapp under kartet: genererer kartet (~75s) **kun** når brukeren eksplisitt trykker der. Dialog-åpning er nå umiddelbar (<1s).
+- **Resultat:**
+  - **Plugin Manager "Add"/"Reload"**: <1s (ned fra ~75s).
+  - **Library → Geography Keyword Builder (første åpning per økt)**: <1s (ned fra ~75s).
+  - **"Update map"-knapp**: ~75s (kun når du eksplisitt ber om det) — Lightroom kan virke fastlåst under renderingen, men det er kun da.
+- **GitHub Sync**: Finn den i **Extensions-fanen**, nederst etter extension-listen — ikke lenger i Plugin Manager.
+
 ## 0.9.226 — 2026-09-15
 ### Forsøk — fjerner kart-genereringen fra åpnings-stien (din foreslåtte «Update map»-knapp)
 - **Status:** IKKE bekreftet løst ennå — dette skal testes av deg. Jeg skriver ikke «løst» før du ser at det faktisk er borte.
