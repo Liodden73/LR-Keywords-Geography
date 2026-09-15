@@ -31,6 +31,24 @@ local LrStringUtils     = import 'LrStringUtils'
 local pluginPath = _PLUGIN.path
 local dataDir    = LrPathUtils.child( pluginPath, "data" )
 
+-- ── Edition marker ────────────────────────────────────────────────────────────
+-- Two editions are built from this one shared source tree by build_editions.py:
+--   • Manager  (isManager=true)  — the plugin author's admin tool: Verify/Update
+--     in List Overview, the Verification Monitor tab, and GitHub Sync (registered
+--     via LrPluginInfoProvider in Info.lua).
+--   • End-user (isManager=false) — the product customers install: choose countries,
+--     read-only List Overview (no Verify/Update), keyword generation and the GPS
+--     Keyword Converter. No Verification Monitor, no GitHub — hence no ~75 s delay.
+-- Edition.lua is swapped per bundle at build time. Missing/unreadable → default to
+-- Manager (the full superset), so the raw source tree runs as the admin tool.
+local IS_MANAGER = true
+do
+        local ok, ed = pcall( dofile, LrPathUtils.child( pluginPath, "Edition.lua" ) )
+        if ok and type( ed ) == "table" and ed.isManager ~= nil then
+                IS_MANAGER = ed.isManager and true or false
+        end
+end
+
 -- ── Lazy LrHttp ───────────────────────────────────────────────────────────────
 -- Importing LrHttp at top level initialises the HTTP stack (proxy detection,
 -- socket setup) the moment this file runs — i.e. every time the dialog opens —
@@ -1549,7 +1567,9 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                         width          = W_VERIFIED,
                                 },
                                 -- Verify with Wiki button → opens Monitor for this country.
-                                f:push_button {
+                                -- Manager edition only; the end-user edition shows an
+                                -- aligned spacer so the table columns stay lined up.
+                                ( IS_MANAGER and f:push_button {
                                         title  = "Verify with Wiki",
                                         width  = W_BUTTON,
                                         action = function()
@@ -1557,14 +1577,17 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                                 initVerPropsForCountry( country.id )
                                                 switchTab( TAB_IDS.MN )
                                         end,
-                                },
+                                } or f:spacer { width = W_BUTTON } ),
                                 f:spacer { width = 10 },
                                 f:static_text {
                                         bind_to_object = props,
                                         title          = LrView.bind( updKey ),
                                         width          = W_UPDATED,
                                 },
-                                f:push_button {
+                                -- Update button → writes changes to the data file and
+                                -- pushes to GitHub. Manager edition only; the end-user
+                                -- edition shows an aligned spacer instead.
+                                ( IS_MANAGER and f:push_button {
                                         title  = "Update",
                                         width  = W_BUTTON,
                                         action = function()
@@ -2013,7 +2036,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                                 end
                                                 end )  -- LrTasks.startAsyncTask
                                         end,
-                                },
+} or f:spacer { width = W_BUTTON } ),
                         }
                 end
 
@@ -3674,49 +3697,51 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                 local showSave = ( currentDialog == TAB_IDS.MN )
                                  and ( props.verify_country_id ~= nil )
 
-                contents = f:tab_view {
+                -- Build the tab list programmatically so the Verification Monitor
+                -- tab can be included in the Manager edition only.
+                local tabItems = {
                         bind_to_object = props,
                         value          = LrView.bind( "activeTabId" ),
-                        f:tab_view_item {
+                }
+                        tabItems[ #tabItems + 1 ] = f:tab_view_item {
                                 title      = "Intro",
                                 identifier = TAB_IDS.INTRO,
                                 f:column { width = CONTENT_W, spacing = f:control_spacing(), panelINTRO },
-                        },
-                        f:tab_view_item {
+                        }
+                        tabItems[ #tabItems + 1 ] = f:tab_view_item {
                                 title      = "Keyword List Builder",
                                 identifier = TAB_IDS.KB,
                                 f:column { spacing = f:control_spacing(), fill_horizontal = 1, panelKB },
-                        },
-                        f:tab_view_item {
+                        }
+                        tabItems[ #tabItems + 1 ] = f:tab_view_item {
                                 title      = "List Overview",
                                 identifier = TAB_IDS.OV,
                                 f:column { width = CONTENT_W, spacing = f:control_spacing(), panelOV },
-                        },
-                        f:tab_view_item {
-                                title      = "Verification Monitor",
-                                identifier = TAB_IDS.MN,
-                                -- Monitor tab is wider (3 full-width groups side by side).
-                                f:column { width = CONTENT_W_MN, spacing = f:control_spacing(), panelMN },
-                        },
-                        f:tab_view_item {
+                        }
+                -- Verification Monitor is a Manager-edition-only admin tool.
+                if IS_MANAGER then
+                                tabItems[ #tabItems + 1 ] = f:tab_view_item {
+                                        title      = "Verification Monitor",
+                                        identifier = TAB_IDS.MN,
+                                        f:column { width = CONTENT_W_MN, spacing = f:control_spacing(), panelMN },
+                                }
+                end
+                        tabItems[ #tabItems + 1 ] = f:tab_view_item {
                                 title      = "GPS Keyword Converter",
                                 identifier = TAB_IDS.GPS,
-                                -- Match the widest tab (Monitor) so the GPS content fills
-                                -- the window with ≤10 px right margin instead of ~70 px.
                                 f:column { width = CONTENT_W_MN, spacing = f:control_spacing(), panelGPS },
-                        },
-                        f:tab_view_item {
+                        }
+                        tabItems[ #tabItems + 1 ] = f:tab_view_item {
                                 title      = "Extensions",
                                 identifier = TAB_IDS.EXT,
-                                -- Match the widest tab (Monitor) for the 4-column table.
                                 f:column { width = CONTENT_W_MN, spacing = f:control_spacing(), panelEXT },
-                        },
-                        f:tab_view_item {
+                        }
+                        tabItems[ #tabItems + 1 ] = f:tab_view_item {
                                 title      = "Help",
                                 identifier = TAB_IDS.HLP,
                                 f:column { width = CONTENT_W, spacing = f:control_spacing(), panelHLP },
-                        },
-                }
+                        }
+                contents = f:tab_view( tabItems )
 
                 -- Copyright footer shown left-aligned on the same line as the action buttons.
                 -- accessoryView is the SDK mechanism for placing content in the button bar.

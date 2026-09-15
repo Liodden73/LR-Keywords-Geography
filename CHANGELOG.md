@@ -1,3 +1,18 @@
+## 0.9.231 — 2026-09-15
+### Deler pluginen i to utgaver fra ÉN felles kildekode (Manager + Sluttbruker)
+Etter det vi ble enige om bygges pluginen nå som **to utgaver** fra samme kildebase (ingen dobbeltlagring av data — landfilene i `data/` er identiske i begge):
+
+- **Manager-utgave (kun deg):** det fulle admin-verktøyet. Beholder **"Verify with Wiki"**- og **"Update"**-knappene i List Overview, **Verification Monitor**-fanen og **GitHub Sync** i **File ▸ Plug-in Manager**. Har ny egen `LrToolkitIdentifier` (`com.lioddenMedia.geographyBuilderManager`) og navnet **"Geography Keyword Builder — Manager"**, slik at den kan installeres side om side med sluttbruker-utgaven. Denne utgaven beholder `LrPluginInfoProvider`, og dermed også ~75-sekunders forsinkelsen ved "Add"/registrering — det er greit siden bare du bruker den.
+- **Sluttbruker-utgave (kundene):** List Overview viser **all den samme informasjonen som nå** (også kolonnene "Last verified"/"Last update"), men **uten** "Verify with Wiki"- og "Update"-knappene. **Verification Monitor**-fanen er fjernet, og det er **ingen GitHub** og **ingen `LrPluginInfoProvider`** — derfor **ingen ~75s-forsinkelse** ved installasjon/registrering. Kunden velger land (på/av), genererer nøkkelord og bruker **GPS Keyword Converter** (kjernefunksjonen de betaler for). Beholder samme `LrToolkitIdentifier` (`com.lioddenMedia.geographyBuilder`) og navn som før, slik at eksisterende kundeinstallasjoner oppdateres på plass.
+- **Begge utgaver** beholder Intro-, Keyword List Builder-, GPS Keyword Converter-, **Extensions**- (kjøp/aktiver regionpakker) og Help-fanene.
+
+**Slik er det bygget teknisk:**
+- Én ny fil `Edition.lua` (`{ isManager = true/false }`) leses ved oppstart og styrer om knappene og Monitor-fanen vises. Mangler fila, kjører kildetreet som Manager (full superset).
+- Byggeskriptet `build_editions.py` lager begge `.lrplugin`-buntene: sluttbruker-utgaven utelater `GitHubSettings.lua`, `GitHubSync.lua`, `Base64.lua`, `dkjson.lua` og `verified/`, og fjerner `LrPluginInfoProvider`-linja fra `Info.lua`.
+- Jeg har sporet alle kodestier: ingen kodesti i sluttbruker-utgaven kaller GitHub- eller Wikidata-funksjonene (de ligger kun bak Monitor-fanen / de fjernede knappene), så de utelatte filene trengs aldri der.
+
+**Ærlig forbehold:** Jeg kan ikke kjøre Lightroom sin egen Lua-tolk i mitt miljø, så jeg har **ikke** kunnet måle at sluttbruker-utgaven faktisk laster uten forsinkelse — kun bekreftet at all Lua-kode er syntaktisk gyldig og at fane-/knapp-logikken velger riktig per utgave. Du må teste begge utgavene i Lightroom Classic og gi tilbakemelding.
+
 ## 0.9.230 — 2026-09-15
 ### Retter innlastingsfeilen fra 0.9.229 (diagnose-bygget lot seg ikke laste)
 - **Hva som gikk galt i 0.9.229:** Diagnose-bygget flyttet `import`-kallene (`LrView`, `LrPrefs`, `LrTasks`, `LrDialogs`) ut av toppnivå og inn i funksjonene. Det fikk Lightroom til å feile med "An error occurred while attempting to load this plug-in". Årsaken: Lightroom kjører `sectionsForTopOfDialog` **mens** Plugin Manager-siden tegnes, og krever at importene allerede er løst ved modul-lasting. Diagnose-testen (Alternativ C) kjørte altså aldri — den er ikke bekreftet hverken den ene eller andre veien.
