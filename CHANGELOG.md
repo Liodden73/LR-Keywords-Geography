@@ -1,5 +1,20 @@
+## 0.9.226 — 2026-09-15
+### Forsøk — fjerner kart-genereringen fra åpnings-stien (din foreslåtte «Update map»-knapp)
+- **Status:** IKKE bekreftet løst ennå — dette skal testes av deg. Jeg skriver ikke «løst» før du ser at det faktisk er borte.
+- **Hva 0.9.225 ikke fikset:** 0.9.225 la til en vedvarende cache, men kartet ble fortsatt **generert automatisk når intro-fanen åpnes**. Siden du har land aktivert, fantes det ikke noe ferdig kart for akkurat ditt valg ved første åpning i økten → kartet ble regenerert (~75 s). Cachen hjalp bare hvis valget allerede var rendret. Rotårsaken (den rene Lua-kart-genereringen) sto altså igjen i åpnings-stien.
+- **Denne endringen (din idé):** Kartet genereres ikke lenger automatisk ved åpning. Åpning gjør nå kun et **umiddelbart fil-oppslag**:
+  - `WorldMap.getCachedPath(enabledSet)` — ny funksjon som returnerer et ferdig kart hvis det finnes, uten å generere noe. Filnavnet koder selve landvalget (`lr_geography_map_900_<slug>.png`), så et gitt valg peker alltid til samme fil (vedvarende cache på tvers av økter), og et endret valg gir en ny fil (så bildet oppdateres pålitelig).
+  - Er kartet for ditt valg ikke rendret ennå, vises det medfølgende **standardkartet** (gråt, ingen land valgt) med en liten melding om å trykke «Update map».
+  - Ny knapp **«Update map»** under kartet: genereringen (~75 s) skjer **kun** når du trykker der — aldri ved åpning. Under generering vises en statusmelding, og bildet oppdateres automatisk når det er ferdig. (Selve renderingen er tung ren-Lua CPU, så Lightroom kan se fastfrosset ut i den perioden — men bare da, og bare når du selv ba om det.)
+- **Førstegangsbruker:** Har ingen land valgt → ser standard grått kart umiddelbart, akkurat som du beskrev.
+- **Om HTML-kartet (`lr_geography_map.html`):** Selve *genereringen* av HTML-filen er tekst-sammensetting og er tilnærmet umiddelbar (millisekunder) — det er ikke den som er treg. Men HTML-kartet *tegnes* i nettleseren med d3/topojson lastet fra internett (CDN), så det krever nett for å vises, og det fremhever landene ut fra ditt valg. Et statisk skjermbilde av det ville ikke kunne vise dine røde/valgte land uten å genereres på nytt per valg, så det egner seg ikke som forsidebilde. Derfor beholdt jeg PNG-kartet på forsiden, men flyttet genereringen bak «Update map»-knappen slik du foreslo.
+- **Beholdt:** «Test connection» / GitHub Sync ligger fortsatt i **File ▸ Plug-in Manager**. Diagnose-tidsloggen skrives fortsatt, så vi kan bekrefte at panelbyggingen nå er under ett sekund.
+
 ## 0.9.225 — 2026-09-15
-### LØST — 75-sekunders-forsinkelsen (EKTE rotårsak, bevist av din tidslogg)
+### Forsøk (utilstrekkelig) — vedvarende cache, men kartet ble fortsatt regenerert ved åpning
+> Merk: denne versjonen fjernet IKKE forsinkelsen for deg, fordi kartet fortsatt ble generert automatisk ved åpning når valget ditt ikke allerede var rendret. Se 0.9.226 for den faktiske omleggingen. Beskrivelsen under er beholdt for historikk.
+
+### (opprinnelig tekst) 75-sekunders-forsinkelsen — rotårsak bevist av din tidslogg
 - **Rotårsak, endelig bevist:** Din `LR-Geography-Builder-timing.log` viste at modul-lastingen tok **under 1 sekund**, mens **selve panelbyggingen tok 78 sekunder** ved første åpning — og bare da. Det var altså aldri nettverk, proxy, dkjson eller lpeg (alle de teoriene var feil og er forkastet). Synderen er **verdenskart-generatoren** (`WorldMap.generate`), som kalles fra intro-panelet: den tegner et 900×450 PNG med en ren-Lua polygon-fyll- og zlib/PNG-koder (over 400 000 piksler, byte-for-byte). Det er tung CPU-jobb i Lightrooms Lua-tolk = ~75 sekunder.
 - **Hvorfor det kom tilbake hver økt:** Kartet ble mellomlagret, men bare i **minnet**. Hver ny Lightroom-økt lastes modulen på nytt, minnet nullstilles, og kartet ble derfor **regenerert (75 s)** første gang dialogen ble åpnet i hver økt.
 - **Løsningen (dette fjerner forsinkelsen, den flyttes ikke):**

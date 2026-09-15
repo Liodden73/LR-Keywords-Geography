@@ -3598,18 +3598,39 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                         end
                 end
                 local totalCount = #COUNTRIES
-                local mapPath = lazyMap().generate( enabledSet )
+
+                -- IMPORTANT: never render the map on dialog open. The 900x450 map is
+                -- rendered in pure Lua (~75 s in Lightroom's interpreter), which is what
+                -- caused the long delay when the intro tab was shown. We now only SHOW an
+                -- already-rendered map (instant file lookup); regeneration happens solely
+                -- when the user clicks "Update map" below.
+                local cachedPath = lazyMap().getCachedPath( enabledSet )
+                local isCurrent  = cachedPath ~= nil
+                -- Fall back to the shipped default (empty-selection, all-grey) map so
+                -- first-time users — who have not enabled any country — see something.
+                local shownPath  = cachedPath or lazyMap().getCachedPath( {} )
+
+                props.introMapPath   = shownPath or ""
+                props.introMapBusy   = false
+                if isCurrent then
+                        props.introMapStatus = ""
+                elseif enabledCount == 0 then
+                        props.introMapStatus = ""
+                else
+                        props.introMapStatus = "The map above does not yet reflect your current selection — "
+                                            .. "click \"Update map\" to render it (Lightroom may appear frozen for up to ~90 seconds)."
+                end
 
                 local mapItem
-                if mapPath then
+                if shownPath then
                         mapItem = f:picture {
-                                value  = mapPath,
+                                value  = LrView.bind( "introMapPath" ),
                                 width  = 900,
                                 height = 450,
                         }
                 else
                         mapItem = f:static_text {
-                                title = "(Map image could not be generated)",
+                                title = "(No map yet — click \"Update map\" below)",
                                 width = 900,
                         }
                 end
@@ -3630,6 +3651,17 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                               .. "  —  Red: " .. enabledCount .. " countries currently enabled (On)"
                                               .. "  —  Blue: supported countries",
                                         font  = "<system/small>",
+                                },
+                                f:spacer { fill_horizontal = 1 },
+                        },
+                        f:row {
+                                f:spacer { fill_horizontal = 1 },
+                                f:static_text {
+                                        title       = LrView.bind( "introMapStatus" ),
+                                        font        = "<system/small>",
+                                        text_color  = LrColor( 0.75, 0.45, 0.0 ),
+                                        width       = CONTENT_W,
+                                        alignment   = "center",
                                 },
                                 f:spacer { fill_horizontal = 1 },
                         },
@@ -3654,6 +3686,35 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                         f:spacer { height = 6 },
                         f:row {
                                 f:spacer { fill_horizontal = 1 },
+                                f:push_button {
+                                        title    = "Update map",
+                                        enabled  = LrView.bind {
+                                                key       = "introMapBusy",
+                                                transform = function( v ) return not v end,
+                                        },
+                                        action = function()
+                                                LrTasks.startAsyncTask( function()
+                                                        props.introMapBusy   = true
+                                                        props.introMapStatus = "Generating map… Lightroom may appear frozen for up to ~90 seconds. The image updates automatically when done."
+                                                        LrTasks.yield()   -- let the status text repaint before the heavy render
+                                                        local currentEnabled = {}
+                                                        for _, c in ipairs( COUNTRIES ) do
+                                                                if props[ c.id .. "_enabled" ] then
+                                                                        currentEnabled[ c.id ] = true
+                                                                end
+                                                        end
+                                                        local newPath = lazyMap().generate( currentEnabled )
+                                                        if newPath then
+                                                                props.introMapPath   = newPath
+                                                                props.introMapStatus = ""
+                                                        else
+                                                                props.introMapStatus = "Map could not be generated."
+                                                        end
+                                                        props.introMapBusy = false
+                                                end )
+                                        end,
+                                },
+                                f:spacer { width = 12 },
                                 f:push_button {
                                         title = "Show Interactive Map in Browser",
                                         action = function()

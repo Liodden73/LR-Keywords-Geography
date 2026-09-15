@@ -154,15 +154,30 @@ end
 -- ─────────────────────────────────────────────────────────────────────────────
 -- Cache
 -- ─────────────────────────────────────────────────────────────────────────────
-local _cachedHash     = nil
-local _cachedPath     = nil
-local _cachedHashPath = nil
-
 local function enabledHash( enabledSet )
         local ids = {}
         for id in pairs( enabledSet ) do ids[#ids+1] = id end
         table.sort( ids )
         return table.concat( ids, "," )
+end
+
+-- Short deterministic slug of the enabled-set string (djb2, kept in 32-bit).
+-- The generated PNG filename embeds this slug, which gives us two things for free:
+--   • a persistent cross-session cache (a given selection always maps to the same
+--     file, reused across Lightroom restarts — no regeneration when unchanged), and
+--   • a distinct file path per selection, so the LrView picture reliably reloads
+--     when the map is regenerated for a changed selection.
+local function slugOf( s )
+        local h = 5381
+        for i = 1, #s do
+                h = ( h * 33 + s:byte(i) ) % 4294967296
+        end
+        return string.format( "%08x", h )
+end
+
+local function mapPathFor( enabledSet )
+        local slug = slugOf( enabledHash( enabledSet ) )
+        return LrPathUtils.child( _PLUGIN.path, "lr_geography_map_900_" .. slug .. ".png" )
 end
 
 local function fileExists( path )
@@ -172,39 +187,31 @@ local function fileExists( path )
 end
 
 -- ─────────────────────────────────────────────────────────────────────────────
+-- WorldMap.getCachedPath( enabledSet ) → png_path or nil   (NEVER generates)
+-- Returns the already-rendered map file for this selection if it exists on disk.
+-- Cheap: a single file-existence check. Used to show the map instantly on dialog
+-- open without ever triggering the heavy (~75 s) render.
+-- ─────────────────────────────────────────────────────────────────────────────
+function WorldMap.getCachedPath( enabledSet )
+        local p = mapPathFor( enabledSet )
+        if fileExists( p ) then return p end
+        return nil
+end
+
+-- ─────────────────────────────────────────────────────────────────────────────
 -- WorldMap.generate( enabledSet ) → png_path or nil
+-- Heavy (~75 s in Lightroom's Lua). Now only called on demand ("Update map"),
+-- never automatically on dialog open. If the map for this exact selection already
+-- exists on disk, it is reused immediately (persistent cross-session cache).
 -- ─────────────────────────────────────────────────────────────────────────────
 function WorldMap.generate( enabledSet )
 
-        if not _cachedPath then
-                _cachedPath = LrPathUtils.child( _PLUGIN.path, "lr_geography_map_cache_900.png" )
-        end
-        if not _cachedHashPath then
-                _cachedHashPath = LrPathUtils.child( _PLUGIN.path, "lr_geography_map_cache_900.hash" )
-        end
-        local outPath = _cachedPath
+        local outPath = mapPathFor( enabledSet )
 
-        local hash = enabledHash( enabledSet )
-
-        -- (1) In-memory cache — same Lightroom session, unchanged selection.
-        if hash == _cachedHash and fileExists( outPath ) then return outPath end
-
-        -- (2) Cross-session persistent cache.
-        -- The 900x450 map is pure-Lua rendered (heavy). Previously the in-memory
-        -- cache reset on every new Lightroom session, so the map was regenerated
-        -- (tens of seconds) the first time the plugin dialog was opened each session.
-        -- We now persist the enabled-set hash in a sidecar file next to the PNG, so
-        -- an existing map is reused across restarts whenever the selection is unchanged.
-        if fileExists( outPath ) then
-                local hf = io.open( _cachedHashPath, "rb" )
-                if hf then
-                        local saved = hf:read( "*a" ); hf:close()
-                        if saved == hash then
-                                _cachedHash = hash
-                                return outPath
-                        end
-                end
-        end
+        -- Persistent cross-session cache: the filename encodes the selection, so an
+        -- existing file always matches this exact selection — reuse it and skip the
+        -- expensive render (also true across Lightroom restarts).
+        if fileExists( outPath ) then return outPath end
 
         local W, H = 900, 450
         local sx, sy = 1.5, 1.5
@@ -300,15 +307,7 @@ function WorldMap.generate( enabledSet )
                 fh:close()
         end)
 
-        if ok then
-                _cachedHash = hash
-                -- Persist the sidecar hash so the cache survives Lightroom restarts.
-                pcall(function()
-                        local hf = io.open( _cachedHashPath, "wb" )
-                        if hf then hf:write( hash ); hf:close() end
-                end)
-                return outPath
-        end
+        if ok then return outPath end
         return nil
 
 end  -- WorldMap.generate
