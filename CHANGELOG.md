@@ -1,3 +1,13 @@
+## 0.9.233 — 2026-09-15
+### DIAGNOSE: presise tidsmarkører for å finne den EKTE årsaken til 75-sekunders forsinkelsen
+- **Ærlig status:** Tidsloggen fra 0.9.232 viser at forsinkelsen IKKE ble løst — `loadCountryState` er nå øyeblikkelig (samme sekund), men de ~75 sekundene sitter fortsatt mellom "module load DONE" og "entry: props/countryState setup DONE". Det betyr at `loadCountryState`/`dofile(Norway.lua)` IKKE var den egentlige synderen. Jeg har tatt feil to ganger (først `LrPluginInfoProvider`, så `loadCountryState`) — denne versjonen slutter å gjette og MÅLER i stedet.
+- **Nye finmaskede markører** i oppstartskoden deler nå opp det 75-sekunders vinduet i fire faser, slik at neste logg peker ut nøyaktig hvilken kodelinje som bruker tiden:
+  - `[t] A` — etter at prefs, view-factory og property-tabell er opprettet
+  - `[t] B` — etter løkken som gjenoppretter per-land-innstillinger fra prefs
+  - `[t] C` — etter props-oppsett + 800-løkkene (logger også **antall land som er huket av**)
+  - `[t] D` — etter registrering av observers
+- **Tester din hypotese direkte:** Markør `[t] C` logger hvor mange land som er aktivert under List Overview. Slik kan vi se svart på hvitt om trege åpninger henger sammen med antall avhukede land (Manager har ingen avhuket = ingen forsinkelse). Se testinstruksjon i chatten.
+
 ## 0.9.232 — 2026-09-15
 ### Fjerner 75-sekunders forsinkelse ved åpning av dialog + gjenopprettet kart på Intro-siden
 - **Rotårsaken bekreftet via tidslogg:** Forsinkelsen satt mellom "module load DONE" og "entry: props/countryState setup DONE" (75 sek) — dvs. i oppsettskoden, IKKE i panel-byggingen. Synderen var `loadCountryState(Norway)` som kjørte ved dialog-åpning og kalte `dofile(Norway.lua)` (268 KB Lua-data). I PUC-Lua 5.1 tar det ~75 sek å parse denne filen første gang i en ny Lightroom-sesjon.

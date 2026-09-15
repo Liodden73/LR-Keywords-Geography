@@ -738,6 +738,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
         local prefs = LrPrefs.prefsForPlugin()
         local f     = LrView.osFactory()
         local props = LrBinding.makePropertyTable( context )
+        tlog( "  [t] A: prefs+factory+propertyTable ready" )
 
         -- Restore per-country props from prefs.
         for _, c in ipairs( COUNTRIES ) do
@@ -751,6 +752,8 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                 -- bumped beyond the data file's meta.version via a Save in the Monitor.
                 props[ "list_version_" .. c.id ] = prefs[ "list_version_" .. c.id ] or "?"
         end
+
+        tlog( "  [t] B: per-country prefs restore loop DONE" )
 
         -- Which country is currently open in the Verification Monitor.
         props.verify_country_id = nil
@@ -825,6 +828,14 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                 props[ "county_name_" .. i ] = ""
         end
         props.active_select_all_label     = "Select All"
+
+        do
+                local nEnabled = 0
+                for _, c in ipairs( COUNTRIES ) do
+                        if props[ c.id .. "_enabled" ] then nEnabled = nEnabled + 1 end
+                end
+                tlog( "  [t] C: props setup + 800-loops DONE (enabled countries = " .. nEnabled .. ")" )
+        end
 
         -- ── Keyword Builder helpers ────────────────────────────────────────────
 
@@ -1309,6 +1320,8 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                         prefs[ "enabled_" .. cid ] = props[ cid .. "_enabled" ]
                 end )
         end
+
+        tlog( "  [t] D: observer registration DONE" )
 
         -- Defer initial country load to the first time the KB tab is opened.
         -- Previously this dofile(Norway.lua) call happened here at dialog-open
