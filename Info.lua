@@ -12,8 +12,6 @@ return {
         LrToolkitIdentifier = "com.lioddenMedia.geographyBuilder",
         LrPluginName = "Geography Keyword Builder",
 
-        LrPluginInfoProvider = "GitHubSettings.lua",
-
         LrLibraryMenuItems = {
                 {
                         title = "Geography Keyword Builder...",
@@ -21,5 +19,5 @@ return {
                 },
         },
 
-        VERSION = { major = 0, minor = 9, revision = 221, build = 0 },
+        VERSION = { major = 0, minor = 9, revision = 222, build = 0 },
 }

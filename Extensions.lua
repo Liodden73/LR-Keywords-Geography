@@ -35,6 +35,16 @@ local function http()
     return _LrHttp
 end
 
+-- Lazy loader for GitHubSync — only loaded when user clicks "Test connection",
+-- not at panel render time (avoids loading dkjson/lpeg during tab switch).
+local _GitHubSync = nil
+local function ghSync( pluginPath )
+    if _GitHubSync == nil then
+        _GitHubSync = dofile( LrPathUtils.child( pluginPath, "GitHubSync.lua" ) )
+    end
+    return _GitHubSync
+end
+
 local Extensions = {}
 
 -- ── Extension catalogue ──────────────────────────────────────────────────────
@@ -247,6 +257,128 @@ local function buildRow( f, ext, props, prefs, pluginPath, switchTab, TAB_IDS )
         }
 end
 
+-- ── GitHub Sync section ───────────────────────────────────────────────────────
+-- Moved from GitHubSettings.lua / LrPluginInfoProvider (which caused a ~75 s
+-- delay when adding the plugin).  Rendered as the bottom section of the
+-- Extensions tab instead.
+local function buildGitHubSection( f, props, prefs, pluginPath )
+        local bind = LrView.bind
+
+        -- Seed prefs defaults (only if the user has never set them).
+        if prefs.gh_owner == nil or prefs.gh_owner == "" then
+                prefs.gh_owner = "Liodden73"
+        end
+        if prefs.gh_repo == nil or prefs.gh_repo == "" then
+                prefs.gh_repo = "LR-Keywords-Geography"
+        end
+        if prefs.gh_branch == nil or prefs.gh_branch == "" then
+                prefs.gh_branch = "main"
+        end
+        if prefs.gh_pathPrefix == nil or prefs.gh_pathPrefix == "" then
+                prefs.gh_pathPrefix = "verified"
+        end
+        -- Status label — only reset if not already set so it survives tab switches.
+        if props.gh_status == nil then
+                props.gh_status = "GitHub Sync ready — click 'Test connection' to verify."
+        end
+
+        local function orDefault( v, default )
+                if v == nil or v == "" then return default end
+                return v
+        end
+
+        return {
+                f:spacer { height = 16 },
+                f:separator { fill_horizontal = 1 },
+                f:spacer { height = 8 },
+                f:static_text {
+                        title = "GitHub Sync",
+                        font  = "<system/bold>",
+                },
+                f:static_text {
+                        title      = "Reading verification files from a PUBLIC repo works without a token. " ..
+                                     "A GitHub personal-access token (with repo / Contents: write scope) is " ..
+                                     "only required to SAVE (push) changes back to GitHub — writing always " ..
+                                     "needs a token, even on a public repo. The token is stored only on this " ..
+                                     "machine and is never included in the distributed plugin.",
+                        text_color = LrColor( 0.4, 0.4, 0.4 ),
+                        width      = 640,
+                        height_in_lines = 3,
+                },
+                f:row {
+                        f:static_text { title = "Token:", width = 90 },
+                        f:edit_field {
+                                value          = bind { object = prefs, key = "gh_token" },
+                                width_in_chars = 44,
+                                immediate      = true,
+                        },
+                },
+                f:row {
+                        f:static_text { title = "Owner:", width = 90 },
+                        f:edit_field {
+                                value          = bind { object = prefs, key = "gh_owner" },
+                                width_in_chars = 30,
+                                immediate      = true,
+                        },
+                },
+                f:row {
+                        f:static_text { title = "Repository:", width = 90 },
+                        f:edit_field {
+                                value          = bind { object = prefs, key = "gh_repo" },
+                                width_in_chars = 30,
+                                immediate      = true,
+                        },
+                },
+                f:row {
+                        f:static_text { title = "Branch:", width = 90 },
+                        f:edit_field {
+                                value          = bind { object = prefs, key = "gh_branch" },
+                                width_in_chars = 16,
+                                immediate      = true,
+                        },
+                },
+                f:row {
+                        f:static_text { title = "Folder:", width = 90 },
+                        f:edit_field {
+                                value          = bind { object = prefs, key = "gh_pathPrefix" },
+                                width_in_chars = 16,
+                                immediate      = true,
+                        },
+                        f:static_text { title = "(path in repo for verified/<Country>.json)" },
+                },
+                f:row {
+                        f:push_button {
+                                title  = "Test connection",
+                                action = function()
+                                        LrTasks.startAsyncTask( function()
+                                                local snap = {
+                                                        token  = prefs.gh_token or "",
+                                                        owner  = orDefault( prefs.gh_owner,      "Liodden73" ),
+                                                        repo   = orDefault( prefs.gh_repo,       "LR-Keywords-Geography" ),
+                                                        branch = orDefault( prefs.gh_branch,     "main" ),
+                                                        prefix = orDefault( prefs.gh_pathPrefix, "verified" ),
+                                                }
+                                                local ok, msg = ghSync( pluginPath ).test( snap )
+                                                if ok then
+                                                        props.gh_status = "Connected: " .. tostring( msg )
+                                                        LrDialogs.message( "GitHub connection OK",
+                                                                "Connected to " .. tostring( msg ) .. ".", "info" )
+                                                else
+                                                        props.gh_status = "Not connected."
+                                                        LrDialogs.message( "GitHub connection failed",
+                                                                tostring( msg ), "warning" )
+                                                end
+                                        end )
+                                end,
+                        },
+                        f:static_text {
+                                title           = bind { object = props, key = "gh_status" },
+                                fill_horizontal = 1,
+                        },
+                },
+        }
+end
+
 -- ── Public API ───────────────────────────────────────────────────────────────
 function Extensions.buildPanel( f, props, prefs, pluginPath, switchTab, TAB_IDS )
         local children = {}
@@ -278,6 +410,12 @@ function Extensions.buildPanel( f, props, prefs, pluginPath, switchTab, TAB_IDS 
                 if i < #EXTENSIONS then
                         children[ #children + 1 ] = f:spacer { height = 8 }
                 end
+        end
+
+        -- GitHub Sync section (moved from Plug-in Manager / LrPluginInfoProvider)
+        local ghItems = buildGitHubSection( f, props, prefs, pluginPath )
+        for _, item in ipairs( ghItems ) do
+                children[ #children + 1 ] = item
         end
 
         children.spacing = f:control_spacing()

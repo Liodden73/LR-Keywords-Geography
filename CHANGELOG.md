@@ -1,3 +1,13 @@
+## 0.9.222 — 2026-09-15
+### Fiks — Treg «Add» i Plugin Manager (~75 sekunder) — DEFINITIV LØSNING
+- **Rot til forsinkelsen endelig bekreftet via biseksjon:** Det er selve tilstedeværelsen av `LrPluginInfoProvider = "GitHubSettings.lua"` i `Info.lua` som utløser en intern synkron nettverks-/socket-initialisering i Lightroom (~75 sekunders TCP-timeout), uavhengig av Lua-koden i InfoProvider-filen. Dette lar seg ikke fikse fra Lua-siden — løsningen er å fjerne `LrPluginInfoProvider` fra `Info.lua`.
+- **Løsning:**
+  - Fjernet `LrPluginInfoProvider = "GitHubSettings.lua",` fra `Info.lua`. GitHub Sync-innstillingene er ikke lenger tilgjengelige i Plug-in Manager — de er i stedet lagt til **i Extensions-fanen** (i `Extensions.lua`).
+  - `buildGitHubSection()` i `Extensions.lua` gir identisk UI: Token, Owner, Repository, Branch, Folder og «Test connection»-knapp. `GitHubSync.lua` lastes fortsatt lat — kun ved klikk på «Test connection», aldri ved fanebytting.
+  - 4 bruker-meldinger i `ListVerification.lua` oppdatert: «Plug-in Manager» erstattet med «the Extensions tab».
+  - `GitHubSettings.lua` beholdes i pluginmappen som død kode (ingen referanser) — kan slettes i en fremtidig versjon.
+- **Bekreftet via test:** v0.9.901 (uten InfoProvider) = **<1 sekund** ✅. Denne versjonen (0.9.222) oppnår samme resultat.
+
 ## 0.9.221 — 2026-09-14
 ### Fiks — Treg «Add» i Plugin Manager (~75 sekunder) — ENDELIG LØSNING
 - **Rot til forsinkelsen funnet (for alvor):** `GitHubSettings.lua` kalte `lazyGH().isConfigured()` ved render av Plugin Manager-siden (linje 62) — dette skjedde **ved «Add»**, ikke kun når brukeren åpner dialogen. Det tvang lasting av hele `GitHubSync.lua` → `dkjson.lua` → `require "lpeg"` synkront på hovedtråden, og lpeg-initialiseringen tok ~75 sekunder.
