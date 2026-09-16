@@ -5,6 +5,7 @@
 - **Engangs-migrering:** Første gang du åpner v0.9.236 flyttes eventuelle eksisterende `ver_*`-nøkler automatisk ut av preferansene og inn i sidecar-fila, og slettes fra preferansene. Loggen viser `[t] A1b: migration — moved N ver_* keys from prefs to sidecar`. Etter dette er preferansefila liten.
 - **Forventet resultat:** Første åpning etter oppgradering kjører migreringen (kan ta litt tid siden den fortsatt leser den gamle, store prefs-fila én siste gang). **Andre kalde oppstart** — avslutt Lightroom helt, vent, start på nytt og åpne pluginen — skal vise `[t] A1` nesten umiddelbart.
 - **Sluttbruker-utgaven** brukte aldri `ver_*`-dataene, men arvet dem fra den gamle felles pluginen. Migreringen rydder dem bort også der. Manager-utgaven fortsetter å fungere som før — den leser/skriver nå bare mot sidecar-fila i stedet for preferansene.
+- **Bugfiks (upvalue limit):** Sidecar-hjelperne er nå lokale funksjoner inne i `callWithContext` i stedet for modulnivå, for å unngå Luas 60-upvalue-grense per funksjon.
 - **Merk:** Jeg kan ikke kjøre Lightroom/Lua i mitt miljø, så selve tidsgevinsten må bekreftes med en ny logg fra deg.
 
 ## 0.9.235 — 2026-09-15

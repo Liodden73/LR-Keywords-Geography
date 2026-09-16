@@ -730,91 +730,6 @@ local function checkName( name )
         return nil
 end
 
--- ── Verification-state sidecar storage ────────────────────────────────────────
--- Verification results (conflict + action for every county/muni/city of every
--- verified country) used to be stored in LrPrefs.  With many countries verified
--- these blobs grew to 100+ KB and — because Lightroom deserializes the ENTIRE
--- plugin prefs file on cold start — made LrPrefs.prefsForPlugin() take ~75-80 s
--- the first time the dialog opened in a fresh session (confirmed via timing log
--- 0.9.235: 79 s spent inside prefsForPlugin, 159 ver_* keys / ~116 KB present).
---
--- These blobs are only needed by the Manager edition's Verification Monitor, and
--- only when a specific country is opened.  We therefore keep them in a SIDECAR
--- file (loaded lazily, never at cold start) instead of LrPrefs.  A one-time
--- migration (below, in the entry point) moves any existing ver_* keys out of
--- prefs and deletes them, which shrinks the prefs file and removes the stall for
--- existing installs too.
-local _verStatePath = LrPathUtils.child(
-        LrPathUtils.getStandardFilePath( "appData" ),
-        "LR-GeoBuilder-verification.lua" )
-local _verState = nil   -- lazily loaded table; nil = not yet read from disk
-
--- Minimal Lua serializer for the verification-state shape (nested tables of
--- strings / numbers / booleans, string- or integer-keyed).
-local function _serializeLua( v )
-        local t = type( v )
-        if t == "string" then
-                return string.format( "%q", v )
-        elseif t == "number" or t == "boolean" then
-                return tostring( v )
-        elseif t == "table" then
-                local parts = {}
-                local isArray = true
-                local n = 0
-                for k in pairs( v ) do
-                        n = n + 1
-                        if type( k ) ~= "number" then isArray = false end
-                end
-                if isArray then
-                        for i = 1, n do
-                                parts[ #parts + 1 ] = _serializeLua( v[ i ] )
-                        end
-                else
-                        for k, val in pairs( v ) do
-                                local key
-                                if type( k ) == "string" then
-                                        key = "[" .. string.format( "%q", k ) .. "]"
-                                else
-                                        key = "[" .. tostring( k ) .. "]"
-                                end
-                                parts[ #parts + 1 ] = key .. "=" .. _serializeLua( val )
-                        end
-                end
-                return "{" .. table.concat( parts, "," ) .. "}"
-        end
-        return "nil"
-end
-
-local function _loadVerState()
-        local fh = io.open( _verStatePath, "r" )
-        if not fh then return {} end
-        local content = fh:read( "*a" )
-        fh:close()
-        if not content or content == "" then return {} end
-        local ok, fn = pcall( loadstring, "return " .. content )
-        if ok and fn then
-                local ok2, t = pcall( fn )
-                if ok2 and type( t ) == "table" then return t end
-        end
-        return {}
-end
-
--- Lazily return the whole verification-state table.
-local function verAll()
-        if _verState == nil then _verState = _loadVerState() end
-        return _verState
-end
-local function verGet( key ) return verAll()[ key ] end
-local function verSet( key, val ) verAll()[ key ] = val end
-local function verFlush()
-        local ok, err = pcall( function()
-                local body = "return " .. _serializeLua( verAll() )
-                local fh = io.open( _verStatePath, "w" )
-                if fh then fh:write( body ); fh:close() end
-        end )
-        return ok
-end
-
 -- ── Main entry point ──────────────────────────────────────────────────────────
 
 tlog( "module load DONE (COUNTRIES built) — entering main entry point" )
@@ -823,6 +738,94 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
         tlog( "  [t] A0: entered callWithContext (before LrPrefs)" )
         local prefs = LrPrefs.prefsForPlugin()
         tlog( "  [t] A1: LrPrefs.prefsForPlugin() returned" )
+
+        -- ── Verification-state sidecar storage (local to avoid upvalue limit) ──
+        -- Verification results (conflict + action for every county/muni/city of
+        -- every verified country) used to be stored in LrPrefs.  With many countries
+        -- verified these blobs grew to 100+ KB and — because Lightroom deserializes
+        -- the ENTIRE plugin prefs file on cold start — made prefsForPlugin() take
+        -- ~75-80 s the first time the dialog opened in a fresh session (confirmed
+        -- via timing log 0.9.235: 79 s spent inside prefsForPlugin, 159 ver_* keys
+        -- / ~116 KB present).
+        --
+        -- These blobs are only needed by the Manager edition's Verification Monitor,
+        -- and only when a specific country is opened.  We keep them in a SIDECAR
+        -- file (loaded lazily, never at cold start) instead of LrPrefs.  A one-time
+        -- migration (below) moves any existing ver_* keys out of prefs and deletes
+        -- them, which shrinks the prefs file and removes the stall for existing
+        -- installs too.
+        --
+        -- These functions are LOCAL to callWithContext to avoid the 60-upvalue limit.
+        local _verStatePath = LrPathUtils.child(
+                LrPathUtils.getStandardFilePath( "appData" ),
+                "LR-GeoBuilder-verification.lua" )
+        local _verState = nil   -- lazily loaded table; nil = not yet read from disk
+
+        -- Minimal Lua serializer for the verification-state shape (nested tables of
+        -- strings / numbers / booleans, string- or integer-keyed).
+        local function _serializeLua( v )
+                local t = type( v )
+                if t == "string" then
+                        return string.format( "%q", v )
+                elseif t == "number" or t == "boolean" then
+                        return tostring( v )
+                elseif t == "table" then
+                        local parts = {}
+                        local isArray = true
+                        local n = 0
+                        for k in pairs( v ) do
+                                n = n + 1
+                                if type( k ) ~= "number" then isArray = false end
+                        end
+                        if isArray then
+                                for i = 1, n do
+                                        parts[ #parts + 1 ] = _serializeLua( v[ i ] )
+                                end
+                        else
+                                for k, val in pairs( v ) do
+                                        local key
+                                        if type( k ) == "string" then
+                                                key = "[" .. string.format( "%q", k ) .. "]"
+                                        else
+                                                key = "[" .. tostring( k ) .. "]"
+                                        end
+                                        parts[ #parts + 1 ] = key .. "=" .. _serializeLua( val )
+                                end
+                        end
+                        return "{" .. table.concat( parts, "," ) .. "}"
+                end
+                return "nil"
+        end
+
+        local function _loadVerState()
+                local fh = io.open( _verStatePath, "r" )
+                if not fh then return {} end
+                local content = fh:read( "*a" )
+                fh:close()
+                if not content or content == "" then return {} end
+                local ok, fn = pcall( loadstring, "return " .. content )
+                if ok and fn then
+                        local ok2, t = pcall( fn )
+                        if ok2 and type( t ) == "table" then return t end
+                end
+                return {}
+        end
+
+        -- Lazily return the whole verification-state table.
+        local function verAll()
+                if _verState == nil then _verState = _loadVerState() end
+                return _verState
+        end
+        local function verGet( key ) return verAll()[ key ] end
+        local function verSet( key, val ) verAll()[ key ] = val end
+        local function verFlush()
+                local ok, err = pcall( function()
+                        local body = "return " .. _serializeLua( verAll() )
+                        local fh = io.open( _verStatePath, "w" )
+                        if fh then fh:write( body ); fh:close() end
+                end )
+                return ok
+        end
 
         -- ── One-time migration: move heavy ver_* blobs OUT of LrPrefs ──────────
         -- Verification results used to live in LrPrefs, bloating the prefs file to
