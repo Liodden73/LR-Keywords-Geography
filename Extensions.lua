@@ -50,7 +50,7 @@ local Extensions = {}
 -- ── Extension catalogue ──────────────────────────────────────────────────────
 local EXTENSIONS = {
         { id = "svalbard",      name = "Svalbard GPS Extension",         description = "98 GPS-mapped keyword names · Norway › Svalbard",            filesize = "42 KB", buy_url = "https://liodden.com/extensions/svalbard/",         pref_key = "ext_activated_svalbard",      filename = "svalbard_gps.lua",     coming_soon = false },
-        { id = "south_georgia", name = "South Georgia GPS Extension",     description = "GPS-mapped keyword names · United Kingdom › South Georgia",  filesize = "—",     buy_url = "https://liodden.com/extensions/south-georgia/",    pref_key = "ext_activated_south_georgia", filename = "south_georgia_gps.lua", coming_soon = true  },
+        { id = "south_georgia", name = "South Georgia GPS Extension",     description = "15 GPS-mapped regions · United Kingdom › South Georgia",     filesize = "~5 KB", buy_url = "https://liodden.com/extensions/south-georgia/",    pref_key = "ext_activated_south_georgia", filename = "south_georgia_gps.lua", coming_soon = false },
         { id = "falklands",     name = "Falkland Islands GPS Extension",  description = "GPS-mapped keyword names · United Kingdom › Falkland Islands",filesize = "—",     buy_url = "https://liodden.com/extensions/falkland-islands/", pref_key = "ext_activated_falklands",     filename = "falklands_gps.lua",    coming_soon = true  },
         { id = "antarctica",    name = "Antarctica GPS Extension",        description = "GPS-mapped keyword names · Antarctica",                      filesize = "—",     buy_url = "https://liodden.com/extensions/antarctica/",       pref_key = "ext_activated_antarctica",    filename = "antarctica_gps.lua",   coming_soon = true  },
 }
@@ -67,22 +67,36 @@ local API_CS = "cs_placeholder"
 
 -- ── Activation logic ─────────────────────────────────────────────────────────
 local function activateExtension( ext, props, prefs, pluginPath, switchTab, TAB_IDS )
-        -- 1. Read key from edit field
+        -- 1. Read + trim key
         local rawKey = props[ "ext_key_" .. ext.id ]
-        -- 2. Trim + validate
-        local key = rawKey and LrStringUtils.trimWhitespace( tostring( rawKey ) ) or ""
+        local key    = rawKey and LrStringUtils.trimWhitespace( tostring( rawKey ) ) or ""
         if key == "" then
-                LrDialogs.message( "Manglende lisensnøkkel", "Skriv inn lisensnøkkelen din før du aktiverer.", "warning" )
+                LrDialogs.message( "Missing licence key",
+                        "Enter your licence key before activating.", "warning" )
                 return
         end
 
-        -- 3. Network work off the main thread
+        -- 2. Build the expected local file path (plugin/extensions/<filename>)
+        local extDir   = LrPathUtils.child( pluginPath, "extensions" )
+        local destPath = LrPathUtils.child( extDir, ext.filename )
+
+        -- 3. If the extension file is already present (bundled or previously downloaded),
+        --    activate immediately — no server call needed.
+        if LrFileUtils.exists( destPath ) then
+                prefs[ ext.pref_key ] = key
+                LrDialogs.message( "Extension activated",
+                        ext.name .. " is now active and ready to use.", "info" )
+                if switchTab and TAB_IDS then switchTab( TAB_IDS.EXT ) end
+                return
+        end
+
+        -- 4. File not present locally — try server download on a background thread.
         LrTasks.startAsyncTask( function()
                 local Base64 = dofile( LrPathUtils.child( pluginPath, "Base64.lua" ) )
                 local json   = dofile( LrPathUtils.child( pluginPath, "dkjson.lua" ) )
 
-                -- 4. POST to the License Manager activate endpoint
-                local url = "https://liodden.com/wp-json/lmfwc/v2/licenses/activate/" .. key
+                -- POST to the License Manager activate endpoint
+                local url     = "https://liodden.com/wp-json/lmfwc/v2/licenses/activate/" .. key
                 local headers = {
                         { field = "Authorization", value = "Basic " .. Base64.encode( API_CK .. ":" .. API_CS ) },
                         { field = "Content-Type",  value = "application/json" },
@@ -90,43 +104,37 @@ local function activateExtension( ext, props, prefs, pluginPath, switchTab, TAB_
 
                 local body, respHeaders = http().post( url, "", headers )
 
-                -- 5. HTTP / transport error
+                -- HTTP / transport error
                 if not body then
-                        LrDialogs.message(
-                                "Aktivering feilet",
-                                "Kunne ikke kontakte aktiveringsserveren. Sjekk internettforbindelsen og prøv igjen.",
-                                "error"
-                        )
+                        LrDialogs.message( "Activation failed",
+                                "Could not contact the activation server. " ..
+                                "Check your internet connection and try again.", "error" )
                         return
                 end
 
                 local status = respHeaders and respHeaders.status or nil
 
-                -- 6. Try to parse the JSON response
+                -- Parse the JSON response
                 local parsed = nil
                 if body and body ~= "" then
                         parsed = json.decode( body )
                 end
 
-                -- Server not yet configured (non-200 or missing/unsuccessful payload).
                 local ok       = parsed and parsed.success == true
                 local download = ok and parsed.data and parsed.data.download_url or nil
 
+                -- Server not yet configured — save the key so it works once live
                 if ( status and status ~= 200 ) or not ok then
-                        -- Save the key anyway so activation works once the server is live.
                         prefs[ ext.pref_key ] = key
-                        LrDialogs.message(
-                                "Serveren er ikke konfigurert ennå",
-                                "Serveren er ikke satt opp ennå. Nøkkelen din er lagret — aktivering vil fungere fullt ut når serveren er oppe.",
-                                "info"
-                        )
+                        LrDialogs.message( "Extension activated (server not yet live)",
+                                "Your licence key has been saved. Full activation will " ..
+                                "complete automatically once the download server is live.", "info" )
                         if switchTab and TAB_IDS then switchTab( TAB_IDS.EXT ) end
                         return
                 end
 
-                -- 7. Download the extension .lua file into extensions/
+                -- Download the extension .lua file into extensions/
                 if download then
-                        local extDir = LrPathUtils.child( pluginPath, "extensions" )
                         if not LrFileUtils.exists( extDir ) then
                                 LrFileUtils.createDirectory( extDir )
                         end
@@ -135,39 +143,31 @@ local function activateExtension( ext, props, prefs, pluginPath, switchTab, TAB_
                         local getStatus = getHeaders and getHeaders.status or nil
 
                         if fileBytes and ( not getStatus or getStatus == 200 ) then
-                                local destPath = LrPathUtils.child( extDir, ext.filename )
                                 local fh = io.open( destPath, "wb" )
                                 if fh then
                                         fh:write( fileBytes )
                                         fh:close()
                                 else
-                                        LrDialogs.message(
-                                                "Kunne ikke lagre filen",
-                                                "Aktiveringen lyktes, men extension-filen kunne ikke lagres i plugin-mappen.",
-                                                "error"
-                                        )
+                                        LrDialogs.message( "Could not save file",
+                                                "Activation succeeded but the extension file " ..
+                                                "could not be saved into the plugin folder.", "error" )
                                         return
                                 end
                         else
-                                LrDialogs.message(
-                                        "Nedlasting feilet",
-                                        "Aktiveringen lyktes, men extension-filen kunne ikke lastes ned. Prøv igjen senere.",
-                                        "error"
-                                )
+                                LrDialogs.message( "Download failed",
+                                        "Activation succeeded but the extension file " ..
+                                        "could not be downloaded. Try again later.", "error" )
                                 return
                         end
                 end
 
-                -- 8. Store the key (truthy = activated)
+                -- Store the key (truthy = activated)
                 prefs[ ext.pref_key ] = key
 
-                LrDialogs.message(
-                        "Extension aktivert",
-                        ext.name .. " er nå aktivert og klar til bruk.",
-                        "info"
-                )
+                LrDialogs.message( "Extension activated",
+                        ext.name .. " is now active and ready to use.", "info" )
 
-                -- 9. Rebuild the panel to show the green "✓ Activated" state
+                -- Rebuild the panel to show the activated state
                 if switchTab and TAB_IDS then switchTab( TAB_IDS.EXT ) end
         end )
 end
@@ -237,7 +237,7 @@ local function buildRow( f, ext, props, prefs, pluginPath, switchTab, TAB_IDS )
                                 value          = LrView.bind( "ext_key_" .. ext.id ),
                                 width          = 200,
                                 enabled        = not ext.coming_soon,
-                                placeholder_string = "Lisensnøkkel",
+                                placeholder_string = "Licence key",
                         },
                         f:push_button {
                                 title   = "Activate",
@@ -250,11 +250,24 @@ local function buildRow( f, ext, props, prefs, pluginPath, switchTab, TAB_IDS )
         end
         local actCol = f:column { width = COL_ACT, actContent }
 
-        return f:row {
+        local rowNode = f:row {
                 fill_horizontal = 1,
                 spacing = f:label_spacing(),
                 areaCol, sizeCol, buyCol, actCol,
         }
+
+        -- Wrap the whole row in a light-green column when activated.
+        -- NOTE: background_color on f:column may not render on all platforms/
+        -- Lightroom versions — test in your Lightroom to confirm the colour shows.
+        if isActivated then
+                return f:column {
+                        fill_horizontal = 1,
+                        background_color = LrColor( 0.85, 1.0, 0.85 ),
+                        rowNode,
+                }
+        else
+                return rowNode
+        end
 end
 
 -- ── GitHub Sync section ───────────────────────────────────────────────────────
@@ -388,7 +401,7 @@ function Extensions.buildPanel( f, props, prefs, pluginPath, switchTab, TAB_IDS 
                 font  = "<system/bold>",
         }
         children[ #children + 1 ] = f:static_text {
-                title      = "Kjøp og aktiver spesialpakker med GPS-mappede stedsnavn for utvalgte regioner.",
+                title      = "Buy and activate GPS-mapped keyword packs for selected regions.",
                 text_color = LrColor( 0.4, 0.4, 0.4 ),
         }
         children[ #children + 1 ] = f:spacer { height = 12 }
