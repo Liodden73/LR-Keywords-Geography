@@ -1,9 +1,10 @@
-## 0.9.236 — 2026-09-15
+## 0.9.237 — 2026-09-16
 ### FIKS: flytter de tunge `ver_*`-dataene UT av preferansefila (angriper rotårsaken)
 - **Bekreftet av loggen din (timing 4):** De **79 sekundene** (22:59:43 A0 → 23:01:02 A1) ligger i sin helhet inne i `LrPrefs.prefsForPlugin()`. Markøren `[t] A1b` viste **159 `ver_*`-nøkler / ~116 KB** lagret i preferansene, og `[t] C` viste 43 avhukede land. Lightroom leser HELE preferansefila ved kald oppstart, og det er den mengden verifiseringsdata som gjør lesingen treg. Alt etter A1 skjer fortsatt på samme sekund.
 - **Hva som er endret:** Verifiseringsstatusen (`ver_*`-blobene) lagres ikke lenger i Lightrooms preferansefil. Den ligger nå i en **egen sidecar-fil** (`LR-GeoBuilder-verification.lua` i appData), som bare leses når Verifiserings-fanen faktisk brukes — ikke ved hver oppstart av pluginen.
-- **Engangs-migrering:** Første gang du åpner v0.9.236 flyttes eventuelle eksisterende `ver_*`-nøkler automatisk ut av preferansene og inn i sidecar-fila, og slettes fra preferansene. Loggen viser `[t] A1b: migration — moved N ver_* keys from prefs to sidecar`. Etter dette er preferansefila liten.
+- **Engangs-migrering:** Første gang du åpner v0.9.237 flyttes eventuelle eksisterende `ver_*`-nøkler automatisk ut av preferansene og inn i sidecar-fila, og slettes fra preferansene. Loggen viser `[t] A1b: migration — moved N ver_* keys from prefs to sidecar`. Etter dette er preferansefila liten.
 - **Forventet resultat:** Første åpning etter oppgradering kjører migreringen (kan ta litt tid siden den fortsatt leser den gamle, store prefs-fila én siste gang). **Andre kalde oppstart** — avslutt Lightroom helt, vent, start på nytt og åpne pluginen — skal vise `[t] A1` nesten umiddelbart.
+- **v0.9.236 (trukket tilbake):** Første versjon med sidecar-fiksen feilet med "60 upvalues"-feil. v0.9.237 fikser dette ved å flytte hjelperne inne i `callWithContext`.
 - **Sluttbruker-utgaven** brukte aldri `ver_*`-dataene, men arvet dem fra den gamle felles pluginen. Migreringen rydder dem bort også der. Manager-utgaven fortsetter å fungere som før — den leser/skriver nå bare mot sidecar-fila i stedet for preferansene.
 - **Bugfiks (upvalue limit):** Sidecar-hjelperne er nå lokale funksjoner inne i `callWithContext` i stedet for modulnivå, for å unngå Luas 60-upvalue-grense per funksjon.
 - **Merk:** Jeg kan ikke kjøre Lightroom/Lua i mitt miljø, så selve tidsgevinsten må bekreftes med en ny logg fra deg.

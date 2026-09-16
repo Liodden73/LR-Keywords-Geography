@@ -77,7 +77,7 @@ local function tlog( msg )
                 end
         end )
 end
-tlog( "── ListVerification.lua module load START (dialog opening) — plugin v0.9.236 ──" )
+tlog( "── ListVerification.lua module load START (dialog opening) — plugin v0.9.237 ──" )
 
 -- ── Lazy-loaded heavy modules ─────────────────────────────────────────────────
 -- Loaded only on first use so Plugin Manager add-time stays fast.
