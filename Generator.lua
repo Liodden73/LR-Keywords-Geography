@@ -11,20 +11,22 @@
         single UTF-8 string.
 
         .txt format rules reproduced here:
-          * Root keyword:              Geography
-          * Level 2 wrappers:          Nature (physical features) and World
+          * Root keyword:              [GEOGRAPHY]
+          * Level 2 wrappers:          [NATURE] (physical features) and [WORLD]
                                        (administrative geography). Everything sits
                                        under one of these two.
-          * Nature sections:           children of Nature (2 tabs): National Park,
-                                       Nature Reserve, Mountain, Fjord, Lake, River,
-                                       Island, Viewpoint
+          * Nature sections:           children of [NATURE]: [NATIONAL PARK],
+                                       [NATURE RESERVE], [MOUNTAIN], [FJORD], [LAKE],
+                                       [RIVER], [ISLAND], [VIEWPOINT]
           * National Park / Nature Reserve: no country synonym (implied by location)
           * Mountain / Fjord / Lake / River / Island / Viewpoint: get a {Country}
             synonym on the next line (indented one level deeper) ONLY when
             prefs.country_synonym is true. Default OFF to keep the list slim.
-          * Administrative:            Geography > World > Europe > <Country> > County >
-                                       Municipality > Primary City > Districts ;
+          * Administrative:            [GEOGRAPHY] > [WORLD] > [CONTINENT] > <Country> >
+                                       County > Municipality > Primary City > Districts ;
                                        secondary cities (no districts)
+          * Container nodes (all-caps + brackets) are non-exportable markers managed
+            by ListDoctor plugin after import. Lightroom strips [] on import.
           * Tab indentation only, no commas in names, UTF-8 throughout.
           * prefs.country_synonym (bool) — new unified field; also accepts the legacy
             prefs.norway_synonym for backward compatibility.
@@ -104,14 +106,18 @@ function Generator.generate(data, prefs)
                 end
         end
 
+        -- Container node: all-caps + square brackets (non-exportable marker).
+        local function container(name)
+                return "[" .. name:upper() .. "]"
+        end
+
         -- ── Root ────────────────────────────────────────────────────────────────
-        -- Level 2 has exactly two wrappers under Geography:
-        --   Nature  → physical features (Mountain, Fjord, Island, …)
-        --   World   → administrative geography (Continent > Country > …)
-        -- These wrappers keep root tidy as more countries/continents are added, and
-        -- are the only always-applied parents. If the user later excludes them from
-        -- export in Lightroom, no descriptive information is lost.
-        lines[#lines + 1] = "Geography"
+        -- Level 2 has exactly two wrappers under [GEOGRAPHY]:
+        --   [NATURE]  → physical features ([MOUNTAIN], [FJORD], [ISLAND], …)
+        --   [WORLD]   → administrative geography ([CONTINENT] > Country > …)
+        -- These wrappers keep root tidy as more countries/continents are added.
+        -- Container nodes (all-caps + []) are managed by ListDoctor after import.
+        lines[#lines + 1] = container("Geography")
 
         -- ── Nature wrapper (emit only if at least one nature section is selected) ─
         local anyNature = (prefs.national_parks and data.national_parks)
@@ -124,12 +130,12 @@ function Generator.generate(data, prefs)
                 or (prefs.viewpoints and data.viewpoints)
 
         if anyNature then
-                add(1, "Nature")
+                add(1, container("Nature"))
         end
 
         -- ── National Parks (no {Norway} synonym) ─────────────────────────────────
         if prefs.national_parks and data.national_parks then
-                add(2, "National Park")
+                add(2, container("National Park"))
                 local items = sortedCopy(data.national_parks)
                 local maxN = prefs.national_parks_max or #items
                 for i = 1, math.min(maxN, #items) do
@@ -139,7 +145,7 @@ function Generator.generate(data, prefs)
 
         -- ── Nature Reserves (no {Norway} synonym) ────────────────────────────────
         if prefs.nature_reserves and data.nature_reserves then
-                add(2, "Nature Reserve")
+                add(2, container("Nature Reserve"))
                 local items = sortedCopy(data.nature_reserves)
                 local maxN = prefs.nature_reserves_max or #items
                 for i = 1, math.min(maxN, #items) do
@@ -160,7 +166,7 @@ function Generator.generate(data, prefs)
                                 if elev >= mainlandCut then picked[#picked + 1] = m.name end
                         end
                 end
-                add(2, "Mountain")
+                add(2, container("Mountain"))
                 picked = sortedCopy(picked)
                 local maxM = prefs.mountains_max or math.min(100, #picked)
                 for i = 1, maxM do
@@ -174,7 +180,7 @@ function Generator.generate(data, prefs)
                 local maxN = prefs.fjords_max or math.min(100, #data.fjords)
                 local picked = {}
                 for i = 1, math.min(maxN, #data.fjords) do picked[#picked + 1] = data.fjords[i] end
-                add(2, "Fjord")
+                add(2, container("Fjord"))
                 picked = sortedCopy(picked)
                 for _, name in ipairs(picked) do
                         add(3, name)
@@ -187,7 +193,7 @@ function Generator.generate(data, prefs)
                 local maxN = prefs.lakes_max or math.min(100, #data.lakes)
                 local picked = {}
                 for i = 1, math.min(maxN, #data.lakes) do picked[#picked + 1] = data.lakes[i] end
-                add(2, "Lake")
+                add(2, container("Lake"))
                 picked = sortedCopy(picked)
                 for _, name in ipairs(picked) do
                         add(3, name)
@@ -200,7 +206,7 @@ function Generator.generate(data, prefs)
                 local maxN = prefs.rivers_max or math.min(100, #data.rivers)
                 local picked = {}
                 for i = 1, math.min(maxN, #data.rivers) do picked[#picked + 1] = data.rivers[i] end
-                add(2, "River")
+                add(2, container("River"))
                 picked = sortedCopy(picked)
                 for _, name in ipairs(picked) do
                         add(3, name)
@@ -215,7 +221,7 @@ function Generator.generate(data, prefs)
                 local maxN = prefs.islands_max or math.min(100, #data.islands)
                 local picked = {}
                 for i = 1, math.min(maxN, #data.islands) do picked[#picked + 1] = data.islands[i] end
-                add(2, "Island")
+                add(2, container("Island"))
                 picked = sortedCopy(picked)
                 for _, name in ipairs(picked) do
                         add(3, name)
@@ -229,7 +235,7 @@ function Generator.generate(data, prefs)
                 for _, v in ipairs(data.viewpoints) do
                         picked[#picked + 1] = (v.name or "") .. (v.suffix or "")
                 end
-                add(2, "Viewpoint")
+                add(2, container("Viewpoint"))
                 picked = sortedCopy(picked)
                 local maxN = prefs.viewpoints_max or math.min(100, #picked)
                 for i = 1, math.min(maxN, #picked) do
@@ -259,8 +265,8 @@ function Generator.generate(data, prefs)
         end
 
         if prefs.administrative and (anyCounty or anyRI) then
-                add(1, "World")
-                add(2, data.meta and data.meta.continent or "Europe")
+                add(1, container("World"))
+                add(2, container(data.meta and data.meta.continent or "Europe"))
                 add(3, countryName)
                 if nativeName then
                         addSynonym(4, "{" .. nativeName .. "}")
