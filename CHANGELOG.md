@@ -1,3 +1,69 @@
+## 0.9.248 — 2026-10-07
+### Intro-panel: redusert ytre margin med 5 px
+- `margin_left = -5, margin_right = -5` lagt til på wrapper-kolonnen i Intro tab_view_item. Trekker innholdet 5 px nærmere sidekantene på begge sider. Kun Intro-fanen er påvirket.
+
+## [0.9.249] - 2026-10-07
+### Added
+- Israel.lua: geographic keyword data for Israel with 6 districts (Jerusalem, Northern, Haifa, Central, Tel Aviv, Southern), 20 national parks, 12 nature reserves, 12 mountains (incl. Mount Hermon 2814m), lakes, rivers and viewpoints
+
+
+## 0.9.247 — 2026-10-07
+### Intro-panel: tilbake til v0.9.242-base med kun bekreftede spacer-endringer
+- Startet fra v0.9.242-koden (alle margin/column-eksperimenter fra v0.9.243–246 fjernet).
+- **Spacer over kartet:** Fjernet (var 8 px) — 0 px.
+- **Spacer over knapperaden:** 4 px → 5 px.
+- **Spacer under knapperaden:** Lagt til 5 px (var ingen i v0.9.242).
+
+## 0.9.246 — 2026-10-07
+### Intro-panel: fikset tekst-margin og spacer over kart
+- **Tekst-margin (punkt 1):** `margin_left = 5` og `margin_right = 5` flyttet fra `f:static_text`-elementene til selve `f:column`-containeren. Gir 5 px innrykk på begge sider av alt innholdet i panelet uten å påvirke det sentrerte kartet.
+- **Spacer over kartet (punkt 2):** Fjernet den eksplisitte spaceren (var 4 px); kun `control_spacing` styrer nå gapet mellom beskrivelse og kart.
+
+## 0.9.245 — 2026-10-07
+### Intro-panel: knapperad-spacer justert
+- Lagt til 5 px spacer over knapperaden ("Update Map" / "Show Interactive Map in Browser").
+- Redusert spacer under knapperaden fra 10 px til 5 px.
+
+## 0.9.244 — 2026-10-07
+### Intro-panel: fikset spacer-justeringer (runde 2)
+- **Tekst/tittel venstre+høyre margin:** `margin_left = 5` og `margin_right = 5` lagt til begge statiske tekstelementer (tittel og beskrivelse). Retter punkt 1 fra v0.9.243 der kun topp-spacer ble endret.
+- **Spacer mellom beskrivelse og kart:** Satt til 4 px (total visuell gap inkl. `control_spacing` ≈ 10 px). Retter punkt 2 fra v0.9.243 der spacer ble økt (8→10) i stedet for redusert.
+- **Topp-spacer:** Tilbake til 8 px (var feilaktig satt til 13 px i v0.9.243).
+
+## 0.9.243 — 2026-10-07
+### Intro-panel: justeringer av spacer-verdier
+- Spacer **over tittelen** økt fra 8 px til 13 px (+5 px).
+- Spacer **mellom beskrivelse og kart** satt til 10 px (var 8 px).
+- Spacer **over knapperaden** fjernet (var 4 px).
+- Lagt til 10 px spacer **under knapperaden** (bunnmargin).
+
+## 0.9.242 — 2026-10-07
+### Dynamisk fargelagt verdenskart på Intro-siden gjeninnført
+- **Fargelagt PNG-kart:** Intro-siden viser nå et fargekodet verdenskart der **røde** land = aktiverte i List Overview, **blå** land = tilgjengelige i plugin-en, **grå** land = ikke med i plugin-en.
+- **Hurtig åpning:** `buildIntroPanel()` gjør kun en billig fil-sjekk (`getCachedPath`) ved oppstart — kartet genereres aldri automatisk, så dialogen åpner like raskt som før.
+- **"Update Map"-knapp:** Trykk for å generere/regenerere det fargede kartet via `WorldMap.generate()`. Første kjøring tar ~75 s (vises i statuslinjen), men resultatet lagres i en vedvarende diskcache. Knappen deaktiveres automatisk under generering.
+- **Statuslinje:** Viser antall aktiverte land og fargeforklaring (rød/blå) når kart er generert, eller veiledningsmelding om hvordan man genererer kart.
+- **Cache-bevissthet:** Hvis en cachet PNG allerede finnes for gjeldende utvalg, vises den fargelagte versjonen umiddelbart ved oppstart — ingen ny generering nødvendig.
+- **"Show Interactive Map in Browser"-knapp:** Beholdt uendret ved siden av "Update Map".
+
+## 0.9.241 — 2026-10-07
+### Verdenskart på Intro-siden oppgradert til 1200×600 px
+- **Nytt kart:** `worldmap_bg.png` er erstattet med en 1200×600 px versjon (opp fra 480×240 px) generert fra Natural Earth-data. Gir skarp gjengivelse også på Retina/HiDPI-skjermer.
+- **Displaystørrelse:** Kartvisningen på Intro-siden bruker nå full dialogbredde (`CONTENT_W_MN` = 999 px, kart vises 999×499 px) i stedet for den smale lista-bredden (`CONTENT_W` = 395 px). Ingen endring i lastetid — bildet lastes statisk som før.
+
+## 0.9.240 — 2026-09-30
+### Omklassifisering: Sør-Georgia og Falklandsøyene → South America
+- **Geografisk omklassifisering (Getty TGN / UN M49):** Sør-Georgia og Falklandsøyene er reklassifisert fra *United Kingdom* til *South America* i alle plugin-filer. Dette følger Getty Thesaurus of Geographic Names (TGN) og FNs M49-standard, som plasserer disse territoriene geografisk i Sør-Amerika — uavhengig av britisk politisk suverenitet.
+- **GPS-extension filer oppdatert:**
+  - `south_georgia_gps.lua` — `keyword_path` endret fra `[EUROPE] > United Kingdom > South Georgia` til `[SOUTH AMERICA] > South Georgia`. Utvidet fra 15 til 37 GPS-kartlagte regioner (~13 KB).
+  - `falkland_islands_gps.lua` — `keyword_path` endret fra `[EUROPE] > United Kingdom > Falkland Islands` til `[SOUTH AMERICA] > Falkland Islands`. 22 GPS-kartlagte regioner + 17 tettsteder (~12 KB). **Extension utgitt** (fjernet `coming_soon`-flagget).
+- **Extensions.lua oppdatert** — EXTENSIONS-katalogen:
+  - `south_georgia` description: `"15 GPS-mapped regions · United Kingdom › South Georgia"` → `"37 GPS-mapped regions · South America › South Georgia"`
+  - `falklands` description: `"GPS-mapped keyword names · United Kingdom › Falkland Islands"` → `"22 GPS-mapped regions · South America › Falkland Islands"`
+  - `falklands` filename rettet: `"falklands_gps.lua"` → `"falkland_islands_gps.lua"` (stemmer nå med faktisk filnavn)
+  - Filstørrelser oppdatert til målte verdier (~13 KB / ~12 KB)
+- **Keyword-stier i begge GPS-filer:** `[GEOGRAPHY] > [WORLD] > [SOUTH AMERICA] > <territorium> > <sted>`
+
 ## 0.9.239 — 2026-09-18
 ### Non-export containere + Svalbard-features flyttet til GPS-extension
 - **Container-konvensjon:** Alle organiserings-containere i keyword-lister bruker nå STORE bokstaver + `[]`-braketter for å markere dem som non-exportable. Dette gjelder: `[GEOGRAPHY]`, `[WORLD]`, `[NATURE]`, kontinentnavn (`[EUROPE]`, `[ASIA]`, etc.) og kategorier (`[NATIONAL PARK]`, `[MOUNTAIN]`, `[FJORD]`, `[LAKE]`, `[RIVER]`, `[ISLAND]`, `[VIEWPOINT]`). Lightroom stripper `[]` ved import, men STORE bokstaver beholdes — ListDoctor-pluginen bruker dette til å legge på `[]` (non-export-flagget) automatisk etter import. Land/county/municipality-navn forblir normal skrift (eksporterbare).
