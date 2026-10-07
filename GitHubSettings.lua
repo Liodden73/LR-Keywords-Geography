@@ -67,12 +67,31 @@ local function lazyGH()
   return _GitHubSync
 end
 
+-- ── Manager access ────────────────────────────────────────────────────────────
+-- Hash function (djb2 mod 2^31): same algorithm used at build time to derive
+-- PW_HASH.  Only the hash is stored here — never the plaintext.
+local function pwHash( s )
+    local h = 5381
+    for i = 1, #s do
+        h = (h * 33 + string.byte( s, i )) % 2147483648
+    end
+    return h
+end
+local PW_HASH = 63763524   -- hash of the manager access password
+
 local provider = {}
 
 function provider.sectionsForTopOfDialog( f, props )
         tlog( "sectionsForTopOfDialog START (Plugin Manager page render)" )
 
         local prefs = LrPrefs.prefsForPlugin()
+        local bind  = LrView.bind
+
+        -- Seed transient props for the password field and status label.
+        if props.manager_pw_field  == nil then props.manager_pw_field  = "" end
+        if props.manager_pw_status == nil then
+                props.manager_pw_status = prefs.manager_unlocked and "Unlocked" or "Locked"
+        end
 
         -- Helper: treat nil AND empty string as missing.
         local function orDefault( v, default )
@@ -102,6 +121,51 @@ function provider.sectionsForTopOfDialog( f, props )
         local bind = LrView.bind
 
         local section = {
+                -- ── Manager Access ─────────────────────────────────────────────────────
+                {
+                        title = "Manager Access",
+
+                        f:static_text {
+                                title = "Enter the manager password to unlock the GitHub Sync section "
+                                        .. "and the Verify / Update buttons in the plugin.",
+                                width           = 640,
+                                height_in_lines = 2,
+                        },
+                        f:row {
+                                f:static_text { title = "Password:", width = 90 },
+                                f:edit_field {
+                                        value          = bind { object = props, key = "manager_pw_field" },
+                                        width_in_chars = 24,
+                                        immediate      = true,
+                                },
+                                f:push_button {
+                                        title  = "Unlock",
+                                        action = function()
+                                                local typed = props.manager_pw_field or ""
+                                                if pwHash( typed ) == PW_HASH then
+                                                        prefs.manager_unlocked = true
+                                                        props.manager_pw_field  = ""
+                                                        props.manager_pw_status = "✓ Unlocked — GitHub Sync is now active"
+                                                else
+                                                        props.manager_pw_status = "✗ Wrong password"
+                                                end
+                                        end,
+                                },
+                                f:push_button {
+                                        title  = "Lock",
+                                        action = function()
+                                                prefs.manager_unlocked = false
+                                                props.manager_pw_field  = ""
+                                                props.manager_pw_status = "Locked"
+                                        end,
+                                },
+                                f:static_text {
+                                        title           = bind { object = props, key = "manager_pw_status" },
+                                        fill_horizontal = 1,
+                                },
+                        },
+                },
+                -- ── GitHub Sync ────────────────────────────────────────────────────────
                 {
                         title = "GitHub Sync",
 
@@ -124,6 +188,7 @@ function provider.sectionsForTopOfDialog( f, props )
                                         value          = bind { object = prefs, key = "gh_token" },
                                         width_in_chars = 44,
                                         immediate      = true,
+                                        enabled        = bind { object = prefs, key = "manager_unlocked" },
                                 },
                         },
                         f:row {
@@ -132,6 +197,7 @@ function provider.sectionsForTopOfDialog( f, props )
                                         value          = bind { object = prefs, key = "gh_owner" },
                                         width_in_chars = 30,
                                         immediate      = true,
+                                        enabled        = bind { object = prefs, key = "manager_unlocked" },
                                 },
                         },
                         f:row {
@@ -140,6 +206,7 @@ function provider.sectionsForTopOfDialog( f, props )
                                         value          = bind { object = prefs, key = "gh_repo" },
                                         width_in_chars = 30,
                                         immediate      = true,
+                                        enabled        = bind { object = prefs, key = "manager_unlocked" },
                                 },
                         },
                         f:row {
@@ -148,6 +215,7 @@ function provider.sectionsForTopOfDialog( f, props )
                                         value          = bind { object = prefs, key = "gh_branch" },
                                         width_in_chars = 16,
                                         immediate      = true,
+                                        enabled        = bind { object = prefs, key = "manager_unlocked" },
                                 },
                         },
                         f:row {
@@ -156,14 +224,16 @@ function provider.sectionsForTopOfDialog( f, props )
                                         value          = bind { object = prefs, key = "gh_pathPrefix" },
                                         width_in_chars = 16,
                                         immediate      = true,
+                                        enabled        = bind { object = prefs, key = "manager_unlocked" },
                                 },
                                 f:static_text { title = "(path in the repo for verified/<Country>.json)" },
                         },
 
                         f:row {
                                 f:push_button {
-                                        title  = "Test connection",
-                                        action = function()
+                                        title   = "Test connection",
+                                        enabled = bind { object = prefs, key = "manager_unlocked" },
+                                        action  = function()
                                                 LrTasks.startAsyncTask( function()
                                                         local snap = {
                                                                 token  = prefs.gh_token,

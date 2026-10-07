@@ -1,9 +1,11 @@
--- Edition.lua — identifies which edition this bundle is.
+-- Edition.lua — kept as a no-op placeholder.
 --
--- This file is REWRITTEN by build_editions.py for each packaged bundle:
---   • Manager edition   → { isManager = true }
---   • End-user edition  → { isManager = false }
+-- IS_MANAGER is now controlled entirely by the prefs.manager_unlocked preference
+-- (set via the password gate in Plugin Manager → Manager Access), NOT by this
+-- file.  A single plugin binary therefore serves both regular users (locked) and
+-- the plugin author (unlocked).
 --
--- The raw source tree ships this Manager default so that running the plugin
--- straight from source behaves as the full admin superset.
-return { isManager = true }
+-- This file is preserved so that any install that still has the old Edition.lua-
+-- reading block in ListVerification.lua will load this file harmlessly and get
+-- isManager=false (end-user mode).  The block has been removed from v0.9.257+.
+return { isManager = false }

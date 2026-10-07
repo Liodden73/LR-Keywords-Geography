@@ -1,3 +1,14 @@
+## 0.9.257 — 2026-10-08
+### «Change manually»: vis alltid redigeringsdialog
+- **Feil:** Velger man «Change manually» i Peru-verifisering for en by som allerede har et Wikidata-forslag (f.eks. «La Legua - San Jacinto» med forslaget «San Jacinto»), ble redigeringsdialogen hoppet over. Systemet brukte Wikidata-forslaget direkte uten at brukeren fikk muligheten til å skrive inn ønsket navn.
+- **Årsak:** Dialogen ble bare vist for rader der konfliktsøylen viste «✓» (intet forslag). Rader med et faktisk forslag gikk rett til bekreftelsesdialogen.
+- **Rettet:** Redigeringsdialogen vises nå alltid for «Change manually»-rader, uansett om det finnes et Wikidata-forslag eller ikke. Forslaget er forhåndsutfylt i tekstfeltet og kan redigeres fritt eller slettes.
+
+### Én utgave med passordgate (erstatter to separate bundler)
+- **Endring:** Plugin kommer nå i én enkelt utgave i stedet for separate Builder- og Manager-bundler. Manager-funksjonene (Verify with Wiki, Update, GitHub Sync) er låst bak et passord som legges inn i Fil ▸ Tillegg ▸ Innstillinger → «Manager Access».
+- **For brukere:** Ingen endring i daglig bruk — plugin ser og fungerer akkurat som Builder-utgaven de kjenner. Manager-felter er grå inntil riktig passord er skrevet inn.
+- **For plugin-forfatter:** Én zip å distribuere, én plugin å installere. Etter opplåsing fungerer GitHub Sync og Verify/Update som før.
+
 ## 0.9.256 — 2026-10-08
 ### List Manager: byer vises for land uten kommunenivå
 - **Feil:** I 15 land ligger byene rett under fylket/departementet, uten kommunenivå: Uruguay, Japan, Slovenia, Belarus, Moldova, Montenegro, North Macedonia, Jordan, Cyprus, Malta og mikrostatene. List Manager leste bare byer som lå under en kommune, så disse landene viste 0 byer og kunne ikke verifiseres. Keyword Builder har hele tiden tatt med byene.

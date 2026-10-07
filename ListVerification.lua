@@ -31,23 +31,12 @@ local LrStringUtils     = import 'LrStringUtils'
 local pluginPath = _PLUGIN.path
 local dataDir    = LrPathUtils.child( pluginPath, "data" )
 
--- ── Edition marker ────────────────────────────────────────────────────────────
--- Two editions are built from this one shared source tree by build_editions.py:
---   • Manager  (isManager=true)  — the plugin author's admin tool: Verify/Update
---     in List Overview, the Verification Monitor tab, and GitHub Sync (registered
---     via LrPluginInfoProvider in Info.lua).
---   • End-user (isManager=false) — the product customers install: choose countries,
---     read-only List Overview (no Verify/Update), keyword generation and the GPS
---     Keyword Converter. No Verification Monitor, no GitHub — hence no ~75 s delay.
--- Edition.lua is swapped per bundle at build time. Missing/unreadable → default to
--- Manager (the full superset), so the raw source tree runs as the admin tool.
-local IS_MANAGER = true
-do
-        local ok, ed = pcall( dofile, LrPathUtils.child( pluginPath, "Edition.lua" ) )
-        if ok and type( ed ) == "table" and ed.isManager ~= nil then
-                IS_MANAGER = ed.isManager and true or false
-        end
-end
+-- ── Manager mode ─────────────────────────────────────────────────────────────
+-- IS_MANAGER is set from prefs.manager_unlocked inside callWithContext (see
+-- below), so a single plugin binary serves both regular users (locked) and the
+-- plugin author (unlocked via password in Plugin Manager).  Default = false
+-- (end-user mode) until the correct password has been entered.
+local IS_MANAGER = false
 
 -- ── Lazy LrHttp ───────────────────────────────────────────────────────────────
 -- Importing LrHttp at top level initialises the HTTP stack (proxy detection,
@@ -775,6 +764,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
         tlog( "  [t] A0: entered callWithContext (before LrPrefs)" )
         local prefs = LrPrefs.prefsForPlugin()
         tlog( "  [t] A1: LrPrefs.prefsForPlugin() returned" )
+        IS_MANAGER = (prefs.manager_unlocked == true)
 
         -- ── Verification-state sidecar storage (local to avoid upvalue limit) ──
         -- Verification results (conflict + action for every county/muni/city of
@@ -1810,12 +1800,12 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                                 -- For "Change manually" rows where Conflicts shows "✓"
                                                 -- (no Wikidata suggestion), prompt the user for a custom name
                                                 -- before the main confirmation dialog.
-                                                local function promptCustomName( oldName )
+                                                local function promptCustomName( oldName, prefill )
                                                         local result = nil
                                                         LrFunctionContext.callWithContext(
                                                                 "promptCustomName", function( ctx )
                                                                 local np = LrBinding.makePropertyTable( ctx )
-                                                                np.customName = ""
+                                                                np.customName = prefill or ""
                                                                 local dlgResult = LrDialogs.presentModalDialog {
                                                                         title    = "Custom name — " .. cname,
                                                                         contents = f:column {
@@ -1841,25 +1831,25 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                                         return result
                                                 end
 
-                                                -- Pre-pass: resolve change_manual rows with no Wikidata name.
+                                                -- Pre-pass: ask the user for a custom name for every
+                                                -- change_manual row.  Pre-fill the dialog with entry.c so
+                                                -- the user can accept or edit the Wikidata suggestion (or
+                                                -- start from scratch when there is none).
                                                 for i, entry in ipairs( savedCo ) do
-                                                        if geo.counties[ i ] and entry.a == "change_manual"
-                                                                        and not hasName( entry.c ) then
-                                                                local custom = promptCustomName( geo.counties[ i ] )
+                                                        if geo.counties[ i ] and entry.a == "change_manual" then
+                                                                local custom = promptCustomName( geo.counties[ i ], entry.c )
                                                                 if custom then entry.c = custom end
                                                         end
                                                 end
                                                 for i, entry in ipairs( savedMu ) do
-                                                        if geo.munis[ i ] and entry.a == "change_manual"
-                                                                        and not hasName( entry.c ) then
-                                                                local custom = promptCustomName( geo.munis[ i ] )
+                                                        if geo.munis[ i ] and entry.a == "change_manual" then
+                                                                local custom = promptCustomName( geo.munis[ i ], entry.c )
                                                                 if custom then entry.c = custom end
                                                         end
                                                 end
                                                 for i, entry in ipairs( savedCi ) do
-                                                        if geo.cities[ i ] and entry.a == "change_manual"
-                                                                        and not hasName( entry.c ) then
-                                                                local custom = promptCustomName( geo.cities[ i ] )
+                                                        if geo.cities[ i ] and entry.a == "change_manual" then
+                                                                local custom = promptCustomName( geo.cities[ i ], entry.c )
                                                                 if custom then entry.c = custom end
                                                         end
                                                 end
