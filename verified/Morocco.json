@@ -1,0 +1,16 @@
+{
+  "listname":"?",
+  "levels":{
+    "mu":[],
+    "ci":[{
+        "i":99,
+        "action":"none",
+        "name":"Al Machouar - Stinia",
+        "conflict":"Stinia"
+      }],
+    "co":[]
+  },
+  "version":"0.1.1",
+  "country":"Morocco",
+  "verified":"2026-10-08 01:16"
+}
