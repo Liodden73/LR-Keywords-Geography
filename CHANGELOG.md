@@ -1,3 +1,9 @@
+## 0.9.256 — 2026-10-08
+### List Manager: byer vises for land uten kommunenivå
+- **Feil:** I 15 land ligger byene rett under fylket/departementet, uten kommunenivå: Uruguay, Japan, Slovenia, Belarus, Moldova, Montenegro, North Macedonia, Jordan, Cyprus, Malta og mikrostatene. List Manager leste bare byer som lå under en kommune, så disse landene viste 0 byer og kunne ikke verifiseres. Keyword Builder har hele tiden tatt med byene.
+- **Rettet:** List Manager leser nå også byer som ligger direkte under fylket. Uruguay viser for eksempel 19 departementer og 134 byer.
+- **Tryggere endring og sletting av byer:** Endring og sletting av en by påvirker nå bare selve bynavnet i bylisten. Før kunne en by med samme navn som fylket eller kommunen (f.eks. Artigas, Montevideo eller Piura) gi nytt navn til fylket, eller slette hele fylkesblokken.
+
 ## 0.9.255 — 2026-10-07
 ### Naturdata for land som manglet det
 - **Gjenopprettet tapte data:** Brazil, Canada, Colombia, Mexico, Peru, Turkey og United States hadde naturdata tidligere i git-historikken. Den ble borte da filene ble overskrevet med versjoner som bare inneholdt fylker og kommuner. Natur-blokkene er hentet tilbake, og dagens `meta` og fylker/kommuner (med verifiserte navnerettinger) er beholdt. US har fått tilbake 63 nasjonalparker, 248 reservater, 3 130 fjell, 2 402 innsjøer, 3 802 elver og 2 169 øyer.

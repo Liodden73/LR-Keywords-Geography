@@ -663,6 +663,15 @@ local function extractGeoData( cdata )
         if cdata and cdata.counties then
                 for _, co in ipairs( cdata.counties ) do
                         counties[ #counties + 1 ] = co.name or "?"
+                        -- Flat structure (Uruguay, Moldova, Slovenia, microstates …):
+                        -- cities sit directly under the county with no municipality level.
+                        for _, ci in ipairs( co.cities or {} ) do
+                                if type( ci ) == "string" then
+                                        cities[ #cities + 1 ] = ci
+                                elseif type( ci ) == "table" then
+                                        cities[ #cities + 1 ] = ci.name or "?"
+                                end
+                        end
                         local mlist = co.municipalities or {}
                         for _, mu in ipairs( mlist ) do
                                 munis[ #munis + 1 ] = mu.name or "?"
@@ -1991,29 +2000,55 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                                                 end
                                                         end
                                                 end
+                                                -- Edit plain city string literals ("Old") only — never a
+                                                -- `name = "Old"` field, so a city that shares its name with
+                                                -- its county/municipality (e.g. Artigas, Piura) cannot rename
+                                                -- or delete the parent. newName == nil → delete the literal
+                                                -- together with one adjacent list comma.
+                                                local function editCityLiterals( oldName, newName )
+                                                        local needle = '"' .. oldName .. '"'
+                                                        local out, pos, n = {}, 1, 0
+                                                        while true do
+                                                                local s, e = content:find( needle, pos, true )
+                                                                if not s then break end
+                                                                local before = content:sub( math.max( 1, s - 24 ), s - 1 )
+                                                                if before:match( "name%s*=%s*$" ) then
+                                                                        out[ #out + 1 ] = content:sub( pos, e )
+                                                                elseif newName then
+                                                                        out[ #out + 1 ] = content:sub( pos, s - 1 )
+                                                                        out[ #out + 1 ] = '"' .. newName .. '"'
+                                                                        n = n + 1
+                                                                else
+                                                                        local _, te = content:find( "^%s*,[ \t]*", e + 1 )
+                                                                        if te then
+                                                                                out[ #out + 1 ] = content:sub( pos, s - 1 )
+                                                                                e = te
+                                                                        else
+                                                                                local pre = content:sub( pos, s - 1 ):gsub( ",%s*$", "" )
+                                                                                out[ #out + 1 ] = pre
+                                                                        end
+                                                                        n = n + 1
+                                                                end
+                                                                pos = e + 1
+                                                        end
+                                                        out[ #out + 1 ] = content:sub( pos )
+                                                        if n > 0 then content = table.concat( out ) end
+                                                        return n
+                                                end
                                                 local function doCitySubs( changes )
                                                         for _, ch in ipairs( changes ) do
-                                                                local esc = ch.old:gsub(
-                                                                        "([%(%)%.%%%+%-%*%?%[%^%$])", "%%%1" )
-                                                                local safeNew = ch.new:gsub( "%%", "%%%%" )
-                                                                -- Try structured entry:  name = "OldName"
-                                                                local pat1 = '(name%s*=%s*")' .. esc .. '(")'  
-                                                                local newContent, n =
-                                                                        content:gsub( pat1, "%1" .. safeNew .. "%2" )
-                                                                if n > 0 then
-                                                                        content = newContent
-                                                                        applied = applied + n
-                                                                else
-                                                                        -- Fallback: plain string literal:  "OldName"
-                                                                        local pat2 = '"' .. esc .. '"'
-                                                                        newContent, n =
-                                                                                content:gsub(
-                                                                                        pat2, '"' .. safeNew .. '"' )
-                                                                        if n > 0 then
-                                                                                content = newContent
-                                                                                applied = applied + n
-                                                                        end
+                                                                local n = editCityLiterals( ch.old, ch.new )
+                                                                if n == 0 then
+                                                                        -- Fallback: structured city entry  name = "OldName"
+                                                                        local esc = ch.old:gsub(
+                                                                                "([%(%)%.%%%+%-%*%?%[%^%$])", "%%%1" )
+                                                                        local safeNew = ch.new:gsub( "%%", "%%%%" )
+                                                                        local pat1 = '(name%s*=%s*")' .. esc .. '(")'
+                                                                        local newContent
+                                                                        newContent, n = content:gsub( pat1, "%1" .. safeNew .. "%2" )
+                                                                        if n > 0 then content = newContent end
                                                                 end
+                                                                applied = applied + n
                                                         end
                                                 end
                                                 doSubs( coChanges )
@@ -2080,7 +2115,11 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                                 end
                                                 for _, ch in ipairs( coDeletes ) do deleteName( ch.old ) end
                                                 for _, ch in ipairs( muDeletes ) do deleteName( ch.old ) end
-                                                for _, ch in ipairs( ciDeletes ) do deleteName( ch.old ) end
+                                                for _, ch in ipairs( ciDeletes ) do
+                                                        local n = editCityLiterals( ch.old, nil )
+                                                        if n > 0 then deleted = deleted + n
+                                                        else deleteName( ch.old ) end
+                                                end
 
                                                 -- ── 3. Bump version in the meta block. ────────────────────────
                                                 content = content:gsub(
