@@ -4,13 +4,15 @@
         Data management window, using the same native f:tab_view +
         stopModalWithResult / while-loop navigation pattern as LR-ListDoctor.
 
-        Four tabs:
+        Five tabs:
           1. Keyword List Builder  — opens KeywordBuilder.lua (dofile after loop)
           2. List Overview         — bundled country database table
           3. Verification Monitor  — three-level (county / municipality / city)
                                      verification table with per-item conflict
                                      result, action popup, and Save button
-          4. Help                  — usage guidance (stub)
+          4. GPS Keyword Converter — reverse-geocodes selected/folder/all photos
+                                     and applies matching city-level keywords
+          5. Help                  — usage guidance (stub)
 ]]
 
 local LrView            = import 'LrView'
@@ -20,25 +22,96 @@ local LrDialogs         = import 'LrDialogs'
 local LrFunctionContext = import 'LrFunctionContext'
 local LrPathUtils       = import 'LrPathUtils'
 local LrPrefs           = import 'LrPrefs'
-local LrHttp            = import 'LrHttp'
 local LrTasks           = import 'LrTasks'
+local LrApplication     = import 'LrApplication'
+local LrStringUtils     = import 'LrStringUtils'
 
 -- ── Bundled data files ────────────────────────────────────────────────────────
 
 local pluginPath = _PLUGIN.path
 local dataDir    = LrPathUtils.child( pluginPath, "data" )
 
-local norwayData = dofile( LrPathUtils.child( dataDir, "Norway.lua"       ) )
-local swedenData = dofile( LrPathUtils.child( dataDir, "Sweden.lua"       ) )
-local panamaData = dofile( LrPathUtils.child( dataDir, "Panama.lua"       ) )
-local usData     = dofile( LrPathUtils.child( dataDir, "UnitedStates.lua" ) )
-local chileData  = dofile( LrPathUtils.child( dataDir, "Chile.lua"        ) )
-local kenyaData  = dofile( LrPathUtils.child( dataDir, "Kenya.lua"        ) )
-local nzData     = dofile( LrPathUtils.child( dataDir, "NewZealand.lua"   ) )
+-- ── Edition marker ────────────────────────────────────────────────────────────
+-- Two editions are built from this one shared source tree by build_editions.py:
+--   • Manager  (isManager=true)  — the plugin author's admin tool: Verify/Update
+--     in List Overview, the Verification Monitor tab, and GitHub Sync (registered
+--     via LrPluginInfoProvider in Info.lua).
+--   • End-user (isManager=false) — the product customers install: choose countries,
+--     read-only List Overview (no Verify/Update), keyword generation and the GPS
+--     Keyword Converter. No Verification Monitor, no GitHub — hence no ~75 s delay.
+-- Edition.lua is swapped per bundle at build time. Missing/unreadable → default to
+-- Manager (the full superset), so the raw source tree runs as the admin tool.
+local IS_MANAGER = true
+do
+        local ok, ed = pcall( dofile, LrPathUtils.child( pluginPath, "Edition.lua" ) )
+        if ok and type( ed ) == "table" and ed.isManager ~= nil then
+                IS_MANAGER = ed.isManager and true or false
+        end
+end
 
-local genPath   = LrPathUtils.child( pluginPath, "Generator.lua" )
-local Generator = dofile( genPath )
-local WorldMap  = dofile( LrPathUtils.child( pluginPath, "WorldMap.lua" ) )
+-- ── Lazy LrHttp ───────────────────────────────────────────────────────────────
+-- Importing LrHttp at top level initialises the HTTP stack (proxy detection,
+-- socket setup) the moment this file runs — i.e. every time the dialog opens —
+-- which added a ~60 s delay before the window appeared. Import it lazily instead,
+-- so the cost is only paid the first time a network call is actually made.
+local _LrHttp = nil
+local function http()
+    if _LrHttp == nil then _LrHttp = import 'LrHttp' end
+    return _LrHttp
+end
+
+-- ── Diagnostic timing log ─────────────────────────────────────────────────────
+-- Appends millisecond timestamps to <Documents>/LR-Geography-Builder-timing.log
+-- so we can pinpoint exactly which dialog-open step is slow, should the ~75 s
+-- delay ever reappear. Cheap (one file append) and fully safe. Can be removed
+-- once the open time is confirmed fast.
+local _tLog = LrPathUtils.child(
+        LrPathUtils.getStandardFilePath( "documents" ),
+        "LR-Geography-Builder-timing.log" )
+local function tlog( msg )
+        local ok, err = pcall( function()
+                local f = io.open( _tLog, "a" )
+                if f then
+                        f:write( os.date( "%Y-%m-%d %H:%M:%S" ) .. "  " .. tostring( msg ) .. "\n" )
+                        f:close()
+                end
+        end )
+end
+tlog( "── ListVerification.lua module load START (dialog opening) — plugin v0.9.237 ──" )
+
+-- ── Lazy-loaded heavy modules ─────────────────────────────────────────────────
+-- Loaded only on first use so Plugin Manager add-time stays fast.
+local _GPSConverter, _Generator, _WorldMap = nil, nil, nil
+
+local function lazyGPS()
+    if _GPSConverter == nil then
+        _GPSConverter = dofile( LrPathUtils.child( pluginPath, "GPSConverter.lua" ) )
+    end
+    return _GPSConverter
+end
+
+local function lazyGen()
+    if _Generator == nil then
+        _Generator = dofile( LrPathUtils.child( pluginPath, "Generator.lua" ) )
+    end
+    return _Generator
+end
+
+local function lazyMap()
+    if _WorldMap == nil then
+        _WorldMap = dofile( LrPathUtils.child( pluginPath, "WorldMap.lua" ) )
+    end
+    return _WorldMap
+end
+
+
+local _Extensions = nil
+local function lazyExt()
+    if _Extensions == nil then
+        _Extensions = dofile( LrPathUtils.child( pluginPath, "Extensions.lua" ) )
+    end
+    return _Extensions
+end
 
 local function makeCountyNames( data )
         local names = {}
@@ -49,27 +122,204 @@ local function makeCountyNames( data )
         return names
 end
 
--- Bundled pure-Lua JSON decoder (dkjson, MIT licence).
-local dkjson = dofile( LrPathUtils.child( pluginPath, "dkjson.lua" ) )
+--- Compute slider maxes from a loaded data table and cache them on `country`.
+--- NP/NR: full count (no cap). FJ/LK/RV/IS/VP: capped at 100 (top-100 policy).
+local function computeMaxes( country, d )
+        country.np_max      = #( d.national_parks  or {} )
+        country.nr_max      = #( d.nature_reserves or {} )
+        country.fj_max      = math.min( #( d.fjords     or {} ), 100 )
+        country.lk_max      = math.min( #( d.lakes      or {} ), 100 )
+        country.rv_max      = math.min( #( d.rivers     or {} ), 100 )
+        country.is_max      = math.min( #( d.islands    or {} ), 100 )
+        country.vp_max      = math.min( #( d.viewpoints or {} ), 100 )
+        country.countyNames = makeCountyNames( d )
+end
+
+--- Lazy data loader. Country data files are loaded on first access, not at
+--- startup — this avoids a ~60 s stall from dofile()-ing ~90 files up front.
+--- getData( country ) loads country.data on demand and caches maxes/countyNames.
+local function getData( country )
+        if country.data == nil then
+                country.data = dofile( LrPathUtils.child( dataDir, country.filename ) )
+                computeMaxes( country, country.data )
+        end
+        return country.data
+end
+
+--- addCountry sets placeholder values; real maxes/countyNames are filled in
+--- lazily the first time getData() is called for this country.
+local function addCountry( t )
+        t.np_max      = 0
+        t.nr_max      = 0
+        t.fj_max      = 0
+        t.lk_max      = 0
+        t.rv_max      = 0
+        t.is_max      = 0
+        t.vp_max      = 0
+        t.countyNames = {}
+        t.data        = nil
+        return t
+end
+
+-- Bundled pure-Lua JSON decoder (dkjson, MIT licence) and GitHub sync helper.
+-- Both are loaded lazily (on first use), NOT at dialog-open / module-load time.
+-- Loading them up front made the FIRST open of the plugin dialog take ~75 s in a
+-- fresh Lightroom session; deferring them keeps the dialog opening instantly.
+local _dkjson = nil
+local function lazyDkjson()
+    if _dkjson == nil then
+        _dkjson = dofile( LrPathUtils.child( pluginPath, "dkjson.lua" ) )
+    end
+    return _dkjson
+end
 
 -- GitHub sync helper (reads/writes verified/<Country>.json). Sync is only
--- active on a machine where a token has been entered in Plug-in Manager.
-local GitHubSync = dofile( LrPathUtils.child( pluginPath, "GitHubSync.lua" ) )
+-- active on a machine where a token has been entered in File ▸ Plug-in Manager.
+local _GitHubSync = nil
+local function lazyGHSync()
+    if _GitHubSync == nil then
+        _GitHubSync = dofile( LrPathUtils.child( pluginPath, "GitHubSync.lua" ) )
+    end
+    return _GitHubSync
+end
 
 local COUNTRIES = {
-        { id = "Norway",       name = "Norway",        code = "NO-578", filename = "Norway.lua",       continent = "Europe",   admin_label = "Counties & Areas",  mountain_max = 2271, data = norwayData, countyNames = makeCountyNames( norwayData ), remoteIslandNames = { "Svalbard", "Jan Mayen", "Peter 1. Island", "Bouvetøya", "Dronning Mauds Land" } },
-        { id = "Sweden",       name = "Sweden",        code = "SE-752", filename = "Sweden.lua",       continent = "Europe",   admin_label = "Counties & Areas",  mountain_max = 2097, data = swedenData, countyNames = makeCountyNames( swedenData ), remoteIslandNames = {} },
-        { id = "Panama",       name = "Panama",        code = "PA-591", filename = "Panama.lua",       continent = "Americas", admin_label = "Provinces & Areas", mountain_max = 3474, data = panamaData, countyNames = makeCountyNames( panamaData ), remoteIslandNames = {} },
-        { id = "UnitedStates", name = "United States", code = "US-840", filename = "UnitedStates.lua", continent = "Americas", admin_label = "States & Areas",    mountain_max = 6194, data = usData,     countyNames = makeCountyNames( usData ),     remoteIslandNames = { "Puerto Rico", "Guam", "US Virgin Islands", "American Samoa", "Northern Mariana Islands" } },
-        { id = "Chile",        name = "Chile",         code = "CL-152", filename = "Chile.lua",        continent = "Americas", admin_label = "Regions & Areas",   mountain_max = 6893, data = chileData,  countyNames = makeCountyNames( chileData ),  remoteIslandNames = { "Isla de Pascua", "Archipiélago Juan Fernández" } },
-        { id = "Kenya",        name = "Kenya",         code = "KE-404", filename = "Kenya.lua",        continent = "Africa",   admin_label = "Counties & Areas",  mountain_max = 5199, data = kenyaData,  countyNames = makeCountyNames( kenyaData ),  remoteIslandNames = {} },
-        { id = "NewZealand",   name = "New Zealand",   code = "NZ-554", filename = "NewZealand.lua",   continent = "Oceania",  admin_label = "Regions & Areas",   mountain_max = 3724, data = nzData,     countyNames = makeCountyNames( nzData ),     remoteIslandNames = { "Chatham Islands", "Subantarctic Islands" } },
+        addCountry { id = "Norway",       name = "Norway",        code = "NO-578", filename = "Norway.lua",       continent = "Europe",        admin_label = "Counties & Areas",  mountain_max = 2469, remoteIslandNames = { "Bouvetøya", "Dronning Mauds Land", "Jan Mayen", "Peter 1. Island", "Svalbard" } },
+        addCountry { id = "Sweden",       name = "Sweden",        code = "SE-752", filename = "Sweden.lua",       continent = "Europe",        admin_label = "Counties & Areas",  mountain_max = 2097, remoteIslandNames = {} },
+        addCountry { id = "Panama",       name = "Panama",        code = "PA-591", filename = "Panama.lua",       continent = "North America", admin_label = "Provinces & Areas", mountain_max = 3474, remoteIslandNames = {} },
+        addCountry { id = "UnitedStates", name = "United States", code = "US-840", filename = "UnitedStates.lua", continent = "North America", admin_label = "States & Areas",    mountain_max = 6194, remoteIslandNames = { "American Samoa", "Guam", "Northern Mariana Islands", "Puerto Rico", "US Virgin Islands" } },
+        addCountry { id = "Chile",        name = "Chile",         code = "CL-152", filename = "Chile.lua",        continent = "South America", admin_label = "Regions & Areas",   mountain_max = 6893, remoteIslandNames = { "Archipiélago Juan Fernández", "Isla de Pascua" } },
+        addCountry { id = "Venezuela",    name = "Venezuela",     code = "VE-862", filename = "Venezuela.lua",    continent = "South America", admin_label = "States & Areas",      mountain_max = 4981, remoteIslandNames = {} },
+        addCountry { id = "Brazil",       name = "Brazil",        code = "BR-076", filename = "Brazil.lua",       continent = "South America", admin_label = "States & Areas",      mountain_max = 2973, remoteIslandNames = {} },
+        addCountry { id = "Paraguay",     name = "Paraguay",      code = "PY-600", filename = "Paraguay.lua",     continent = "South America", admin_label = "Departments & Areas", mountain_max = 842,  remoteIslandNames = {} },
+        addCountry { id = "Uruguay",      name = "Uruguay",       code = "UY-858", filename = "Uruguay.lua",      continent = "South America", admin_label = "Departments & Areas", mountain_max = 514,  remoteIslandNames = {} },
+        addCountry { id = "Colombia",     name = "Colombia",      code = "CO-170", filename = "Colombia.lua",     continent = "South America", admin_label = "Departments & Areas", mountain_max = 5775, remoteIslandNames = {} },
+        addCountry { id = "Peru",         name = "Peru",          code = "PE-604", filename = "Peru.lua",         continent = "South America", admin_label = "Departments & Areas", mountain_max = 6768, remoteIslandNames = {} },
+        addCountry { id = "Cuba",         name = "Cuba",          code = "CU-192", filename = "Cuba.lua",         continent = "North America", admin_label = "Provinces & Areas",   mountain_max = 1974, remoteIslandNames = {} },
+        addCountry { id = "Guatemala",    name = "Guatemala",     code = "GT-320", filename = "Guatemala.lua",    continent = "North America", admin_label = "Departments & Areas", mountain_max = 4220, remoteIslandNames = {} },
+        addCountry { id = "Belize",       name = "Belize",        code = "BZ-084", filename = "Belize.lua",       continent = "North America", admin_label = "Districts & Areas",   mountain_max = 1124, remoteIslandNames = {} },
+        addCountry { id = "ElSalvador",   name = "El Salvador",   code = "SV-222", filename = "ElSalvador.lua",   continent = "North America", admin_label = "Departments & Areas", mountain_max = 2381, remoteIslandNames = {} },
+        addCountry { id = "Nicaragua",    name = "Nicaragua",     code = "NI-558", filename = "Nicaragua.lua",    continent = "North America", admin_label = "Departments & Areas", mountain_max = 2438, remoteIslandNames = {} },
+        addCountry { id = "Bolivia",      name = "Bolivia",       code = "BO-068", filename = "Bolivia.lua",      continent = "South America", admin_label = "Departments & Areas", mountain_max = 6542, remoteIslandNames = {} },
+        addCountry { id = "Jamaica",      name = "Jamaica",       code = "JM-388", filename = "Jamaica.lua",      continent = "North America", admin_label = "Parishes & Areas",    mountain_max = 2256, remoteIslandNames = {} },
+        addCountry { id = "Haiti",        name = "Haiti",         code = "HT-332", filename = "Haiti.lua",        continent = "North America", admin_label = "Departments & Areas", mountain_max = 2674, remoteIslandNames = {} },
+        addCountry { id = "DominicanRepublic", name = "Dominican Republic", code = "DO-214", filename = "DominicanRepublic.lua", continent = "North America", admin_label = "Provinces & Areas", mountain_max = 3098, remoteIslandNames = {} },
+        addCountry { id = "Bahamas",      name = "Bahamas",       code = "BS-044", filename = "Bahamas.lua",      continent = "North America", admin_label = "Districts & Areas",   mountain_max = 63,   remoteIslandNames = {} },
+        addCountry { id = "Guyana",       name = "Guyana",        code = "GY-328", filename = "Guyana.lua",       continent = "South America", admin_label = "Regions & Areas",     mountain_max = 2775, remoteIslandNames = {} },
+        addCountry { id = "Surinam",      name = "Surinam",       code = "SR-740", filename = "Surinam.lua",      continent = "South America", admin_label = "Districts & Areas",   mountain_max = 1280, remoteIslandNames = {} },
+        addCountry { id = "Kenya",        name = "Kenya",         code = "KE-404", filename = "Kenya.lua",        continent = "Africa",        admin_label = "Counties & Areas",  mountain_max = 5199, remoteIslandNames = {} },
+        addCountry { id = "NewZealand",   name = "New Zealand",   code = "NZ-554", filename = "NewZealand.lua",   continent = "Oceania",       admin_label = "Regions & Areas",   mountain_max = 3724, remoteIslandNames = { "Auckland Islands", "Bounty Islands", "Campbell Island", "Chatham Islands", "Great Barrier Island", "Kermadec Islands", "Poor Knights Islands", "The Antipodes Islands", "The Snares" } },
+        addCountry { id = "Greenland",    name = "Greenland",     code = "GL-304", filename = "Greenland.lua",    continent = "North America", admin_label = "Municipalities & Areas", mountain_max = 3694, remoteIslandNames = {} },
+        addCountry { id = "Canada",       name = "Canada",        code = "CA-124", filename = "Canada.lua",       continent = "North America", admin_label = "Provinces & Areas", mountain_max = 5959, remoteIslandNames = {} },
+        addCountry { id = "Mexico",       name = "Mexico",        code = "MX-484", filename = "Mexico.lua",       continent = "North America", admin_label = "States & Areas",    mountain_max = 5636, remoteIslandNames = {} },
+        addCountry { id = "Honduras",     name = "Honduras",      code = "HN-340", filename = "Honduras.lua",     continent = "North America", admin_label = "Departments & Areas", mountain_max = 2849, remoteIslandNames = {} },
+        addCountry { id = "CostaRica",    name = "Costa Rica",    code = "CR-188", filename = "CostaRica.lua",    continent = "North America", admin_label = "Provinces & Areas", mountain_max = 3820, remoteIslandNames = {} },
+        addCountry { id = "Finland",      name = "Finland",       code = "FI-246", filename = "Finland.lua",      continent = "Europe",        admin_label = "Regions & Areas",        mountain_max = 1328, remoteIslandNames = { "Åland Islands" } },
+        addCountry { id = "UnitedKingdom",name = "United Kingdom",code = "GB-826", filename = "UnitedKingdom.lua",continent = "Europe",        admin_label = "Countries & Areas",      mountain_max = 1345, remoteIslandNames = {
+                "Anguilla",
+                "Ascension Island",
+                "Bermuda",
+                "British Antarctic Territory",
+                "British Indian Ocean Territory",
+                "British Virgin Islands",
+                "Cayman Islands",
+                "Channel Islands",
+                "Falkland Islands",
+                "Gibraltar",
+                "Isle of Man",
+                "Montserrat",
+                "Pitcairn Islands",
+                "Saint Helena",
+                "South Georgia",
+                "South Sandwich Islands",
+                "Tristan da Cunha",
+                "Turks and Caicos Islands",
+        } },
+        addCountry { id = "India",        name = "India",         code = "IN-356", filename = "India.lua",        continent = "Asia",          admin_label = "States & Areas",         mountain_max = 8586, remoteIslandNames = { "Andaman and Nicobar Islands", "Lakshadweep" } },
+        addCountry { id = "Argentina",   name = "Argentina",    code = "AR-032", filename = "Argentina.lua",   continent = "South America", admin_label = "Provinces & Areas",  mountain_max = 6961, remoteIslandNames = { "Isla de los Estados", "Tierra del Fuego" } },
+        addCountry { id = "Ecuador",     name = "Ecuador",      code = "EC-218", filename = "Ecuador.lua",     continent = "South America", admin_label = "Provinces & Areas",  mountain_max = 6268, remoteIslandNames = { "Galápagos Islands" } },
+        addCountry { id = "Rwanda",      name = "Rwanda",       code = "RW-646", filename = "Rwanda.lua",      continent = "Africa",        admin_label = "Provinces & Areas",  mountain_max = 4507, remoteIslandNames = {} },
+        addCountry { id = "Botswana",    name = "Botswana",     code = "BW-072", filename = "Botswana.lua",    continent = "Africa",        admin_label = "Districts & Areas",  mountain_max = 1491, remoteIslandNames = {} },
+        addCountry { id = "SouthAfrica", name = "South Africa", code = "ZA-710", filename = "SouthAfrica.lua", continent = "Africa",        admin_label = "Provinces & Areas",  mountain_max = 3482, remoteIslandNames = { "Marion Island", "Prince Edward Island" } },
+        addCountry { id = "Egypt",       name = "Egypt",        code = "EG-818", filename = "Egypt.lua",       continent = "Africa",        admin_label = "Governorates & Areas", mountain_max = 2629, remoteIslandNames = {} },
+        addCountry { id = "Morocco",     name = "Morocco",      code = "MA-504", filename = "Morocco.lua",     continent = "Africa",        admin_label = "Regions & Areas",    mountain_max = 4167, remoteIslandNames = {} },
+        addCountry { id = "Tunisia",     name = "Tunisia",      code = "TN-788", filename = "Tunisia.lua",     continent = "Africa",        admin_label = "Governorates & Areas", mountain_max = 1544, remoteIslandNames = {} },
+        addCountry { id = "Nigeria",     name = "Nigeria",      code = "NG-566", filename = "Nigeria.lua",     continent = "Africa",        admin_label = "States & Areas",     mountain_max = 2419, remoteIslandNames = {} },
+        addCountry { id = "Ghana",       name = "Ghana",        code = "GH-288", filename = "Ghana.lua",       continent = "Africa",        admin_label = "Regions & Areas",    mountain_max = 885,  remoteIslandNames = {} },
+        addCountry { id = "Senegal",     name = "Senegal",      code = "SN-686", filename = "Senegal.lua",     continent = "Africa",        admin_label = "Regions & Areas",    mountain_max = 648,  remoteIslandNames = {} },
+        addCountry { id = "Tanzania",    name = "Tanzania",     code = "TZ-834", filename = "Tanzania.lua",    continent = "Africa",        admin_label = "Regions & Areas",    mountain_max = 5895, remoteIslandNames = {} },
+        addCountry { id = "Ethiopia",    name = "Ethiopia",     code = "ET-231", filename = "Ethiopia.lua",    continent = "Africa",        admin_label = "Regions & Areas",    mountain_max = 4550, remoteIslandNames = {} },
+        addCountry { id = "Uganda",      name = "Uganda",       code = "UG-800", filename = "Uganda.lua",      continent = "Africa",        admin_label = "Regions & Areas",    mountain_max = 5109, remoteIslandNames = {} },
+        addCountry { id = "Namibia",     name = "Namibia",      code = "NA-516", filename = "Namibia.lua",     continent = "Africa",        admin_label = "Regions & Areas",    mountain_max = 2606, remoteIslandNames = {} },
+        addCountry { id = "Australia",   name = "Australia",    code = "AU-036", filename = "Australia.lua",   continent = "Oceania",       admin_label = "States & Areas",     mountain_max = 2228, remoteIslandNames = { "Christmas Island", "Cocos Islands", "Heard Island", "Lord Howe Island", "Macquarie Island", "Norfolk Island" } },
+        addCountry { id = "Hungary",     name = "Hungary",      code = "HU-348", filename = "Hungary.lua",     continent = "Europe",        admin_label = "Counties & Areas",   mountain_max = 1014, remoteIslandNames = {} },
+        addCountry { id = "Netherlands", name = "Netherlands",  code = "NL-528", filename = "Netherlands.lua", continent = "Europe",        admin_label = "Provinces & Areas",  mountain_max = 323,  remoteIslandNames = { "Aruba", "Bonaire", "Curaçao", "Saba", "Sint Eustatius", "Sint Maarten" } },
+        addCountry { id = "China",        name = "China",         code = "CN-156", filename = "China.lua",        continent = "Asia",          admin_label = "Provinces & Areas",       mountain_max = 8849, remoteIslandNames = {} },
+        addCountry { id = "Russia",      name = "Russia",       code = "RU-643", filename = "Russia.lua",      continent = "Europe",        admin_label = "Federal Subjects & Areas", mountain_max = 5642, remoteIslandNames = {} },
+        addCountry { id = "France",      name = "France",       code = "FR-250", filename = "France.lua",      continent = "Europe",        admin_label = "Regions & Areas",    mountain_max = 4808, remoteIslandNames = { "Amsterdam Island", "Clipperton Island", "Crozet Islands", "French Guiana", "French Polynesia", "Guadeloupe", "Kerguelen Islands", "Martinique", "Mayotte", "New Caledonia", "Réunion", "Saint Barthélemy", "Saint Martin", "Saint Pierre and Miquelon", "Saint-Paul Island", "Wallis and Futuna" } },
+        addCountry { id = "Denmark",     name = "Denmark",      code = "DK-208", filename = "Denmark.lua",     continent = "Europe",        admin_label = "Regions & Areas",    mountain_max = 171,  remoteIslandNames = { "Faroe Islands" } },
+        addCountry { id = "Iceland",     name = "Iceland",      code = "IS-352", filename = "Iceland.lua",     continent = "Europe",        admin_label = "Regions & Areas",    mountain_max = 2110, remoteIslandNames = {} },
+        addCountry { id = "Germany",     name = "Germany",      code = "DE-276", filename = "Germany.lua",     continent = "Europe",        admin_label = "States & Areas",     mountain_max = 2962, remoteIslandNames = {} },
+        addCountry { id = "Spain",       name = "Spain",        code = "ES-724", filename = "Spain.lua",       continent = "Europe",        admin_label = "Communities & Areas", mountain_max = 3715, remoteIslandNames = {} },
+        addCountry { id = "Portugal",    name = "Portugal",     code = "PT-620", filename = "Portugal.lua",    continent = "Europe",        admin_label = "Districts & Areas",     mountain_max = 2351, remoteIslandNames = { "Azores", "Madeira" } },
+        addCountry { id = "Italy",       name = "Italy",        code = "IT-380", filename = "Italy.lua",       continent = "Europe",        admin_label = "Regions & Areas",       mountain_max = 4810, remoteIslandNames = {} },
+        addCountry { id = "Austria",     name = "Austria",      code = "AT-040", filename = "Austria.lua",     continent = "Europe",        admin_label = "States & Areas",        mountain_max = 3798, remoteIslandNames = {} },
+        addCountry { id = "Belgium",     name = "Belgium",      code = "BE-056", filename = "Belgium.lua",     continent = "Europe",        admin_label = "Regions & Areas",       mountain_max = 694,  remoteIslandNames = {} },
+        addCountry { id = "Bulgaria",    name = "Bulgaria",     code = "BG-100", filename = "Bulgaria.lua",    continent = "Europe",        admin_label = "Provinces & Areas",     mountain_max = 2925, remoteIslandNames = {} },
+        addCountry { id = "Switzerland", name = "Switzerland",  code = "CH-756", filename = "Switzerland.lua", continent = "Europe",        admin_label = "Cantons & Areas",       mountain_max = 4634, remoteIslandNames = {} },
+        addCountry { id = "Croatia",     name = "Croatia",      code = "HR-191", filename = "Croatia.lua",     continent = "Europe",        admin_label = "Counties & Areas",      mountain_max = 1830, remoteIslandNames = {} },
+        addCountry { id = "Ireland",     name = "Ireland",      code = "IE-372", filename = "Ireland.lua",     continent = "Europe",        admin_label = "Counties & Areas",      mountain_max = 1038, remoteIslandNames = {} },
+        addCountry { id = "Poland",      name = "Poland",       code = "PL-616", filename = "Poland.lua",      continent = "Europe",        admin_label = "Voivodeships & Areas",  mountain_max = 2499, remoteIslandNames = {} },
+        addCountry { id = "Greece",      name = "Greece",       code = "GR-300", filename = "Greece.lua",      continent = "Europe",        admin_label = "Regions & Areas",       mountain_max = 2918, remoteIslandNames = {} },
+        addCountry { id = "CzechRepublic", name = "Czech Republic", code = "CZ-203", filename = "CzechRepublic.lua", continent = "Europe",  admin_label = "Regions & Areas",       mountain_max = 1603, remoteIslandNames = {} },
+        addCountry { id = "Romania",     name = "Romania",      code = "RO-642", filename = "Romania.lua",     continent = "Europe",        admin_label = "Counties & Areas",      mountain_max = 2544, remoteIslandNames = {} },
+        addCountry { id = "Serbia",      name = "Serbia",       code = "RS-688", filename = "Serbia.lua",      continent = "Europe",        admin_label = "Regions & Areas",       mountain_max = 2174, remoteIslandNames = {} },
+        addCountry { id = "Slovakia",    name = "Slovakia",     code = "SK-703", filename = "Slovakia.lua",    continent = "Europe",        admin_label = "Regions & Areas",       mountain_max = 2655, remoteIslandNames = {} },
+        addCountry { id = "Slovenia",    name = "Slovenia",     code = "SI-705", filename = "Slovenia.lua",    continent = "Europe",        admin_label = "Municipalities & Areas", mountain_max = 2740, remoteIslandNames = {} },
+        addCountry { id = "Estonia",     name = "Estonia",      code = "EE-233", filename = "Estonia.lua",     continent = "Europe",        admin_label = "Counties & Areas",      mountain_max = 320,  remoteIslandNames = {} },
+        addCountry { id = "Latvia",      name = "Latvia",       code = "LV-428", filename = "Latvia.lua",      continent = "Europe",        admin_label = "Municipalities & Areas", mountain_max = 320,  remoteIslandNames = {} },
+        addCountry { id = "Lithuania",   name = "Lithuania",    code = "LT-440", filename = "Lithuania.lua",   continent = "Europe",        admin_label = "Counties & Areas",      mountain_max = 300,  remoteIslandNames = {} },
+        addCountry { id = "Ukraine",     name = "Ukraine",      code = "UA-804", filename = "Ukraine.lua",     continent = "Europe",        admin_label = "Oblasts & Areas",       mountain_max = 2061, remoteIslandNames = {} },
+        addCountry { id = "Albania",     name = "Albania",      code = "AL-008", filename = "Albania.lua",     continent = "Europe",        admin_label = "Counties & Areas",      mountain_max = 2700, remoteIslandNames = {} },
+        addCountry { id = "BosniaAndHerzegovina", name = "Bosnia and Herzegovina", code = "BA-070", filename = "BosniaAndHerzegovina.lua", continent = "Europe", admin_label = "Entities & Areas", mountain_max = 2400, remoteIslandNames = {} },
+        addCountry { id = "Montenegro",  name = "Montenegro",   code = "ME-499", filename = "Montenegro.lua",  continent = "Europe",        admin_label = "Municipalities & Areas", mountain_max = 2530, remoteIslandNames = {} },
+        addCountry { id = "NorthMacedonia", name = "North Macedonia", code = "MK-807", filename = "NorthMacedonia.lua", continent = "Europe", admin_label = "Municipalities & Areas", mountain_max = 2770, remoteIslandNames = {} },
+        addCountry { id = "Moldova",     name = "Moldova",      code = "MD-498", filename = "Moldova.lua",     continent = "Europe",        admin_label = "Districts & Areas",     mountain_max = 428,  remoteIslandNames = {} },
+        addCountry { id = "Belarus",     name = "Belarus",      code = "BY-112", filename = "Belarus.lua",     continent = "Europe",        admin_label = "Regions & Areas",       mountain_max = 345,  remoteIslandNames = {} },
+        addCountry { id = "Turkey",      name = "Turkey",       code = "TR-792", filename = "Turkey.lua",      continent = "Europe",        admin_label = "Provinces & Areas",     mountain_max = 5137, remoteIslandNames = {} },
+        addCountry { id = "Luxembourg",  name = "Luxembourg",   code = "LU-442", filename = "Luxembourg.lua",  continent = "Europe",        admin_label = "Cantons & Areas",       mountain_max = 560,  remoteIslandNames = {} },
+        addCountry { id = "Malta",       name = "Malta",        code = "MT-470", filename = "Malta.lua",       continent = "Europe",        admin_label = "Local Councils & Areas", mountain_max = 253, remoteIslandNames = {} },
+        addCountry { id = "Israel",      name = "Israel",       code = "IL-376", filename = "Israel.lua",      continent = "Asia",          admin_label = "Districts & Areas",     mountain_max = 2814, remoteIslandNames = {} },
+        addCountry { id = "Cyprus",      name = "Cyprus",       code = "CY-196", filename = "Cyprus.lua",      continent = "Europe",        admin_label = "Districts & Areas",     mountain_max = 1952, remoteIslandNames = {} },
+        addCountry { id = "Andorra",     name = "Andorra",      code = "AD-020", filename = "Andorra.lua",     continent = "Europe",        admin_label = "Parishes & Areas",      mountain_max = 2942, remoteIslandNames = {} },
+        addCountry { id = "Monaco",      name = "Monaco",       code = "MC-492", filename = "Monaco.lua",      continent = "Europe",        admin_label = "Wards & Areas",         mountain_max = 161,  remoteIslandNames = {} },
+        addCountry { id = "SanMarino",   name = "San Marino",   code = "SM-674", filename = "SanMarino.lua",   continent = "Europe",        admin_label = "Municipalities & Areas", mountain_max = 739, remoteIslandNames = {} },
+        addCountry { id = "Liechtenstein", name = "Liechtenstein", code = "LI-438", filename = "Liechtenstein.lua", continent = "Europe", admin_label = "Municipalities & Areas", mountain_max = 2599, remoteIslandNames = {} },
+        addCountry { id = "Vatican",     name = "Vatican City", code = "VA-336", filename = "Vatican.lua",     continent = "Europe",        admin_label = "Areas",                 mountain_max = 75,   remoteIslandNames = {} },
+        addCountry { id = "Japan",       name = "Japan",        code = "JP-392", filename = "Japan.lua",          continent = "Asia",          admin_label = "Prefectures & Areas",   mountain_max = 3776, remoteIslandNames = {} },
+        addCountry { id = "Thailand",    name = "Thailand",     code = "TH-764", filename = "Thailand.lua",       continent = "Asia",          admin_label = "Provinces & Areas",     mountain_max = 2565, remoteIslandNames = {} },
+        addCountry { id = "Jordan",      name = "Jordan",       code = "JO-400", filename = "Jordan.lua",         continent = "Asia",          admin_label = "Governorates & Areas",  mountain_max = 1854, remoteIslandNames = {} },
+        addCountry { id = "Nepal",       name = "Nepal",        code = "NP-524", filename = "Nepal.lua",          continent = "Asia",          admin_label = "Provinces & Areas",     mountain_max = 8849, remoteIslandNames = {} },
+        addCountry { id = "SriLanka",    name = "Sri Lanka",    code = "LK-144", filename = "SriLanka.lua",       continent = "Asia",          admin_label = "Provinces & Areas",     mountain_max = 2524, remoteIslandNames = {} },
+        addCountry { id = "Indonesia",   name = "Indonesia",    code = "ID-360", filename = "Indonesia.lua",      continent = "Asia",          admin_label = "Provinces & Areas",     mountain_max = 4884, remoteIslandNames = {} },
+        addCountry { id = "Antarctica",  name = "Antarctica",   code = "AQ-010", filename = "Antarctica.lua",  continent = "Antarctica",    admin_label = "Regions & Areas",    mountain_max = 4892, remoteIslandNames = {} },
 }
 
-local maxCounties = 0
-for _, c in ipairs( COUNTRIES ) do
-        if #c.countyNames > maxCounties then maxCounties = #c.countyNames end
-end
+-- Fixed continent order — shown in Country column regardless of whether
+-- any countries are currently loaded for that continent.
+local CONTINENT_ORDER = {
+        "Europe",
+        "North America",
+        "South America",
+        "Africa",
+        "Asia",
+        "Oceania",
+        "Antarctica",
+}
+
+-- Hardcoded because country data is now lazy-loaded (countyNames are empty at
+-- startup). 800 comfortably covers the current maximum (India: 763 districts).
+local maxCounties = 800
 
 local maxRemoteIslands = 0
 for _, c in ipairs( COUNTRIES ) do
@@ -86,7 +336,57 @@ local LABELS = {
         UnitedStates = { county = "State",    muni = "County",       city = "City" },
         Chile        = { county = "Region",   muni = "Province",     city = "City" },
         Kenya        = { county = "County",   muni = "Sub-county",   city = "City" },
-        NewZealand   = { county = "Region",   muni = "District",     city = "City" },
+        NewZealand    = { county = "Region",       muni = "District",   city = "City" },
+        Greenland     = { county = "Municipality", muni = "District",   city = "Town" },
+        Finland       = { county = "Region",       muni = "Sub-region", city = "City" },
+        UnitedKingdom = { county = "Country",      muni = "County",     city = "City" },
+        India         = { county = "State",        muni = "District",   city = "City" },
+        Argentina     = { county = "Province",    muni = "Department",   city = "City" },
+        Antarctica    = { county = "Region",      muni = "Territory",    city = "Station" },
+        Australia     = { county = "State",       muni = "Region",       city = "City" },
+        Rwanda        = { county = "Province",    muni = "District",     city = "City" },
+        SouthAfrica   = { county = "Province",    muni = "District",     city = "City" },
+        Ecuador       = { county = "Province",    muni = "Canton",       city = "City" },
+        Botswana      = { county = "District",    muni = "Sub-district", city = "City" },
+        Hungary       = { county = "County",      muni = "District",     city = "City" },
+        Netherlands   = { county = "Province",    muni = "Municipality", city = "City" },
+        China         = { county = "Province",    muni = "Prefecture",   city = "City" },
+        Russia        = { county = "Federal Subject", muni = "District",  city = "City" },
+        France        = { county = "Region",       muni = "Department",   city = "Commune" },
+        Denmark       = { county = "Region",       muni = "Municipality", city = "City" },
+        Iceland       = { county = "Region",       muni = "Municipality", city = "City" },
+        Germany       = { county = "State",        muni = "District",     city = "City" },
+        Spain         = { county = "Community",    muni = "Province",     city = "City" },
+        Portugal      = { county = "District",     muni = "Municipality", city = "City" },
+        Italy         = { county = "Region",       muni = "Province",     city = "City" },
+        Austria       = { county = "State",        muni = "District",     city = "City" },
+        Belgium       = { county = "Region",       muni = "Province",     city = "City" },
+        Switzerland   = { county = "Canton",       muni = "District",     city = "City" },
+        Ireland       = { county = "County",       muni = "Local Authority", city = "City" },
+        Poland        = { county = "Voivodeship",  muni = "County",       city = "City" },
+        Greece        = { county = "Region",       muni = "Municipality", city = "City" },
+        CzechRepublic = { county = "Region",       muni = "District",     city = "City" },
+        Romania       = { county = "County",       muni = "Commune",      city = "City" },
+        Israel        = { county = "District",     muni = "Sub-district", city = "City" },
+        Ukraine       = { county = "Oblast",       muni = "Raion",        city = "City" },
+        Croatia       = { county = "County",       muni = "Municipality", city = "City" },
+        Slovenia      = { county = "Municipality", muni = "Settlement",   city = "City" },
+        Bulgaria      = { county = "Province",     muni = "Municipality", city = "City" },
+        Serbia        = { county = "Region",       muni = "District",     city = "City" },
+        Slovakia      = { county = "Region",       muni = "District",     city = "City" },
+        Estonia       = { county = "County",       muni = "Municipality", city = "City" },
+        Latvia        = { county = "Municipality", muni = "Pagasts",      city = "City" },
+        Lithuania     = { county = "County",       muni = "Municipality", city = "City" },
+        Albania       = { county = "County",       muni = "Municipality", city = "City" },
+        BosniaAndHerzegovina = { county = "Entity", muni = "Municipality", city = "City" },
+        Montenegro    = { county = "Municipality", muni = "Settlement",   city = "City" },
+        NorthMacedonia = { county = "Municipality", muni = "Settlement",  city = "City" },
+        Japan         = { county = "Prefecture",  muni = "Municipality", city = "City" },
+        Thailand      = { county = "Province",    muni = "District",     city = "City" },
+        Jordan        = { county = "Governorate", muni = "District",     city = "City" },
+        Nepal         = { county = "Province",    muni = "District",     city = "City" },
+        SriLanka      = { county = "Province",    muni = "District",     city = "City" },
+        Indonesia     = { county = "Province",    muni = "Regency",      city = "City" },
 }
 local DEFAULT_LABELS = { county = "County", muni = "Municipality", city = "City" }
 
@@ -106,7 +406,62 @@ local WIKIDATA_TYPES = {
         UnitedStates = { co = "Q35657",    mu = "Q13221722", ci = nil },
         Chile        = { co = nil,         mu = nil,         ci = nil },
         Kenya        = { co = nil,         mu = nil,         ci = nil },
-        NewZealand   = { co = nil,         mu = nil,         ci = nil },
+        NewZealand    = { co = nil, mu = nil, ci = nil },
+        Greenland     = { co = nil, mu = nil, ci = nil },
+        Finland       = { co = nil, mu = nil, ci = nil },
+        UnitedKingdom = { co = nil, mu = nil, ci = nil },
+        India         = { co = nil, mu = nil, ci = nil },
+        Argentina     = { co = nil, mu = nil, ci = nil },
+        Antarctica    = { co = nil, mu = nil, ci = nil },
+        Australia     = { co = nil, mu = nil, ci = nil },
+        Rwanda        = { co = nil, mu = nil, ci = nil },
+        SouthAfrica   = { co = nil, mu = nil, ci = nil },
+        Ecuador       = { co = nil, mu = nil, ci = nil },
+        Botswana      = { co = nil, mu = nil, ci = nil },
+        Hungary       = { co = nil, mu = nil, ci = nil },
+        Netherlands   = { co = nil, mu = nil, ci = nil },
+        China         = { co = nil, mu = nil, ci = nil },
+        Russia        = { co = nil, mu = nil, ci = nil },
+        France        = { co = nil, mu = nil, ci = nil },
+        Denmark       = { co = nil, mu = nil, ci = nil },
+        Iceland       = { co = nil, mu = nil, ci = nil },
+        Germany       = { co = nil, mu = nil, ci = nil },
+        Spain         = { co = nil, mu = nil, ci = nil },
+        Portugal      = { co = nil, mu = nil, ci = nil },
+        Italy         = { co = nil, mu = nil, ci = nil },
+        Austria       = { co = nil, mu = nil, ci = nil },
+        Belgium       = { co = nil, mu = nil, ci = nil },
+        Switzerland   = { co = nil, mu = nil, ci = nil },
+        Ireland       = { co = nil, mu = nil, ci = nil },
+        Poland        = { co = nil, mu = nil, ci = nil },
+        Greece        = { co = nil, mu = nil, ci = nil },
+        CzechRepublic = { co = nil, mu = nil, ci = nil },
+        Romania       = { co = nil, mu = nil, ci = nil },
+        Israel        = { co = nil, mu = nil, ci = nil },
+        Ukraine       = { co = nil, mu = nil, ci = nil },
+        Croatia       = { co = nil, mu = nil, ci = nil },
+        Slovenia      = { co = nil, mu = nil, ci = nil },
+        Bulgaria      = { co = nil, mu = nil, ci = nil },
+        Serbia        = { co = nil, mu = nil, ci = nil },
+        Slovakia      = { co = nil, mu = nil, ci = nil },
+        Estonia       = { co = nil, mu = nil, ci = nil },
+        Latvia        = { co = nil, mu = nil, ci = nil },
+        Lithuania     = { co = nil, mu = nil, ci = nil },
+        Albania       = { co = nil, mu = nil, ci = nil },
+        BosniaAndHerzegovina = { co = nil, mu = nil, ci = nil },
+        Montenegro    = { co = nil, mu = nil, ci = nil },
+        NorthMacedonia = { co = nil, mu = nil, ci = nil },
+        Guatemala     = { co = nil, mu = nil, ci = nil },
+        Belize        = { co = nil, mu = nil, ci = nil },
+        ElSalvador    = { co = nil, mu = nil, ci = nil },
+        Nicaragua     = { co = nil, mu = nil, ci = nil },
+        Bolivia       = { co = nil, mu = nil, ci = nil },
+        Japan         = { co = nil, mu = nil, ci = nil },
+        Thailand      = { co = nil, mu = nil, ci = nil },
+        Jordan        = { co = nil, mu = nil, ci = nil },
+        Nepal         = { co = nil, mu = nil, ci = nil },
+        SriLanka      = { co = nil, mu = nil, ci = nil },
+        Indonesia     = { co = nil, mu = nil, ci = nil },
 }
 
 -- Preferred label language(s) per country for the Wikidata label service.
@@ -117,7 +472,78 @@ local WIKIDATA_LANG = {
         UnitedStates = "en",
         Chile        = "es,en",
         Kenya        = "sw,en",
-        NewZealand   = "en,mi",
+        NewZealand    = "en,mi",
+        Greenland     = "kl,da,en",
+        Finland       = "fi,sv,en",
+        UnitedKingdom = "en",
+        India         = "hi,en",
+        Argentina     = "es,en",
+        Antarctica    = "en",
+        Australia     = "en",
+        Rwanda        = "rw,fr,en",
+        SouthAfrica   = "en,af,zu",
+        Ecuador       = "es,en",
+        Botswana      = "tn,en",
+        Hungary       = "hu,en",
+        Netherlands   = "nl,en",
+        China         = "zh,en",
+        Russia        = "ru,en",
+        France        = "fr,en",
+        Denmark       = "da,en",
+        Iceland       = "is,en",
+        Germany       = "de,en",
+        Spain         = "es,en",
+        Portugal      = "pt,en",
+        Italy         = "it,en",
+        Austria       = "de,en",
+        Belgium       = "nl,fr,de,en",
+        Switzerland   = "de,fr,it,en",
+        Ireland       = "en,ga",
+        Poland        = "pl,en",
+        Greece        = "el,en",
+        CzechRepublic = "cs,en",
+        Romania       = "ro,en",
+        Israel        = "he,ar,en",
+        Ukraine       = "uk,en",
+        Croatia       = "hr,en",
+        Slovenia      = "sl,en",
+        Bulgaria      = "bg,en",
+        Serbia        = "sr,en",
+        Slovakia      = "sk,en",
+        Estonia       = "et,en",
+        Latvia        = "lv,en",
+        Lithuania     = "lt,en",
+        Albania       = "sq,en",
+        BosniaAndHerzegovina = "bs,hr,sr,en",
+        Montenegro    = "sr,en",
+        NorthMacedonia = "mk,en",
+        Guatemala     = "es,en",
+        Belize        = "en,es",
+        ElSalvador    = "es,en",
+        Nicaragua     = "es,en",
+        Bolivia       = "es,qu,ay,en",
+        Jamaica       = "en",
+        Haiti         = "fr,ht,en",
+        DominicanRepublic = "es,en",
+        Bahamas       = "en",
+        Guyana        = "en",
+        Surinam       = "nl,en",
+        Egypt         = "ar,en",
+        Morocco       = "ar,fr,en",
+        Tunisia       = "ar,fr,en",
+        Nigeria       = "en",
+        Ghana         = "en",
+        Senegal       = "fr,en",
+        Tanzania      = "sw,en",
+        Ethiopia      = "am,en",
+        Uganda        = "en,sw",
+        Namibia       = "en,af,de",
+        Japan         = "ja,en",
+        Thailand      = "th,en",
+        Jordan        = "ar,en",
+        Nepal         = "ne,en",
+        SriLanka      = "si,ta,en",
+        Indonesia     = "id,en",
 }
 
 -- Percent-encode a string for safe inclusion in a URL query parameter.
@@ -158,10 +584,10 @@ local function fetchWikidataNames( cid, level )
                 { field = "Accept",     value = "application/sparql-results+json" },
         }
 
-        local body = LrHttp.get( url, headers, 30 )
+        local body = http().get( url, headers, 30 )
         if not body or body == "" then return nil end
 
-        local data, _pos, decErr = dkjson.decode( body )
+        local data, _pos, decErr = lazyDkjson().decode( body )
         if decErr or type( data ) ~= "table" then return nil end
 
         local nameSet  = {}
@@ -181,14 +607,14 @@ local function fetchWikidataNames( cid, level )
 end
 
 -- Stable string identifiers for the four tabs.
-local TAB_IDS = { INTRO = "intro", KB = "builder", OV = "overview", MN = "monitor", HLP = "help" }
+local TAB_IDS = { INTRO = "intro", KB = "builder", OV = "overview", MN = "monitor", GPS = "gps", EXT = "extensions", HLP = "help" }
 
 -- ── Column widths for List Overview ──────────────────────────────────────────
 
 local W_ONOFF    = 35
-local W_COUNTRY  = 90
+local W_COUNTRY  = 130
 local W_CODE     = 60
-local W_FILE     = 150
+local W_FILE     = 110
 local W_FILESIZE = 60
 local W_VERSION  = 50
 local W_NAMES    = 55
@@ -209,9 +635,10 @@ local G_W          = W_M_NAME + W_M_CONF + W_M_ACT + 12 + 16   -- ~323 px
 local CONTENT_W_MN = G_W * 3 + 30
 
 -- ── Column widths for Keyword List Builder ────────────────────────────────────
-local KB_COL_W_COUNTRY = 380  -- Country column (wider to accommodate continent sliders)
-local KB_COL_W_COUNTY  = 230  -- Counties & Areas column
-local KB_COUNTY_LIST_H = 300  -- Fixed height of the county scrolled_view (fills the
+local KB_COL_W_COUNTRY = 380  -- Country column
+local KB_COL_W_COUNTY  = 300  -- Counties & Areas column
+local KB_COL_W_FEAT    = 300  -- Selections (Features) column
+local KB_COUNTY_LIST_H = 327  -- Fixed height of the county scrolled_view (fills the
                               -- middle column down to the version text; fill_vertical
                               -- on scrolled_view is unreliable in the LR SDK)
 
@@ -253,10 +680,20 @@ local function extractGeoData( cdata )
         return counties, munis, cities
 end
 
+-- GEO is populated lazily: the geo data for a country is extracted the first
+-- time getGEO() is called for it (which triggers getData() to load the file).
 local GEO = {}
-for _, c in ipairs( COUNTRIES ) do
-        local cos, mus, cis = extractGeoData( c.data )
-        GEO[ c.id ] = { counties = cos, munis = mus, cities = cis }
+local function getGEO( cid )
+        if not GEO[ cid ] then
+                for _, c in ipairs( COUNTRIES ) do
+                        if c.id == cid then
+                                local cos, mus, cis = extractGeoData( getData( c ) )
+                                GEO[ cid ] = { counties = cos, munis = mus, cities = cis }
+                                break
+                        end
+                end
+        end
+        return GEO[ cid ] or { counties = {}, munis = {}, cities = {} }
 end
 
 -- ── Helper functions ──────────────────────────────────────────────────────────
@@ -302,7 +739,7 @@ local function computeNextVersion( cid, prefs )
         if not current then
                 for _, c in ipairs( COUNTRIES ) do
                         if c.id == cid then
-                                current = getVersion( c.data )
+                                current = getVersion( getData( c ) )
                                 break
                         end
                 end
@@ -323,21 +760,161 @@ end
 
 -- ── Main entry point ──────────────────────────────────────────────────────────
 
+tlog( "module load DONE (COUNTRIES built) — entering main entry point" )
 LrFunctionContext.callWithContext( "ListVerification", function( context )
 
+        tlog( "  [t] A0: entered callWithContext (before LrPrefs)" )
         local prefs = LrPrefs.prefsForPlugin()
+        tlog( "  [t] A1: LrPrefs.prefsForPlugin() returned" )
+
+        -- ── Verification-state sidecar storage (local to avoid upvalue limit) ──
+        -- Verification results (conflict + action for every county/muni/city of
+        -- every verified country) used to be stored in LrPrefs.  With many countries
+        -- verified these blobs grew to 100+ KB and — because Lightroom deserializes
+        -- the ENTIRE plugin prefs file on cold start — made prefsForPlugin() take
+        -- ~75-80 s the first time the dialog opened in a fresh session (confirmed
+        -- via timing log 0.9.235: 79 s spent inside prefsForPlugin, 159 ver_* keys
+        -- / ~116 KB present).
+        --
+        -- These blobs are only needed by the Manager edition's Verification Monitor,
+        -- and only when a specific country is opened.  We keep them in a SIDECAR
+        -- file (loaded lazily, never at cold start) instead of LrPrefs.  A one-time
+        -- migration (below) moves any existing ver_* keys out of prefs and deletes
+        -- them, which shrinks the prefs file and removes the stall for existing
+        -- installs too.
+        --
+        -- These functions are LOCAL to callWithContext to avoid the 60-upvalue limit.
+        local _verStatePath = LrPathUtils.child(
+                LrPathUtils.getStandardFilePath( "appData" ),
+                "LR-GeoBuilder-verification.lua" )
+        local _verState = nil   -- lazily loaded table; nil = not yet read from disk
+
+        -- Minimal Lua serializer for the verification-state shape (nested tables of
+        -- strings / numbers / booleans, string- or integer-keyed).
+        local function _serializeLua( v )
+                local t = type( v )
+                if t == "string" then
+                        return string.format( "%q", v )
+                elseif t == "number" or t == "boolean" then
+                        return tostring( v )
+                elseif t == "table" then
+                        local parts = {}
+                        local isArray = true
+                        local n = 0
+                        for k in pairs( v ) do
+                                n = n + 1
+                                if type( k ) ~= "number" then isArray = false end
+                        end
+                        if isArray then
+                                for i = 1, n do
+                                        parts[ #parts + 1 ] = _serializeLua( v[ i ] )
+                                end
+                        else
+                                for k, val in pairs( v ) do
+                                        local key
+                                        if type( k ) == "string" then
+                                                key = "[" .. string.format( "%q", k ) .. "]"
+                                        else
+                                                key = "[" .. tostring( k ) .. "]"
+                                        end
+                                        parts[ #parts + 1 ] = key .. "=" .. _serializeLua( val )
+                                end
+                        end
+                        return "{" .. table.concat( parts, "," ) .. "}"
+                end
+                return "nil"
+        end
+
+        local function _loadVerState()
+                local fh = io.open( _verStatePath, "r" )
+                if not fh then return {} end
+                local content = fh:read( "*a" )
+                fh:close()
+                if not content or content == "" then return {} end
+                local ok, fn = pcall( loadstring, "return " .. content )
+                if ok and fn then
+                        local ok2, t = pcall( fn )
+                        if ok2 and type( t ) == "table" then return t end
+                end
+                return {}
+        end
+
+        -- Lazily return the whole verification-state table.
+        local function verAll()
+                if _verState == nil then _verState = _loadVerState() end
+                return _verState
+        end
+        local function verGet( key ) return verAll()[ key ] end
+        local function verSet( key, val ) verAll()[ key ] = val end
+        local function verFlush()
+                local ok, err = pcall( function()
+                        local body = "return " .. _serializeLua( verAll() )
+                        local fh = io.open( _verStatePath, "w" )
+                        if fh then fh:write( body ); fh:close() end
+                end )
+                return ok
+        end
+
+        -- ── One-time migration: move heavy ver_* blobs OUT of LrPrefs ──────────
+        -- Verification results used to live in LrPrefs, bloating the prefs file to
+        -- 100+ KB and causing the ~75-80 s cold-start stall in prefsForPlugin().
+        -- Move any existing ver_* keys into the sidecar file and DELETE them from
+        -- prefs.  After this runs once, the prefs file is small and cold starts
+        -- are fast.  Cheap and safe: no-op when there is nothing left to migrate.
+        do
+                local migrated = 0
+                for _, c in ipairs( COUNTRIES ) do
+                        for _, suf in ipairs( { "_co", "_mu", "_ci" } ) do
+                                local key = "ver_" .. c.id .. suf
+                                local v = prefs[ key ]
+                                if v ~= nil then
+                                        if verGet( key ) == nil then verSet( key, v ) end
+                                        prefs[ key ] = nil   -- remove from prefs → shrinks the file
+                                        migrated = migrated + 1
+                                end
+                        end
+                end
+                if migrated > 0 then verFlush() end
+                tlog( "  [t] A1b: migration — moved " .. migrated .. " ver_* keys from prefs to sidecar" )
+        end
+
         local f     = LrView.osFactory()
         local props = LrBinding.makePropertyTable( context )
+        tlog( "  [t] A2: view factory + property table ready" )
 
-        -- Restore per-country props from prefs.
+        -- Bundled snapshot of GitHub verified/*.json (written at build time by
+        -- sync_verified.py). Used when this edition's prefs are empty, e.g. after
+        -- installing the Manager edition (separate toolkit id = separate prefs).
+        do -- scoped block: keeps the main function's local/upvalue count unchanged
+        local VIDX = {}
+        do
+                local ok, t = pcall( dofile, LrPathUtils.child( pluginPath, "VerifiedIndex.lua" ) )
+                if ok and type( t ) == "table" then VIDX = t end
+        end
+
+        -- Restore per-country props from prefs (fallback: bundled snapshot).
         for _, c in ipairs( COUNTRIES ) do
-                props[ "verified_"    .. c.id ] = prefs[ "verified_"    .. c.id ] or "—"
+                local vi = VIDX[ c.id ] or {}
+                props[ "verified_"    .. c.id ] = prefs[ "verified_"    .. c.id ] or vi.verified or "—"
                 props[ "updated_"     .. c.id ] = prefs[ "updated_"     .. c.id ] or "—"
-                props[ "listname_"    .. c.id ] = prefs[ "listname_"    .. c.id ] or getListName( c.data )
+                -- Data files are lazy-loaded, so at startup we fall back to the
+                -- snapshot / "?" instead of reading the (unloaded) data file.
+                props[ "listname_"    .. c.id ] = prefs[ "listname_"    .. c.id ] or vi.listname or "?"
                 -- list_version_: the version label shown in List Overview; may have been
                 -- bumped beyond the data file's meta.version via a Save in the Monitor.
-                props[ "list_version_" .. c.id ] = prefs[ "list_version_" .. c.id ] or getVersion( c.data )
+                -- Use the highest of prefs and snapshot so it never goes backwards.
+                local pv, sv = prefs[ "list_version_" .. c.id ], vi.version
+                local function vt( v )
+                        local a, b, d = tostring( v or "" ):match( "^(%d+)%.(%d+)%.(%d+)$" )
+                        return a and ( tonumber( a ) * 1e6 + tonumber( b ) * 1e3 + tonumber( d ) ) or -1
+                end
+                local best = ( vt( sv ) > vt( pv ) ) and sv or pv
+                props[ "list_version_" .. c.id ] = best or "?"
+                if best and best ~= pv then prefs[ "list_version_" .. c.id ] = best end
         end
+        end -- scoped block
+
+        tlog( "  [t] B: per-country prefs restore loop DONE" )
 
         -- Which country is currently open in the Verification Monitor.
         props.verify_country_id = nil
@@ -355,27 +932,34 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
         props.dirty                   = false
         props.active_selections_label = "Selections"
         props.active_divisions_label  = "Counties & Areas"
-        props.active_save_label       = "Save settings"
+        props.active_save_label       = "Save setting"
         props.active_version_label    = ""
         props.active_mountain_max     = COUNTRIES[1].mountain_max
+        props.active_np_max           = COUNTRIES[1].np_max
+        props.active_nr_max           = COUNTRIES[1].nr_max
+        props.active_fj_max           = COUNTRIES[1].fj_max
+        props.active_lk_max           = COUNTRIES[1].lk_max
+        props.active_rv_max           = COUNTRIES[1].rv_max
+        props.active_is_max           = COUNTRIES[1].is_max
+        props.active_vp_max           = COUNTRIES[1].vp_max
 
         props.feat_select_all          = false
         props.feat_national_parks      = false
-        props.feat_national_parks_max  = 100
+        props.feat_national_parks_max  = COUNTRIES[1].np_max
         props.feat_nature_reserves     = false
-        props.feat_nature_reserves_max = 100
+        props.feat_nature_reserves_max = COUNTRIES[1].nr_max
         props.feat_mountains           = false
         props.feat_mainland_cutoff     = 1800
         props.feat_fjords              = false
-        props.feat_fjords_max          = 100
+        props.feat_fjords_max          = COUNTRIES[1].fj_max
         props.feat_lakes               = false
-        props.feat_lakes_max           = 100
+        props.feat_lakes_max           = COUNTRIES[1].lk_max
         props.feat_rivers              = false
-        props.feat_rivers_max          = 100
+        props.feat_rivers_max          = COUNTRIES[1].rv_max
         props.feat_islands             = false
-        props.feat_islands_max         = 100
+        props.feat_islands_max         = COUNTRIES[1].is_max
         props.feat_viewpoints          = false
-        props.feat_viewpoints_max      = 100
+        props.feat_viewpoints_max      = COUNTRIES[1].vp_max
         props.feat_admin_detail        = 3
         props.feat_remote_islands_all  = false
         props.show_ri_section          = false
@@ -390,14 +974,9 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                 props[ "div_value_" .. i ] = false
         end
 
-        local _initCont = {}
-        for _, _c in ipairs( COUNTRIES ) do
-                local _cl = ( _c.continent or "Other" ):lower():gsub( "%s+", "_" )
-                if not _initCont[ _cl ] then
-                        _initCont[ _cl ] = true
-                        props[ _cl .. "_expanded" ] = true
-                        props[ _cl .. "_detail"   ] = 0
-                end
+        for _, _cont in ipairs( CONTINENT_ORDER ) do
+                local _cl = _cont:lower():gsub( "%s+", "_" )
+                props[ _cl .. "_expanded" ] = false
         end
 
         for _, country in ipairs( COUNTRIES ) do
@@ -410,6 +989,14 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                 props[ "county_name_" .. i ] = ""
         end
         props.active_select_all_label     = "Select All"
+
+        do
+                local nEnabled = 0
+                for _, c in ipairs( COUNTRIES ) do
+                        if props[ c.id .. "_enabled" ] then nEnabled = nEnabled + 1 end
+                end
+                tlog( "  [t] C: props setup + 800-loops DONE (enabled countries = " .. nEnabled .. ")" )
+        end
 
         -- ── Keyword Builder helpers ────────────────────────────────────────────
 
@@ -444,31 +1031,26 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                 return ( { "Less", "More", "All" } )[ n ] or "All"
         end
 
-        local function contDetailLabel( v )
-                local n = math.min( 3, math.max( 0, math.floor( (v or 0) + 0.5 ) ) )
-                return ( { "None", "Less", "More", "All" } )[ n + 1 ] or "None"
-        end
-
         -- ── Keyword Builder state management ───────────────────────────────────
 
         local function kbDefaultState( country )
                 return {
                         feat_national_parks      = false,
-                        feat_national_parks_max  = 100,
+                        feat_national_parks_max  = country.np_max,
                         feat_nature_reserves     = false,
-                        feat_nature_reserves_max = 100,
+                        feat_nature_reserves_max = country.nr_max,
                         feat_mountains           = false,
                         feat_mainland_cutoff     = (country.id == "Norway" and 1800 or country.id == "UnitedStates" and 4000 or 1000),
                         feat_fjords              = false,
-                        feat_fjords_max          = 100,
+                        feat_fjords_max          = country.fj_max,
                         feat_lakes               = false,
-                        feat_lakes_max           = 100,
+                        feat_lakes_max           = country.lk_max,
                         feat_rivers              = false,
-                        feat_rivers_max          = 100,
+                        feat_rivers_max          = country.rv_max,
                         feat_islands             = false,
-                        feat_islands_max         = 100,
+                        feat_islands_max         = country.is_max,
                         feat_viewpoints          = false,
-                        feat_viewpoints_max      = 100,
+                        feat_viewpoints_max      = country.vp_max,
                         feat_admin_detail        = 1,
                         ri                       = {},
                         counties                 = {},
@@ -522,26 +1104,36 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
 
         local function loadCountryState( cid, country )
                 loading = true
+                -- Ensure the country's data file is loaded (populates maxes,
+                -- countyNames and country.data) before we read any of them.
+                getData( country )
                 local state = countryState[ cid ] or kbDefaultState( country )
                 local names = country.countyNames
+                props.active_np_max            = country.np_max
+                props.active_nr_max            = country.nr_max
+                props.active_fj_max            = country.fj_max
+                props.active_lk_max            = country.lk_max
+                props.active_rv_max            = country.rv_max
+                props.active_is_max            = country.is_max
+                props.active_vp_max            = country.vp_max
                 props.feat_national_parks      = state.feat_national_parks      or false
-                props.feat_national_parks_max  = state.feat_national_parks_max  or 100
+                props.feat_national_parks_max  = math.min( state.feat_national_parks_max  or country.np_max, country.np_max )
                 props.feat_nature_reserves     = state.feat_nature_reserves      or false
-                props.feat_nature_reserves_max = state.feat_nature_reserves_max or 100
+                props.feat_nature_reserves_max = math.min( state.feat_nature_reserves_max or country.nr_max, country.nr_max )
                 props.feat_mountains           = state.feat_mountains            or false
                 props.feat_mainland_cutoff     = math.min(
                         state.feat_mainland_cutoff or country.mountain_max,
                         country.mountain_max )
                 props.feat_fjords              = state.feat_fjords               or false
-                props.feat_fjords_max          = state.feat_fjords_max           or 100
+                props.feat_fjords_max          = math.min( state.feat_fjords_max           or country.fj_max, math.max( country.fj_max, 1 ) )
                 props.feat_lakes               = state.feat_lakes                or false
-                props.feat_lakes_max           = state.feat_lakes_max            or 100
+                props.feat_lakes_max           = math.min( state.feat_lakes_max            or country.lk_max, math.max( country.lk_max, 1 ) )
                 props.feat_rivers              = state.feat_rivers               or false
-                props.feat_rivers_max          = state.feat_rivers_max           or 100
+                props.feat_rivers_max          = math.min( state.feat_rivers_max           or country.rv_max, math.max( country.rv_max, 1 ) )
                 props.feat_islands             = state.feat_islands              or false
-                props.feat_islands_max         = state.feat_islands_max          or 100
+                props.feat_islands_max         = math.min( state.feat_islands_max          or country.is_max, math.max( country.is_max, 1 ) )
                 props.feat_viewpoints          = state.feat_viewpoints           or false
-                props.feat_viewpoints_max      = state.feat_viewpoints_max       or 100
+                props.feat_viewpoints_max      = math.min( state.feat_viewpoints_max or country.vp_max, math.max( country.vp_max, 1 ) )
                 props.feat_admin_detail        = state.feat_admin_detail         or 1
                 props.feat_select_all          = false
                 local savedCounties = state.counties or {}
@@ -578,7 +1170,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                 props.active_mountain_max     = country.mountain_max
                 props.active_selections_label = "Selections for " .. country.name
                 props.active_divisions_label  = adminLabel .. " for " .. country.name
-                props.active_save_label       = "Save settings for " .. country.name
+                props.active_save_label       = "Save setting"
                 props.active_select_all_label = "Select All"
                 props.active_version_label    = country.name .. " v" .. ver
                 props.dirty = false
@@ -709,6 +1301,9 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                 local skipped    = {}
                 for _, country in ipairs( COUNTRIES ) do
                         local cid      = country.id
+                        -- Load the country's data file before building prefs, which read
+                        -- country.countyNames / remoteIslandNames (populated by getData).
+                        getData( country )
                         local genPrefs = nil
                         if props[ cid .. "_include" ] then
                                 genPrefs = buildCustomPrefs( country )
@@ -720,7 +1315,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                 end
                         end
                         if genPrefs then
-                                local output    = Generator.generate( country.data, genPrefs )
+                                local output    = lazyGen().generate( getData( country ), genPrefs )
                                 local lineCount = 0
                                 for _ in output:gmatch( "[^\n]+" ) do lineCount = lineCount + 1 end
                                 if lineCount > 1 then
@@ -887,8 +1482,14 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                 end )
         end
 
-        loadCountryState( COUNTRIES[1].id, COUNTRIES[1] )
+        tlog( "  [t] D: observer registration DONE" )
+
+        -- Defer initial country load to the first time the KB tab is opened.
+        -- Previously this dofile(Norway.lua) call happened here at dialog-open
+        -- time, causing a ~75 s stall on cold start in a fresh Lightroom session.
+        -- loadCountryState() is now called lazily below, just before buildBuilderPanel().
         activePanelCountry = COUNTRIES[1]   -- initialise shared upvalue
+        local kbStateInitialized = false     -- true after first loadCountryState() runs
 
 
         -- Track which countries have had their verification props initialised this session.
@@ -906,11 +1507,11 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
         local function initVerPropsForCountry( cid )
                 if verInited[ cid ] then return end
                 verInited[ cid ] = true
-                local geo = GEO[ cid ]
+                local geo = getGEO( cid )
                 if not geo then return end
-                local savedCo = prefs[ "ver_" .. cid .. "_co" ] or {}
-                local savedMu = prefs[ "ver_" .. cid .. "_mu" ] or {}
-                local savedCi = prefs[ "ver_" .. cid .. "_ci" ] or {}
+                local savedCo = verGet( "ver_" .. cid .. "_co" ) or {}
+                local savedMu = verGet( "ver_" .. cid .. "_mu" ) or {}
+                local savedCi = verGet( "ver_" .. cid .. "_ci" ) or {}
                 -- Sanitise saved action value: "change", "change_manual", "delete" are
                 -- preserved; everything else (old "dash", nil, unknown) → "none".
                 local validAction = sanitizeAction
@@ -932,7 +1533,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
         -- for a country to prefs.  Captures action changes made via the popup
         -- after a Verify run (which otherwise would only live in props).
         local function persistVerToPrefs( cid )
-                local geo = GEO[ cid ]
+                local geo = getGEO( cid )
                 if not geo then return end
                 local function grab( names, vcPfx, vaPfx )
                         local saved = {}
@@ -944,16 +1545,17 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                         end
                         return saved
                 end
-                prefs[ "ver_" .. cid .. "_co" ] = grab( geo.counties, "vcco_", "vaco_" )
-                prefs[ "ver_" .. cid .. "_mu" ] = grab( geo.munis,    "vcmu_", "vamu_" )
-                prefs[ "ver_" .. cid .. "_ci" ] = grab( geo.cities,   "vcci_", "vaci_" )
+                verSet( "ver_" .. cid .. "_co", grab( geo.counties, "vcco_", "vaco_" ) )
+                verSet( "ver_" .. cid .. "_mu", grab( geo.munis,    "vcmu_", "vamu_" ) )
+                verSet( "ver_" .. cid .. "_ci", grab( geo.cities,   "vcci_", "vaci_" ) )
+                verFlush()
         end
 
         -- Build the verified/<Country>.json payload (Lua table) from the current
         -- in-memory verification state.  Entries with a real conflict suggestion
         -- or a non-default action (change / change_manual / delete) are included.
         local function buildVerifiedJson( cid, ver )
-                local geo = GEO[ cid ]
+                local geo = getGEO( cid )
                 local function levelArr( names, vcPfx, vaPfx )
                         local arr = {}
                         for i = 1, #names do
@@ -993,7 +1595,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
         -- Entries are matched by name (with an index fallback), so the mapping
         -- survives small reorderings of the underlying data.
         local function applyVerifiedJson( cid, obj )
-                local geo = GEO[ cid ]
+                local geo = getGEO( cid )
                 if not geo or not obj or not obj.levels then return end
                 local function applyLevel( names, vcPfx, vaPfx, arr )
                         if type( arr ) ~= "table" then return end
@@ -1065,6 +1667,17 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                 end
         end )
 
+        -- GPS Keyword Converter state (persists across tab rebuilds)
+        local gpsConflicts  = {}   -- list of conflict records (built during Generate)
+        local gpsSuccesses  = {}   -- list of {photo, match} records to apply on Save
+        local gpsIsRunning  = false
+        -- Folder list is enumerated lazily inside an async task (catalog:getFolders()
+        -- and folder:getChildren() are yielding calls and MUST NOT run during the
+        -- synchronous panel build, or LR throws "We can only wait from within a task").
+        local gpsFolderItems    = nil  -- nil until user clicks "Load Folders"
+        local gpsRootKwObjects  = nil  -- nil until Load is clicked; array of {name,kw} top-level LR keywords
+        local gpsRootItems      = nil  -- popup items for the Keyword List selector
+
 
         ------------------------------------------------------------------------
         -- Tab 1 — List Overview
@@ -1105,7 +1718,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                         local updKey  = "updated_"      .. country.id
                         local lvKey   = "list_version_" .. country.id
                         local cname   = country.name
-                        local geo     = GEO[ country.id ]
+                        local geo     = getGEO( country.id )
                         local nTotal  = ( geo and ( #geo.counties + #geo.munis + #geo.cities ) or 0 )
                         rowViews[ #rowViews + 1 ] = f:row {
                                 spacing = 6,
@@ -1117,7 +1730,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                 },
                                 f:static_text { title = cname,               width = W_COUNTRY },
                                 f:static_text { title = country.code or "",  width = W_CODE },
-                                f:static_text { title = "data/" .. country.filename, width = W_FILE },
+                                f:static_text { title = country.filename, width = W_FILE },
                                 f:static_text { title = getFileSize( country.filename ), width = W_FILESIZE },
                                 -- Version column: shows list_version prop (may be bumped by Save).
                                 f:static_text {
@@ -1133,7 +1746,9 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                         width          = W_VERIFIED,
                                 },
                                 -- Verify with Wiki button → opens Monitor for this country.
-                                f:push_button {
+                                -- Manager edition only; the end-user edition shows an
+                                -- aligned spacer so the table columns stay lined up.
+                                ( IS_MANAGER and f:push_button {
                                         title  = "Verify with Wiki",
                                         width  = W_BUTTON,
                                         action = function()
@@ -1141,20 +1756,23 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                                 initVerPropsForCountry( country.id )
                                                 switchTab( TAB_IDS.MN )
                                         end,
-                                },
+                                } or f:spacer { width = W_BUTTON } ),
                                 f:spacer { width = 10 },
                                 f:static_text {
                                         bind_to_object = props,
                                         title          = LrView.bind( updKey ),
                                         width          = W_UPDATED,
                                 },
-                                f:push_button {
+                                -- Update button → writes changes to the data file and
+                                -- pushes to GitHub. Manager edition only; the end-user
+                                -- edition shows an aligned spacer instead.
+                                ( IS_MANAGER and f:push_button {
                                         title  = "Update",
                                         width  = W_BUTTON,
                                         action = function()
                                                 LrTasks.startAsyncTask( function()
                                                 local cid    = country.id
-                                                local geo    = GEO[ cid ]
+                                                local geo    = getGEO( cid )
                                                 local labels = LABELS[ cid ] or DEFAULT_LABELS
 
                                                 -- Flush any action popup changes that were made after
@@ -1163,9 +1781,9 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                                 persistVerToPrefs( cid )
 
                                                 -- Collect all non-default actions from prefs.
-                                                local savedCo = prefs[ "ver_" .. cid .. "_co" ] or {}
-                                                local savedMu = prefs[ "ver_" .. cid .. "_mu" ] or {}
-                                                local savedCi = prefs[ "ver_" .. cid .. "_ci" ] or {}
+                                                local savedCo = verGet( "ver_" .. cid .. "_co" ) or {}
+                                                local savedMu = verGet( "ver_" .. cid .. "_mu" ) or {}
+                                                local savedCi = verGet( "ver_" .. cid .. "_ci" ) or {}
 
                                                 -- coChanges / muChanges / ciChanges: rename (change or change_manual)
                                                 -- coDeletes / muDeletes / ciDeletes: remove entry from data file
@@ -1333,7 +1951,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                                                 "DELETE " .. labels.city .. ":  \"" .. ch.old .. "\""
                                                 end
                                                 local currentVer = prefs[ "list_version_" .. cid ]
-                                                                   or getVersion( country.data )
+                                                                   or getVersion( getData( country ) )
                                                 local newVer     = nextPatchVersion( currentVer )
 
                                                 local answer = LrDialogs.confirm(
@@ -1493,7 +2111,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                                 props[ "updated_" .. cid ]      = prefs[ "updated_" .. cid ]
 
                                                 -- Clear applied actions in prefs so next Verify starts clean.
-                                                local coSaved = prefs[ "ver_" .. cid .. "_co" ] or {}
+                                                local coSaved = verGet( "ver_" .. cid .. "_co" ) or {}
                                                 for _, ch in ipairs( coChanges ) do
                                                         if coSaved[ ch.idx ] then
                                                                 coSaved[ ch.idx ].a = "none"
@@ -1504,9 +2122,9 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                                                 coSaved[ ch.idx ].a = "none"
                                                         end
                                                 end
-                                                prefs[ "ver_" .. cid .. "_co" ] = coSaved
+                                                verSet( "ver_" .. cid .. "_co", coSaved )
 
-                                                local muSaved = prefs[ "ver_" .. cid .. "_mu" ] or {}
+                                                local muSaved = verGet( "ver_" .. cid .. "_mu" ) or {}
                                                 for _, ch in ipairs( muChanges ) do
                                                         if muSaved[ ch.idx ] then
                                                                 muSaved[ ch.idx ].a = "none"
@@ -1517,9 +2135,9 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                                                 muSaved[ ch.idx ].a = "none"
                                                         end
                                                 end
-                                                prefs[ "ver_" .. cid .. "_mu" ] = muSaved
+                                                verSet( "ver_" .. cid .. "_mu", muSaved )
 
-                                                local ciSaved = prefs[ "ver_" .. cid .. "_ci" ] or {}
+                                                local ciSaved = verGet( "ver_" .. cid .. "_ci" ) or {}
                                                 for _, ch in ipairs( ciChanges ) do
                                                         if ciSaved[ ch.idx ] then
                                                                 ciSaved[ ch.idx ].a = "none"
@@ -1530,7 +2148,8 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                                                 ciSaved[ ch.idx ].a = "none"
                                                         end
                                                 end
-                                                prefs[ "ver_" .. cid .. "_ci" ] = ciSaved
+                                                verSet( "ver_" .. cid .. "_ci", ciSaved )
+                                                verFlush()
 
                                                 -- Reload data file in memory so Verification Monitor
                                                 -- sees the updated names immediately (no plugin reload needed
@@ -1540,6 +2159,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                                 for _, c in ipairs( COUNTRIES ) do
                                                         if c.id == cid then
                                                                 c.data = newData
+                                                                computeMaxes( c, newData )
                                                                 break
                                                         end
                                                 end
@@ -1554,9 +2174,9 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                                                   ( deleted == 1 and "y" or "ies" ) .. " deleted"
                                                 end
 
-                                                if GitHubSync.isConfigured() then
+                                                if lazyGHSync().isConfigured() then
                                                         LrTasks.startAsyncTask( function()
-                                                                local ok, info = GitHubSync.writeFile(
+                                                                local ok, info = lazyGHSync().writeFile(
                                                                         "data/" .. country.filename,
                                                                         content,
                                                                         "Update " .. cid .. " data → " .. newVer )
@@ -1596,17 +2216,13 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                                 end
                                                 end )  -- LrTasks.startAsyncTask
                                         end,
-                                },
+} or f:spacer { width = W_BUTTON } ),
                         }
                 end
 
-                local tableSpec = {
-                        spacing = f:control_spacing(),
-                        headerRow,
-                        f:separator { fill_horizontal = 1 },
-                }
+                local rowSpec = { spacing = f:control_spacing() }
                 for _, row in ipairs( rowViews ) do
-                        tableSpec[ #tableSpec + 1 ] = row
+                        rowSpec[ #rowSpec + 1 ] = row
                 end
 
                 return f:column {
@@ -1622,183 +2238,14 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                         },
                         f:separator { fill_horizontal = 1 },
                         f:spacer { height = 5 },
-                        f:column( tableSpec ),
-                        f:spacer { height = 10 },
-                        f:push_button {
-                                title  = "New country",
-                                action = function()
-                                        LrFunctionContext.callWithContext( "newCountry", function( ctx )
-                                                local np = LrBinding.makePropertyTable( ctx )
-                                                np.c_name   = ""
-                                                np.c_native = ""
-                                                np.c_id     = ""
-                                                np.c_lv1    = "County"
-                                                np.c_lv2    = "Municipality"
-                                                local result = LrDialogs.presentModalDialog {
-                                                        title    = "New country",
-                                                        contents = f:column {
-                                                                bind_to_object = np,
-                                                                spacing        = f:label_spacing(),
-                                                                f:static_text {
-                                                                        title = "Fill in the details for the new country:",
-                                                                        font  = "<system/bold>",
-                                                                },
-                                                                f:spacer { height = 6 },
-                                                                f:row {
-                                                                        f:static_text { title = "Country name (English):", width = 170 },
-                                                                        f:edit_field { bind_to_object = np, value = LrView.bind( "c_name" ),   width = 200, immediate = true },
-                                                                },
-                                                                f:row {
-                                                                        f:static_text { title = "Native name:", width = 170 },
-                                                                        f:edit_field { bind_to_object = np, value = LrView.bind( "c_native" ), width = 200, immediate = true },
-                                                                },
-                                                                f:row {
-                                                                        f:static_text { title = "Country ID (no spaces):", width = 170 },
-                                                                        f:edit_field { bind_to_object = np, value = LrView.bind( "c_id" ),     width = 200, immediate = true },
-                                                                },
-                                                                f:row {
-                                                                        f:static_text { title = "Admin level 1 label:", width = 170 },
-                                                                        f:edit_field { bind_to_object = np, value = LrView.bind( "c_lv1" ),   width = 200, immediate = true },
-                                                                },
-                                                                f:row {
-                                                                        f:static_text { title = "Admin level 2 label:", width = 170 },
-                                                                        f:edit_field { bind_to_object = np, value = LrView.bind( "c_lv2" ),   width = 200, immediate = true },
-                                                                },
-                                                                f:spacer { height = 8 },
-                                                                f:static_text {
-                                                                        title           = "Creates a data file template and registers the country in\nthe plugin. Reload the plug-in (Plug-in Manager) afterwards.",
-                                                                        width           = 390,
-                                                                        height_in_lines = 2,
-                                                                },
-                                                        },
-                                                        actionVerb = "Create",
-                                                }
-                                                if result ~= "ok" then return end
-
-                                                local function trim( s )
-                                                        return ( s or "" ):match( "^%s*(.-)%s*$" )
-                                                end
-                                                local cname  = trim( np.c_name )
-                                                local native = trim( np.c_native )
-                                                local cid    = trim( np.c_id ):gsub( "%s+", "" )
-                                                local lv1    = trim( np.c_lv1 )
-                                                local lv2    = trim( np.c_lv2 )
-                                                if cname == "" or cid == "" then
-                                                        LrDialogs.message( "New country",
-                                                                "Country name and Country ID are required.", "warning" )
-                                                        return
-                                                end
-                                                if native == "" then native = cname end
-                                                if lv1    == "" then lv1    = "County" end
-                                                if lv2    == "" then lv2    = "Municipality" end
-
-                                                local filename = cid .. ".lua"
-                                                local filePath = LrPathUtils.child( dataDir, filename )
-                                                local chk = io.open( filePath, "r" )
-                                                if chk then
-                                                        chk:close()
-                                                        LrDialogs.message( "New country",
-                                                                "A data file already exists: data/" .. filename, "warning" )
-                                                        return
-                                                end
-
-                                                -- ── Write skeleton data file ───────────────────────
-                                                local today = os.date( "%Y-%m-%d" )
-                                                local tpl = "-- " .. filename .. " — Geography Keyword Builder\n" ..
-                                                        "-- Template created " .. today .. "\n\n" ..
-                                                        "return {\n" ..
-                                                        "    meta = {\n" ..
-                                                        '        version     = "0.0.1",\n' ..
-                                                        '        generated   = "' .. today .. '",\n' ..
-                                                        '        native_name = "' .. native .. '",\n' ..
-                                                        '        language    = "en",\n' ..
-                                                        "    },\n" ..
-                                                        "    counties = {\n" ..
-                                                        "        -- Add entries here. Example:\n" ..
-                                                        "        -- {\n" ..
-                                                        '        --     name  = "Region Name",\n' ..
-                                                        '        --     qcode = "",\n' ..
-                                                        "        --     municipalities = {\n" ..
-                                                        "        --         {\n" ..
-                                                        '        --             name   = "Municipality Name",\n' ..
-                                                        '        --             qcode  = "",\n' ..
-                                                        '        --             cities = { "City Name" },\n' ..
-                                                        "        --         },\n" ..
-                                                        "        --     },\n" ..
-                                                        "        -- },\n" ..
-                                                        "    },\n" ..
-                                                        "}\n"
-                                                local wf = io.open( filePath, "w" )
-                                                if not wf then
-                                                        LrDialogs.message( "New country",
-                                                                "Cannot write: " .. filePath, "critical" )
-                                                        return
-                                                end
-                                                wf:write( tpl )
-                                                wf:close()
-
-                                                -- ── Patch ListVerification.lua ─────────────────────
-                                                local varName  = cid:lower() .. "Data"
-                                                local selfPath = LrPathUtils.child( pluginPath, "ListVerification.lua" )
-                                                local sf = io.open( selfPath, "r" )
-                                                if not sf then
-                                                        LrDialogs.message( "New country — file created",
-                                                                "data/" .. filename .. " written.\n\n" ..
-                                                                "Could not patch ListVerification.lua.\n" ..
-                                                                "Add the country manually and reload.", "warning" )
-                                                        return
-                                                end
-                                                local sc = sf:read( "*all" )
-                                                sf:close()
-
-                                                -- 1. Add dofile after last existing dofile in data section
-                                                local doLine = 'local ' .. varName ..
-                                                        ' = dofile( LrPathUtils.child( dataDir, "' ..
-                                                        filename .. '" ) )\n'
-                                                sc = sc:gsub(
-                                                        "(local " .. varName .. "[^\n]*\n)",
-                                                        "%1" .. doLine )
-
-                                                -- 2. Add COUNTRIES entry after UnitedStates entry
-                                                local coEntry =
-                                                        '        { id = "' .. cid ..
-                                                        '", name = "' .. cname ..
-                                                        '", filename = "' .. filename ..
-                                                        '", data = ' .. varName .. '     },\n'
-                                                sc = sc:gsub(
-                                                        '(        { id = "UnitedStates"[^\n]+\n)',
-                                                        '%1' .. coEntry )
-
-                                                -- 3. Add LABELS entry after UnitedStates entry
-                                                local lbEntry =
-                                                        '        ' .. cid ..
-                                                        ' = { county = "' .. lv1 ..
-                                                        '", muni = "' .. lv2 ..
-                                                        '", city = "City" },\n'
-                                                sc = sc:gsub(
-                                                        '(        UnitedStates%s*=%s*{[^\n]+\n)',
-                                                        '%1' .. lbEntry )
-
-                                                local wsc = io.open( selfPath, "w" )
-                                                if not wsc then
-                                                        LrDialogs.message( "New country — file created",
-                                                                "data/" .. filename .. " written.\n\n" ..
-                                                                "Could not patch ListVerification.lua.\n" ..
-                                                                "Add the country manually and reload.", "warning" )
-                                                        return
-                                                end
-                                                wsc:write( sc )
-                                                wsc:close()
-
-                                                LrDialogs.message(
-                                                        "New country added — " .. cname,
-                                                        "Data template: data/" .. filename .. "\n\n" ..
-                                                        "The plugin has been updated. Reload the plug-in\n" ..
-                                                        "(Plug-in Manager → Reload Plug-in) to see the new\n" ..
-                                                        "country in List Overview.",
-                                                        "info" )
-                                        end )
-                                end,
+                        headerRow,
+                        f:separator { fill_horizontal = 1 },
+                        f:scrolled_view {
+                                height              = 390,
+                                width               = 1000,
+                                horizontal_scroller = false,
+                                background_color    = LrColor( 0.88, 0.88, 0.88 ),
+                                f:column( rowSpec ),
                         },
                 }
         end
@@ -1845,7 +2292,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                         if c.id == cid then cname = c.name; break end
                 end
 
-                local geo    = GEO[ cid ]
+                local geo    = getGEO( cid )
                 local labels = LABELS[ cid ] or DEFAULT_LABELS
                 local nextVer = computeNextVersion( cid, prefs )
 
@@ -2015,7 +2462,8 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                                         a = props[ vaPfx .. cid .. "_" .. i ],
                                                 }
                                         end
-                                        prefs[ "ver_" .. cid .. "_" .. prefKey ] = saved
+                                        verSet( "ver_" .. cid .. "_" .. prefKey, saved )
+                                        verFlush()
                                         -- Refresh Last-verified stamp.
                                         props[ "verified_" .. cid ] = today
                                         prefs[ "verified_" .. cid ] = today
@@ -2177,7 +2625,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                         f:static_text {
                                 title = "Click Save to store the results as version " ..
                                         nextVer .. " of the " .. cname .. " list" ..
-                                        ( GitHubSync.isConfigured()
+                                        ( lazyGHSync().isConfigured()
                                           and " and push to GitHub."
                                           or  ". To push to GitHub, add a token in Plug-in Manager." ),
                                 width           = CONTENT_W_MN,
@@ -2208,13 +2656,72 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                         f:static_text { title = "Help", font = "<system/bold>" },
                         f:spacer { height = 5 },
                         f:static_text {
-                                title           = "How to use the Geography Keyword Builder — Data Management window.",
+                                title           = "This window builds a geography keyword hierarchy (continent > country > "
+                                                .. "region > city, plus nature features) that you can import into "
+                                                .. "Lightroom Classic.",
                                 width           = CONTENT_W,
                                 height_in_lines = 2,
                         },
                         f:separator { fill_horizontal = 1 },
-                        f:spacer { height = 5 },
-                        f:static_text { title = "Help content is not yet implemented." },
+                        f:spacer { height = 8 },
+
+                        ----------------------------------------------------------------
+                        -- Data limits
+                        ----------------------------------------------------------------
+                        f:static_text { title = "Data limits", font = "<system/bold>" },
+                        f:spacer { height = 3 },
+                        f:static_text {
+                                title           = "To keep the plug-in fast to load and the keyword tree manageable, "
+                                                .. "the bundled country data is capped. The limits below are applied "
+                                                .. "to the data files that ship with the plug-in.",
+                                width           = CONTENT_W,
+                                height_in_lines = 3,
+                        },
+                        f:spacer { height = 6 },
+
+                        ----------------------------------------------------------------
+                        -- Nature caps
+                        ----------------------------------------------------------------
+                        f:static_text { title = "Nature features", font = "<system/bold>" },
+                        f:spacer { height = 3 },
+                        f:static_text {
+                                title           = "Each country keeps at most 100 of each of the following:\n"
+                                                .. "   \226\128\162 Mountains \226\128\148 the 100 highest, ranked by elevation.\n"
+                                                .. "   \226\128\162 Lakes \226\128\148 the 100 most prominent.\n"
+                                                .. "   \226\128\162 Rivers \226\128\148 the 100 most prominent.\n"
+                                                .. "   \226\128\162 Islands \226\128\148 the 100 most prominent.\n"
+                                                .. "Prominence is estimated from how widely a feature is referenced "
+                                                .. "(number of known name variants), so the best-known lakes, rivers "
+                                                .. "and islands are kept.\n"
+                                                .. "National parks and nature reserves are NOT capped \226\128\148 all of "
+                                                .. "them are included.",
+                                width           = CONTENT_W,
+                                height_in_lines = 9,
+                        },
+                        f:spacer { height = 6 },
+
+                        ----------------------------------------------------------------
+                        -- City thresholds
+                        ----------------------------------------------------------------
+                        f:static_text { title = "Cities", font = "<system/bold>" },
+                        f:spacer { height = 3 },
+                        f:static_text {
+                                title           = "Cities are filtered by population. A higher threshold is used for "
+                                                .. "the most city-dense countries so their keyword trees stay usable:\n"
+                                                .. "   \226\128\162 Large countries \226\128\148 population 5000 or more.\n"
+                                                .. "   \226\128\162 All other countries \226\128\148 population 1000 or more.\n"
+                                                .. "Administrative seats (capitals and regional/municipal seats) are "
+                                                .. "ALWAYS included, regardless of population.",
+                                width           = CONTENT_W,
+                                height_in_lines = 5,
+                        },
+                        f:spacer { height = 3 },
+                        f:static_text {
+                                title           = "Large countries (population 5000+): United States, Mexico, Brazil, "
+                                                .. "Turkey, Panama, Peru, Canada, Sweden, Colombia, United Kingdom.",
+                                width           = CONTENT_W,
+                                height_in_lines = 2,
+                        },
                 }
         end
 
@@ -2231,31 +2738,38 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                         if props[ c.id .. "_enabled" ] then anyEnabled = true break end
                 end
 
-                local continents  = {}
                 local byContinent = {}
                 for _, country in ipairs( COUNTRIES ) do
                         if not anyEnabled or props[ country.id .. "_enabled" ] then
                                 local cont = country.continent or "Other"
-                                if not byContinent[ cont ] then
-                                        byContinent[ cont ] = {}
-                                        continents[ #continents + 1 ] = cont
-                                end
+                                if not byContinent[ cont ] then byContinent[ cont ] = {} end
                                 local cl = byContinent[ cont ]
                                 cl[ #cl + 1 ] = country
                         end
                 end
+                -- Sort countries alphabetically within each continent.
+                for _, cl in pairs( byContinent ) do
+                        table.sort( cl, function( a, b ) return a.name:lower() < b.name:lower() end )
+                end
+                -- Use fixed order; continents without countries still get a button.
+                local continents = CONTINENT_ORDER
 
                 local countryChildren = {
-                        spacing         = f:control_spacing(),
-                        fill_horizontal = 1,
+                        spacing = f:control_spacing(),
+                        width   = KB_COL_W_COUNTRY - 20,
                         f:static_text { title = "Country", font = "<system/bold>" },
+                        f:static_text {
+                                title = "Select a country (Select More) and check \226\128\156Include\226\128\157\nto export keywords.",
+                                font  = "<system>",
+                                width = KB_COL_W_COUNTRY - 20,
+                        },
+                        f:separator { fill_horizontal = 1 },
                         f:spacer { height = 2 },
                 }
 
                 for _, cont in ipairs( continents ) do
                         local contLower = cont:lower():gsub( "%s+", "_" )
                         local contKey   = contLower .. "_expanded"
-                        local detailKey = contLower .. "_detail"
 
                         countryChildren[ #countryChildren + 1 ] = f:push_button {
                                 bind_to_object = props,
@@ -2266,81 +2780,96 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                         end,
                                 },
                                 action = function()
+                                        -- Accordion: close all other continents first
+                                        for _, otherCont in ipairs( continents ) do
+                                                local otherKey = otherCont:lower():gsub( "%s+", "_" ) .. "_expanded"
+                                                if otherKey ~= contKey then
+                                                        props[ otherKey ] = false
+                                                end
+                                        end
                                         props[ contKey ] = not props[ contKey ]
+                                        switchTab( TAB_IDS.KB )
                                 end,
                         }
 
-                        countryChildren[ #countryChildren + 1 ] = f:column {
-                                bind_to_object  = props,
-                                visible         = LrView.bind( contKey ),
-                                fill_horizontal = 1,
-                                f:row {
-                                        spacing = f:label_spacing(),
-                                        f:static_text { title = "Include:", width = 55 },
-                                        f:slider {
-                                                bind_to_object = props,
-                                                value          = LrView.bind( detailKey ),
-                                                min            = 0,
-                                                max            = 3,
-                                                integral       = true,
-                                                width          = 90,
-                                        },
-                                        f:static_text {
-                                                bind_to_object = props,
-                                                title = LrView.bind {
-                                                        key       = detailKey,
-                                                        transform = function( v )
-                                                                return contDetailLabel( v )
-                                                        end,
-                                                },
-                                                width = 36,
-                                        },
-                                },
-                        }
+                        -- Only build country rows when this continent is expanded.
+                        -- Rebuild-on-click (switchTab above) ensures correct layout:
+                        -- invisible elements are never created, so LR SDK space-reservation
+                        -- for visible=false is completely avoided.
+                        if props[ contKey ] then
+                                local contCountries = byContinent[ cont ] or {}
 
-                        for _, country in ipairs( byContinent[ cont ] ) do
-                                local cid          = country.id
-                                local includeKey   = cid .. "_include"
-                                local switchAction = makeSwitchAction( cid, country )
-
-                                countryChildren[ #countryChildren + 1 ] = f:column {
-                                        bind_to_object  = props,
-                                        visible         = LrView.bind( contKey ),
-                                        fill_horizontal = 1,
-                                        f:row {
-                                                spacing         = f:label_spacing(),
+                                local function makeCountryRow( country )
+                                        local cid          = country.id
+                                        local includeKey   = cid .. "_include"
+                                        local switchAction = makeSwitchAction( cid, country )
+                                        return f:column {
                                                 fill_horizontal = 1,
-                                                f:static_text {
-                                                        bind_to_object = props,
-                                                        title = LrView.bind {
-                                                                key       = "active_country_id",
-                                                                transform = function( v )
-                                                                        return v == cid and "\226\150\182" or "  "
-                                                                end,
-                                                        },
-                                                        width = 16,
-                                                },
-                                                f:static_text {
-                                                        title           = country.name,
+                                                f:row {
                                                         fill_horizontal = 1,
+                                                        f:static_text {
+                                                                bind_to_object = props,
+                                                                title = LrView.bind {
+                                                                        key       = "active_country_id",
+                                                                        transform = function( v )
+                                                                                return v == cid and "\226\150\182" or "  "
+                                                                        end,
+                                                                },
+                                                                width = 16,
+                                                        },
+                                                        f:static_text {
+                                                                title           = country.name,
+                                                                fill_horizontal = 1,
+                                                        },
+                                                        f:spacer { width = 12 },
+                                                        f:push_button {
+                                                                title  = "Select More",
+                                                                action = switchAction,
+                                                        },
+                                                        f:checkbox {
+                                                                bind_to_object = props,
+                                                                title          = "Include",
+                                                                value          = LrView.bind( includeKey ),
+                                                        },
+                                                        f:spacer { width = 20 },
                                                 },
-                                                f:push_button {
-                                                        title  = "Select More",
-                                                        action = switchAction,
-                                                },
-                                                f:checkbox {
-                                                        bind_to_object = props,
-                                                        title          = "Include",
-                                                        value          = LrView.bind( includeKey ),
-                                                },
-                                        },
-                                }
+                                        }
+                                end
+
+                                if #contCountries > 4 then
+                                        -- Wrap in a scrolled_view showing 4 rows; scroll for the rest.
+                                        -- Height = 4 rows × 26 px per row (button height + spacing).
+                                        local innerSpec = { spacing = f:control_spacing() }
+                                        for _, country in ipairs( contCountries ) do
+                                                innerSpec[ #innerSpec + 1 ] = makeCountryRow( country )
+                                        end
+                                        countryChildren[ #countryChildren + 1 ] = f:scrolled_view {
+                                                height              = 107,
+                                                width               = KB_COL_W_COUNTRY - 20,
+                                                horizontal_scroller = false,
+                                                vertical_scroller   = false,
+                                                background_color    = LrColor( 0.835, 0.835, 0.835 ),
+                                                f:column( innerSpec ),
+                                        }
+                                else
+                                        for _, country in ipairs( contCountries ) do
+                                                countryChildren[ #countryChildren + 1 ] = makeCountryRow( country )
+                                        end
+                                end
                         end
 
                         countryChildren[ #countryChildren + 1 ] = f:spacer { height = 4 }
                 end
 
-                local countryColumn = f:column( countryChildren )
+                local countryScrollView = f:scrolled_view {
+                        height              = 481,
+                        width               = KB_COL_W_COUNTRY - 20,
+                        horizontal_scroller = false,
+                        background_color    = LrColor( 0.835, 0.835, 0.835 ),
+                        border_color        = LrColor( 0.835, 0.835, 0.835 ),
+                        border_width        = 0,
+                        f:column( countryChildren ),
+                }
 
                 -- County section — exact-count approach (v0.9.77).
                 -- LR SDK: visible=false on ANY element type preserves layout space.
@@ -2390,12 +2919,20 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                 -- does not expand to fill the parent column, regardless of the
                 -- fill chain).  KB_COUNTY_LIST_H is sized so the county list fills
                 -- down to the version text, matching the tall left country column.
+                -- border_color/border_width are not honoured by LR SDK for scrolled_view
+                -- (the OS draws the frame independently); left here as documentation.
+                -- scrolled_view width = group_box width minus internal padding (~10 px each side).
+                -- This makes the group_box total outer width match KB_COL_W_COUNTY.
+                -- fill_horizontal=1 pushes the group_box wider (LR SDK limitation), so
+                -- an explicit inner width is required.
                 local countyListContainer = f:scrolled_view {
                         bind_to_object      = props,
                         height              = KB_COUNTY_LIST_H,
-                        width               = KB_COL_W_COUNTY,
+                        width               = KB_COL_W_COUNTY - 20,
                         horizontal_scroller = false,
-                        background_color    = panelGrey,
+                        background_color    = LrColor( 0.835, 0.835, 0.835 ),
+                        border_color        = LrColor( 0.835, 0.835, 0.835 ),
+                        border_width        = 0,
                         f:column( countyItems ),
                 }
 
@@ -2407,6 +2944,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                         bind_to_object = props,
                         title          = "",
                         spacing        = f:control_spacing(),
+                        width          = KB_COL_W_COUNTY,
                         f:static_text {
                                 bind_to_object = props,
                                 title          = LrView.bind( "active_divisions_label" ),
@@ -2414,8 +2952,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                         },
                         f:static_text {
                                 title = "Select which information to include\nand how detailed.",
-                                wrap  = true,
-                                width = KB_COL_W_COUNTY,
+                                font  = "<system>",
                         },
                         f:separator { fill_horizontal = 1 },
                         f:row {
@@ -2444,7 +2981,6 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                 font           = "<system>",
                                 title          = LrView.bind( "active_select_all_label" ),
                                 value          = LrView.bind( "div_select_all" ),
-                                width          = KB_COL_W_COUNTY,
                         },
                         countyListContainer,
                         f:static_text {
@@ -2456,17 +2992,17 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
 
                 -- Feature selections
                 local featuresContent = f:column {
-                        bind_to_object = props,
-                        spacing        = f:control_spacing(),
+                        bind_to_object  = props,
+                        spacing         = f:control_spacing(),
+                        fill_horizontal = 1,
                         f:static_text {
                                 bind_to_object = props,
                                 title          = LrView.bind( "active_selections_label" ),
                                 font           = "<system/bold>",
                         },
-                        f:column {
-                                spacing = 2,
-                                f:static_text { title = "Use the sliders below to set max count or" },
-                                f:static_text { title = "min elevation (only for mountains)." },
+                        f:static_text {
+                                title = "Use the sliders below to set max count or\nmin elevation (only for mountains).",
+                                font  = "<system>",
                         },
                         f:separator { fill_horizontal = 1 },
                         f:checkbox {
@@ -2478,11 +3014,11 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                         f:row { fill_horizontal = 1, spacing = f:label_spacing(),
                                 f:checkbox { bind_to_object=props, font="<system>", title="National Park",  value=LrView.bind("feat_national_parks") },
                                 f:spacer { fill_horizontal = 1 },
-                                inlineSlider( "feat_national_parks_max",  10, 500, "" ) },
+                                inlineSlider( "feat_national_parks_max",  1, LrView.bind("active_np_max"), "" ) },
                         f:row { fill_horizontal = 1, spacing = f:label_spacing(),
                                 f:checkbox { bind_to_object=props, font="<system>", title="Nature Reserve", value=LrView.bind("feat_nature_reserves") },
                                 f:spacer { fill_horizontal = 1 },
-                                inlineSlider( "feat_nature_reserves_max", 10, 500, "" ) },
+                                inlineSlider( "feat_nature_reserves_max", 1, LrView.bind("active_nr_max"), "" ) },
                         f:row { fill_horizontal = 1, spacing = f:label_spacing(),
                                 f:checkbox { bind_to_object=props, font="<system>", title="Mountain",       value=LrView.bind("feat_mountains") },
                                 f:spacer { fill_horizontal = 1 },
@@ -2490,23 +3026,23 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                         f:row { fill_horizontal = 1, spacing = f:label_spacing(),
                                 f:checkbox { bind_to_object=props, font="<system>", title="Fjord",          value=LrView.bind("feat_fjords") },
                                 f:spacer { fill_horizontal = 1 },
-                                inlineSlider( "feat_fjords_max",     10, 100, "" ) },
+                                inlineSlider( "feat_fjords_max",     1, LrView.bind("active_fj_max"), "" ) },
                         f:row { fill_horizontal = 1, spacing = f:label_spacing(),
                                 f:checkbox { bind_to_object=props, font="<system>", title="Lake",           value=LrView.bind("feat_lakes") },
                                 f:spacer { fill_horizontal = 1 },
-                                inlineSlider( "feat_lakes_max",      10, 100, "" ) },
+                                inlineSlider( "feat_lakes_max",      1, LrView.bind("active_lk_max"), "" ) },
                         f:row { fill_horizontal = 1, spacing = f:label_spacing(),
                                 f:checkbox { bind_to_object=props, font="<system>", title="River",          value=LrView.bind("feat_rivers") },
                                 f:spacer { fill_horizontal = 1 },
-                                inlineSlider( "feat_rivers_max",     10, 100, "" ) },
+                                inlineSlider( "feat_rivers_max",     1, LrView.bind("active_rv_max"), "" ) },
                         f:row { fill_horizontal = 1, spacing = f:label_spacing(),
                                 f:checkbox { bind_to_object=props, font="<system>", title="Island",         value=LrView.bind("feat_islands") },
                                 f:spacer { fill_horizontal = 1 },
-                                inlineSlider( "feat_islands_max",    10, 100, "" ) },
+                                inlineSlider( "feat_islands_max",    1, LrView.bind("active_is_max"), "" ) },
                         f:row { fill_horizontal = 1, spacing = f:label_spacing(),
                                 f:checkbox { bind_to_object=props, font="<system>", title="Viewpoint",      value=LrView.bind("feat_viewpoints") },
                                 f:spacer { fill_horizontal = 1 },
-                                inlineSlider( "feat_viewpoints_max", 10, 500, "" ) },
+                                inlineSlider( "feat_viewpoints_max", 1, LrView.bind("active_vp_max"), "" ) },
                 }
 
                 -- Save + Generate row
@@ -2532,22 +3068,29 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                 }
 
                 return f:column {
-                        bind_to_object = props,
-                        spacing        = f:control_spacing(),
+                        bind_to_object  = props,
+                        spacing         = f:control_spacing(),
+                        fill_horizontal = 1,
                         f:static_text {
                                 title = "Select a country (Select More), configure sections and areas, "
                                      .. "check Include to add it to the export, then click Generate.",
                         },
                         f:row {
-                                spacing = f:label_spacing() * 2,
-                                f:group_box {
-                                        title   = "",
-                                        spacing = f:control_spacing(),
-                                        countryColumn,
+                                spacing         = f:label_spacing() * 2,
+                                fill_horizontal = 1,
+                                f:column {
+                                        background_color = LrColor( 0.94, 0.94, 0.94 ),
+                                        f:group_box {
+                                                title   = "",
+                                                spacing = f:control_spacing(),
+                                                width   = KB_COL_W_COUNTRY,
+                                                countryScrollView,
+                                        },
                                 },
                                 countyGroupBox,
                                 f:column {
-                                        spacing = f:control_spacing(),
+                                        spacing         = f:control_spacing(),
+                                        fill_horizontal = 1,
                                         f:group_box {
                                                 title           = "",
                                                 fill_horizontal = 1,
@@ -2561,43 +3104,722 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
         end  -- buildBuilderPanel
 
         ------------------------------------------------------------------------
+        -- Tab — GPS Keyword Converter
+        ------------------------------------------------------------------------
+
+        local function buildGPSPanel()
+
+          -- Font sizes for this tab: body text in the gray fields is a bit larger
+          -- than the SDK default, and the group-box section titles are two notches
+          -- larger still. The { name, size } table form is honoured by the LR SDK
+          -- (see the footer/version text elsewhere in this file).
+          local GPS_FONT  = { name = "<system>",      size = 14 }
+          local GPS_TITLE = { name = "<system/bold>", size = 15 }
+
+          -- ── Helpers ──────────────────────────────────────────────────────────────
+
+          -- Folder items are read from the cache (gpsFolderItems). They are populated
+          -- lazily by the "Load Folders" button below, which enumerates the catalog
+          -- inside an async task (getFolders/getChildren are yielding SDK calls and
+          -- cannot run during this synchronous panel build, or LR throws
+          -- "We can only wait from within a task").
+          local catalog = LrApplication.activeCatalog()
+          local folderItems
+          if gpsFolderItems then
+            folderItems = gpsFolderItems
+          else
+            folderItems = { { title = "— click 'Load Folders' first —", value = "" } }
+          end
+
+          -- Build enabledSet from props
+          local enabledSet = {}
+          for _, c in ipairs(COUNTRIES) do
+            if props[c.id .. "_enabled"] then enabledSet[c.id] = true end
+          end
+
+          -- ── Description ──────────────────────────────────────────────────────────
+
+          local descText = f:static_text {
+            title = "GPS Keyword Converter reads the GPS coordinates from selected images and looks up "
+                  .. "the geographic location (country, state, city) using reverse geocoding. "
+                  .. "It then searches only the enabled keyword lists in this plugin for a matching "
+                  .. "city-level keyword and applies it to the photo in Lightroom. "
+                  .. "Only city-level keywords are matched — not parent or child levels. "
+                  .. "Conflicts (no match found, or duplicate matches) are listed below for manual review.",
+            width           = CONTENT_W_MN,
+            height_in_lines = 4,
+            font            = GPS_FONT,
+          }
+
+
+          -- ── Keyword List selector ────────────────────────────────────────────────────────────────────────
+
+          -- Root keyword items are populated by the same "Load Folders" async task
+          -- that enumerates the catalog folder tree.
+          if props.gps_kw_root_idx == nil then props.gps_kw_root_idx = 0 end
+          local kwListItems
+          if gpsRootItems then
+            kwListItems = gpsRootItems
+          else
+            kwListItems = { { title = "— click 'Load Folders' in Scope to populate —", value = 0 } }
+          end
+
+          local kwListSection = f:group_box {
+            title = "Keyword List",
+            font  = GPS_TITLE,
+            fill_horizontal = 1,
+            f:column {
+              spacing = 8,
+              f:static_text {
+                title           = "If you have multiple geography keyword lists imported in Lightroom, "
+                                .. "select which root keyword to target here. "
+                                .. "Click 'Load Folders' in Scope above to populate the list.",
+                width           = CONTENT_W_MN,
+                height_in_lines = 2,
+                font            = GPS_FONT,
+              },
+              f:row {
+                spacing = 8,
+                f:static_text { title = "Root keyword:", font = GPS_FONT, width = 100 },
+                f:popup_menu {
+                  items = kwListItems,
+                  value = LrView.bind("gps_kw_root_idx"),
+                  width = 300,
+                  font  = GPS_FONT,
+                },
+              },
+            },
+          }
+
+          -- ── Generate button ───────────────────────────────────────────────────────
+
+          -- Initialise gps_running BEFORE the button is defined so the enabled
+          -- binding evaluates to true (active) on first render instead of nil.
+          if props.gps_running == nil then props.gps_running = false end
+
+          local generateBtn = f:push_button {
+            title   = "Generate Keywords",
+            width   = 350,
+            height  = 36,
+            font    = "<system/bold>",
+            enabled = LrView.bind { key = "gps_running", transform = function(v) return not v end },
+            action  = function()
+              LrTasks.startAsyncTask(function()
+                gpsConflicts = {}
+                gpsSuccesses = {}
+                props.gps_running       = true
+                props.gps_success_count = 0
+                props.gps_conflict_count = 0
+                props.gps_cur_filename  = ""
+                props.gps_cur_size      = ""
+                props.gps_cur_folder    = ""
+                props.gps_cur_gps       = ""
+                props.gps_cur_path      = ""
+                props.gps_status        = "Running…"
+
+                -- Country data is now lazy-loaded (getData). findCityMatches reads
+                -- country.data directly, so ensure every enabled country's data is
+                -- loaded before matching — otherwise all lookups return no match.
+                for _, c in ipairs(COUNTRIES) do
+                  if enabledSet[c.id] then getData(c) end
+                end
+
+                -- Collect photos to process
+                local photos = {}
+                local scope  = props.gps_scope
+                if scope == "selected" then
+                  photos = catalog:getTargetPhotos()
+                elseif scope == "folder" then
+                  local folderObj = props.gps_folder_obj
+                  if folderObj and folderObj ~= "" then
+                    photos = folderObj:getPhotos()
+                  end
+                elseif scope == "all" then
+                  photos = catalog:getAllPhotos()
+                end
+
+                -- Process each photo
+                for _, photo in ipairs(photos or {}) do
+                  local gpsData = photo:getRawMetadata("gps")
+                  if gpsData and gpsData.latitude and gpsData.longitude then
+                    local lat, lon  = gpsData.latitude, gpsData.longitude
+                    local path      = photo:getRawMetadata("path") or ""
+                    local filename  = LrPathUtils.leafName(path)
+                    local folder    = LrPathUtils.parent(path)
+                    -- Strip macOS /Volumes/ mount prefix for display
+                    local folderDisplay = folder:gsub("^/[Vv]olumes/", "")
+                    local sizeStr   = lazyGPS().getPhotoFileSize(photo)
+                    local dmsStr    = lazyGPS().formatDMS(lat, lon)
+
+                    props.gps_cur_filename = filename
+                    props.gps_cur_size     = sizeStr
+                    props.gps_cur_folder   = folder
+                    props.gps_cur_gps      = dmsStr
+                    props.gps_cur_path     = "Searching…"
+
+                    -- Curated bounding-box override (highest priority). Checked
+                    -- BEFORE Nominatim so remote places with no usable geoname
+                    -- (pack ice, tiny islands) still get tagged.
+                    local bboxMatch = lazyGPS().findBoundingBoxMatch(lat, lon, COUNTRIES, enabledSet)
+
+                    -- Reverse geocode (second return value is a diagnostic reason on failure)
+                    local geo, geoReason = lazyGPS().reverseGeocode(lat, lon)
+                    LrTasks.yield()
+                    LrTasks.sleep(1.0)  -- Nominatim rate limit: max 1 req/sec
+
+                    if not bboxMatch and not geo then
+                      props.gps_cur_path = "(no GPS result)"
+                      local sc = props.gps_conflict_count or 0
+                      props.gps_conflict_count = sc + 1
+                      table.insert(gpsConflicts, {
+                        filename = filename, size = sizeStr, folder = folderDisplay,
+                        gpsStr = dmsStr, keywordPath = "–",
+                        conflictType = "No GPS result", matchCount = 0,
+                        geoReason = geoReason, lat = lat, lon = lon,
+                        matches = {}, photo = photo,
+                      })
+                    else
+                      local matches = bboxMatch and { bboxMatch }
+                                      or lazyGPS().findCityMatches(geo, COUNTRIES, enabledSet)
+                      local kwPath  = #matches > 0 and lazyGPS().formatKeywordPath(matches[1]) or "–"
+                      props.gps_cur_path = kwPath
+
+                      if #matches == 0 then
+                        local sc = props.gps_conflict_count or 0
+                        props.gps_conflict_count = sc + 1
+                        table.insert(gpsConflicts, {
+                          filename = filename, size = sizeStr, folder = folderDisplay,
+                          gpsStr = dmsStr, keywordPath = "–",
+                          conflictType = "No keyword found", matchCount = 0,
+                          matches = {}, photo = photo, geo = geo,
+                        })
+                      elseif #matches > 1 then
+                        local sc = props.gps_conflict_count or 0
+                        props.gps_conflict_count = sc + 1
+                        table.insert(gpsConflicts, {
+                          filename = filename, size = sizeStr, folder = folderDisplay,
+                          gpsStr = dmsStr, keywordPath = kwPath,
+                          conflictType = "Duplicate keyword found (" .. #matches .. ")", matchCount = #matches,
+                          matches = matches, photo = photo, geo = geo,
+                        })
+                      else
+                        local sc = props.gps_success_count or 0
+                        props.gps_success_count = sc + 1
+                        table.insert(gpsSuccesses, { photo = photo, match = matches[1], path = kwPath })
+                      end
+                    end
+                    LrTasks.yield()
+                  end
+                end
+
+                props.gps_status  = "Done. " .. (props.gps_success_count or 0) .. " converted, "
+                                  .. (props.gps_conflict_count or 0) .. " conflicts."
+                props.gps_running = false
+                -- Force GPS tab rebuild to show conflict rows:
+                switchTab(TAB_IDS.GPS)
+              end)
+            end,
+          }
+
+          -- ── Scope selector ───────────────────────────────────────────────────────
+          -- props.gps_scope: "selected" | "folder" | "all"
+          if props.gps_scope   == nil then props.gps_scope   = "selected" end
+          if props.gps_running == nil then props.gps_running = false     end
+
+          local scopeSection = f:group_box {
+            title = "Scope",
+            font  = GPS_TITLE,
+            fill_horizontal = 1,
+            f:column {
+              spacing = 8,
+              f:radio_button {
+                title = "Selected Images",
+                font  = GPS_FONT,
+                value = LrView.bind("gps_scope"),
+                checked_value = "selected",
+              },
+              f:row {
+                f:radio_button {
+                   title = "Folder:",  font = GPS_FONT,
+                  value = LrView.bind("gps_scope"),
+                  checked_value = "folder",
+                },
+                f:popup_menu {
+                  items   = folderItems,
+                  value   = LrView.bind("gps_folder_obj"),
+                  enabled = LrView.bind { key = "gps_scope", transform = function(v) return v == "folder" end },
+                  width   = 400,
+                  font    = GPS_FONT,
+                },
+                f:push_button {
+                  title  = gpsFolderItems and "Reload Folders" or "Load Folders",
+                   font   = GPS_FONT,
+                  action = function()
+                    -- Enumerate catalog folder tree AND top-level keywords inside an
+                    -- async task. getFolders/getChildren/getKeywords/getName all yield
+                    -- and must NOT run during synchronous panel build.
+                    LrTasks.startAsyncTask(function()
+
+                      -- ── Folders (alphabetically sorted at each level) ──
+                      local items = { { title = "— select folder —", value = "" } }
+                      local function addFolders(folder, indent)
+                        local name = (indent or "") .. folder:getName()
+                        table.insert(items, { title = name, value = folder })
+                        local children = folder:getChildren() or {}
+                        -- Pre-fetch child names into plain Lua strings BEFORE sorting.
+                        -- getName() yields; calling it inside a sort comparator crosses
+                        -- a C boundary and crashes LR.
+                        local sorted = {}
+                        for _, c in ipairs(children) do
+                          sorted[#sorted+1] = { child = c, name = c:getName() }
+                        end
+                        table.sort(sorted, function(a, b) return a.name < b.name end)
+                        for _, s in ipairs(sorted) do
+                          addFolders(s.child, (indent or "") .. "    ")
+                        end
+                      end
+                      local rootFolders = catalog:getFolders() or {}
+                      local sortedRoots = {}
+                      for _, fld in ipairs(rootFolders) do
+                        sortedRoots[#sortedRoots+1] = { folder = fld, name = fld:getName() }
+                      end
+                      table.sort(sortedRoots, function(a, b) return a.name < b.name end)
+                      for _, r in ipairs(sortedRoots) do
+                        addFolders(r.folder)
+                      end
+                      gpsFolderItems = items
+
+                      -- ── Root keyword list (for "Keyword List" selector) ──
+                      -- catalog:getKeywords() returns all top-level LrKeyword objects
+                      -- (SDK 3.0+; must be called from an async task).
+                      local rootKws = catalog:getKeywords() or {}
+                      local kwObjects = {}
+                      for _, kw in ipairs(rootKws) do
+                        kwObjects[#kwObjects+1] = { name = kw:getName(), kw = kw }
+                      end
+                      table.sort(kwObjects, function(a, b) return a.name < b.name end)
+                      gpsRootKwObjects = kwObjects
+                      local kwItems = { { title = "— All keyword lists —", value = 0 } }
+                      for i, rko in ipairs(kwObjects) do
+                        kwItems[#kwItems+1] = { title = rko.name, value = i }
+                      end
+                      gpsRootItems = kwItems
+
+                      switchTab(TAB_IDS.GPS)   -- rebuild so both popups are filled
+                    end)
+                  end,
+                },
+              },
+              f:radio_button {
+                title = "All Images in Catalog (with GPS data)",
+                font  = GPS_FONT,
+                value = LrView.bind("gps_scope"),
+                checked_value = "all",
+              },
+            },
+          }
+
+          -- ── Current-image display ─────────────────────────────────────────────────
+
+          local currentImageSection = f:group_box {
+            title = "Current Image",
+            font  = GPS_TITLE,
+            fill_horizontal = 1,
+            f:column {
+              spacing = 2,
+              f:row {
+                spacing = 12,
+                f:static_text { title = "File:",   width = 70, font = GPS_FONT },
+                f:static_text { title = LrView.bind("gps_cur_filename"), width = 500, font = GPS_FONT },
+              },
+              f:row {
+                spacing = 12,
+                f:static_text { title = "Folder:", width = 70, font = GPS_FONT },
+                f:static_text { title = LrView.bind("gps_cur_folder"),   width = 500, height_in_lines = 1, font = GPS_FONT },
+              },
+              f:row {
+                spacing = 12,
+                f:static_text { title = "GPS:",    width = 70, font = GPS_FONT },
+                f:static_text { title = LrView.bind("gps_cur_gps"),  width = 400, font = GPS_FONT },
+              },
+              f:row {
+                spacing = 12,
+                f:static_text { title = "",        width = 70 },
+                f:static_text { title = LrView.bind("gps_cur_path"), width = 500, height_in_lines = 1, font = GPS_FONT },
+              },
+            },
+          }
+
+          -- ── Counters ─────────────────────────────────────────────────────────────
+
+          local countersRow = f:row {
+            spacing = 20,
+            f:static_text {
+              title = "✓ Converted: ",
+              font  = "<system/bold>",
+            },
+            f:static_text {
+              title = LrView.bind { key = "gps_success_count",
+                transform = function(v) return tostring(v or 0) end },
+              width = 40,
+            },
+            f:static_text { title = "⚠ Conflicts: ", font = "<system/bold>" },
+            f:static_text {
+              title = LrView.bind { key = "gps_conflict_count",
+                transform = function(v) return tostring(v or 0) end },
+              width = 40,
+            },
+            f:static_text {
+              title = LrView.bind("gps_status"),
+              fill_horizontal = 1,
+            },
+          }
+
+          -- ── Conflict table ─────────────────────────────────────────────────────
+
+          -- Column widths for conflict table
+          local CW_FILE    = 140
+          local CW_SIZE    = 55
+          local CW_GPS     = 175
+          local CW_CONF    = 130
+          local CW_ACTION  = 80
+
+          local conflictHeader = f:row {
+            spacing = 4,
+            f:static_text { title = "Filename",     width = CW_FILE,   font = "<system/bold>" },
+            f:static_text { title = "Size (MB)",    width = CW_SIZE,   font = "<system/bold>" },
+            f:static_text { title = "GPS",          width = CW_GPS,    font = "<system/bold>" },
+            f:static_text { title = "Conflict",     width = CW_CONF,   font = "<system/bold>" },
+            f:static_text { title = "Action",       width = CW_ACTION, font = "<system/bold>" },
+          }
+
+          -- Build conflict rows from gpsConflicts (closure var, populated by Generate)
+          local conflictRows = {}
+          for i, entry in ipairs(gpsConflicts) do
+            local actionBtn
+            if entry.conflictType == "No keyword found" or entry.conflictType == "No GPS result" then
+              actionBtn = f:push_button {
+                title  = "Add Keyword",
+                width  = CW_ACTION,
+                action = function()
+                  LrTasks.startAsyncTask(function()
+                    if entry.conflictType == "No GPS result" then
+                      local diag = "Could not determine location for:\n" .. entry.filename
+                      if entry.lat and entry.lon then
+                        diag = diag .. string.format("\n\nCoordinates sent: %.6f, %.6f", entry.lat, entry.lon)
+                      end
+                      if entry.geoReason then
+                        diag = diag .. "\n\nReason: " .. tostring(entry.geoReason)
+                        if tostring(entry.geoReason):find("^http_error") then
+                          diag = diag .. "\n\nThe reverse-geocoding request to OpenStreetMap failed."
+                                      .. "\nCheck that Lightroom has internet access and try again."
+                        elseif tostring(entry.geoReason):find("^no_city") then
+                          diag = diag .. "\n\nOpenStreetMap found no city/town/village for this point."
+                        end
+                      else
+                        diag = diag .. "\n\nCheck that the image has valid GPS coordinates."
+                      end
+                      LrDialogs.message("No GPS Result", diag, "info")
+                      return
+                    end
+                    local geo = entry.geo or {}
+                    local msg = "No keyword was found for:\n\n"
+                              .. "  Image:   " .. entry.filename .. "\n"
+                              .. "  GPS:     " .. entry.gpsStr .. "\n"
+                              .. "  Country: " .. (geo.country or "?") .. "\n"
+                              .. "  State:   " .. (geo.state or "?") .. "\n"
+                              .. "  City:    " .. (geo.city or "?") .. "\n\n"
+                              .. "To add this location, enable the country in List Overview\n"
+                              .. "and re-run Generate, or create the keyword manually in LR."
+                    LrDialogs.message("No Keyword Found — " .. entry.filename, msg, "info")
+                  end)
+                end,
+              }
+            else
+              -- Duplicate: let user pick which match to use
+              local capturedEntry = entry
+              actionBtn = f:push_button {
+                title  = "Resolve",
+                width  = CW_ACTION,
+                action = function()
+                  LrTasks.startAsyncTask(function()
+                    local lines = { "Multiple keyword matches found for city: " .. (capturedEntry.geo and capturedEntry.geo.city or "?") .. "\n" }
+                    for idx, m in ipairs(capturedEntry.matches) do
+                      lines[#lines+1] = idx .. ".  " .. lazyGPS().formatKeywordPath(m)
+                    end
+                    lines[#lines+1] = "\nPress OK to use the FIRST match, or Cancel to skip."
+                    local r = LrDialogs.confirm(
+                      "Resolve Duplicate — " .. capturedEntry.filename,
+                      table.concat(lines, "\n"),
+                      "Use First Match", "Cancel"
+                    )
+                    if r == "ok" then
+                      -- Mark this entry as resolved (use first match)
+                      capturedEntry._resolved     = true
+                      capturedEntry._resolvedMatch = capturedEntry.matches[1]
+                      table.insert(gpsSuccesses, {
+                        photo = capturedEntry.photo,
+                        match = capturedEntry.matches[1],
+                        path  = lazyGPS().formatKeywordPath(capturedEntry.matches[1]),
+                      })
+                      local sc = props.gps_success_count or 0
+                      props.gps_success_count = sc + 1
+                      local cc = props.gps_conflict_count or 0
+                      if cc > 0 then props.gps_conflict_count = cc - 1 end
+                      LrDialogs.message("Resolved", "Match applied:\n" .. lazyGPS().formatKeywordPath(capturedEntry.matches[1]), "info")
+                    end
+                  end)
+                end,
+              }
+            end
+
+            local row = f:row {
+              spacing = 4,
+              f:static_text { title = entry.filename,     width = CW_FILE,   height_in_lines = 1 },
+              f:static_text { title = entry.size,         width = CW_SIZE },
+              f:static_text { title = entry.gpsStr,       width = CW_GPS,    height_in_lines = 1 },
+              f:static_text { title = entry.conflictType .. (entry.geoReason and " (" .. entry.geoReason .. ")" or ""), width = CW_CONF, height_in_lines = 1 },
+              actionBtn,
+            }
+            table.insert(conflictRows, row)
+          end
+
+          local noConflictsNote = f:static_text {
+            title  = #gpsConflicts == 0 and "No conflicts — run Generate to populate this list." or "",
+            width  = CONTENT_W_MN - 20,
+            font   = GPS_FONT,
+          }
+
+          local conflictScrollView = f:scrolled_view {
+            width  = CONTENT_W_MN,
+            height = 200,
+            f:column {
+              spacing = 2,
+              noConflictsNote,
+              unpack(conflictRows),
+            },
+          }
+
+          local conflictSection = f:group_box {
+            title = "Conflicts",
+            font  = GPS_TITLE,
+            fill_horizontal = 1,
+            f:column {
+              spacing = 4,
+              conflictHeader,
+              conflictScrollView,
+            },
+          }
+
+          -- ── Save / Close buttons ─────────────────────────────────────────────────
+
+          local saveBtn = f:push_button {
+            title  = "Save — Apply Keywords to Photos",
+            action = function()
+              LrTasks.startAsyncTask(function()
+                if #gpsSuccesses == 0 then
+                  LrDialogs.message("Nothing to Save",
+                    "No successfully matched photos to apply keywords to.\n\nRun Generate first.", "info")
+                  return
+                end
+                local applied = 0
+                local failed  = 0
+                local rootIdx      = props.gps_kw_root_idx or 0
+                local selectedRoot = (rootIdx > 0 and gpsRootKwObjects and gpsRootKwObjects[rootIdx])
+                                      and gpsRootKwObjects[rootIdx].kw or nil
+
+                -- Build the ordered keyword-path segments to descend for a match.
+                -- Full hierarchy is: Geography > World > Country > County > [Muni] > City.
+                -- When a root keyword is selected (e.g. "Geography"), we descend from it,
+                -- so drop every leading segment up to and including the root's own name.
+                local function buildSegments(match, rootKw)
+                  local full = { "Geography", "World" }
+                  if match.continentName then full[#full + 1] = match.continentName end
+                  if match.countryName   then full[#full + 1] = match.countryName   end
+                  if match.countyName    then full[#full + 1] = match.countyName    end
+                  if match.muniName      then full[#full + 1] = match.muniName      end
+                  if match.cityName      then full[#full + 1] = match.cityName      end
+                  if rootKw then
+                    local rootName = rootKw:getName()
+                    for i, seg in ipairs(full) do
+                      if seg == rootName then
+                        local rest = {}
+                        for j = i + 1, #full do rest[#rest + 1] = full[j] end
+                        return rest
+                      end
+                    end
+                  end
+                  return full
+                end
+
+                -- Resolve (or create) the keyword hierarchy for each photo, then apply
+                -- the deepest keyword. Lightroom propagates the parent levels
+                -- automatically, so only the leaf needs to be added to the photo.
+                --
+                -- CRITICAL SDK constraint (the cause of the earlier "only the top
+                -- keyword was applied" bug): a keyword returned by createKeyword() is
+                -- NOT accessible — neither as the parent of another createKeyword call
+                -- nor via getChildren()/addKeyword() — until the withWriteAccessDo gate
+                -- that produced it has RETURNED. Chaining createKeyword calls inside a
+                -- single write gate therefore silently fails after the first level.
+                -- getChildren() on the captured root keyword also does not enumerate
+                -- reliably from this task, so we do NOT descend the tree that way.
+                --
+                -- Instead each level is resolved in ITS OWN write gate:
+                --   createKeyword(name, {}, true, parent, true)
+                -- With returnExisting=true this returns the EXISTING child of `parent`
+                -- with that name when one exists (so nothing is duplicated in the
+                -- user's already-imported hierarchy), otherwise it creates it. Because
+                -- every call sits in its own gate, the returned keyword is fully
+                -- accessible by the time it becomes the parent of the next level.
+                -- addKeyword() then runs in a final, separate gate.
+
+                local resolveErr = nil
+                local leafCache  = {}   -- "seg1>seg2>…" → resolved leaf keyword (accessible)
+
+                -- Resolve a full segment list to its leaf keyword, one write gate per
+                -- level, reusing the cache so repeated locations cost nothing extra.
+                local function resolveLeaf(segments)
+                  local key = table.concat(segments, ">")
+                  if leafCache[key] ~= nil then return leafCache[key] end
+                  local parent = selectedRoot   -- accessible (captured earlier); nil ⇒ top level
+                  local leaf   = nil
+                  for _, segName in ipairs(segments) do
+                    local created = nil
+                    local okSeg, err = LrTasks.pcall(function()
+                      catalog:withWriteAccessDo(
+                        "GPS Keyword Converter — resolve keyword",
+                        function(context)
+                          created = catalog:createKeyword(segName, {}, true, parent, true)
+                        end)
+                    end)
+                    if not okSeg then
+                      resolveErr = resolveErr or tostring(err)
+                      return nil
+                    end
+                    if not created then return nil end
+                    -- The gate has returned ⇒ `created` is now safe to use as parent.
+                    parent = created
+                    leaf   = created
+                  end
+                  leafCache[key] = leaf
+                  return leaf
+                end
+
+                for _, entry in ipairs(gpsSuccesses) do
+                  local segments = buildSegments(entry.match, selectedRoot)
+                  local leaf     = (#segments > 0) and resolveLeaf(segments) or nil
+                  if leaf then
+                    local okApply, err2 = LrTasks.pcall(function()
+                      catalog:withWriteAccessDo(
+                        "GPS Keyword Converter — apply keyword",
+                        function(context)
+                          entry.photo:addKeyword(leaf)
+                        end)
+                    end)
+                    if okApply then
+                      applied = applied + 1
+                    else
+                      failed = failed + 1
+                      resolveErr = resolveErr or tostring(err2)
+                    end
+                  else
+                    failed = failed + 1
+                  end
+                end
+
+                if resolveErr then
+                  -- Surface the real error text instead of Lightroom's generic
+                  -- "internal error" dialog, so any remaining issue can be diagnosed.
+                  LrDialogs.message(
+                    "Keyword Save — error",
+                    applied .. " keyword(s) applied, " .. failed .. " failed.\n\n"
+                      .. "First error:\n" .. resolveErr,
+                    "warning")
+                  return
+                end
+
+                local msg = applied .. " keyword(s) applied to photos."
+                if failed > 0 then
+                  msg = msg .. "\n" .. failed .. " could not be applied."
+                end
+                LrDialogs.message("Keywords Saved", msg, "info")
+              end)
+            end,
+          }
+
+          local closeBtn = f:push_button {
+            title  = "Close",
+            action = function()
+              switchTab( TAB_IDS.INTRO )
+            end,
+          }
+
+          local bottomRow = f:row {
+            fill_horizontal = 1,
+            f:spacer { fill_horizontal = 1 },
+            saveBtn,
+          }
+
+          -- ── Assemble panel ───────────────────────────────────────────────────────
+
+          return f:column {
+            bind_to_object = props,
+            spacing        = f:control_spacing(),
+            f:spacer { height = 6 },
+            descText,
+            f:spacer { height = 4 },
+            scopeSection,
+            f:spacer { height = 4 },
+            kwListSection,
+            f:spacer { height = 4 },
+            f:row {
+              f:spacer { fill_horizontal = 1 },
+              generateBtn,
+              f:spacer { fill_horizontal = 1 },
+            },
+            f:spacer { height = 4 },
+            currentImageSection,
+            countersRow,
+            f:spacer { height = 4 },
+            conflictSection,
+            f:spacer { height = 8 },
+            bottomRow,
+          }
+        end  -- buildGPSPanel
+
+        ------------------------------------------------------------------------
         -- Tab 0 — Intro  (world-map welcome panel)
         ------------------------------------------------------------------------
 
         local function buildIntroPanel()
-                -- Generate (or retrieve cached) world-map PNG with current enabled colours.
-                local enabledSet = {}
+                -- Build the set of currently-enabled countries (cheap — just iterates props).
+                local currentEnabled = {}
                 for _, c in ipairs( COUNTRIES ) do
-                        if props[ c.id .. "_enabled" ] then enabledSet[ c.id ] = true end
+                        if props[ c.id .. "_enabled" ] then
+                                currentEnabled[ c.id ] = true
+                        end
                 end
-                local mapPath = WorldMap.generate( enabledSet )
 
-                local mapItem
-                if mapPath then
-                        mapItem = f:picture {
-                                value  = mapPath,
-                                width  = 600,
-                                height = 300,
-                        }
-                else
-                        mapItem = f:static_text {
-                                title = "(Map image could not be generated)",
-                                width = 600,
-                        }
-                end
+                -- Check whether a colored PNG already exists in the cache (file-stat only,
+                -- never generates anything here — dialog opens instantly).
+                local staticPath = LrPathUtils.child( pluginPath, "worldmap_bg.png" )
+                local cachedPath = lazyMap().getCachedPath( currentEnabled )
+
+                local enabledCount = 0
+                for _ in pairs( currentEnabled ) do enabledCount = enabledCount + 1 end
+
+                -- Seed the three bindable props before the view is built.
+                props.mapImagePath  = cachedPath or staticPath
+                props.mapStatusText = cachedPath
+                        and ( tostring( enabledCount ) .. " countries enabled — red on map, blue = available" )
+                        or  "Click \xE2\x80\x9CUpdate Map\xE2\x80\x9D to generate a colored map (first run ~75 s; cached after)"
+                props.mapUpdating   = false
 
                 return f:column {
                         bind_to_object = props,
                         spacing        = f:control_spacing(),
                         f:spacer { height = 8 },
-                        f:row {
-                                f:spacer { fill_horizontal = 1 },
-                                mapItem,
-                                f:spacer { fill_horizontal = 1 },
-                        },
-                        f:spacer { height = 6 },
-                        f:separator { fill_horizontal = 1 },
-                        f:spacer { height = 4 },
                         f:static_text {
                                 title = "Geography Keyword Builder",
                                 font  = "<system/bold>",
@@ -2613,27 +3835,70 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                 width           = CONTENT_W,
                                 height_in_lines = 4,
                         },
-                        f:spacer { height = 2 },
-                        f:static_text {
-                                title           = "Blue = supported countries.  Red = currently enabled (On).  "
-                                                .. "Click below to open a fully interactive map in your browser.",
-                                width           = CONTENT_W,
-                                height_in_lines = 2,
+                        -- World map: shows static PNG until "Update Map" is pressed,
+                        -- then switches to the cached colored PNG (blue = available,
+                        -- red = enabled in List Overview).
+                        f:row {
+                                f:spacer { fill_horizontal = 1 },
+                                f:picture {
+                                        value  = LrView.bind 'mapImagePath',
+                                        width  = CONTENT_W_MN,
+                                        height = math.floor( CONTENT_W_MN / 2 ),
+                                },
+                                f:spacer { fill_horizontal = 1 },
                         },
-                        f:spacer { height = 6 },
+                        f:row {
+                                f:spacer { fill_horizontal = 1 },
+                                f:static_text {
+                                        title = LrView.bind 'mapStatusText',
+                                        font  = "<system/small>",
+                                },
+                                f:spacer { fill_horizontal = 1 },
+                        },
+                        f:spacer { height = 5 },
                         f:row {
                                 f:spacer { fill_horizontal = 1 },
                                 f:push_button {
-                                        title = "Show Interactive Map in Browser",
-                                        action = function()
+                                        title   = "Update Map",
+                                        enabled = LrView.bind {
+                                                key       = 'mapUpdating',
+                                                transform = function( v ) return not v end,
+                                        },
+                                        action  = function()
                                                 LrTasks.startAsyncTask( function()
-                                                        local currentEnabled = {}
+                                                        props.mapUpdating   = true
+                                                        props.mapStatusText = "Generating map\xE2\x80\xA6 first run ~75 s, cached after"
+                                                        local newEnabled = {}
                                                         for _, c in ipairs( COUNTRIES ) do
                                                                 if props[ c.id .. "_enabled" ] then
-                                                                        currentEnabled[ c.id ] = true
+                                                                        newEnabled[ c.id ] = true
                                                                 end
                                                         end
-                                                        local htmlPath = WorldMap.generateHTML( currentEnabled )
+                                                        local newPath = lazyMap().generate( newEnabled )
+                                                        if newPath then
+                                                                props.mapImagePath = newPath
+                                                                local cnt = 0
+                                                                for _ in pairs( newEnabled ) do cnt = cnt + 1 end
+                                                                props.mapStatusText = tostring( cnt ) .. " countries enabled — red on map, blue = available"
+                                                        else
+                                                                props.mapStatusText = "Map generation failed — see Lightroom log for details"
+                                                        end
+                                                        props.mapUpdating = false
+                                                end )
+                                        end,
+                                },
+                                f:spacer { width = 8 },
+                                f:push_button {
+                                        title  = "Show Interactive Map in Browser",
+                                        action = function()
+                                                LrTasks.startAsyncTask( function()
+                                                        local currentEnabled2 = {}
+                                                        for _, c in ipairs( COUNTRIES ) do
+                                                                if props[ c.id .. "_enabled" ] then
+                                                                        currentEnabled2[ c.id ] = true
+                                                                end
+                                                        end
+                                                        local htmlPath = lazyMap().generateHTML( currentEnabled2 )
                                                         if htmlPath then
                                                                 local url
                                                                 if WIN_ENV then
@@ -2641,13 +3906,14 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                                                 else
                                                                         url = "file://" .. htmlPath
                                                                 end
-                                                                LrHttp.openUrlInBrowser( url )
+                                                                http().openUrlInBrowser( url )
                                                         end
                                                 end )
                                         end,
                                 },
                                 f:spacer { fill_horizontal = 1 },
                         },
+                        f:spacer { height = 5 },
                 }
         end  -- buildIntroPanel
 
@@ -2655,6 +3921,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
         -- Dialog loop
         ------------------------------------------------------------------------
 
+        tlog( "entry: props/countryState setup DONE — entering dialog loop" )
         local keepOpen = true
         while keepOpen do
 
@@ -2664,59 +3931,101 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
 
                 local placeholder = f:column { f:spacer { height = 5 } }
 
+                tlog( "loop: START building panels (tab=" .. tostring( currentDialog ) .. ")" )
                 local panelINTRO = ( currentDialog == TAB_IDS.INTRO ) and buildIntroPanel()  or placeholder
+                tlog( "loop: DONE panelINTRO" )
+
+                -- Lazy initial country load: load Norway (the default country) only
+                -- the first time the KB tab is actually opened, not at dialog-open time.
+                if currentDialog == TAB_IDS.KB and not kbStateInitialized then
+                        tlog( "loop: deferred loadCountryState START" )
+                        loadCountryState( activePanelCountry.id, activePanelCountry )
+                        kbStateInitialized = true
+                        tlog( "loop: deferred loadCountryState DONE" )
+                end
                 local panelKB    = ( currentDialog == TAB_IDS.KB    ) and buildBuilderPanel() or placeholder
                 local panelOV  = ( currentDialog == TAB_IDS.OV  ) and buildOverviewPanel() or placeholder
                 local panelMN  = ( currentDialog == TAB_IDS.MN  ) and buildMonitorPanel()  or placeholder
+                local panelGPS = ( currentDialog == TAB_IDS.GPS ) and buildGPSPanel()     or placeholder
+                local panelEXT = ( currentDialog == TAB_IDS.EXT ) and lazyExt().buildPanel(f, props, prefs, pluginPath, switchTab, TAB_IDS) or placeholder
                 local panelHLP = ( currentDialog == TAB_IDS.HLP ) and buildHelpPanel()     or placeholder
 
                 -- Show Save button only when the Monitor is active and a country is selected.
                 local showSave = ( currentDialog == TAB_IDS.MN )
                                  and ( props.verify_country_id ~= nil )
 
-                contents = f:tab_view {
+                -- Build the tab list programmatically so the Verification Monitor
+                -- tab can be included in the Manager edition only.
+                local tabItems = {
                         bind_to_object = props,
                         value          = LrView.bind( "activeTabId" ),
-                        f:tab_view_item {
+                }
+                        tabItems[ #tabItems + 1 ] = f:tab_view_item {
                                 title      = "Intro",
                                 identifier = TAB_IDS.INTRO,
-                                f:column { width = CONTENT_W, spacing = f:control_spacing(), panelINTRO },
-                        },
-                        f:tab_view_item {
+                                f:column { width = CONTENT_W, spacing = f:control_spacing(), margin_left = -5, margin_right = -5, panelINTRO },
+                        }
+                        tabItems[ #tabItems + 1 ] = f:tab_view_item {
                                 title      = "Keyword List Builder",
                                 identifier = TAB_IDS.KB,
-                                f:column { spacing = f:control_spacing(), panelKB },
-                        },
-                        f:tab_view_item {
+                                f:column { spacing = f:control_spacing(), fill_horizontal = 1, panelKB },
+                        }
+                        tabItems[ #tabItems + 1 ] = f:tab_view_item {
                                 title      = "List Overview",
                                 identifier = TAB_IDS.OV,
                                 f:column { width = CONTENT_W, spacing = f:control_spacing(), panelOV },
-                        },
-                        f:tab_view_item {
-                                title      = "Verification Monitor",
-                                identifier = TAB_IDS.MN,
-                                -- Monitor tab is wider (3 full-width groups side by side).
-                                f:column { width = CONTENT_W_MN, spacing = f:control_spacing(), panelMN },
-                        },
-                        f:tab_view_item {
+                        }
+                -- Verification Monitor is a Manager-edition-only admin tool.
+                if IS_MANAGER then
+                                tabItems[ #tabItems + 1 ] = f:tab_view_item {
+                                        title      = "Verification Monitor",
+                                        identifier = TAB_IDS.MN,
+                                        f:column { width = CONTENT_W_MN, spacing = f:control_spacing(), panelMN },
+                                }
+                end
+                        tabItems[ #tabItems + 1 ] = f:tab_view_item {
+                                title      = "GPS Keyword Converter",
+                                identifier = TAB_IDS.GPS,
+                                f:column { width = CONTENT_W_MN, spacing = f:control_spacing(), panelGPS },
+                        }
+                        tabItems[ #tabItems + 1 ] = f:tab_view_item {
+                                title      = "Extensions",
+                                identifier = TAB_IDS.EXT,
+                                f:column { width = CONTENT_W_MN, spacing = f:control_spacing(), panelEXT },
+                        }
+                        tabItems[ #tabItems + 1 ] = f:tab_view_item {
                                 title      = "Help",
                                 identifier = TAB_IDS.HLP,
                                 f:column { width = CONTENT_W, spacing = f:control_spacing(), panelHLP },
-                        },
+                        }
+                contents = f:tab_view( tabItems )
+
+                -- Copyright footer shown left-aligned on the same line as the action buttons.
+                -- accessoryView is the SDK mechanism for placing content in the button bar.
+                local info   = dofile( LrPathUtils.child( _PLUGIN.path, "Info.lua" ) )
+                local pv     = info.VERSION
+                local pvStr  = string.format( "%d.%d.%d.%d", pv.major, pv.minor, pv.revision, pv.build )
+                local footer = f:static_text {
+                        title      = string.char( 194, 169 ) .. " Liodden Media " .. os.date( "%Y" ) .. " - version " .. pvStr,
+                        text_color = LrColor( 0.45, 0.45, 0.45 ),
+                        font       = { name = "<system>", size = 11 },
+                        height     = 12,
                 }
 
                 -- On the Monitor (with a country selected): actionVerb = "Save" (blue,
                 -- Enter-key default), cancelVerb = "Cancel" — both appear on the right side
                 -- of the button bar together.
                 -- On all other tabs: actionVerb = "Close", no cancel button.
+                tlog( "panel build DONE — about to present dialog window (tab=" .. tostring( currentDialog ) .. ")" )
                 local result = LrDialogs.presentModalDialog {
-                        title      = "Geography Keyword Builder",
-                        contents   = contents,
-                        actionVerb = showSave and "Save" or "Close",
-                        cancelVerb = showSave and "Cancel" or "< exclude >",
+                        title         = "Geography Keyword Builder",
+                        contents      = contents,
+                        actionVerb    = showSave and "Save" or "Close",
+                        cancelVerb    = showSave and "Cancel" or "< exclude >",
+                        accessoryView = footer,
                 }
 
-                if result == TAB_IDS.INTRO or result == TAB_IDS.KB or result == TAB_IDS.OV or result == TAB_IDS.MN or result == TAB_IDS.HLP then
+                if result == TAB_IDS.INTRO or result == TAB_IDS.KB or result == TAB_IDS.OV or result == TAB_IDS.MN or result == TAB_IDS.GPS or result == TAB_IDS.EXT or result == TAB_IDS.HLP then
                         -- Tab switch triggered by observer or switchTab() call.
                         -- If leaving the Monitor tab, flush any unsaved action popup changes
                         -- to prefs so Update can read them even if Save was not clicked.
@@ -2739,14 +4048,14 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                 persistVerToPrefs( cid )
                                 local cname = getCountryName( cid )
 
-                                if GitHubSync.isConfigured() then
+                                if lazyGHSync().isConfigured() then
                                         -- Build the payload now (on the UI thread, where props are
                                         -- valid) then push from an async task (LrHttp requires one).
                                         local payload = buildVerifiedJson( cid, newVer )
-                                        local path    = GitHubSync.verifiedPath( cid )
-                                        local pretty  = dkjson.encode( payload, { indent = true } )
+                                        local path    = lazyGHSync().verifiedPath( cid )
+                                        local pretty  = lazyDkjson().encode( payload, { indent = true } )
                                         LrTasks.startAsyncTask( function()
-                                                local ok, info = GitHubSync.writeFile(
+                                                local ok, info = lazyGHSync().writeFile(
                                                         path, pretty,
                                                         "Verify " .. cname .. " → " .. newVer )
                                                 if ok then
