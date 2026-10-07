@@ -11,20 +11,22 @@
         single UTF-8 string.
 
         .txt format rules reproduced here:
-          * Root keyword:              Geography
-          * Level 2 wrappers:          Nature (physical features) and World
+          * Root keyword:              [GEOGRAPHY]
+          * Level 2 wrappers:          [NATURE] (physical features) and [WORLD]
                                        (administrative geography). Everything sits
                                        under one of these two.
-          * Nature sections:           children of Nature (2 tabs): National Park,
-                                       Nature Reserve, Mountain, Fjord, Lake, River,
-                                       Island, Viewpoint
+          * Nature sections:           children of [NATURE]: [NATIONAL PARK],
+                                       [NATURE RESERVE], [MOUNTAIN], [FJORD], [LAKE],
+                                       [RIVER], [ISLAND], [VIEWPOINT]
           * National Park / Nature Reserve: no country synonym (implied by location)
           * Mountain / Fjord / Lake / River / Island / Viewpoint: get a {Country}
             synonym on the next line (indented one level deeper) ONLY when
             prefs.country_synonym is true. Default OFF to keep the list slim.
-          * Administrative:            Geography > World > Europe > <Country> > County >
-                                       Municipality > Primary City > Districts ;
+          * Administrative:            [GEOGRAPHY] > [WORLD] > [CONTINENT] > <Country> >
+                                       County > Municipality > Primary City > Districts ;
                                        secondary cities (no districts)
+          * Container nodes (all-caps + brackets) are non-exportable markers managed
+            by ListDoctor plugin after import. Lightroom strips [] on import.
           * Tab indentation only, no commas in names, UTF-8 throughout.
           * prefs.country_synonym (bool) — new unified field; also accepts the legacy
             prefs.norway_synonym for backward compatibility.
@@ -55,6 +57,28 @@ local function sortedCopy(list)
         return out
 end
 
+-- Returns the list only if it has at least one entry (empty Lua tables are truthy,
+-- which would otherwise emit empty container nodes like "[NATIONAL PARK]").
+local function nonEmpty(list)
+        if type(list) == "table" and #list > 0 then return list end
+        return nil
+end
+
+-- Mountain names at/above the active cutoff (region "svalbard" uses its own cutoff).
+local function pickMountains(data, prefs)
+        local mainlandCut = prefs.mainland_cutoff or 1800
+        local svalbardCut = prefs.svalbard_cutoff or 1000
+        local picked = {}
+        for _, m in ipairs(data.mountains or {}) do
+                if type(m) == "table" and m.name then
+                        local elev = m.elev or 0
+                        local cut = (m.region == "svalbard") and svalbardCut or mainlandCut
+                        if elev >= cut then picked[#picked + 1] = m.name end
+                end
+        end
+        return picked
+end
+
 -- ── main entry point ─────────────────────────────────────────────────────────
 
 -- prefs = {
@@ -67,9 +91,9 @@ end
 --   islands = bool, islands_max = number,
 --   viewpoints = bool, viewpoints_max = number,
 --   administrative = bool,
---   counties = { ["Akershus"] = true, ... },   -- keyed by county display name
---   svalbard = bool,    -- Norway-only; ignored (treated as false) for other countries
---   jan_mayen = bool,   -- Norway-only; ignored (treated as false) for other countries
+--   counties = { ["Akershus"] = true, ... },    -- keyed by county display name
+--   remote_islands_names    = { "Svalbard", ... }, -- ordered list of RI for this country
+--   remote_islands_selected = { ["Svalbard"] = true, ... }, -- which ones to include
 --   country_synonym = bool,  -- add {Country} synonym to nature features (default false)
 --   norway_synonym = bool,   -- LEGACY alias for country_synonym; still accepted
 -- }
@@ -104,32 +128,36 @@ function Generator.generate(data, prefs)
                 end
         end
 
+        -- Container node: all-caps + square brackets (non-exportable marker).
+        local function container(name)
+                return "[" .. name:upper() .. "]"
+        end
+
         -- ── Root ────────────────────────────────────────────────────────────────
-        -- Level 2 has exactly two wrappers under Geography:
-        --   Nature  → physical features (Mountain, Fjord, Island, …)
-        --   World   → administrative geography (Continent > Country > …)
-        -- These wrappers keep root tidy as more countries/continents are added, and
-        -- are the only always-applied parents. If the user later excludes them from
-        -- export in Lightroom, no descriptive information is lost.
-        lines[#lines + 1] = "Geography"
+        -- Level 2 has exactly two wrappers under [GEOGRAPHY]:
+        --   [NATURE]  → physical features ([MOUNTAIN], [FJORD], [ISLAND], …)
+        --   [WORLD]   → administrative geography ([CONTINENT] > Country > …)
+        -- These wrappers keep root tidy as more countries/continents are added.
+        -- Container nodes (all-caps + []) are managed by ListDoctor after import.
+        lines[#lines + 1] = container("Geography")
 
         -- ── Nature wrapper (emit only if at least one nature section is selected) ─
-        local anyNature = (prefs.national_parks and data.national_parks)
-                or (prefs.nature_reserves and data.nature_reserves)
-                or (prefs.mountains and data.mountains)
-                or (prefs.fjords and data.fjords)
-                or (prefs.lakes and data.lakes)
-                or (prefs.rivers and data.rivers)
-                or (prefs.islands and data.islands)
-                or (prefs.viewpoints and data.viewpoints)
+        local anyNature = (prefs.national_parks and nonEmpty(data.national_parks))
+                or (prefs.nature_reserves and nonEmpty(data.nature_reserves))
+                or (prefs.mountains and #pickMountains(data, prefs) > 0)
+                or (prefs.fjords and nonEmpty(data.fjords))
+                or (prefs.lakes and nonEmpty(data.lakes))
+                or (prefs.rivers and nonEmpty(data.rivers))
+                or (prefs.islands and nonEmpty(data.islands))
+                or (prefs.viewpoints and nonEmpty(data.viewpoints))
 
         if anyNature then
-                add(1, "Nature")
+                add(1, container("Nature"))
         end
 
         -- ── National Parks (no {Norway} synonym) ─────────────────────────────────
-        if prefs.national_parks and data.national_parks then
-                add(2, "National Park")
+        if prefs.national_parks and nonEmpty(data.national_parks) then
+                add(2, container("National Park"))
                 local items = sortedCopy(data.national_parks)
                 local maxN = prefs.national_parks_max or #items
                 for i = 1, math.min(maxN, #items) do
@@ -138,8 +166,8 @@ function Generator.generate(data, prefs)
         end
 
         -- ── Nature Reserves (no {Norway} synonym) ────────────────────────────────
-        if prefs.nature_reserves and data.nature_reserves then
-                add(2, "Nature Reserve")
+        if prefs.nature_reserves and nonEmpty(data.nature_reserves) then
+                add(2, container("Nature Reserve"))
                 local items = sortedCopy(data.nature_reserves)
                 local maxN = prefs.nature_reserves_max or #items
                 for i = 1, math.min(maxN, #items) do
@@ -148,32 +176,23 @@ function Generator.generate(data, prefs)
         end
 
         -- ── Mountains and Peaks (region-filtered, {Norway} synonym) ──────────────
-        if prefs.mountains and data.mountains then
-                local mainlandCut = prefs.mainland_cutoff or 1800
-                local svalbardCut = prefs.svalbard_cutoff or 1000
-                local picked = {}
-                for _, m in ipairs(data.mountains) do
-                        local elev = m.elev or 0
-                        if m.region == "svalbard" then
-                                if elev >= svalbardCut then picked[#picked + 1] = m.name end
-                        else
-                                if elev >= mainlandCut then picked[#picked + 1] = m.name end
-                        end
-                end
-                add(2, "Mountain")
-                picked = sortedCopy(picked)
-                for _, name in ipairs(picked) do
-                        add(3, name)
+        local mountainPicks = prefs.mountains and pickMountains(data, prefs) or {}
+        if #mountainPicks > 0 then
+                add(2, container("Mountain"))
+                local picked = sortedCopy(mountainPicks)
+                local maxM = math.min(prefs.mountains_max or 100, #picked)
+                for i = 1, maxM do
+                        add(3, picked[i])
                         addCountrySynonym(4)
                 end
         end
 
         -- ── Fjords (top-N by importance, then alphabetical, {Norway} synonym) ────
-        if prefs.fjords and data.fjords then
-                local maxN = prefs.fjords_max or #data.fjords
+        if prefs.fjords and nonEmpty(data.fjords) then
+                local maxN = prefs.fjords_max or math.min(100, #data.fjords)
                 local picked = {}
                 for i = 1, math.min(maxN, #data.fjords) do picked[#picked + 1] = data.fjords[i] end
-                add(2, "Fjord")
+                add(2, container("Fjord"))
                 picked = sortedCopy(picked)
                 for _, name in ipairs(picked) do
                         add(3, name)
@@ -182,11 +201,11 @@ function Generator.generate(data, prefs)
         end
 
         -- ── Lakes ────────────────────────────────────────────────────────────────
-        if prefs.lakes and data.lakes then
-                local maxN = prefs.lakes_max or #data.lakes
+        if prefs.lakes and nonEmpty(data.lakes) then
+                local maxN = prefs.lakes_max or math.min(100, #data.lakes)
                 local picked = {}
                 for i = 1, math.min(maxN, #data.lakes) do picked[#picked + 1] = data.lakes[i] end
-                add(2, "Lake")
+                add(2, container("Lake"))
                 picked = sortedCopy(picked)
                 for _, name in ipairs(picked) do
                         add(3, name)
@@ -195,11 +214,11 @@ function Generator.generate(data, prefs)
         end
 
         -- ── Rivers ────────────────────────────────────────────────────────────────
-        if prefs.rivers and data.rivers then
-                local maxN = prefs.rivers_max or #data.rivers
+        if prefs.rivers and nonEmpty(data.rivers) then
+                local maxN = prefs.rivers_max or math.min(100, #data.rivers)
                 local picked = {}
                 for i = 1, math.min(maxN, #data.rivers) do picked[#picked + 1] = data.rivers[i] end
-                add(2, "River")
+                add(2, container("River"))
                 picked = sortedCopy(picked)
                 for _, name in ipairs(picked) do
                         add(3, name)
@@ -210,11 +229,11 @@ function Generator.generate(data, prefs)
         -- ── Islands (top-N by importance, then alphabetical, {Norway} synonym) ────
         -- Norway has ~240 000 islands, so this is a curated + capped list bundled in
         -- importance order; the slider takes the top-N most notable.
-        if prefs.islands and data.islands then
-                local maxN = prefs.islands_max or #data.islands
+        if prefs.islands and nonEmpty(data.islands) then
+                local maxN = prefs.islands_max or math.min(100, #data.islands)
                 local picked = {}
                 for i = 1, math.min(maxN, #data.islands) do picked[#picked + 1] = data.islands[i] end
-                add(2, "Island")
+                add(2, container("Island"))
                 picked = sortedCopy(picked)
                 for _, name in ipairs(picked) do
                         add(3, name)
@@ -223,14 +242,17 @@ function Generator.generate(data, prefs)
         end
 
         -- ── Viewpoints ({Norway} synonym) ────────────────────────────────────────
-        if prefs.viewpoints and data.viewpoints then
+        if prefs.viewpoints and nonEmpty(data.viewpoints) then
                 local picked = {}
                 for _, v in ipairs(data.viewpoints) do
-                        picked[#picked + 1] = (v.name or "") .. (v.suffix or "")
+                        -- Accept both { name = "...", suffix = "..." } and plain strings
+                        -- (several older data files store viewpoints as strings).
+                        local name = (type(v) == "table") and ((v.name or "") .. (v.suffix or "")) or tostring(v)
+                        if name ~= "" then picked[#picked + 1] = name end
                 end
-                add(2, "Viewpoint")
+                add(2, container("Viewpoint"))
                 picked = sortedCopy(picked)
-                local maxN = prefs.viewpoints_max or #picked
+                local maxN = prefs.viewpoints_max or math.min(100, #picked)
                 for i = 1, math.min(maxN, #picked) do
                         add(3, picked[i])
                         addCountrySynonym(4)
@@ -238,8 +260,8 @@ function Generator.generate(data, prefs)
         end
 
         -- ── World wrapper > Europe > Norway > County > Municipality > City ───────
-        local wantSvalbard  = prefs.svalbard and data.svalbard
-        local wantJanMayen  = prefs.jan_mayen and data.jan_mayen
+        local riNames    = prefs.remote_islands_names    or {}
+        local riSelected = prefs.remote_islands_selected or {}
         local prefsCounties = prefs.counties or {}
         -- admin_detail: 1=Less (counties only), 2=More (counties+municipalities),
         --               3=All (municipalities+cities+districts). Default=All.
@@ -252,10 +274,14 @@ function Generator.generate(data, prefs)
                         if prefsCounties[county.name] then anyCounty = true break end
                 end
         end
+        local anyRI = false
+        for _, riName in ipairs(riNames) do
+                if riSelected[riName] then anyRI = true break end
+        end
 
-        if prefs.administrative and (anyCounty or wantSvalbard or wantJanMayen) then
-                add(1, "World")
-                add(2, "Europe")
+        if prefs.administrative and (anyCounty or anyRI) then
+                add(1, container("World"))
+                add(2, container(data.meta and data.meta.continent or "Europe"))
                 add(3, countryName)
                 if nativeName then
                         addSynonym(4, "{" .. nativeName .. "}")
@@ -265,6 +291,17 @@ function Generator.generate(data, prefs)
                         for _, county in ipairs(data.counties) do
                                 if prefsCounties[county.name] then
                                         add(4, county.name)
+                                        
+                                        -- Flat structure: cities directly under the county
+                                        -- (no municipality level, e.g. Uruguay, Moldova, Slovenia,
+                                        -- Montenegro, Belarus, microstates). These should be shown
+                                        -- even at Basic level since there's no ADM2 alternative.
+                                        if adminDetail >= 1 then
+                                                for _, cityName in ipairs(county.cities or {}) do
+                                                        add(5, cityName)
+                                                end
+                                        end
+                                        
                                         -- Level 2 (More / All): include municipalities
                                         if adminDetail >= 2 then
                                                 for _, muni in ipairs(county.municipalities or {}) do
@@ -287,22 +324,19 @@ function Generator.generate(data, prefs)
                         end
                 end
 
-                if wantSvalbard then
-                        add(4, "Svalbard")
-                        if adminDetail >= 2 then
-                                local settlements = sortedCopy(data.svalbard.settlements or {})
-                                for _, name in ipairs(settlements) do
-                                        add(5, name)
-                                end
-                        end
-                end
-
-                if wantJanMayen then
-                        add(4, "Jan Mayen")
-                        if adminDetail >= 2 then
-                                local settlements = sortedCopy(data.jan_mayen.settlements or {})
-                                for _, name in ipairs(settlements) do
-                                        add(5, name)
+                -- Remote islands: iterate in declared order, emit each selected one.
+                -- Svalbard and Jan Mayen get settlement sub-keywords when data exists.
+                for _, riName in ipairs(riNames) do
+                        if riSelected[riName] then
+                                add(4, riName)
+                                if adminDetail >= 2 then
+                                        if riName == "Svalbard" and data.svalbard then
+                                                local settlements = sortedCopy(data.svalbard.settlements or {})
+                                                for _, s in ipairs(settlements) do add(5, s) end
+                                        elseif riName == "Jan Mayen" and data.jan_mayen then
+                                                local settlements = sortedCopy(data.jan_mayen.settlements or {})
+                                                for _, s in ipairs(settlements) do add(5, s) end
+                                        end
                                 end
                         end
                 end

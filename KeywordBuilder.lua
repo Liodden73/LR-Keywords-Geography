@@ -667,7 +667,7 @@ local function showDialog()
                 singleListSpec[ #singleListSpec + 1 ] = f:checkbox {
                         bind_to_object = props,
                         font           = "<system/small>",
-                        title          = "Svalbard",
+                        title          = ( LrPrefs.prefsForPlugin().ext_activated_svalbard and "Svalbard  ✓ GPS Extension activated" or "Svalbard" ),
                         value          = LrView.bind( "feat_svalbard" ),
                         visible        = LrView.bind( "show_svalbard_section" ),
                 }
