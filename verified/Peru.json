@@ -1,0 +1,31 @@
+{
+  "listname":"?",
+  "levels":{
+    "mu":[],
+    "ci":[{
+        "i":1206,
+        "action":"none",
+        "name":"Santa Anita - Los Ficus",
+        "conflict":"Los Ficus"
+      },{
+        "i":1390,
+        "action":"none",
+        "name":"Paragsha- San Andres - Jose Carlos Mariategui",
+        "conflict":"Jose Carlos Mariategui"
+      },{
+        "i":1414,
+        "action":"none",
+        "name":"La Legua - San Jacinto",
+        "conflict":"San Jacinto"
+      },{
+        "i":1637,
+        "action":"none",
+        "name":"Segunda Jerusalén - Azunguillo",
+        "conflict":"Azunguillo"
+      }],
+    "co":[]
+  },
+  "version":"0.1.1",
+  "country":"Peru",
+  "verified":"2026-10-08 01:11"
+}
