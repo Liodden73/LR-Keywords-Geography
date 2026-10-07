@@ -236,6 +236,11 @@ return {
   },
 
   national_parks = {
+    "Aukštaitija National Park",
+    "Curonian Spit National Park",
+    "Dzūkija National Park",
+    "Trakai Historical National Park",
+    "Žemaitija National Park",
   },
 
   nature_reserves = {
@@ -475,6 +480,25 @@ return {
   },
 
   viewpoints = {
+    { name = "Siberijos Watchtower" },
+    { name = "Rumšiškės Watchtower" },
+    { name = "Observation tower Highlight in Nida" },
+    { name = "Dreverna's sightseeing tower" },
+    { name = "observation tower in Pervalka Neringa" },
+    { name = "Bear's Head viewing platform" },
+    { name = "Tyrų Takas Lookout Towers" },
+    { name = "Paplatelė Trail Watchtower" },
+    { name = "Mūšos Tyrelio Watchtower" },
+    { name = "Krokų lanka Watchtower" },
+    { name = "Aukštumalos view platform" },
+    { name = "Lapnugario kalnas" },
+    { name = "Rusnės regykla" },
+    { name = "Ventė Watchtower" },
+    { name = "Plateliai Lake Lookout" },
+    { name = "Italian View" },
+    { name = "Vecekrugo kalnas observation platform" },
+    { name = "Observation tower in Bubiai" },
+    { name = "Kintai Watchtower" },
   },
 
 }

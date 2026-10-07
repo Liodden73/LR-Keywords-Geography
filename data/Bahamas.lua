@@ -216,6 +216,18 @@ return {
   },
 
   national_parks = {
+    "Abaco National Park",
+    "Blue Holes National Park",
+    "Bonefish Pond National Park",
+    "Clifton Heritage National Park",
+    "Conception Island National Park",
+    "Exuma Cays Land and Sea Park",
+    "Inagua National Park",
+    "Little Inagua National Park",
+    "Lucayan National Park",
+    "Moriah Harbour Cay National Park",
+    "Primeval Forest National Park",
+    "Walker's Cay National Park",
   },
 
   nature_reserves = {

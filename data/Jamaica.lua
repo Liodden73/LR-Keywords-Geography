@@ -357,6 +357,7 @@ return {
   },
 
   national_parks = {
+    "Blue and John Crow Mountains National Park",
   },
 
   nature_reserves = {

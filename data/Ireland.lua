@@ -21,10 +21,9 @@ return {
     },
 
     nature_reserves = {
-            "Inch Wildfowl Reserve",
-            "Killarney National Park",
-            "Pollardstown Fen Nature Reserve",
-            "The Gearagh",
+      "Inch Wildfowl Reserve",
+      "Pollardstown Fen Nature Reserve",
+      "The Gearagh",
     },
 
     mountains = {

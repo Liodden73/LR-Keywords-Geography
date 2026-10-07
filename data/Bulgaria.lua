@@ -923,6 +923,9 @@ return {
   },
 
   national_parks = {
+    "Central Balkan National Park",
+    "Pirin National Park",
+    "Rila National Park",
   },
 
   nature_reserves = {

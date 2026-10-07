@@ -802,7 +802,20 @@ return {
   },
 
   national_parks = {
+    "Capiro Calentura National Park",
+    "Celaque National Park",
+    "Cerro Azul Meámbar National Park",
+    "Cusuco National Park",
+    "Jeanette Kawas National Park",
+    "La Muralla National Park",
+    "La Tigra National Park",
+    "Montaña de Yoro National Park",
+    "Montecristo Trifinio National Park",
     "Patuca National Park",
+    "Pico Bonito National Park",
+    "Pico Pijol National Park",
+    "Port Royal National Park",
+    "Sierra de Agalta National Park",
   },
 
   nature_reserves = {

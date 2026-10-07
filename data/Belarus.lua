@@ -37,6 +37,10 @@ return {
   },
 
   national_parks = {
+    "Belavezhskaya Pushcha National Park",
+    "Braslaw Lakes National Park",
+    "Narachanski National Park",
+    "Pripyatsky National Park",
   },
 
   nature_reserves = {

@@ -641,6 +641,21 @@ return {
   },
 
   viewpoints = {
+    { name = "Suur Munamägi Tower" },
+    { name = "Kohtuotsa viewing platform" },
+    { name = "Patkul viewing platform" },
+    { name = "Orjaku Birdwatching Tower" },
+    { name = "Meremägi viewing tower" },
+    { name = "Palli observation tower" },
+    { name = "Kabli Beach Watch Tower" },
+    { name = "Kabli bird tower" },
+    { name = "Raeküla bird tower" },
+    { name = "Silmakare observation platform" },
+    { name = "Orjaku northern observation platform" },
+    { name = "Suuresadama viewing platform" },
+    { name = "viewing platform of Pärnu coastal meadow hiking trail" },
+    { name = "Southern Bird Observatory in Orjaku" },
+    { name = "Ilmatsalu bird hide" },
   },
 
 }

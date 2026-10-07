@@ -61,6 +61,19 @@ return {
   },
 
   national_parks = {
+    "Aguas Turbias National Park",
+    "Bacalar Chico National Park",
+    "Billy Barquedier National Park",
+    "Chiquibul National Park",
+    "Elijio Panti National Park",
+    "Five Blues Lake National Park",
+    "Guanacaste National Park",
+    "Laughing Bird Caye National Park",
+    "Mayflower Bocawina National Park",
+    "Payne's Creek National Park",
+    "Peccary Hills National Park",
+    "Sarstoon-Temash National Park",
+    "St. Herman's Blue Hole National Park",
   },
 
   nature_reserves = {

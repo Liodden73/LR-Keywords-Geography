@@ -500,6 +500,16 @@ return {
   },
 
   national_parks = {
+    "Alexander von Humboldt National Park",
+    "Caguanes National Park",
+    "Ciénaga de Lanier National Park",
+    "Crystal Peak National Park",
+    "Desembarco del Granma National Park",
+    "Jardines de la Reina National Park",
+    "La Güira National Park",
+    "Pico La Bayamesa National Park",
+    "Punta Francés Marine National Park",
+    "Turquino National Park",
   },
 
   nature_reserves = {
@@ -811,6 +821,7 @@ return {
   },
 
   viewpoints = {
+    { name = "Loma de la Cruz" },
   },
 
 }

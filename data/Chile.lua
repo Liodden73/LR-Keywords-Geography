@@ -1,9 +1,9 @@
 -- Hand-crafted data file for Chile
 -- All names are comma-free and UTF-8 (Spanish accents preserved).
--- Data version 0.1.1  generated 2026-08-30
+-- Data version 0.1.2  generated 2026-08-30
 return {
         meta = {
-                version     = "0.1.1",
+                version     = "0.1.2",
                 country     = "Chile",
                 native_name = "Chile",
                 continent   = "South America",

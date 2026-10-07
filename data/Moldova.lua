@@ -127,6 +127,8 @@ return {
   },
 
   national_parks = {
+    "Orhei National Park",
+    "Rașcov National Park",
   },
 
   nature_reserves = {

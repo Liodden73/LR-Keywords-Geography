@@ -283,6 +283,17 @@ return {
   },
 
   national_parks = {
+    "Al Hoceima National Park",
+    "Haut Atlas Oriental National Park",
+    "Ifrane National Park",
+    "Iriqui National Park",
+    "Khenifiss National Park",
+    "Khenifra National Park",
+    "Dakhla National Park",
+    "Souss-Massa National Park",
+    "Talassemtane National Park",
+    "Tazekka National Park",
+    "Toubkal National Park",
   },
 
   nature_reserves = {

@@ -229,9 +229,14 @@ return {
   },
 
   national_parks = {
+    "Galičica National Park",
+    "Mavrovo National Park",
+    "National park Šar Planina",
+    "Pelister National Park",
   },
 
   nature_reserves = {
+    "Ohrid-Prespa Transboundary Biosphere Reserve",
   },
 
   mountains = {

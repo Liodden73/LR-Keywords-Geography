@@ -462,6 +462,9 @@ return {
   },
 
   national_parks = {
+    "Kozara National Park",
+    "National park Drina",
+    "Sutjeska National Park",
     "Una National Park",
   },
 

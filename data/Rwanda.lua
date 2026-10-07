@@ -19,15 +19,13 @@ return {
     },
 
     nature_reserves = {
-            "Bushengo",
-            "Gashike",
-            "Kaliba",
-            "Migisa",
-            "Muhoza",
-            "Murambi",
-            "Nyabigega",
-            "Nyungwe Forest National Park",
-            "Volcanoes National Park",
+      "Bushengo",
+      "Gashike",
+      "Kaliba",
+      "Migisa",
+      "Muhoza",
+      "Murambi",
+      "Nyabigega",
     },
 
     mountains = {

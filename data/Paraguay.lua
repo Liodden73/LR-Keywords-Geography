@@ -517,6 +517,16 @@ return {
   },
 
   national_parks = {
+    "Caazapá National Park",
+    "Cerro Cora National Park",
+    "Defensores del Chaco National Park",
+    "Estero Milagro National Park",
+    "Médanos del Chaco National Park",
+    "Nacunday National Park",
+    "Tinfunqué National Park",
+    "Vapor Cué National Park",
+    "Ybycuí National Park",
+    "Ypoá National Park",
   },
 
   nature_reserves = {

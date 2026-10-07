@@ -86,6 +86,7 @@ return {
   },
 
   national_parks = {
+    "Kaieteur National Park",
   },
 
   nature_reserves = {

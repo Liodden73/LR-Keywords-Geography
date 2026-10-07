@@ -5,7 +5,7 @@
 
 return {
   meta = {
-    version = "0.1.0",
+    version = "0.1.1",
     country = "Vatican City",
     native_name = "Città del Vaticano",
     continent = "Europe",
@@ -37,6 +37,7 @@ return {
   },
 
   viewpoints = {
+    { name = "Terrace of the Niche" },
   },
 
 }

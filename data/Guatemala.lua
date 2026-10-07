@@ -647,6 +647,25 @@ return {
   },
 
   national_parks = {
+    "Candelaria Caves",
+    "Cerro El Baúl",
+    "Cuevas del Silvino",
+    "Cultural Triangle Yaxha-Nakum-Naranjo National Park",
+    "Dulce River",
+    "El Rosario National Park",
+    "Grutas de Lanquín",
+    "Laguna Lachuá",
+    "Las Victorias",
+    "Los Aposentos",
+    "Naciones Unidas National Park",
+    "Rio Dulce National Park",
+    "Riscos de Momostenango",
+    "San José la Colonia",
+    "Semuc Champey",
+    "Sierra del Lacandón",
+    "Sipacate-Naranjo National Park",
+    "Takalik Abaj",
+    "Tikal National Park",
   },
 
   nature_reserves = {

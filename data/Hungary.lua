@@ -24,11 +24,9 @@ return {
     },
 
     nature_reserves = {
-            "Aggtelek National Park",
-            "Kiskunság national park",
-            "Nagy-rét",
-            "Pepi-kert",
-            "Puskaporos",
+      "Nagy-rét",
+      "Pepi-kert",
+      "Puskaporos",
     },
 
     mountains = {

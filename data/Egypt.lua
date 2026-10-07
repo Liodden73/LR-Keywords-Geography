@@ -208,10 +208,30 @@ return {
   },
 
   national_parks = {
+    "Al-Fayrouz Garden",
+    "Gabal Elba National Park",
+    "Gilf Kebir National Park",
+    "Green River Park",
+    "International Park",
     "Ras Muhammad National Park",
+    "Saint Katherine Protectorate",
+    "Wadi el Gamal National Park",
+    "White Desert",
   },
 
   nature_reserves = {
+    "Wadi Elrayan",
+    "Nabq Reserve",
+    "Omayed",
+    "Abu Gallum",
+    "Saluga and Ghazal islands",
+    "Wadi Al Allaqi",
+    "Zaranik",
+    "Lake Qarun Protected Area",
+    "El Ahrash",
+    "Wadi El Assuti",
+    "Sannur Cave Nature Reserve",
+    "Lake Burullus Protectorate",
   },
 
   mountains = {
@@ -536,6 +556,7 @@ return {
   },
 
   viewpoints = {
+    { name = "Shark Observatory" },
   },
 
 }

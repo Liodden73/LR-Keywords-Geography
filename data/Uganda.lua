@@ -5,7 +5,7 @@
 
 return {
   meta = {
-    version = "0.1.0",
+    version = "0.1.2",
     country = "Uganda",
     native_name = "Uganda",
     continent = "Africa",
@@ -380,6 +380,17 @@ return {
   },
 
   national_parks = {
+    "Bwindi Impenetrable National Park",
+    "Kibale National Park",
+    "Kidepo Valley National Park",
+    "Kyambura Game Reserve",
+    "Lake Mburo National Park",
+    "Mgahinga Gorilla National Park",
+    "Mount Elgon National Park",
+    "Murchison Falls National Park",
+    "Queen Elizabeth National Park",
+    "Rwenzori Mountains National Park",
+    "Semuliki National Park",
   },
 
   nature_reserves = {

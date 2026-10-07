@@ -202,6 +202,10 @@ return {
   },
 
   viewpoints = {
+    { name = "Amphitheater view point in Paphos" },
+    { name = "Viewing platform south of Paphos lighthouse" },
+    { name = "Observation platform below mount Olympus in Troodos" },
+    { name = "Oroklini Flamingo Spot" },
   },
 
 }

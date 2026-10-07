@@ -192,6 +192,9 @@ return {
   },
 
   nature_reserves = {
+    "Navassa Island National Wildlife Refuge",
+    "La Hotte Biosphere Reserve",
+    "La Selle",
   },
 
   mountains = {

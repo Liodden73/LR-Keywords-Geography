@@ -5,7 +5,7 @@
 
 return {
   meta = {
-    version = "0.1.0",
+    version = "0.1.2",
     country = "Tanzania",
     native_name = "Tanzania",
     continent = "Africa",
@@ -611,6 +611,25 @@ return {
   },
 
   national_parks = {
+    "Arusha National Park",
+    "Gombe National Park",
+    "Jozani Chwaka Bay National Park",
+    "Katavi National Park",
+    "Kilimanjaro National Park",
+    "Kitulo National Park",
+    "Lake Manyara National Park",
+    "Mahale Mountains National Park",
+    "Mikumi National Park",
+    "Mkomazi National Park",
+    "Nyerere National Park",
+    "Ruaha National Park",
+    "Rubondo Island National Park",
+    "Saadani National Park",
+    "Saanane Island National Park",
+    "Serengeti National Park",
+    "Tarangire National Park",
+    "Udzungwa Mountains National Park",
+    "Ugalla River National Park",
   },
 
   nature_reserves = {
@@ -995,6 +1014,7 @@ return {
   },
 
   viewpoints = {
+    { name = "Irente View Point" },
   },
 
 }

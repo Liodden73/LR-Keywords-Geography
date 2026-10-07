@@ -99,9 +99,33 @@ return {
   },
 
   national_parks = {
+    "Fruška Gora National Park",
+    "Kopaonik National Park",
+    "Kučaj-Beljanica National Park",
+    "Prokletije National Park",
+    "Stara Planina National Park",
+    "Tara National Park",
+    "Đerdap National Park",
   },
 
   nature_reserves = {
+    "Deliblato sands",
+    "Special Nature Reserve Uvac",
+    "Five-country Biosphere Reserve Mura-Drava-Danube",
+    "Zasavica",
+    "Koviljsko-Petrovaradinski Rit",
+    "Strict nature reserve Rtanj",
+    "Meadows of Great Bustard",
+    "Taorska vrela",
+    "Selevenj heath",
+    "Strict Nature Reserve \"Iznad Tatalije\"",
+    "Klisura reke Trešnjice",
+    "Karađorđevo special nature reserve",
+    "Okanj bara",
+    "Golija-Studenica",
+    "Krečnjaci Boljetinske reke",
+    "Lipljan marble cave",
+    "Special Nature Reserve \"Klisura reke Mileševke\"",
   },
 
   mountains = {
@@ -366,6 +390,7 @@ return {
   },
 
   viewpoints = {
+    { name = "Banjska Stena" },
   },
 
 }

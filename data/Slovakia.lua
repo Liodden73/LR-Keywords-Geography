@@ -285,6 +285,14 @@ return {
   },
 
   national_parks = {
+    "Low Tatras National Park",
+    "Malá Fatra National Park",
+    "Muránska planina National Park",
+    "Pieniny National Park",
+    "Poloniny National Park",
+    "Slovak Paradise National Park",
+    "Tatra National Park",
+    "Veľká Fatra National Park",
   },
 
   nature_reserves = {

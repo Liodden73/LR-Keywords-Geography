@@ -123,6 +123,12 @@ return {
   },
 
   national_parks = {
+    "Basse Casamance National Park",
+    "Djoudj National Bird Sanctuary",
+    "Langue de Barbarie National Park",
+    "Niokolo-Koba National Park",
+    "Saloum Delta National Park",
+    "Îles des Madeleines National Park",
   },
 
   nature_reserves = {

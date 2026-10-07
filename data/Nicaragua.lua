@@ -273,6 +273,9 @@ return {
   },
 
   national_parks = {
+    "Masaya Volcano National Park",
+    "Mombacho Volcano National Park",
+    "Saslaya National Park",
   },
 
   nature_reserves = {

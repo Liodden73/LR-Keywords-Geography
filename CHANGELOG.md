@@ -1,3 +1,12 @@
+## 0.9.255 — 2026-10-07
+### Naturdata for land som manglet det
+- **Gjenopprettet tapte data:** Brazil, Canada, Colombia, Mexico, Peru, Turkey og United States hadde naturdata tidligere i git-historikken. Den ble borte da filene ble overskrevet med versjoner som bare inneholdt fylker og kommuner. Natur-blokkene er hentet tilbake, og dagens `meta` og fylker/kommuner (med verifiserte navnerettinger) er beholdt. US har fått tilbake 63 nasjonalparker, 248 reservater, 3 130 fjell, 2 402 innsjøer, 3 802 elver og 2 169 øyer.
+- **Nasjonalparker flyttet:** Brazil (10), Colombia (5) og Peru (4) hadde nasjonalparker som lå blant naturreservatene.
+- **Fylt ut fra Wikidata:** 448 nasjonalparker i 38 land (bl.a. Canada, Mexico, Turkey, Tanzania, Morocco, Ethiopia, Guatemala), 144 naturreservater i 9 land og 59 utsiktspunkter i 12 land. Bare tomme lister er fylt (nasjonalparker også når listen hadde under 5). Listene er rangert etter antall Wikipedia-lenker, med engelske navn uten komma og parenteser. Nasjonalparker som også stod blant reservatene, er fjernet derfra. Fjell, innsjøer, elver og øyer er ikke endret.
+- **Manuell opprydding:** feil land (La Gran Sabana i DR), skogreservater i Nigeria, generiske utsiktspunkter og noen ikke-engelske navn er rettet eller fjernet (`cleanup_wd_names.py`).
+- **Byggevakt:** `check_nature_regression.py` stopper bygget hvis en natur-seksjon blir tom sammenlignet med git, hvis gamle feltnavn dukker opp igjen, eller hvis et navn inneholder komma.
+- Dataversjonene er ikke endret, så verifiseringsstatus beholdes.
+
 ## 0.9.254 — 2026-10-07
 ### Natur-seksjoner vises nå for 49 eldre land
 - **Årsak:** 49 datafiler (bl.a. Egypt, Cuba, Morocco, Bolivia, Venezuela, Tanzania, Uganda, Croatia, Slovenia og alle mikrostatene) brukte feltnavnene `nationalParks` / `natureReserves`, mens Generator leser `national_parks` / `nature_reserves`. Fjell og utsiktspunkter lå som rene tekstlister uten høyde. Resultat: National Park, Nature Reserve, Mountain og Viewpoint kom aldri med i søkeordlistene for disse landene.

@@ -701,6 +701,11 @@ return {
   },
 
   national_parks = {
+    "Gauja National Park",
+    "Rāzna National Park",
+    "Slītere National Park",
+    "Ķemeri National Park",
+    "Špakovska parks",
   },
 
   nature_reserves = {
@@ -994,6 +999,11 @@ return {
   },
 
   viewpoints = {
+    { name = "birdwatching tower I in Kaņieris" },
+    { name = "Lookout tower in Great Ķemeri Bog" },
+    { name = "Kuiviži Watchtower" },
+    { name = "birdwatching tower II in Kaņieris" },
+    { name = "Bird hide Niedrāju-Pilkas" },
   },
 
 }

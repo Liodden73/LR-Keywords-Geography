@@ -576,6 +576,18 @@ return {
   },
 
   national_parks = {
+    "Anacaona National Park",
+    "Cabo Cabrón National Park",
+    "Cotubanamá National Park",
+    "Jaragua National Park",
+    "José Armando Bermúdez National Park",
+    "José del Carmen Ramírez National Park",
+    "Los Haitises National Park",
+    "Monte Cristi National Park",
+    "Lago Enriquillo and Isla Cabritos National Park",
+    "La Caleta Underwater National Park",
+    "Pueblo Viejo National Park",
+    "Sierra de Bahoruco National Park",
   },
 
   nature_reserves = {

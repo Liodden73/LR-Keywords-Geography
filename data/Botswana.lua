@@ -22,14 +22,13 @@ return {
     },
 
     nature_reserves = {
-            "Est de la reserve de Moremi region de Khwai",
-            "Linyanti",
-            "Nord de la reserve de Moremi",
-            "Nord du parc national de Chobe riviere de Chobe",
-            "Nxai Pan National Park",
-            "Parc national de Nxai Pan",
-            "Reserve de Kwedi nord du delta de l’Okavango",
-            "Sud du parc national de Chobe region de Savute",
+      "Est de la reserve de Moremi region de Khwai",
+      "Linyanti",
+      "Nord de la reserve de Moremi",
+      "Nord du parc national de Chobe riviere de Chobe",
+      "Parc national de Nxai Pan",
+      "Reserve de Kwedi nord du delta de l’Okavango",
+      "Sud du parc national de Chobe region de Savute",
     },
 
     mountains = {

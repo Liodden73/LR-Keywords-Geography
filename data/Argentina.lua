@@ -47,13 +47,12 @@ return {
     },
 
     nature_reserves = {
-            "Extreme",
-            "Los Arrayanes National Park",
-            "Parque Nacional El Palmar",
-            "Proyecto Carayá",
-            "Puesto de Santa Rosa",
-            "Reserva Ecológica de Buenos Aires",
-            "Reserva Natural Silvestre Piedra del Fraile",
+      "Extreme",
+      "Parque Nacional El Palmar",
+      "Proyecto Carayá",
+      "Puesto de Santa Rosa",
+      "Reserva Ecológica de Buenos Aires",
+      "Reserva Natural Silvestre Piedra del Fraile",
     },
 
     mountains = {

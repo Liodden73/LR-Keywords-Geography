@@ -130,10 +130,22 @@ return {
   },
 
   national_parks = {
+    "Amboró National Park",
+    "Carrasco National Park",
+    "Cotapata National Park and Integrated Management Natural Area",
+    "Isiboro Sécure National Park and Indigenous Territory",
+    "Iñao National Park and Integrated Management Natural Area",
+    "Llica National Park",
+    "Madidi National Park and Integrated Management Natural Area",
+    "Noel Kempff Mercado National Park",
+    "Otuquis National Park and Integrated Management Natural Area",
+    "Sajama National Park",
+    "San Matías Integrated management natural area",
+    "Toro Toro National Park",
+    "Tunari National Park",
   },
 
   nature_reserves = {
-    "Cotapata National Park and Integrated Management Natural Area",
     "Eduardo Avaroa Andean Fauna National Reserve",
   },
 
@@ -509,6 +521,7 @@ return {
   },
 
   viewpoints = {
+    { name = "Mirador Killi Killi" },
   },
 
 }

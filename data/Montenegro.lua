@@ -91,6 +91,11 @@ return {
   },
 
   national_parks = {
+    "Biogradska Gora",
+    "Durmitor National Park",
+    "Lovćen National Park",
+    "Prokletije National Park",
+    "Skadar Lake National Park",
   },
 
   nature_reserves = {

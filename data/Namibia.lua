@@ -120,6 +120,12 @@ return {
   },
 
   national_parks = {
+    "Dorob National Park",
+    "Etosha National Park",
+    "Mangetti National Park",
+    "Namib-Naukluft National Park",
+    "Nkasa Rupara National Park",
+    "Skeleton Coast National Park",
   },
 
   nature_reserves = {

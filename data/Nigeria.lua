@@ -2402,6 +2402,14 @@ return {
   },
 
   national_parks = {
+    "Chad Basin National Park",
+    "Cross River National Park",
+    "Gashaka Gumti National Park",
+    "Kainji National Park",
+    "Kamuku National Park",
+    "Okomu National Park",
+    "Old Oyo National Park",
+    "Yankari National Park",
   },
 
   nature_reserves = {

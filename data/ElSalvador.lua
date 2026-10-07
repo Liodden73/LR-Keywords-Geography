@@ -117,6 +117,10 @@ return {
   },
 
   national_parks = {
+    "El Boqueron National Park",
+    "El Imposible National Park",
+    "Los Volcanes National Park",
+    "Montecristo National Park",
   },
 
   nature_reserves = {

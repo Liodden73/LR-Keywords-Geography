@@ -141,6 +141,22 @@ return {
   },
 
   national_parks = {
+    "Abijatta-Shalla National Park",
+    "Alatish National Park",
+    "Awash National Park",
+    "Bale Mountains National Park",
+    "Chebera Churchura National Park",
+    "Gambela National Park",
+    "Geraille National Park",
+    "Kafta Sheraro National Park",
+    "Mago National Park",
+    "Maze National Park",
+    "Nechisar National Park",
+    "Omo National Park",
+    "Senkelle Swayne's Hartebeest Sanctuary",
+    "Simien Mountains National Park",
+    "Yabelo Wildlife Sanctuary",
+    "Yangudi Rassa National Park",
   },
 
   nature_reserves = {

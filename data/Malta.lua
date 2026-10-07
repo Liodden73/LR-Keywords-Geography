@@ -223,6 +223,9 @@ return {
   },
 
   nature_reserves = {
+    "Simar Nature Reserve",
+    "Għadira Nature Reserve",
+    "Majjistral Park",
   },
 
   mountains = {

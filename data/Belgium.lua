@@ -12,7 +12,12 @@ return {
     },
 
     national_parks = {
-            "Hoge Kempen National Park",
+      "De Zoom - Kalmthoutse Heide",
+      "Forests of Brabant National Park",
+      "Hoge Kempen National Park",
+      "National Park Bosland",
+      "National Park Entre-Sambre-et-Meuse",
+      "Scheldt Valley National Park",
     },
 
     nature_reserves = {

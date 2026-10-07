@@ -347,6 +347,13 @@ return {
   },
 
   national_parks = {
+    "Bia National Park",
+    "Bui National Park",
+    "Digya National Park",
+    "Kakum National Park",
+    "Kyabobo National Park",
+    "Mole National Park",
+    "Nini Suhien National Park",
   },
 
   nature_reserves = {

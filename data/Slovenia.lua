@@ -656,6 +656,12 @@ return {
   },
 
   nature_reserves = {
+    "Zelenci",
+    "Five-country Biosphere Reserve Mura-Drava-Danube",
+    "Kozjansko and Obsotelje Biosphere Reserve",
+    "Huda luknja Špehovka Pilanca nature reserve",
+    "Julian Alps",
+    "The Karst",
   },
 
   mountains = {

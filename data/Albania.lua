@@ -247,7 +247,20 @@ return {
   },
 
   national_parks = {
+    "Albanian Alps National Park",
+    "Butrint National Park",
+    "Dajti National Park",
+    "Divjakë-Karavasta National Park",
+    "Llogara National Park",
+    "Lurë-Dejë Mountain National Park",
+    "National Park - Fir of Hotova",
+    "Prespa National Park",
     "Shebenik-Jabllanicë National Park",
+    "Thethi National Park",
+    "Tomorr Mountain National Park",
+    "Valbonë Valley National Park",
+    "Vjosa Wild River National Park",
+    "Zall-Gjoçaj National Park",
   },
 
   nature_reserves = {
