@@ -6,26 +6,26 @@
         "i":1206,
         "action":"change_manual",
         "name":"Santa Anita - Los Ficus",
-        "conflict":"Los Ficus"
+        "conflict":"Santa Anita"
       },{
         "i":1390,
         "action":"change_manual",
         "name":"Paragsha- San Andres - Jose Carlos Mariategui",
-        "conflict":"Jose Carlos Mariategui"
+        "conflict":"Paragsha"
       },{
         "i":1414,
         "action":"change_manual",
         "name":"La Legua - San Jacinto",
-        "conflict":"San Jacinto"
+        "conflict":"La Legua"
       },{
         "i":1637,
         "action":"change_manual",
         "name":"Segunda Jerusalén - Azunguillo",
-        "conflict":"Azunguillo"
+        "conflict":"Segunda Jerusalén"
       }],
     "co":[]
   },
-  "version":"0.1.4",
+  "version":"0.1.5",
   "country":"Peru",
-  "verified":"2026-10-08 03:00"
+  "verified":"2026-10-08 03:53"
 }
