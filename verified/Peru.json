@@ -16,7 +16,7 @@
         "i":1414,
         "action":"change_manual",
         "name":"La Legua - San Jacinto",
-        "conflict":"La Legua"
+        "conflict":"San Jacinto"
       },{
         "i":1637,
         "action":"none",
@@ -25,7 +25,7 @@
       }],
     "co":[]
   },
-  "version":"0.1.6",
+  "version":"0.1.7",
   "country":"Peru",
-  "verified":"2026-10-08 13:13"
+  "verified":"2026-10-08 13:14"
 }
