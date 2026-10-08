@@ -74,7 +74,7 @@ return {
         Norway = { version = "0.5.21", verified = "2026-10-07 21:20", listname = "LR-Norway" },
         Panama = { version = "0.1.4", verified = "2026-08-31 17:19", listname = "LR-Panama" },
         Paraguay = { version = "0.1.1", verified = "2026-10-08 01:11", listname = "?" },
-        Peru = { version = "0.1.9", verified = "2026-10-08 13:16", listname = "?" },
+        Peru = { version = "0.1.11", verified = "2026-10-08 17:01", listname = "?" },
         Philippines = { version = "0.1.1", verified = "2026-10-08 16:43", listname = "?" },
         Poland = { version = "0.1.1", verified = "2026-09-03 15:47", listname = "Polska" },
         Portugal = { version = "0.1.1", verified = "2026-09-03 15:17", listname = "Portugal" },
