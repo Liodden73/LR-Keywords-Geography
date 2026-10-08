@@ -1,3 +1,8 @@
+## 0.9.263 — 2026-10-08
+### Intro-skjermen: rettet tegnfeil i teksten under kartet
+- **Feil:** Teksten viste «xE2x80x94» i stedet for en tankestrek mellom «(red)» og antallet blå land. Lightroom bruker Lua 5.1, som ikke forstår `\x`-escapes i strenger.
+- **Rettet:** Alle `\x`-escapes i ListVerification.lua er byttet til desimale escapes (`\226\128\148`), som Lua 5.1 støtter. Det retter også anførselstegnene i «Click "Update Map"…» og ellipsen i «Generating map…».
+
 ## 0.9.262 — 2026-10-08
 ### Intro-skjermen: sentrert karttekst og separate tellere for røde og blå land
 - Teksten under kartet er nå sentrert.
