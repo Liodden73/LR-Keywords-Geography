@@ -5,7 +5,7 @@
 
 return {
   meta = {
-    version = "0.1.8",
+    version = "0.1.10",
     country = "Peru",
     native_name = "Perú",
     continent = "South America",
@@ -198,7 +198,7 @@ return {
         },
         { name = "Lima",
           municipalities = {
-            { name = "Lima", cities = { "Asentamiento Humano Nicolas de Pierola", "Breña", "Carabayllo", "Chaclacayo", "Chosica", "Cieneguilla", "Jesus Maria", "La Molina", "Pucusana", "Punta Hermosa", "San Bartolo", "San Francisco De Borja", "San Isidro", "Santa Anita - Los Ficus", "Santa María", "Santa Rosa", "Vitarte" } },
+            { name = "Lima", cities = { "Asentamiento Humano Nicolas de Pierola", "Breña", "Carabayllo", "Chaclacayo", "Chosica", "Cieneguilla", "Jesus Maria", "La Molina", "Pucusana", "Punta Hermosa", "San Bartolo", "San Francisco De Borja", "San Isidro", "Santa Anita", "Santa María", "Santa Rosa", "Vitarte" } },
             { name = "Barranca", cities = { "Barranca", "Paramonga", "Pativilca", "Supe", "Supe Puerto" } },
             { name = "Provincia de Cajatambo", cities = { "Copa", "Gorgor" } },
             { name = "Provincia de Canta", cities = { "Arahuay", "Canta", "Huamantanga", "Huaros", "Lachaqui", "San Buenaventura", "Yangas" } },
@@ -238,7 +238,7 @@ return {
         },
         { name = "Pasco",
           municipalities = {
-            { name = "Provincia de Pasco", cities = { "Cerro de Pasco", "Huachón", "Huariaca", "Huayllay", "Ninacaca", "Pallanchacra", "Paragsha- San Andres - Jose Carlos Mariategui", "Paucartambo", "San Antonio de Rancas", "Ticlacayán", "Tinyahuarco", "Vicco", "Yanacancha", "Yarusyacán" } },
+            { name = "Provincia de Pasco", cities = { "Cerro de Pasco", "Huachón", "Huariaca", "Huayllay", "Ninacaca", "Pallanchacra", "Paragsha", "Paucartambo", "San Antonio de Rancas", "Ticlacayán", "Tinyahuarco", "Vicco", "Yanacancha", "Yarusyacán" } },
             { name = "Daniel Alcides Carrión", cities = { "Chaupimarca", "Goyllarisquizga", "Paucar", "San Pedro de Pillao", "Santa Ana de Tusi", "Tápuc", "Vilcabamba", "Yanahuanca" } },
             { name = "Provincia de Oxapampa", cities = { "Chontabamba", "Huancabamba", "Iscozacín", "Oxapampa", "Pozuzo", "Villa Rica" } },
           },
@@ -281,7 +281,7 @@ return {
             { name = "Provincia de Lamas", cities = { "Barranquita", "Cacatachi", "Cuñumbuqui", "Lamas", "Morales", "Pinto Recodo", "Pongo de Caynarachi", "Roque", "Rumisapa", "Shanao", "Tabaloslos", "Tabalosos", "Zapatero" } },
             { name = "Provincia de Mariscal Cáceres", cities = { "Campanilla", "Huicungo", "Juanjuí", "Pachiza", "Pajarillo" } },
             { name = "Picota", cities = { "Buenos Aires", "Caspisapa", "Picota", "Pilluana", "Pucacaca", "Puerto Rico", "Shamboyacu", "Tingo de Ponasa", "Tres Unidos" } },
-            { name = "Provincia de Rioja", cities = { "Bajo Naranjillo", "Naranjos", "Nueva Cajamarca", "Posic", "Rioja", "San Fernano", "Segunda Jerusalén - Azunguillo", "Yorongos", "Yuracyacu" } },
+            { name = "Provincia de Rioja", cities = { "Bajo Naranjillo", "Naranjos", "Nueva Cajamarca", "Posic", "Rioja", "San Fernano", "Segunda Jerusalén", "Yorongos", "Yuracyacu" } },
             { name = "Provincia de San Martín", cities = { "Chazuta", "Juan Guerra", "La Banda", "Navarro", "Papaplaya", "Pelejo", "San Antonio", "Sauce", "Shapaja", "Tarapoto", "Utcurarca" } },
             { name = "Tocache", cities = { "Pólvora", "Tocache", "Uchiza" } },
           },
