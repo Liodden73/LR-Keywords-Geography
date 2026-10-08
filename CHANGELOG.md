@@ -1,3 +1,9 @@
+## 0.9.260 — 2026-10-08
+### Jamaica: fjernet duplikat municipality/by-nivå
+- **Problem:** I Verification Monitor for Jamaica var Municipality- og City-kolonnene nesten identiske — 77 av 95 municipalities hadde nøyaktig én by med samme navn. Dette skyldes at GeoNames bruker «electoral divisions» som municipality-nivå, og disse er typisk oppkalt etter sin eneste by.
+- **Rettet:** Jamaica.lua er omstrukturert: municipalities der by-navn == municipality-navn kollapses til flat `cities`-liste direkte under county (parish). Kun de 18 meningsfulle municipalities (der navnene er ulike, f.eks. «May Pen Proper» → «May Pen», eller som har flere byer) beholdes. Jamaica.lua er oppdatert til versjon 0.1.1.
+- **Resultat i Monitor:** Municipality-kolonnen viser nå bare 18 reelle administrative enheter. City-kolonnen viser alle 96 byer som før.
+
 ## 0.9.259 — 2026-10-08
 ### «Change manually» Update: handlinger nullstilles nå synlig i Monitor
 - **Feil 1:** Etter at brukeren klikket OK i «Change manually»-dialogene og bekreftet Update, ble `props["vaci_..."]` aldri nullstilt i minnet. Monitor-tabellen viste fortsatt `"Change manually"` for de berørte radene, og brukeren trodde ingenting var lagret.
