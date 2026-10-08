@@ -5,7 +5,7 @@
 
 return {
   meta = {
-    version = "0.1.0",
+    version = "0.1.2",
     country = "Tunisia",
     native_name = "تونس",
     continent = "Africa",

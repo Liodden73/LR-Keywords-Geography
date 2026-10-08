@@ -1,3 +1,15 @@
+## 0.9.261 — 2026-10-08
+### Sju nye land: Vietnam, Filippinene, Malaysia, Sør-Korea, Kambodsja, De forente arabiske emirater og Fiji
+- **Vietnam** (Asia): 34 provinser etter reformen i 2025, 876 byer (flat struktur). Navn uten diakritiske tegn.
+- **Philippines** (Asia): 17 regioner, 87 provinser, 1236 byer.
+- **Malaysia** (Asia): 16 delstater/føderale territorier, 143 distrikter, 723 byer. Perlis og Putrajaya har byer direkte under delstaten (ingen dobbeltnivå).
+- **South Korea** (Asia): 17 provinser/storbyer, 299 byer (flat struktur).
+- **Cambodia** (Asia): 25 provinser, 199 distrikter, 297 byer.
+- **United Arab Emirates** (Asia): 7 emirater, 50 byer (flat struktur).
+- **Fiji** (Oceania): 5 divisjoner, 21 byer (flat struktur).
+- Hvert land har kuraterte nasjonalparker, naturreservater, fjell, innsjøer, elver, øyer og utsiktspunkter. Alle nye datafiler starter på versjon 0.1.0.
+- Landene er lagt til i landslisten, etikett-tabellen, Wikidata-oppsettet og på verdenskartet.
+
 ## 0.9.260 — 2026-10-08
 ### Jamaica: fjernet duplikat municipality/by-nivå
 - **Problem:** I Verification Monitor for Jamaica var Municipality- og City-kolonnene nesten identiske — 77 av 95 municipalities hadde nøyaktig én by med samme navn. Dette skyldes at GeoNames bruker «electoral divisions» som municipality-nivå, og disse er typisk oppkalt etter sin eneste by.

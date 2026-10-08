@@ -9,7 +9,7 @@ return {
                 country     = "Sweden",
                 native_name = "Sverige",
                 continent   = "Europe",
-                version     = "0.1.3",
+                version     = "0.1.5",
                 generated   = "2026-08-25",
                 min_city_pop = 1000,
 },

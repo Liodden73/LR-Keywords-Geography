@@ -5,7 +5,7 @@
 
 return {
 
-	meta = { version = "0.7.20", country = "United States", native_name = "United States",
+	meta = { version = "0.7.21", country = "United States", native_name = "United States",
 	 min_city_pop = 1000,
 	 continent = "North America" },
 

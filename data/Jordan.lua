@@ -1,10 +1,10 @@
 -- Jordan geography data for LR Geography Builder
 -- Admin divisions and cities: GeoNames.org (CC BY 4.0); national parks, reserves
 -- and viewpoints: curated lists. No commas in any name (Lightroom constraint).
--- Data version 0.1.0  generated 2026-10-07
+-- Data version 0.1.1  generated 2026-10-07
 return {
         meta = {
-                version      = "0.1.0",
+                version      = "0.1.1",
                 country      = "Jordan",
                 native_name  = "الأردن",
                 continent    = "Asia",

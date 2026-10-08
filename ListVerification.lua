@@ -291,6 +291,13 @@ local COUNTRIES = {
         addCountry { id = "Nepal",       name = "Nepal",        code = "NP-524", filename = "Nepal.lua",          continent = "Asia",          admin_label = "Provinces & Areas",     mountain_max = 8849, remoteIslandNames = {} },
         addCountry { id = "SriLanka",    name = "Sri Lanka",    code = "LK-144", filename = "SriLanka.lua",       continent = "Asia",          admin_label = "Provinces & Areas",     mountain_max = 2524, remoteIslandNames = {} },
         addCountry { id = "Indonesia",   name = "Indonesia",    code = "ID-360", filename = "Indonesia.lua",      continent = "Asia",          admin_label = "Provinces & Areas",     mountain_max = 4884, remoteIslandNames = {} },
+        addCountry { id = "Vietnam", name = "Vietnam", code = "VN-704", filename = "Vietnam.lua", continent = "Asia", admin_label = "Provinces & Areas", mountain_max = 3142, remoteIslandNames = {} },
+        addCountry { id = "Philippines", name = "Philippines", code = "PH-608", filename = "Philippines.lua", continent = "Asia", admin_label = "Regions & Areas", mountain_max = 2954, remoteIslandNames = {} },
+        addCountry { id = "Malaysia", name = "Malaysia", code = "MY-458", filename = "Malaysia.lua", continent = "Asia", admin_label = "States & Areas", mountain_max = 4095, remoteIslandNames = {} },
+        addCountry { id = "SouthKorea", name = "South Korea", code = "KR-410", filename = "SouthKorea.lua", continent = "Asia", admin_label = "Provinces & Areas", mountain_max = 1950, remoteIslandNames = {} },
+        addCountry { id = "Cambodia", name = "Cambodia", code = "KH-116", filename = "Cambodia.lua", continent = "Asia", admin_label = "Provinces & Areas", mountain_max = 1813, remoteIslandNames = {} },
+        addCountry { id = "UnitedArabEmirates", name = "United Arab Emirates", code = "AE-784", filename = "UnitedArabEmirates.lua", continent = "Asia", admin_label = "Emirates & Areas", mountain_max = 1746, remoteIslandNames = {} },
+        addCountry { id = "Fiji", name = "Fiji", code = "FJ-242", filename = "Fiji.lua", continent = "Oceania", admin_label = "Divisions & Areas", mountain_max = 1324, remoteIslandNames = {} },
         addCountry { id = "Antarctica",  name = "Antarctica",   code = "AQ-010", filename = "Antarctica.lua",  continent = "Antarctica",    admin_label = "Regions & Areas",    mountain_max = 4892, remoteIslandNames = {} },
 }
 
@@ -376,6 +383,13 @@ local LABELS = {
         Nepal         = { county = "Province",    muni = "District",     city = "City" },
         SriLanka      = { county = "Province",    muni = "District",     city = "City" },
         Indonesia     = { county = "Province",    muni = "Regency",      city = "City" },
+        Vietnam       = { county = "Province", muni = "Municipality", city = "City" },
+        Philippines   = { county = "Region", muni = "Province", city = "City" },
+        Malaysia      = { county = "State", muni = "District", city = "City" },
+        SouthKorea    = { county = "Province", muni = "Municipality", city = "City" },
+        Cambodia      = { county = "Province", muni = "District", city = "City" },
+        UnitedArabEmirates = { county = "Emirate", muni = "Municipality", city = "City" },
+        Fiji          = { county = "Division", muni = "Province", city = "City" },
 }
 local DEFAULT_LABELS = { county = "County", muni = "Municipality", city = "City" }
 
@@ -451,6 +465,13 @@ local WIKIDATA_TYPES = {
         Nepal         = { co = nil, mu = nil, ci = nil },
         SriLanka      = { co = nil, mu = nil, ci = nil },
         Indonesia     = { co = nil, mu = nil, ci = nil },
+        Vietnam       = { co = nil, mu = nil, ci = nil },
+        Philippines   = { co = nil, mu = nil, ci = nil },
+        Malaysia      = { co = nil, mu = nil, ci = nil },
+        SouthKorea    = { co = nil, mu = nil, ci = nil },
+        Cambodia      = { co = nil, mu = nil, ci = nil },
+        UnitedArabEmirates = { co = nil, mu = nil, ci = nil },
+        Fiji          = { co = nil, mu = nil, ci = nil },
 }
 
 -- Preferred label language(s) per country for the Wikidata label service.
@@ -533,6 +554,13 @@ local WIKIDATA_LANG = {
         Nepal         = "ne,en",
         SriLanka      = "si,ta,en",
         Indonesia     = "id,en",
+        Vietnam       = "vi,en",
+        Philippines   = "tl,en",
+        Malaysia      = "ms,en",
+        SouthKorea    = "ko,en",
+        Cambodia      = "km,en",
+        UnitedArabEmirates = "ar,en",
+        Fiji          = "fj,en",
 }
 
 -- Percent-encode a string for safe inclusion in a URL query parameter.
