@@ -298,6 +298,16 @@ local COUNTRIES = {
         addCountry { id = "Cambodia", name = "Cambodia", code = "KH-116", filename = "Cambodia.lua", continent = "Asia", admin_label = "Provinces & Areas", mountain_max = 1813, remoteIslandNames = {} },
         addCountry { id = "UnitedArabEmirates", name = "United Arab Emirates", code = "AE-784", filename = "UnitedArabEmirates.lua", continent = "Asia", admin_label = "Emirates & Areas", mountain_max = 1746, remoteIslandNames = {} },
         addCountry { id = "Fiji", name = "Fiji", code = "FJ-242", filename = "Fiji.lua", continent = "Oceania", admin_label = "Divisions & Areas", mountain_max = 1324, remoteIslandNames = {} },
+        addCountry { id = "Zambia", name = "Zambia", code = "ZM-894", filename = "Zambia.lua", continent = "Africa", admin_label = "Provinces & Areas", mountain_max = 2339, remoteIslandNames = {} },
+        addCountry { id = "Zimbabwe", name = "Zimbabwe", code = "ZW-716", filename = "Zimbabwe.lua", continent = "Africa", admin_label = "Provinces & Areas", mountain_max = 2592, remoteIslandNames = {} },
+        addCountry { id = "Mozambique", name = "Mozambique", code = "MZ-508", filename = "Mozambique.lua", continent = "Africa", admin_label = "Provinces & Areas", mountain_max = 2436, remoteIslandNames = {} },
+        addCountry { id = "Madagascar", name = "Madagascar", code = "MG-450", filename = "Madagascar.lua", continent = "Africa", admin_label = "Regions & Areas", mountain_max = 2876, remoteIslandNames = {} },
+        addCountry { id = "Seychelles", name = "Seychelles", code = "SC-690", filename = "Seychelles.lua", continent = "Africa", admin_label = "Districts & Areas", mountain_max = 905, remoteIslandNames = {} },
+        addCountry { id = "Mauritius", name = "Mauritius", code = "MU-480", filename = "Mauritius.lua", continent = "Africa", admin_label = "Districts & Areas", mountain_max = 828, remoteIslandNames = {} },
+        addCountry { id = "Maldives", name = "Maldives", code = "MV-462", filename = "Maldives.lua", continent = "Asia", admin_label = "Atolls & Areas", mountain_max = 5, remoteIslandNames = {} },
+        addCountry { id = "Bhutan", name = "Bhutan", code = "BT-064", filename = "Bhutan.lua", continent = "Asia", admin_label = "Districts & Areas", mountain_max = 7570, remoteIslandNames = {} },
+        addCountry { id = "Mongolia", name = "Mongolia", code = "MN-496", filename = "Mongolia.lua", continent = "Asia", admin_label = "Provinces & Areas", mountain_max = 4374, remoteIslandNames = {} },
+        addCountry { id = "Georgia", name = "Georgia", code = "GE-268", filename = "Georgia.lua", continent = "Asia", admin_label = "Regions & Areas", mountain_max = 5201, remoteIslandNames = {} },
         addCountry { id = "Antarctica",  name = "Antarctica",   code = "AQ-010", filename = "Antarctica.lua",  continent = "Antarctica",    admin_label = "Regions & Areas",    mountain_max = 4892, remoteIslandNames = {} },
 }
 
@@ -390,6 +400,16 @@ local LABELS = {
         Cambodia      = { county = "Province", muni = "District", city = "City" },
         UnitedArabEmirates = { county = "Emirate", muni = "Municipality", city = "City" },
         Fiji          = { county = "Division", muni = "Province", city = "City" },
+        Zambia        = { county = "Province", muni = "District", city = "City" },
+        Zimbabwe      = { county = "Province", muni = "District", city = "City" },
+        Mozambique    = { county = "Province", muni = "District", city = "City" },
+        Madagascar    = { county = "Region", muni = "District", city = "City" },
+        Seychelles    = { county = "District", muni = "Municipality", city = "City" },
+        Mauritius     = { county = "District", muni = "Municipality", city = "City" },
+        Maldives      = { county = "Atoll", muni = "Municipality", city = "City" },
+        Bhutan        = { county = "District", muni = "Gewog", city = "City" },
+        Mongolia      = { county = "Province", muni = "Sum", city = "City" },
+        Georgia       = { county = "Region", muni = "Municipality", city = "City" },
 }
 local DEFAULT_LABELS = { county = "County", muni = "Municipality", city = "City" }
 
@@ -472,6 +492,16 @@ local WIKIDATA_TYPES = {
         Cambodia      = { co = nil, mu = nil, ci = nil },
         UnitedArabEmirates = { co = nil, mu = nil, ci = nil },
         Fiji          = { co = nil, mu = nil, ci = nil },
+        Zambia        = { co = nil, mu = nil, ci = nil },
+        Zimbabwe      = { co = nil, mu = nil, ci = nil },
+        Mozambique    = { co = nil, mu = nil, ci = nil },
+        Madagascar    = { co = nil, mu = nil, ci = nil },
+        Seychelles    = { co = nil, mu = nil, ci = nil },
+        Mauritius     = { co = nil, mu = nil, ci = nil },
+        Maldives      = { co = nil, mu = nil, ci = nil },
+        Bhutan        = { co = nil, mu = nil, ci = nil },
+        Mongolia      = { co = nil, mu = nil, ci = nil },
+        Georgia       = { co = nil, mu = nil, ci = nil },
 }
 
 -- Preferred label language(s) per country for the Wikidata label service.
@@ -561,6 +591,16 @@ local WIKIDATA_LANG = {
         Cambodia      = "km,en",
         UnitedArabEmirates = "ar,en",
         Fiji          = "fj,en",
+        Zambia        = "en",
+        Zimbabwe      = "en,sn",
+        Mozambique    = "pt,en",
+        Madagascar    = "fr,mg,en",
+        Seychelles    = "en,fr",
+        Mauritius     = "en,fr",
+        Maldives      = "dv,en",
+        Bhutan        = "dz,en",
+        Mongolia      = "mn,en",
+        Georgia       = "ka,en",
 }
 
 -- Percent-encode a string for safe inclusion in a URL query parameter.

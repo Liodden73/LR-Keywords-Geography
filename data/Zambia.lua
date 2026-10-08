@@ -22,24 +22,30 @@ return {
                 "Lochinvar National Park",
                 "Lower Zambezi National Park",
                 "Luambe National Park",
+                "Lukusuzi National Park",
+                "Lusenga Plain National Park",
+                "Mosi-oa-Tunya National Park",
                 "Mweru Wantipa National Park",
                 "North Luangwa National Park",
+                "Nsumbu National Park",
                 "Nyika National Park",
                 "Sioma Ngwezi National Park",
                 "South Luangwa National Park",
-                "Sumbu National Park",
                 "West Lunga National Park",
         },
 
         nature_reserves = {
                 "Bangweulu Wetlands",
+                "Chimfunshi Wildlife Orphanage",
                 "Kafue Flats",
-                "Kasanka National Park Buffer Zone",
                 "Lukanga Swamp",
-                "Lusenga Plain National Park",
+                "Mutinondo Wilderness",
+                "Shiwa Ngandu Estate",
+                "Tondwa Game Management Area",
         },
 
         mountains = {
+                { name = "Mafinga Central", elev = 2339, region = "Muchinga" },
                 { name = "Mumpu", elev = 2000, region = "Central" },
         },
 
@@ -49,9 +55,10 @@ return {
                 "Lake Tanganyika",
                 "Lake Mweru",
                 "Lake Mweru Wantipa",
-                "Lake Lusiwasi",
                 "Lake Itezhi-Tezhi",
-                "Lake Cahora Bassa",
+                "Lake Lusiwasi",
+                "Shiwa Ngandu Lake",
+                "Lake Kashiba",
                 "Chanyanya Lagoon",
                 "Chirengwa Lake",
                 "Kaombe Lagoon",
@@ -143,7 +150,6 @@ return {
                 "Lake Lilambo",
                 "Lake Mwange",
                 "Lake Njolo",
-                "Lake Nsakalala",
         },
 
         rivers = {
@@ -251,10 +257,15 @@ return {
 
         viewpoints = {
                 { name = "Victoria Falls" },
-                { name = "Kafue Flats Viewpoint" },
-                { name = "Mutinondo Wilderness Viewpoint" },
-                { name = "Kasanka Bat Migration Viewpoint" },
-                { name = "Livingstone Museum Viewpoint" },
+                { name = "Devil's Pool" },
+                { name = "Knife-Edge Bridge" },
+                { name = "Boiling Pot" },
+                { name = "Kundalila Falls" },
+                { name = "Kalambo Falls" },
+                { name = "Ngonye Falls" },
+                { name = "Lumangwe Falls" },
+                { name = "Chishimba Falls" },
+                { name = "Muchinga Escarpment" },
         },
 
         counties = {

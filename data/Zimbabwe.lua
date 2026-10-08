@@ -13,26 +13,28 @@ return {
         },
 
         national_parks = {
-                "Charara Safari Area",
                 "Chimanimani National Park",
                 "Chizarira National Park",
                 "Gonarezhou National Park",
                 "Hwange National Park",
+                "Kazuma Pan National Park",
                 "Mana Pools National Park",
                 "Matobo National Park",
                 "Matusadona National Park",
                 "Nyanga National Park",
                 "Victoria Falls National Park",
-                "Vumba National Park",
                 "Zambezi National Park",
         },
 
         nature_reserves = {
                 "Bubye Valley Conservancy",
+                "Charara Safari Area",
                 "Chewore Safari Area",
+                "Lake Chivero Recreational Park",
                 "Malilangwe Wildlife Reserve",
                 "Sapi Safari Area",
                 "Save Valley Conservancy",
+                "Vumba Botanical Garden",
         },
 
         mountains = {
@@ -141,12 +143,14 @@ return {
         lakes = {
                 "Lake Kariba",
                 "Lake Mutirikwi",
+                "Lake Chivero",
                 "Mazvikadei Dam",
                 "Manyame Lake",
                 "Osborne Dam",
                 "Insukamini Dam",
                 "Sebakwe Dam",
                 "Ngezi Dam",
+                "Tugwi-Mukosi Dam",
                 "Lake Mutirikwe",
                 "Lower Mguza dam",
                 "Matobo Dam",
@@ -237,8 +241,6 @@ return {
                 "Chawangonya Dam",
                 "Chemutsi Dam",
                 "Cheoka Dam",
-                "Chewarongo Dam",
-                "Chidzanya Dam",
         },
 
         rivers = {
@@ -345,11 +347,16 @@ return {
         },
 
         viewpoints = {
-                { name = "Victoria Falls Zimbabwe Side" },
-                { name = "Rhodes Matopos Viewpoint" },
-                { name = "Eastern Highlands Viewpoint" },
-                { name = "Harare Gardens Viewpoint" },
-                { name = "Chimanimani Summit Viewpoint" },
+                { name = "Victoria Falls" },
+                { name = "Danger Point" },
+                { name = "Main Falls" },
+                { name = "World's View Nyanga" },
+                { name = "World's View Matobo" },
+                { name = "Bridal Veil Falls" },
+                { name = "Mtarazi Falls" },
+                { name = "Great Zimbabwe" },
+                { name = "Leopard Rock" },
+                { name = "Mana Pools Long Pool" },
         },
 
         counties = {

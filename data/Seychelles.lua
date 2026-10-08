@@ -15,16 +15,20 @@ return {
         national_parks = {
                 "Baie Ternay Marine National Park",
                 "Curieuse Marine National Park",
+                "Ile Coco Marine National Park",
                 "Morne Seychellois National Park",
                 "Port Launay Marine National Park",
+                "Praslin National Park",
                 "Sainte Anne Marine National Park",
                 "Silhouette National Park",
         },
 
         nature_reserves = {
-                "Aldabra Atoll",
+                "Aldabra Atoll Special Reserve",
                 "Aride Island Special Reserve",
                 "Cousin Island Special Reserve",
+                "Fond Ferdinand Nature Reserve",
+                "La Veuve Special Reserve",
                 "Vallee de Mai Nature Reserve",
         },
 
@@ -179,11 +183,18 @@ return {
         },
 
         viewpoints = {
-                { name = "Morne Blanc Viewpoint" },
-                { name = "Anse Source d'Argent Viewpoint" },
-                { name = "La Digue L'Union Estate Viewpoint" },
-                { name = "Copolia Trail Viewpoint" },
-                { name = "Trois Freres Peak Viewpoint" },
+                { name = "Anse Source d'Argent" },
+                { name = "Anse Lazio" },
+                { name = "Anse Georgette" },
+                { name = "Anse Intendance" },
+                { name = "Anse Major" },
+                { name = "Beau Vallon Beach" },
+                { name = "Grand Anse La Digue" },
+                { name = "Copolia" },
+                { name = "Trois Freres" },
+                { name = "Morne Blanc" },
+                { name = "Mission Ruins Viewpoint" },
+                { name = "Nid d'Aigle" },
         },
 
         counties = {

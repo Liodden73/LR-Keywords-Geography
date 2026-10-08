@@ -13,15 +13,21 @@ return {
         },
 
         national_parks = {
-                "Addu Atoll Marine Protected Area",
-                "Baa Atoll UNESCO Biosphere Reserve",
+                "Addu Atoll Biosphere Reserve",
+                "Baa Atoll Biosphere Reserve",
+                "Fuvahmulah Biosphere Reserve",
                 "Hanifaru Bay Marine Protected Area",
         },
 
         nature_reserves = {
-                "Banana Reef Marine Protected Area",
-                "HP Reef Marine Protected Area",
-                "Lankan Finolhu Marine Protected Area",
+                "Banana Reef Protected Area",
+                "British Loyalty Wreck",
+                "Fish Head Protected Area",
+                "HP Reef Protected Area",
+                "Kuda Haa Protected Area",
+                "Lion's Head Protected Area",
+                "Maaya Thila Protected Area",
+                "Manta Point Protected Area",
         },
 
         mountains = {
@@ -155,18 +161,21 @@ return {
         },
 
         viewpoints = {
-                { name = "Malahini Kuda Bandos Viewpoint" },
-                { name = "Veligandu Island Viewpoint" },
-                { name = "Manta Point Baa Atoll" },
-                { name = "Hanifaru Bay Viewpoint" },
-                { name = "Ari Atoll Diving Viewpoint" },
+                { name = "Hanifaru Bay" },
+                { name = "Maaya Thila" },
+                { name = "Fish Head" },
+                { name = "Manta Point" },
+                { name = "Banana Reef" },
+                { name = "Fuvahmulah Thoondu Beach" },
+                { name = "Male Waterfront" },
+                { name = "Addu Link Road" },
         },
 
         counties = {
                 { name = "Addu Atoll",
                   cities = { "Gan", "Hithadhoo", "Hulhudhoo", "Hulumido", "Meedhoo" },
                 },
-                { name = "Alifu (Ari Atoll)",
+                { name = "Alifu Atoll",
                   cities = { "Dhigurah", "Feridhoo", "Himandhoo", "Kuramathi", "Rasdhoo", "Thoddoo", "Ukulhas" },
                 },
                 { name = "Baa Atoll",
@@ -193,7 +202,7 @@ return {
                 { name = "Haa Dhaalu Atoll",
                   cities = { "Hanimaadhoo", "Kulhudhuffushi", "Nolhivaram", "Nolhivaranfaru", "Vaikaradhoo" },
                 },
-                { name = "Kaafu (North Male Atoll)",
+                { name = "Kaafu Atoll",
                   cities = { "Atoll", "Bodubados", "Eboodhoo", "Eboodhoofinolhu", "Eriyadu", "Furanafushi", "Gaafaru", "Guraidhoo", "Himmafushi", "Hulhumale", "Huraa", "Kanu Huraa", "Kuda Huura", "Lankan Finolhu", "Maafushi", "Male", "Meerufenfushi", "Nord Male Atoll", "South Male Atoll", "Thulhaagiri", "Thulusdhoo", "Vabbinfaru Island", "Vihamanaafushi", "Ziyaaraiyfushi" },
                 },
                 { name = "Laamu Atoll",
@@ -223,7 +232,7 @@ return {
                 { name = "Thaa Atoll",
                   cities = { "Diyamigili", "Gaadhiffushi", "Guraidhoo", "Madifushi", "Veymandoo", "Vilufushi" },
                 },
-                { name = "Vaavu (Felidhoo Atoll)",
+                { name = "Vaavu Atoll",
                   cities = { "Felidhoo", "Fulidhoo", "Tinadu" },
                 },
         },

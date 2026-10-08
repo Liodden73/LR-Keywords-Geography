@@ -14,16 +14,19 @@ return {
 
         national_parks = {
                 "Jigme Dorji National Park",
+                "Jigme Singye Wangchuck National Park",
+                "Jomotsangkha Wildlife Sanctuary",
                 "Phrumsengla National Park",
                 "Royal Manas National Park",
-                "Thrumshingla National Park",
                 "Wangchuck Centennial National Park",
         },
 
         nature_reserves = {
                 "Bumdeling Wildlife Sanctuary",
-                "Khaling Wildlife Sanctuary",
+                "Jigme Khesar Strict Nature Reserve",
                 "Phibsoo Wildlife Sanctuary",
+                "Phobjikha Conservation Area",
+                "Royal Botanical Park Lamperi",
                 "Sakteng Wildlife Sanctuary",
         },
 
@@ -42,11 +45,14 @@ return {
         },
 
         lakes = {
-                "Phobjikha Valley Wetland",
+                "Membartsho",
                 "Gangtey Lake",
-                "Mebartsho Lake",
-                "Pele La Lake",
-                "Khasadrapchu Lake",
+                "Nub Tshona Patta Tsho",
+                "Thorthormi Lake",
+                "Luggye Tsho",
+                "Raphstreng Tsho",
+                "Chumphu Lake",
+                "Sinchula Lake",
         },
 
         rivers = {
@@ -83,12 +89,18 @@ return {
         },
 
         viewpoints = {
-                { name = "Paro Taktsang (Tiger's Nest)" },
+                { name = "Tiger's Nest Monastery" },
                 { name = "Dochula Pass" },
-                { name = "Chelela Pass" },
-                { name = "Punakha Dzong Viewpoint" },
-                { name = "Trongsa Dzong Viewpoint" },
-                { name = "Thimphu Tashichho Dzong Viewpoint" },
+                { name = "Chele La Pass" },
+                { name = "Pele La Pass" },
+                { name = "Thrumshing La Pass" },
+                { name = "Punakha Dzong" },
+                { name = "Trongsa Dzong" },
+                { name = "Buddha Dordenma" },
+                { name = "Phobjikha Valley" },
+                { name = "Haa Valley" },
+                { name = "Paro Rinpung Dzong" },
+                { name = "Punakha Suspension Bridge" },
         },
 
         counties = {

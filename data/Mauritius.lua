@@ -14,14 +14,22 @@ return {
 
         national_parks = {
                 "Black River Gorges National Park",
-                "Mahebourg Historical Area",
+                "Bras d'Eau National Park",
+                "Islets National Park",
         },
 
         nature_reserves = {
+                "Balaclava Marine Park",
+                "Blue Bay Marine Park",
+                "Ebony Forest Chamarel",
+                "Francois Leguat Giant Tortoise Reserve",
+                "Grande Montagne Nature Reserve",
                 "Ile Ronde Nature Reserve",
                 "Ile aux Aigrettes Nature Reserve",
-                "Ile aux Serpents",
-                "Royal Botanic Garden Pamplemousses",
+                "Ile aux Serpents Nature Reserve",
+                "La Vallee de Ferney",
+                "Le Pouce Nature Reserve",
+                "Sir Seewoosagur Ramgoolam Botanical Garden",
         },
 
         mountains = {
@@ -268,12 +276,20 @@ return {
         },
 
         viewpoints = {
-                { name = "Chamarel Viewpoint" },
-                { name = "Seven Coloured Earths of Chamarel" },
-                { name = "Le Pouce Summit" },
-                { name = "La Nicoliere Reservoir Viewpoint" },
-                { name = "Trou aux Cerfs Crater Viewpoint" },
-                { name = "Mahebourg Waterfront" },
+                { name = "Seven Coloured Earths" },
+                { name = "Chamarel Waterfall" },
+                { name = "Gorges Viewpoint" },
+                { name = "Alexandra Falls" },
+                { name = "Le Morne Brabant" },
+                { name = "Trou aux Cerfs" },
+                { name = "Grand Bassin" },
+                { name = "Tamarind Falls" },
+                { name = "Rochester Falls" },
+                { name = "Gris Gris" },
+                { name = "Le Pouce" },
+                { name = "Pieter Both" },
+                { name = "Ile aux Cerfs" },
+                { name = "Pointe aux Caves Lighthouse" },
         },
 
         counties = {
