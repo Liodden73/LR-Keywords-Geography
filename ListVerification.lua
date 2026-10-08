@@ -3941,11 +3941,12 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
 
                 local enabledCount = 0
                 for _ in pairs( currentEnabled ) do enabledCount = enabledCount + 1 end
+                local totalCount   = #COUNTRIES
 
                 -- Seed the three bindable props before the view is built.
                 props.mapImagePath  = cachedPath or staticPath
                 props.mapStatusText = cachedPath
-                        and ( tostring( enabledCount ) .. " countries enabled — red on map, blue = available" )
+                        and ( tostring( enabledCount ) .. " selected (red) \xE2\x80\x94 " .. tostring( totalCount - enabledCount ) .. " available (blue)" )
                         or  "Click \xE2\x80\x9CUpdate Map\xE2\x80\x9D to generate a colored map (first run ~75 s; cached after)"
                 props.mapUpdating   = false
 
@@ -3983,8 +3984,10 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                         f:row {
                                 f:spacer { fill_horizontal = 1 },
                                 f:static_text {
-                                        title = LrView.bind 'mapStatusText',
-                                        font  = "<system/small>",
+                                        title     = LrView.bind 'mapStatusText',
+                                        font      = "<system/small>",
+                                        width     = CONTENT_W_MN,
+                                        alignment = "center",
                                 },
                                 f:spacer { fill_horizontal = 1 },
                         },
@@ -4012,7 +4015,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                                                 props.mapImagePath = newPath
                                                                 local cnt = 0
                                                                 for _ in pairs( newEnabled ) do cnt = cnt + 1 end
-                                                                props.mapStatusText = tostring( cnt ) .. " countries enabled — red on map, blue = available"
+                                                                props.mapStatusText = tostring( cnt ) .. " selected (red) \xE2\x80\x94 " .. tostring( #COUNTRIES - cnt ) .. " available (blue)"
                                                         else
                                                                 props.mapStatusText = "Map generation failed — see Lightroom log for details"
                                                         end

@@ -1,3 +1,10 @@
+## 0.9.262 — 2026-10-08
+### Intro-skjermen: sentrert karttekst og separate tellere for røde og blå land
+- Teksten under kartet er nå sentrert.
+- Teksten skiller nå mellom "selected (red)" og "available (blue)" i stedet for én samlet teller.
+  - **Rød** = land du har skrudd på i List Overview.
+  - **Blå** = land som finnes i pluginen men ikke er valgt ennå.
+
 ## 0.9.261 — 2026-10-08
 ### Sju nye land: Vietnam, Filippinene, Malaysia, Sør-Korea, Kambodsja, De forente arabiske emirater og Fiji
 - **Vietnam** (Asia): 34 provinser etter reformen i 2025, 876 byer (flat struktur). Navn uten diakritiske tegn.
