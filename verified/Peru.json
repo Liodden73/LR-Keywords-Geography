@@ -4,14 +4,14 @@
     "mu":[],
     "ci":[{
         "i":1206,
-        "action":"change_manual",
+        "action":"none",
         "name":"Santa Anita - Los Ficus",
-        "conflict":"Santa Anita"
+        "conflict":"Los Ficus"
       },{
         "i":1390,
-        "action":"change_manual",
+        "action":"none",
         "name":"Paragsha- San Andres - Jose Carlos Mariategui",
-        "conflict":"Paragsha"
+        "conflict":"Jose Carlos Mariategui"
       },{
         "i":1414,
         "action":"change_manual",
@@ -19,13 +19,13 @@
         "conflict":"La Legua"
       },{
         "i":1637,
-        "action":"change_manual",
+        "action":"none",
         "name":"Segunda Jerusalén - Azunguillo",
-        "conflict":"Segunda Jerusalén"
+        "conflict":"Azunguillo"
       }],
     "co":[]
   },
-  "version":"0.1.5",
+  "version":"0.1.6",
   "country":"Peru",
-  "verified":"2026-10-08 03:53"
+  "verified":"2026-10-08 13:13"
 }
