@@ -1824,8 +1824,10 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                                                         actionVerb = "OK",
                                                                         cancelVerb = "Skip",
                                                                 }
-                                                                if dlgResult == "ok" and np.customName ~= "" then
-                                                                        result = np.customName
+                                                                local nm = ( np.customName or "" ):gsub( ",", " " )
+                                                                nm = nm:gsub( "^%s+", "" ):gsub( "%s+$", "" )
+                                                                if dlgResult == "ok" and nm ~= "" then
+                                                                        result = nm
                                                                 end
                                                         end )
                                                         return result
@@ -1836,19 +1838,22 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                                 -- the user can accept or edit the Wikidata suggestion (or
                                                 -- start from scratch when there is none).
                                                 for i, entry in ipairs( savedCo ) do
-                                                        if geo.counties[ i ] and entry.a == "change_manual" then
+                                                        if geo.counties[ i ] and entry.a == "change_manual"
+                                                                        and not props[ "vcmok_vcco_" .. cid .. "_" .. i ] then
                                                                 local custom = promptCustomName( geo.counties[ i ], entry.c )
                                                                 if custom then entry.c = custom end
                                                         end
                                                 end
                                                 for i, entry in ipairs( savedMu ) do
-                                                        if geo.munis[ i ] and entry.a == "change_manual" then
+                                                        if geo.munis[ i ] and entry.a == "change_manual"
+                                                                        and not props[ "vcmok_vcmu_" .. cid .. "_" .. i ] then
                                                                 local custom = promptCustomName( geo.munis[ i ], entry.c )
                                                                 if custom then entry.c = custom end
                                                         end
                                                 end
                                                 for i, entry in ipairs( savedCi ) do
-                                                        if geo.cities[ i ] and entry.a == "change_manual" then
+                                                        if geo.cities[ i ] and entry.a == "change_manual"
+                                                                        and not props[ "vcmok_vcci_" .. cid .. "_" .. i ] then
                                                                 local custom = promptCustomName( geo.cities[ i ], entry.c )
                                                                 if custom then entry.c = custom end
                                                         end
@@ -2557,6 +2562,54 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                 for _, d in ipairs( display ) do
                                         local vcKey = vcPfx .. cid .. "_" .. d.i
                                         local vaKey = vaPfx .. cid .. "_" .. d.i
+                                        -- Choosing "Change manually" opens a name dialog right
+                                        -- here in the Monitor; the typed name replaces the
+                                        -- Conflicts value.  Observer registered once per key
+                                        -- (guard stored in props — the panel is rebuilt often).
+                                        if not props[ "cmobs_" .. vaKey ] then
+                                                props[ "cmobs_" .. vaKey ] = true
+                                                local rowName = d.name
+                                                props:addObserver( vaKey, function( _, _, value )
+                                                        if value ~= "change_manual" then return end
+                                                        LrTasks.startAsyncTask( function()
+                                                                LrFunctionContext.callWithContext( "cmName", function( ctx )
+                                                                        local np  = LrBinding.makePropertyTable( ctx )
+                                                                        local cur = props[ vcKey ]
+                                                                        if cur == nil or cur == "✓" or cur == "—"
+                                                                                        or cur == "-" or cur == "..." then
+                                                                                cur = rowName
+                                                                        end
+                                                                        np.customName = cur
+                                                                        local res = LrDialogs.presentModalDialog {
+                                                                                title    = "Change manually",
+                                                                                contents = f:column {
+                                                                                        bind_to_object = np,
+                                                                                        spacing = f:control_spacing(),
+                                                                                        f:static_text {
+                                                                                                title = "New name for \"" .. rowName .. "\":",
+                                                                                                width = 340,
+                                                                                        },
+                                                                                        f:edit_field {
+                                                                                                value     = LrView.bind( "customName" ),
+                                                                                                width     = 340,
+                                                                                                immediate = true,
+                                                                                        },
+                                                                                },
+                                                                                actionVerb = "OK",
+                                                                                cancelVerb = "Cancel",
+                                                                        }
+                                                                        local nm = ( np.customName or "" ):gsub( ",", " " )
+                                                                        nm = nm:gsub( "%s+", " " ):gsub( "^%s+", "" ):gsub( "%s+$", "" )
+                                                                        if res == "ok" and nm ~= "" then
+                                                                                props[ vcKey ] = nm
+                                                                                props[ "vcmok_" .. vcKey ] = true
+                                                                        else
+                                                                                props[ vaKey ] = "none"
+                                                                        end
+                                                                end )
+                                                        end )
+                                                end )
+                                        end
                                         colSpec[ #colSpec + 1 ] = f:row {
                                                 spacing = 6,
                                                 f:static_text {

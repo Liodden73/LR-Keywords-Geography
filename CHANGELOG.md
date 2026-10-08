@@ -1,3 +1,10 @@
+## 0.9.258 — 2026-10-08
+### «Change manually» virker nå direkte i Verification Monitor
+- **Feil:** Når du valgte «Change manually» i Action-menyen, skjedde det ingenting. Navnedialogen kom først når du trykket Update i List Overview.
+- **Rettet:** Når du velger «Change manually», åpnes en dialog med en gang. Feltet er forhåndsutfylt med Wikidata-forslaget (eller det nåværende navnet). Navnet du skriver inn, vises i Conflicts-kolonnen og brukes ved Update. Avbryter du, settes Action tilbake til None.
+- Komma i navn byttes automatisk ut med mellomrom.
+- Rader som du allerede har gitt navn på denne måten, blir ikke spurt om igjen ved Update.
+
 ## 0.9.257 — 2026-10-08
 ### «Change manually»: vis alltid redigeringsdialog
 - **Feil:** Velger man «Change manually» i Peru-verifisering for en by som allerede har et Wikidata-forslag (f.eks. «La Legua - San Jacinto» med forslaget «San Jacinto»), ble redigeringsdialogen hoppet over. Systemet brukte Wikidata-forslaget direkte uten at brukeren fikk muligheten til å skrive inn ønsket navn.
