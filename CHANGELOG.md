@@ -1,3 +1,7 @@
+## 0.9.264 — 2026-10-08
+### Intro-skjermen: 5 px marg til venstre for tittel og velkomsttekst
+- Tittelen «Geography Keyword Builder» og velkomstteksten har nå 5 px spacer til venstre.
+
 ## 0.9.263 — 2026-10-08
 ### Intro-skjermen: rettet tegnfeil i teksten under kartet
 - **Feil:** Teksten viste «xE2x80x94» i stedet for en tankestrek mellom «(red)» og antallet blå land. Lightroom bruker Lua 5.1, som ikke forstår `\x`-escapes i strenger.

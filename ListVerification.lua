@@ -3954,20 +3954,26 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                         bind_to_object = props,
                         spacing        = f:control_spacing(),
                         f:spacer { height = 8 },
-                        f:static_text {
-                                title = "Geography Keyword Builder",
-                                font  = "<system/bold>",
+                        f:row {
+                                f:spacer { width = 5 },
+                                f:static_text {
+                                        title = "Geography Keyword Builder",
+                                        font  = "<system/bold>",
+                                },
                         },
                         f:spacer { height = 2 },
-                        f:static_text {
-                                title           = "Welcome to the Geography Keyword Builder plugin for Adobe Lightroom Classic. "
-                                                .. "This plugin helps you create and manage hierarchical geographic keyword lists "
-                                                .. "for your photo library. "
-                                                .. "Use the tabs above to build keyword lists (Keyword List Builder), "
-                                                .. "manage country data files (List Overview), verify keyword data "
-                                                .. "(Verification Monitor), or read the documentation (Help).",
-                                width           = CONTENT_W,
-                                height_in_lines = 4,
+                        f:row {
+                                f:spacer { width = 5 },
+                                f:static_text {
+                                        title           = "Welcome to the Geography Keyword Builder plugin for Adobe Lightroom Classic. "
+                                                        .. "This plugin helps you create and manage hierarchical geographic keyword lists "
+                                                        .. "for your photo library. "
+                                                        .. "Use the tabs above to build keyword lists (Keyword List Builder), "
+                                                        .. "manage country data files (List Overview), verify keyword data "
+                                                        .. "(Verification Monitor), or read the documentation (Help).",
+                                        width           = CONTENT_W,
+                                        height_in_lines = 4,
+                                },
                         },
                         -- World map: shows static PNG until "Update Map" is pressed,
                         -- then switches to the cached colored PNG (blue = available,
