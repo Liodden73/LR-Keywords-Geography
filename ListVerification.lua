@@ -1837,25 +1837,53 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                                 -- change_manual row.  Pre-fill the dialog with entry.c so
                                                 -- the user can accept or edit the Wikidata suggestion (or
                                                 -- start from scratch when there is none).
+                                                -- Helper: strip placeholder values from pre-fill so the
+                                                -- dialog starts empty when there is no real suggestion.
+                                                local function sanitisePrefill( v )
+                                                        if not v or v == "—" or v == "-" or
+                                                           v == "✓" or v == "..." then
+                                                                return nil
+                                                        end
+                                                        return v
+                                                end
+
                                                 for i, entry in ipairs( savedCo ) do
                                                         if geo.counties[ i ] and entry.a == "change_manual"
                                                                         and not props[ "vcmok_vcco_" .. cid .. "_" .. i ] then
-                                                                local custom = promptCustomName( geo.counties[ i ], entry.c )
-                                                                if custom then entry.c = custom end
+                                                                local custom = promptCustomName(
+                                                                        geo.counties[ i ],
+                                                                        sanitisePrefill( entry.c ) )
+                                                                if custom then
+                                                                        entry.c = custom
+                                                                        props[ "vcco_" .. cid .. "_" .. i ]        = custom
+                                                                        props[ "vcmok_vcco_" .. cid .. "_" .. i ]  = true
+                                                                end
                                                         end
                                                 end
                                                 for i, entry in ipairs( savedMu ) do
                                                         if geo.munis[ i ] and entry.a == "change_manual"
                                                                         and not props[ "vcmok_vcmu_" .. cid .. "_" .. i ] then
-                                                                local custom = promptCustomName( geo.munis[ i ], entry.c )
-                                                                if custom then entry.c = custom end
+                                                                local custom = promptCustomName(
+                                                                        geo.munis[ i ],
+                                                                        sanitisePrefill( entry.c ) )
+                                                                if custom then
+                                                                        entry.c = custom
+                                                                        props[ "vcmu_" .. cid .. "_" .. i ]        = custom
+                                                                        props[ "vcmok_vcmu_" .. cid .. "_" .. i ]  = true
+                                                                end
                                                         end
                                                 end
                                                 for i, entry in ipairs( savedCi ) do
                                                         if geo.cities[ i ] and entry.a == "change_manual"
                                                                         and not props[ "vcmok_vcci_" .. cid .. "_" .. i ] then
-                                                                local custom = promptCustomName( geo.cities[ i ], entry.c )
-                                                                if custom then entry.c = custom end
+                                                                local custom = promptCustomName(
+                                                                        geo.cities[ i ],
+                                                                        sanitisePrefill( entry.c ) )
+                                                                if custom then
+                                                                        entry.c = custom
+                                                                        props[ "vcci_" .. cid .. "_" .. i ]        = custom
+                                                                        props[ "vcmok_vcci_" .. cid .. "_" .. i ]  = true
+                                                                end
                                                         end
                                                 end
 
@@ -2147,40 +2175,35 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                                 -- Clear applied actions in prefs so next Verify starts clean.
                                                 local coSaved = verGet( "ver_" .. cid .. "_co" ) or {}
                                                 for _, ch in ipairs( coChanges ) do
-                                                        if coSaved[ ch.idx ] then
-                                                                coSaved[ ch.idx ].a = "none"
-                                                        end
+                                                        if coSaved[ ch.idx ] then coSaved[ ch.idx ].a = "none" end
+                                                        -- Mirror to live props so Monitor refreshes immediately.
+                                                        props[ "vaco_" .. cid .. "_" .. ch.idx ] = "none"
                                                 end
                                                 for _, ch in ipairs( coDeletes ) do
-                                                        if coSaved[ ch.idx ] then
-                                                                coSaved[ ch.idx ].a = "none"
-                                                        end
+                                                        if coSaved[ ch.idx ] then coSaved[ ch.idx ].a = "none" end
+                                                        props[ "vaco_" .. cid .. "_" .. ch.idx ] = "none"
                                                 end
                                                 verSet( "ver_" .. cid .. "_co", coSaved )
 
                                                 local muSaved = verGet( "ver_" .. cid .. "_mu" ) or {}
                                                 for _, ch in ipairs( muChanges ) do
-                                                        if muSaved[ ch.idx ] then
-                                                                muSaved[ ch.idx ].a = "none"
-                                                        end
+                                                        if muSaved[ ch.idx ] then muSaved[ ch.idx ].a = "none" end
+                                                        props[ "vamu_" .. cid .. "_" .. ch.idx ] = "none"
                                                 end
                                                 for _, ch in ipairs( muDeletes ) do
-                                                        if muSaved[ ch.idx ] then
-                                                                muSaved[ ch.idx ].a = "none"
-                                                        end
+                                                        if muSaved[ ch.idx ] then muSaved[ ch.idx ].a = "none" end
+                                                        props[ "vamu_" .. cid .. "_" .. ch.idx ] = "none"
                                                 end
                                                 verSet( "ver_" .. cid .. "_mu", muSaved )
 
                                                 local ciSaved = verGet( "ver_" .. cid .. "_ci" ) or {}
                                                 for _, ch in ipairs( ciChanges ) do
-                                                        if ciSaved[ ch.idx ] then
-                                                                ciSaved[ ch.idx ].a = "none"
-                                                        end
+                                                        if ciSaved[ ch.idx ] then ciSaved[ ch.idx ].a = "none" end
+                                                        props[ "vaci_" .. cid .. "_" .. ch.idx ] = "none"
                                                 end
                                                 for _, ch in ipairs( ciDeletes ) do
-                                                        if ciSaved[ ch.idx ] then
-                                                                ciSaved[ ch.idx ].a = "none"
-                                                        end
+                                                        if ciSaved[ ch.idx ] then ciSaved[ ch.idx ].a = "none" end
+                                                        props[ "vaci_" .. cid .. "_" .. ch.idx ] = "none"
                                                 end
                                                 verSet( "ver_" .. cid .. "_ci", ciSaved )
                                                 verFlush()

@@ -1,3 +1,12 @@
+## 0.9.259 — 2026-10-08
+### «Change manually» Update: handlinger nullstilles nå synlig i Monitor
+- **Feil 1:** Etter at brukeren klikket OK i «Change manually»-dialogene og bekreftet Update, ble `props["vaci_..."]` aldri nullstilt i minnet. Monitor-tabellen viste fortsatt `"Change manually"` for de berørte radene, og brukeren trodde ingenting var lagret.
+- **Feil 2:** Klikket brukeren Update på nytt (for å sjekke), kjørte `persistVerToPrefs` og overskrev sidecar med `"change_manual"` fra de ikke-nullstilte props-verdiene — og ødela den nettopp lagrede `"none"`-verdien i sidecar.
+- **Rettet:** Etter fil-skriving settes `props["vaci_..."]`, `props["vamu_..."]` og `props["vaco_..."]` til `"none"` direkte i minnet for alle berørte rader. Monitor-tabellen oppdateres umiddelbart.
+- **Feil 3:** Pre-pass-dialogen ble forhåndsutfylt med `"—"` hvis Verify ikke hadde vært kjørt i gjeldende økt. Klikket brukeren OK uten å endre feltet, ble `"—"` lagret — men `hasName("—")` = false, og ingenting ble lagt til endringslisten.
+- **Rettet:** Plassholder-verdier (`"—"`, `"-"`, `"✓"`, `"..."`) filtreres bort fra forhåndsutfyllingen. Dialogen starter med tomt felt når det ikke finnes et reelt forslag.
+- **Tillegg:** Etter at brukeren skriver inn et navn i pre-pass-dialogen, oppdateres `props["vcci_..."]` og `props["vcmok_..."]` umiddelbart, slik at Monitor viser det valgte navnet og dialogen ikke dukker opp igjen ved et nytt Update-klikk.
+
 ## 0.9.258 — 2026-10-08
 ### «Change manually» virker nå direkte i Verification Monitor
 - **Feil:** Når du valgte «Change manually» i Action-menyen, skjedde det ingenting. Navnedialogen kom først når du trykket Update i List Overview.
