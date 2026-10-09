@@ -1,3 +1,20 @@
+## 0.9.278 — 2026-10-09
+
+### Ti nye land: Tsjad, Sudan, Sør-Sudan, Eritrea, Djibouti, Somalia, Libya, Komorene, Jemen, Irak
+
+- **Tsjad**: 23 provinser, 125 departementer, 68 byer. Høyeste topp Emi Koussi (3415 m).
+- **Sudan**: 18 delstater med 102 byer rett under (GeoNames-distriktene er utdaterte). Høyeste topp Jebel Marra (3042 m).
+- **Sør-Sudan**: 10 delstater med 23 byer rett under. Høyeste topp Mount Kinyeti (3187 m).
+- **Eritrea**: 6 regioner, 58 underregioner, 17 tettsteder. Høyeste topp Dega (3047 m, SRTM); Emba Soira er med (3013 m).
+- **Djibouti**: 6 regioner med 32 tettsteder. Høyeste topp Gagou (2028 m), Mount Moussa Ali (2021 m).
+- **Somalia**: 18 regioner, 82 distrikter, 74 byer. Høyeste topp Shimbiris (2460 m).
+- **Libya**: 22 distrikter med 74 byer rett under. Høyeste topp Bikku Bitti (2267 m).
+- **Komorene**: 3 øyer (Grande Comore, Anjouan, Moheli) med 95 tettsteder. Høyeste topp Mount Karthala (2361 m).
+- **Jemen**: 22 guvernement, 333 distrikter, 295 byer. Høyeste topp Jabal an-Nabi Shuayb (3666 m).
+- **Irak**: 19 guvernement, 115 distrikter, 160 byer. Høyeste topp Cheekha Dar (3611 m).
+- Doble distriktsnavn fra GeoNames (gamle og nye stavemåter) er slått sammen i Tsjad, Somalia og Irak.
+- Alle 10 land er lagt til på verdenskartet (Komorene som markør).
+
 ## 0.9.277 — 2026-10-09
 
 ### Ti nye land i Vest-Afrika: Guinea, Liberia, Sierra Leone, Guinea-Bissau, Togo, Benin, Mali, Burkina Faso, Niger, Mauritania

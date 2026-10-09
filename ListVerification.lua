@@ -358,6 +358,16 @@ local COUNTRIES = {
         addCountry { id = "BurkinaFaso", name = "Burkina Faso", code = "BF-854", filename = "BurkinaFaso.lua", continent = "Africa", admin_label = "Regions & Areas", mountain_max = 749, remoteIslandNames = {} },
         addCountry { id = "Niger", name = "Niger", code = "NE-562", filename = "Niger.lua", continent = "Africa", admin_label = "Regions & Areas", mountain_max = 2022, remoteIslandNames = {} },
         addCountry { id = "Mauritania", name = "Mauritania", code = "MR-478", filename = "Mauritania.lua", continent = "Africa", admin_label = "Regions & Areas", mountain_max = 915, remoteIslandNames = {} },
+        addCountry { id = "Chad", name = "Chad", code = "TD-148", filename = "Chad.lua", continent = "Africa", admin_label = "Provinces & Areas", mountain_max = 3415, remoteIslandNames = {} },
+        addCountry { id = "Sudan", name = "Sudan", code = "SD-729", filename = "Sudan.lua", continent = "Africa", admin_label = "States & Areas", mountain_max = 3042, remoteIslandNames = {} },
+        addCountry { id = "SouthSudan", name = "South Sudan", code = "SS-728", filename = "SouthSudan.lua", continent = "Africa", admin_label = "States & Areas", mountain_max = 3187, remoteIslandNames = {} },
+        addCountry { id = "Eritrea", name = "Eritrea", code = "ER-232", filename = "Eritrea.lua", continent = "Africa", admin_label = "Regions & Areas", mountain_max = 3047, remoteIslandNames = {} },
+        addCountry { id = "Djibouti", name = "Djibouti", code = "DJ-262", filename = "Djibouti.lua", continent = "Africa", admin_label = "Regions & Areas", mountain_max = 2028, remoteIslandNames = {} },
+        addCountry { id = "Somalia", name = "Somalia", code = "SO-706", filename = "Somalia.lua", continent = "Africa", admin_label = "Regions & Areas", mountain_max = 2460, remoteIslandNames = {} },
+        addCountry { id = "Libya", name = "Libya", code = "LY-434", filename = "Libya.lua", continent = "Africa", admin_label = "Districts & Areas", mountain_max = 2267, remoteIslandNames = {} },
+        addCountry { id = "Comoros", name = "Comoros", code = "KM-174", filename = "Comoros.lua", continent = "Africa", admin_label = "Islands & Areas", mountain_max = 2361, remoteIslandNames = {} },
+        addCountry { id = "Yemen", name = "Yemen", code = "YE-887", filename = "Yemen.lua", continent = "Asia", admin_label = "Governorates & Areas", mountain_max = 3666, remoteIslandNames = {} },
+        addCountry { id = "Iraq", name = "Iraq", code = "IQ-368", filename = "Iraq.lua", continent = "Asia", admin_label = "Governorates & Areas", mountain_max = 3611, remoteIslandNames = {} },
         addCountry { id = "Antarctica",  name = "Antarctica",   code = "AQ-010", filename = "Antarctica.lua",  continent = "Antarctica",    admin_label = "Regions & Areas",    mountain_max = 4892, remoteIslandNames = {} },
 }
 
@@ -510,6 +520,16 @@ local LABELS = {
         BurkinaFaso   = { county = "Region", muni = "Province", city = "City" },
         Niger         = { county = "Region", muni = "Department", city = "City" },
         Mauritania    = { county = "Region", muni = "Department", city = "City" },
+        Chad          = { county = "Province", muni = "Department", city = "City" },
+        Sudan         = { county = "State", muni = "Area", city = "City" },
+        SouthSudan    = { county = "State", muni = "Area", city = "Town" },
+        Eritrea       = { county = "Region", muni = "Subregion", city = "Town" },
+        Djibouti      = { county = "Region", muni = "Area", city = "Town" },
+        Somalia       = { county = "Region", muni = "District", city = "City" },
+        Libya         = { county = "District", muni = "Area", city = "City" },
+        Comoros       = { county = "Island", muni = "Area", city = "Town" },
+        Yemen         = { county = "Governorate", muni = "District", city = "City" },
+        Iraq          = { county = "Governorate", muni = "District", city = "City" },
 }
 local DEFAULT_LABELS = { county = "County", muni = "Municipality", city = "City" }
 
@@ -652,6 +672,16 @@ local WIKIDATA_TYPES = {
         BurkinaFaso   = { co = nil, mu = nil, ci = nil },
         Niger         = { co = nil, mu = nil, ci = nil },
         Mauritania    = { co = nil, mu = nil, ci = nil },
+        Chad          = { co = nil, mu = nil, ci = nil },
+        Sudan         = { co = nil, mu = nil, ci = nil },
+        SouthSudan    = { co = nil, mu = nil, ci = nil },
+        Eritrea       = { co = nil, mu = nil, ci = nil },
+        Djibouti      = { co = nil, mu = nil, ci = nil },
+        Somalia       = { co = nil, mu = nil, ci = nil },
+        Libya         = { co = nil, mu = nil, ci = nil },
+        Comoros       = { co = nil, mu = nil, ci = nil },
+        Yemen         = { co = nil, mu = nil, ci = nil },
+        Iraq          = { co = nil, mu = nil, ci = nil },
 }
 
 -- Preferred label language(s) per country for the Wikidata label service.
@@ -801,6 +831,16 @@ local WIKIDATA_LANG = {
         BurkinaFaso   = "fr,en",
         Niger         = "fr,en",
         Mauritania    = "ar,fr,en",
+        Chad          = "fr,ar,en",
+        Sudan         = "ar,en",
+        SouthSudan    = "en",
+        Eritrea       = "ti,ar,en",
+        Djibouti      = "fr,ar,en",
+        Somalia       = "so,ar,en",
+        Libya         = "ar,en",
+        Comoros       = "fr,ar,en",
+        Yemen         = "ar,en",
+        Iraq          = "ar,ku,en",
 }
 
 -- Percent-encode a string for safe inclusion in a URL query parameter.
