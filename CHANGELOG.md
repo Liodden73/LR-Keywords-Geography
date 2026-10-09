@@ -1,3 +1,30 @@
+## 0.9.271 — 2026-10-09
+
+### Ny NATURE-struktur: naturinnhold flyttes inn under hvert land
+
+NATURE-søkeordene (fjell, nasjonalparker, fjorder, innsjøer osv.) er nå plassert direkte inne under hvert land i hierarkiet, på samme nivå som fylkene:
+
+```
+[GEOGRAPHY] > [WORLD] > [EUROPE] > Norway
+    [NATURE NORWAY]
+        [MOUNTAIN]
+            Galdhøpiggen
+        [NATIONAL PARK]
+            Jotunheimen nasjonalpark
+        [FJORD]
+            Sognefjorden
+    Innlandet
+    Vestland …
+```
+
+Fordeler med ny struktur:
+- Lightroom arver landet automatisk som overordnet søkeord – ingen behov for landssynonym
+- Alle fjell for ett land er samlet under det landet, ikke i en felles verdensliste
+- Grensetopper (f.eks. Matterhorn) ligger i begge land de tilhører, med riktig land som parent
+- Enklere å vedlikeholde og søke i Lightroom
+
+Det gamle alternativet (NATURE > MOUNTAIN globalt) er fjernet. Existing keywords must be merged manually using ListDoctor if you want to consolidate with previous imports.
+
 ## 0.9.270 — 2026-10-09
 
 ### Opprydding i fjell-lister
