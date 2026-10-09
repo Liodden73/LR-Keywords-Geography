@@ -48,6 +48,20 @@ local function sanitize(name)
         return name
 end
 
+-- Split "A / B / C" (or "A/B") into { "A", "B", "C" }: trimmed, empty and
+-- duplicate parts dropped. Lightroom keywords and synonyms must not contain "/".
+local function splitAlternatives(name)
+        local out, seen = {}, {}
+        for raw in (name .. "/"):gmatch("([^/]*)/") do
+                local part = raw:gsub("^%s+", ""):gsub("%s+$", "")
+                if part ~= "" and not seen[part] then
+                        seen[part] = true
+                        out[#out + 1] = part
+                end
+        end
+        return out
+end
+
 -- Alphabetical sort (byte order). Norwegian Æ Ø Å sort after ASCII which is
 -- fine — Lightroom re-sorts keywords alphabetically on import anyway.
 local function sortedCopy(list)
@@ -112,8 +126,21 @@ function Generator.generate(data, prefs)
         -- The synonym text appended after each nature keyword (e.g. "{Norway}").
         local countrySynonymText = "{" .. countryName .. "}"
 
+        -- Keyword line. Names written as alternatives with "/" (e.g.
+        -- "Milford Sound / Piopiotahi") are split: the first part becomes the
+        -- keyword and every further part becomes its own {synonym} line, so no
+        -- "/" ever reaches the keyword list. Container nodes are never split.
         local function add(depth, text)
-                lines[#lines + 1] = string.rep(TAB, depth) .. sanitize(text)
+                local clean = sanitize(text)
+                if clean:sub(1, 1) == "[" or not clean:find("/", 1, true) then
+                        lines[#lines + 1] = string.rep(TAB, depth) .. clean
+                        return
+                end
+                local parts = splitAlternatives(clean)
+                lines[#lines + 1] = string.rep(TAB, depth) .. (parts[1] or clean)
+                for i = 2, #parts do
+                        lines[#lines + 1] = string.rep(TAB, depth + 1) .. "{" .. parts[i] .. "}"
+                end
         end
 
         -- synonym line: raw braces preserved, NOT sanitized (keep the { } )
@@ -183,7 +210,10 @@ function Generator.generate(data, prefs)
                 add(2, container(data.meta and data.meta.continent or "Europe"))
                 add(3, countryName)
                 if nativeName then
-                        addSynonym(4, "{" .. nativeName .. "}")
+                        -- "België / Belgique" → {België} and {Belgique}
+                        for _, alt in ipairs(splitAlternatives(sanitize(nativeName))) do
+                                if alt ~= countryName then addSynonym(4, "{" .. alt .. "}") end
+                        end
                 end
 
                 -- ── [NATURE COUNTRY] block (depth 4) ─────────────────────────────

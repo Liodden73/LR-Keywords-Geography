@@ -1,3 +1,17 @@
+## 0.9.274 — 2026-10-09
+
+### Ingen «/» i søkeord eller synonymer
+
+- **Generator:** Navn skrevet som alternativer med «/» deles nå automatisk opp: første del blir søkeordet, og hver av de øvrige delene blir et eget synonym. Gjelder alle nivåer (land, fylke/stat, kommune, by, bydel og alt under NATURE).
+- **Landsynonymer:** `{België / Belgique}` → `{België}` + `{Belgique}`; `{Schweiz / Suisse / Svizzera}` → tre egne synonymer (og tilsvarende for andre land med «/» i lokalt navn).
+- **Sammensatte navn** (én enhet, ikke alternative navn) har fått bindestrek i stedet: 18 LGA-er i Nigeria (f.eks. Oshodi-Isolo), Ghana (Komenda-Edina-Eguafo-Abirem, Suhum-Kraboa-Coaltar, Bibiani-Anhwiaso-Bekwai), Tanzania (Zanzibar Central-South, Zanzibar Urban-West), Canada (Saguenay-Lac-Saint-Jean), Sveits (Region Engiadina Bassa-Val Müstair, Region Prättigau-Davos), Guyana, Luxembourg og USA (Lyons-Cutler Reservation, Mount KIA-MIA).
+- **Tyskland:** Nienburg (Weser), Reichenbach im Vogtland, Neustadt-Süd, Neustadt-Nord.
+- **Sveits:** bydeler som «Uster / Kirch-Uster» → Kirch-Uster, Ober-Uster, Thalwil Dorfkern, Pfäffikon Dorfkern, Dietlikon Dorf, Wallisellen-Ost. «Biel/Bienne District» → Biel District + {Bienne District}.
+- **Australia:** Davenport Ranges National Park {Iytwelepenty National Park}, Gregory National Park {Judbarra National Park}.
+- **Canada:** «4 1/2 Mile …» / «16 1/2 Mile …» → 4½ / 16½.
+- **New Zealand:** skrivefeil rettet: Stewart Island {Rakiura} (var «Raikura»).
+- **Karibia:** Bahamas, Den dominikanske republikk, Haiti og Jamaica lå under `[NORTH AMERICA/CARIBBEAN]` — flyttet til `[NORTH AMERICA]` som de øvrige karibiske landene.
+
 ## 0.9.273 — 2026-10-09
 
 - Rettet skrivefeil: synonymet `{water}` under [LAKE] er endret til `{Water}`.

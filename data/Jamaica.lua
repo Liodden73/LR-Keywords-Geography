@@ -8,7 +8,7 @@ return {
     version = "0.1.2",
     country = "Jamaica",
     native_name = "Jamaica",
-    continent = "North America/Caribbean",
+    continent = "North America",
     min_city_pop = 1000,
   },
 

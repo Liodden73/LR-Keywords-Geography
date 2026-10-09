@@ -8,7 +8,7 @@ return {
     version = "0.1.1",
     country = "Bahamas",
     native_name = "Bahamas",
-    continent = "North America/Caribbean",
+    continent = "North America",
     min_city_pop = 1000,
   },
 

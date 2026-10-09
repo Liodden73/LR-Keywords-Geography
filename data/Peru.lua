@@ -5,7 +5,7 @@
 
 return {
   meta = {
-    version = "0.1.10",
+    version = "0.1.11",
     country = "Peru",
     native_name = "Perú",
     continent = "South America",

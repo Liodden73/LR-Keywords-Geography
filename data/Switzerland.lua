@@ -479,7 +479,7 @@ return {
                     cities = { "Saint-Imier" },
                 },
                 {
-                    name = "Biel/Bienne District",
+                    name = "Biel District / Bienne District",
                     primary_city = "Biel/Bienne",
                     cities = { "Biel/Bienne", "Lengnau", "Nidau" },
                 },
@@ -639,7 +639,7 @@ return {
                     cities = {},
                 },
                 {
-                    name = "Region Engiadina Bassa / Val Müstair",
+                    name = "Region Engiadina Bassa-Val Müstair",
                     primary_city = "",
                     cities = {},
                 },
@@ -669,7 +669,7 @@ return {
                     cities = { "Chur" },
                 },
                 {
-                    name = "Region Prättigau / Davos",
+                    name = "Region Prättigau-Davos",
                     primary_city = "Davos",
                     cities = { "Davos" },
                 },
@@ -1161,7 +1161,7 @@ return {
                 {
                     name = "Bezirk Bülach",
                     primary_city = "Opfikon",
-                    cities = { "Opfikon", "Bülach", "Kloten", "Wallisellen", "Embrach", "Bassersdorf", "Dietlikon / Dietlikon (Dorf)", "Wallisellen / Wallisellen-Ost" },
+                    cities = { "Opfikon", "Bülach", "Kloten", "Wallisellen", "Embrach", "Bassersdorf", "Dietlikon Dorf", "Wallisellen-Ost" },
                 },
                 {
                     name = "Bezirk Dielsdorf",
@@ -1181,7 +1181,7 @@ return {
                 {
                     name = "Bezirk Horgen",
                     primary_city = "Horgen",
-                    cities = { "Horgen", "Adliswil", "Thalwil", "Wädenswil", "Richterswil", "Langnau am Albis", "Thalwil / Dorfkern", "Kilchberg" },
+                    cities = { "Horgen", "Adliswil", "Thalwil", "Wädenswil", "Richterswil", "Langnau am Albis", "Thalwil Dorfkern", "Kilchberg" },
                 },
                 {
                     name = "Bezirk Meilen",
@@ -1191,12 +1191,12 @@ return {
                 {
                     name = "Bezirk Pfäffikon",
                     primary_city = "Pfäffikon",
-                    cities = { "Pfäffikon", "Effretikon", "Pfäffikon / Pfäffikon (Dorfkern)" },
+                    cities = { "Pfäffikon", "Effretikon", "Pfäffikon Dorfkern" },
                 },
                 {
                     name = "Bezirk Uster",
                     primary_city = "Uster",
-                    cities = { "Uster", "Dübendorf", "Uster / Kirch-Uster", "Egg", "Hegnau", "Uster / Ober-Uster", "Greifensee" },
+                    cities = { "Uster", "Dübendorf", "Kirch-Uster", "Egg", "Hegnau", "Ober-Uster", "Greifensee" },
                 },
                 {
                     name = "Bezirk Winterthur",

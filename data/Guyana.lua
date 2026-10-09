@@ -98,7 +98,7 @@ return {
     "Koirimap Amerindian Village",
     "Kwabanna Amerindian Village",
     "Little Kaniaballi Amerindian Village",
-    "Mainstay/Whyaka Amerindian Village",
+    "Mainstay-Whyaka Amerindian Village",
     "Manawarin Amerindian Village",
     "Mashabo Amerindian Village",
     "Saint Cuthberts Amerindian Village",

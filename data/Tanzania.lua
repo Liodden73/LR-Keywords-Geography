@@ -425,7 +425,7 @@ return {
         },
       },
     },
-    { name = "Zanzibar Central/South",
+    { name = "Zanzibar Central-South",
       municipalities = {
         { name = "Kati",
           cities = { "Koani", "Koani Ndogo" },
@@ -468,7 +468,7 @@ return {
         },
       },
     },
-    { name = "Zanzibar Urban/West",
+    { name = "Zanzibar Urban-West",
       municipalities = {
         { name = "Magharibi",
           cities = { "Bububu" },

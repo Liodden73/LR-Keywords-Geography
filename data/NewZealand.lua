@@ -325,7 +325,7 @@ return {
                 "Secretary Island",
                 "Kawau Island",
                 "South Island",
-                "Stewart Island/Raikura",
+                "Stewart Island / Rakiura",
                 "Ripapa Island",
                 "Rakino Island",
                 "Pourewa Island",

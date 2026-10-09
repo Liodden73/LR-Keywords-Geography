@@ -8,7 +8,7 @@ return {
     version = "0.1.1",
     country = "Haiti",
     native_name = "Haïti",
-    continent = "North America/Caribbean",
+    continent = "North America",
     min_city_pop = 1000,
   },
 

@@ -1307,7 +1307,7 @@ return {
                     cities = { "Lüneburg" },
                 },
                 {
-                    name = "Nienburg/Weser",
+                    name = "Nienburg (Weser)",
                     primary_city = "Nienburg",
                     cities = { "Nienburg" },
                 },
@@ -1564,7 +1564,7 @@ return {
                 {
                     name = "Köln",
                     primary_city = "Köln",
-                    cities = { "Köln", "Nippes", "Porz am Rhein", "Rodenkirchen", "Mülheim", "Neustadt/Süd", "Neustadt/Nord", "Altstadt Sud" },
+                    cities = { "Köln", "Nippes", "Porz am Rhein", "Rodenkirchen", "Mülheim", "Neustadt-Süd", "Neustadt-Nord", "Altstadt Sud" },
                 },
                 {
                     name = "Leverkusen",
@@ -1904,7 +1904,7 @@ return {
                 {
                     name = "Vogtlandkreis",
                     primary_city = "Plauen",
-                    cities = { "Plauen", "Reichenbach/Vogtland", "Auerbach" },
+                    cities = { "Plauen", "Reichenbach im Vogtland", "Auerbach" },
                 },
                 {
                     name = "Zwickau",
