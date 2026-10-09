@@ -308,6 +308,16 @@ local COUNTRIES = {
         addCountry { id = "Bhutan", name = "Bhutan", code = "BT-064", filename = "Bhutan.lua", continent = "Asia", admin_label = "Districts & Areas", mountain_max = 7570, remoteIslandNames = {} },
         addCountry { id = "Mongolia", name = "Mongolia", code = "MN-496", filename = "Mongolia.lua", continent = "Asia", admin_label = "Provinces & Areas", mountain_max = 4374, remoteIslandNames = {} },
         addCountry { id = "Georgia", name = "Georgia", code = "GE-268", filename = "Georgia.lua", continent = "Asia", admin_label = "Regions & Areas", mountain_max = 5201, remoteIslandNames = {} },
+        addCountry { id = "Armenia", name = "Armenia", code = "AM-051", filename = "Armenia.lua", continent = "Asia", admin_label = "Provinces & Areas", mountain_max = 4090, remoteIslandNames = {} },
+        addCountry { id = "Azerbaijan", name = "Azerbaijan", code = "AZ-031", filename = "Azerbaijan.lua", continent = "Asia", admin_label = "Districts & Areas", mountain_max = 4466, remoteIslandNames = {} },
+        addCountry { id = "Kazakhstan", name = "Kazakhstan", code = "KZ-398", filename = "Kazakhstan.lua", continent = "Asia", admin_label = "Regions & Areas", mountain_max = 7010, remoteIslandNames = {} },
+        addCountry { id = "Kyrgyzstan", name = "Kyrgyzstan", code = "KG-417", filename = "Kyrgyzstan.lua", continent = "Asia", admin_label = "Regions & Areas", mountain_max = 7439, remoteIslandNames = {} },
+        addCountry { id = "Uzbekistan", name = "Uzbekistan", code = "UZ-860", filename = "Uzbekistan.lua", continent = "Asia", admin_label = "Regions & Areas", mountain_max = 4668, remoteIslandNames = {} },
+        addCountry { id = "Oman", name = "Oman", code = "OM-512", filename = "Oman.lua", continent = "Asia", admin_label = "Governorates & Areas", mountain_max = 3005, remoteIslandNames = {} },
+        addCountry { id = "Laos", name = "Laos", code = "LA-418", filename = "Laos.lua", continent = "Asia", admin_label = "Provinces & Areas", mountain_max = 2819, remoteIslandNames = {} },
+        addCountry { id = "Taiwan", name = "Taiwan", code = "TW-158", filename = "Taiwan.lua", continent = "Asia", admin_label = "Counties & Areas", mountain_max = 3952, remoteIslandNames = {} },
+        addCountry { id = "PapuaNewGuinea", name = "Papua New Guinea", code = "PG-598", filename = "PapuaNewGuinea.lua", continent = "Oceania", admin_label = "Provinces & Areas", mountain_max = 4509, remoteIslandNames = {} },
+        addCountry { id = "Malawi", name = "Malawi", code = "MW-454", filename = "Malawi.lua", continent = "Africa", admin_label = "Regions & Areas", mountain_max = 3002, remoteIslandNames = {} },
         addCountry { id = "Antarctica",  name = "Antarctica",   code = "AQ-010", filename = "Antarctica.lua",  continent = "Antarctica",    admin_label = "Regions & Areas",    mountain_max = 4892, remoteIslandNames = {} },
 }
 
@@ -410,6 +420,16 @@ local LABELS = {
         Bhutan        = { county = "District", muni = "Gewog", city = "City" },
         Mongolia      = { county = "Province", muni = "Sum", city = "City" },
         Georgia       = { county = "Region", muni = "Municipality", city = "City" },
+        Armenia       = { county = "Province", muni = "Community", city = "City" },
+        Azerbaijan    = { county = "District", muni = "Municipality", city = "City" },
+        Kazakhstan    = { county = "Region", muni = "District", city = "City" },
+        Kyrgyzstan    = { county = "Region", muni = "District", city = "City" },
+        Uzbekistan    = { county = "Region", muni = "District", city = "City" },
+        Oman          = { county = "Governorate", muni = "Wilayat", city = "City" },
+        Laos          = { county = "Province", muni = "District", city = "City" },
+        Taiwan        = { county = "County", muni = "Township", city = "City" },
+        PapuaNewGuinea = { county = "Province", muni = "District", city = "City" },
+        Malawi        = { county = "Region", muni = "District", city = "City" },
 }
 local DEFAULT_LABELS = { county = "County", muni = "Municipality", city = "City" }
 
@@ -502,6 +522,16 @@ local WIKIDATA_TYPES = {
         Bhutan        = { co = nil, mu = nil, ci = nil },
         Mongolia      = { co = nil, mu = nil, ci = nil },
         Georgia       = { co = nil, mu = nil, ci = nil },
+        Armenia       = { co = nil, mu = nil, ci = nil },
+        Azerbaijan    = { co = nil, mu = nil, ci = nil },
+        Kazakhstan    = { co = nil, mu = nil, ci = nil },
+        Kyrgyzstan    = { co = nil, mu = nil, ci = nil },
+        Uzbekistan    = { co = nil, mu = nil, ci = nil },
+        Oman          = { co = nil, mu = nil, ci = nil },
+        Laos          = { co = nil, mu = nil, ci = nil },
+        Taiwan        = { co = nil, mu = nil, ci = nil },
+        PapuaNewGuinea = { co = nil, mu = nil, ci = nil },
+        Malawi        = { co = nil, mu = nil, ci = nil },
 }
 
 -- Preferred label language(s) per country for the Wikidata label service.
@@ -601,6 +631,16 @@ local WIKIDATA_LANG = {
         Bhutan        = "dz,en",
         Mongolia      = "mn,en",
         Georgia       = "ka,en",
+        Armenia       = "hy,en",
+        Azerbaijan    = "az,en",
+        Kazakhstan    = "kk,ru,en",
+        Kyrgyzstan    = "ky,ru,en",
+        Uzbekistan    = "uz,ru,en",
+        Oman          = "ar,en",
+        Laos          = "lo,en",
+        Taiwan        = "zh,en",
+        PapuaNewGuinea = "en,tpi",
+        Malawi        = "en,ny",
 }
 
 -- Percent-encode a string for safe inclusion in a URL query parameter.

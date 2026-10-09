@@ -1,3 +1,25 @@
+## 0.9.267 — 2026-10-09
+### Ti nye land: Armenia, Aserbajdsjan, Kasakhstan, Kirgisistan, Usbekistan, Oman, Laos, Taiwan, Papua Ny-Guinea og Malawi
+- **Armenia** (Asia): 11 provinser, 258 byer (flat). Høyeste fjell: Mount Aragats 4090 m.
+- **Azerbaijan** (Asia): 71 rayoner, 174 byer (flat). Høyeste fjell: Bazarduzu 4466 m.
+- **Kazakhstan** (Asia): 21 regioner/byer, 266 byer (flat). Høyeste fjell: Khan Tengri 7010 m.
+- **Kyrgyzstan** (Asia): 9 regioner, 95 byer (flat). Høyeste fjell: Jengish Chokusu 7439 m.
+- **Uzbekistan** (Asia): 14 regioner, 210 byer (flat). Høyeste fjell: Alpomish 4668 m.
+- **Oman** (Asia): 11 guvernement, 61 wilayat, 39 byer. Høyeste fjell: Jabal Shams 3005 m.
+- **Laos** (Asia): 18 provinser, 148 distrikter, 94 byer. Høyeste fjell: Phou Bia 2819 m.
+- **Taiwan** (Asia): 22 fylker/byer (flat), 82 byer. Høyeste fjell: Yushan 3952 m.
+- **Papua New Guinea** (Oseania): 22 provinser, 52 byer (flat). Høyeste fjell: Mount Wilhelm 4509 m.
+- **Malawi** (Afrika): 3 regioner, 28 distrikter, 39 byer. Høyeste fjell: Sapitwa 3002 m.
+- Alle ti er registrert i List Overview og på verdenskartet. Dataversjon 0.1.0.
+
+## 0.9.266 — 2026-10-09
+### Registrering av landene fra 0.9.265 i List Overview og på kartet
+- Zambia, Zimbabwe, Mozambique, Madagascar, Seychelles, Mauritius, Maldives, Bhutan, Mongolia og Georgia vises nå i List Overview og på verdenskartet.
+- Rettet navn på naturområder for disse landene.
+
+## 0.9.265 — 2026-10-09
+### Ti nye land: Zambia, Zimbabwe, Mosambik, Madagaskar, Seychellene, Mauritius, Maldivene, Bhutan, Mongolia og Georgia
+
 ## 0.9.264 — 2026-10-08
 ### Intro-skjermen: 5 px marg til venstre for tittel og velkomsttekst
 - Tittelen «Geography Keyword Builder» og velkomstteksten har nå 5 px spacer til venstre.
