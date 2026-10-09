@@ -218,6 +218,7 @@ function Generator.generate(data, prefs)
                         -- ── Mountains and Peaks (elevation-filtered) ─────────────
                         if #mountainPicks > 0 then
                                 add(5, container("Mountain"))
+                                addSynonym(6, "{Mountain}")
                                 local picked = sortedCopy(mountainPicks)
                                 local maxM = math.min(prefs.mountains_max or 100, #picked)
                                 for i = 1, maxM do
@@ -241,6 +242,8 @@ function Generator.generate(data, prefs)
                                 local picked = {}
                                 for i = 1, math.min(maxN, #data.lakes) do picked[#picked + 1] = data.lakes[i] end
                                 add(5, container("Lake"))
+                                addSynonym(6, "{Lake}")
+                                addSynonym(6, "{water}")
                                 picked = sortedCopy(picked)
                                 for _, name in ipairs(picked) do add(6, name) end
                         end
@@ -251,6 +254,7 @@ function Generator.generate(data, prefs)
                                 local picked = {}
                                 for i = 1, math.min(maxN, #data.rivers) do picked[#picked + 1] = data.rivers[i] end
                                 add(5, container("River"))
+                                addSynonym(6, "{Water}")
                                 picked = sortedCopy(picked)
                                 for _, name in ipairs(picked) do add(6, name) end
                         end
@@ -261,6 +265,7 @@ function Generator.generate(data, prefs)
                                 local picked = {}
                                 for i = 1, math.min(maxN, #data.islands) do picked[#picked + 1] = data.islands[i] end
                                 add(5, container("Island"))
+                                addSynonym(6, "{Island}")
                                 picked = sortedCopy(picked)
                                 for _, name in ipairs(picked) do add(6, name) end
                         end

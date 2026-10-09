@@ -1,3 +1,16 @@
+## 0.9.272 — 2026-10-09
+
+### Synonymer lagt til på naturkategorier
+
+For å sikre at kategori-søkeord eksporteres fra Lightroom er følgende synonymer lagt til på container-nodene:
+
+- **[MOUNTAIN]** → {Mountain}
+- **[LAKE]** → {Lake}, {water}
+- **[RIVER]** → {Water}
+- **[ISLAND]** → {Island}
+
+Disse synonymene eksporteres av Lightroom selv om selve container-noden ([MOUNTAIN] osv.) er markert som ikke-eksporterbar.
+
 ## 0.9.271 — 2026-10-09
 
 ### Ny NATURE-struktur: naturinnhold flyttes inn under hvert land
