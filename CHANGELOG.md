@@ -1,3 +1,11 @@
+## 0.9.281 — 2026-10-09
+
+### Verdenskart: to grå flekker i Afrika fjernet
+
+- **Vest-Sahara** vises nå som en del av Marokko. Dataene for Marokko omfatter allerede regionene Laâyoune-Sakia El Hamra og Dakhla-Oued Ed-Dahab.
+- **Somaliland** vises nå som en del av Somalia. Dataene for Somalia omfatter allerede regionene Awdal, Woqooyi Galbeed, Togdheer, Sanaag og Sool.
+- Ingen endring i nøkkelordene, kun i kartet.
+
 ## 0.9.280 — 2026-10-09
 
 ### Tolv nye land: Saint Vincent og Grenadinene, Palestina og ti stillehavsstater
