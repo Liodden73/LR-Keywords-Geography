@@ -1,10 +1,10 @@
 -- Mongolia geography data for LR Geography Builder
 -- Admin divisions and cities: GeoNames.org (CC BY 4.0); national parks, reserves
 -- and viewpoints: curated lists. No commas in any name (Lightroom constraint).
--- Data version 0.1.0  generated 2026-10-08
+-- Data version 0.1.1  generated 2026-10-08
 return {
         meta = {
-                version      = "0.1.0",
+                version      = "0.1.1",
                 country      = "Mongolia",
                 native_name  = "Mongol Uls",
                 continent    = "Asia",
@@ -43,6 +43,7 @@ return {
         mountains = {
                 { name = "Khuiten Peak", elev = 4374, region = "Bayan-Olgii" },
                 { name = "Otgon Tenger Uul", elev = 4008, region = "Zavkhan" },
+                { name = "Munku-Sardyk", elev = 3491, region = "Khuvsgul" },
                 { name = "Choybalsan Uul", elev = 2261, region = "Ulaanbaatar" },
                 { name = "Usagiyn Gol Uul", elev = 1711, region = "Selenge" },
                 { name = "Ashata Uul", elev = 1374, region = "Selenge" },

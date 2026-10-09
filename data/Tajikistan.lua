@@ -47,6 +47,7 @@ return {
                 { name = "Kuhi Arkhar", elev = 4802, region = "Gorno-Badakhshan" },
                 { name = "Kuhi Dulangtosh", elev = 4655, region = "Gorno-Badakhshan" },
                 { name = "Xazrat Sulton Tog", elev = 4643, region = "Sughd" },
+                { name = "Khazret Sultan", elev = 4643, region = "Districts of Republican Subordination" },
                 { name = "Kuhi Navoy", elev = 3838, region = "Districts of Republican Subordination" },
                 { name = "Gora Imomaskar", elev = 2914, region = "Khatlon" },
                 { name = "Gora Kaftarmol", elev = 2726, region = "Khatlon" },

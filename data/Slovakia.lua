@@ -329,6 +329,7 @@ return {
     { name = "Ťažký štít", elev = 2520, region = "Presov" },
     { name = "Malý Kežmarský štít", elev = 2513, region = "Presov" },
     { name = "Zadný Ľadový štít", elev = 2512, region = "Presov" },
+    { name = "Rysy", elev = 2501, region = "Presov" },
     { name = "Kriváň", elev = 2495, region = "Presov" },
     { name = "Spišský štít", elev = 2483, region = "Presov" },
     { name = "Bradavica", elev = 2476, region = "Presov" },

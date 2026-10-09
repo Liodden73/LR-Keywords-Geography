@@ -1,10 +1,10 @@
 -- Armenia geography data for LR Geography Builder
 -- Admin divisions and cities: GeoNames.org (CC BY 4.0); national parks, reserves
 -- and viewpoints: curated lists. No commas in any name (Lightroom constraint).
--- Data version 0.1.0  generated 2026-10-09
+-- Data version 0.1.1  generated 2026-10-09
 return {
         meta = {
-                version      = "0.1.0",
+                version      = "0.1.1",
                 country      = "Armenia",
                 native_name  = "Hayastan",
                 continent    = "Asia",
@@ -31,6 +31,7 @@ return {
 
         mountains = {
                 { name = "Mount Aragats", elev = 4090, region = "Aragatsotn" },
+                { name = "Kaputjugh", elev = 3906, region = "Syunik" },
                 { name = "Azhdahak", elev = 3597, region = "Kotayk" },
                 { name = "Karmir", elev = 3530, region = "Kotayk" },
                 { name = "Vardenis", elev = 3522, region = "Vayots Dzor" },

@@ -113,6 +113,7 @@ return {
   },
 
   mountains = {
+    { name = "Mount Roraima", elev = 2810, region = "Cuyuni-Mazaruni Region" },
     { name = "Mount Wokomung", elev = 1700, region = "Potaro-Siparuni Region" },
   },
 

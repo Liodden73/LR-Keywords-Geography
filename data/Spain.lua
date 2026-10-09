@@ -81,6 +81,7 @@ return {
         { name = "Pico Gran Bachimala", elev = 3177, region = "Aragon" },
         { name = "Pico Delmás", elev = 3163, region = "Aragon" },
         { name = "Pic Balaïtous", elev = 3151, region = "Aragon" },
+        { name = "Pica d'Estats", elev = 3143, region = "Catalunya" },
         { name = "Pico Viejo", elev = 3135, region = "Canary Islands" },
         { name = "La Munia", elev = 3134, region = "Aragon" },
         { name = "Punta del Sabre", elev = 3134, region = "Aragon" },

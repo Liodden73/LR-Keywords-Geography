@@ -50,6 +50,7 @@ return {
         { name = "Aletschhorn", elev = 4193, region = "Valais" },
         { name = "Strahlhorn", elev = 4190, region = "Valais" },
         { name = "Combin de Valsorey", elev = 4184, region = "Valais" },
+        { name = "Dent d'Herens", elev = 4174, region = "Valais" },
         { name = "Breithorn", elev = 4163, region = "Valais" },
         { name = "Jungfrau", elev = 4158, region = "Berne" },
         { name = "Bishorn", elev = 4151, region = "Valais" },
@@ -84,6 +85,9 @@ return {
         { name = "Eiger", elev = 3967, region = "Berne" },
         { name = "Pointe Sud de Moming", elev = 3963, region = "Valais" },
         { name = "Äbeni Flue", elev = 3961, region = "Valais" },
+        { name = "Mont Dolent", elev = 3820, region = "Valais" },
+        { name = "Piz Buin", elev = 3312, region = "Graubünden" },
+        { name = "Grauspitz", elev = 2599, region = "Graubünden" },
     },
 
     lakes = {

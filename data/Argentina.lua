@@ -57,12 +57,15 @@ return {
 
     mountains = {
         { name = "Cerro Aconcagua", elev = 6959, region = "Mendoza Province" },
+        { name = "Ojos del Salado", elev = 6893, region = "Catamarca Province" },
         { name = "Monte Pissis", elev = 6882, region = "La Rioja Province" },
         { name = "Cerro Mercedario", elev = 6770, region = "San Juan Province" },
         { name = "Cerro Bonete", elev = 6759, region = "La Rioja Province" },
         { name = "Nevado Tres Cruces", elev = 6749, region = "Catamarca Province" },
+        { name = "Volcán Llullaillaco", elev = 6739, region = "Salta Province" },
         { name = "Cerro de Incahuasi", elev = 6621, region = "Catamarca Province" },
         { name = "Cerro Incahuasi", elev = 6621, region = "Catamarca Province" },
+        { name = "Volcán Tupungato", elev = 6570, region = "Mendoza Province" },
         { name = "Nevado El Muerto", elev = 6488, region = "" },
         { name = "’Cerro del Nacimiento", elev = 6436, region = "Catamarca Province" },
         { name = "Cerro Bayo", elev = 6436, region = "Catamarca Province" },
@@ -116,6 +119,9 @@ return {
         { name = "Cerros de Toconquis", elev = 5703, region = "Catamarca Province" },
         { name = "Cerro Los Maranceles", elev = 5688, region = "San Juan Province" },
         { name = "Cerro Cajero", elev = 5675, region = "Catamarca Province" },
+        { name = "Volcán Lanín", elev = 3747, region = "Neuquén Province" },
+        { name = "Monte Tronador", elev = 3491, region = "Río Negro Province" },
+        { name = "Cerro Fitz Roy", elev = 3405, region = "Santa Cruz Province" },
     },
 
     lakes = {

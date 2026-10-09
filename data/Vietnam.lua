@@ -59,6 +59,7 @@ return {
         mountains = {
                 { name = "Fansipan", elev = 3142, region = "Lai Chau" },
                 { name = "Phu Si Lung", elev = 3076, region = "Lai Chau" },
+                { name = "Pu Xai Lai Leng", elev = 2720, region = "Nghe An" },
                 { name = "Ngok Linh", elev = 2598, region = "Da Nang" },
                 { name = "Chu Yang Sin", elev = 2405, region = "Dak Lak" },
                 { name = "Tam Dao Bac", elev = 1592, region = "Phu Tho" },

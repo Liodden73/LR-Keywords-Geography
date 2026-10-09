@@ -79,6 +79,7 @@ return {
         { name = "Punta Nordend", elev = 4608, region = "Piemonte" },
         { name = "Zumsteinspitze", elev = 4563, region = "Piemonte" },
         { name = "Punta Gnifetti", elev = 4554, region = "Piemonte" },
+        { name = "Matterhorn", elev = 4478, region = "Regione Autonoma Valle d'Aosta" },
         { name = "Parrotspitze", elev = 4434, region = "Piemonte" },
         { name = "Corno Nero", elev = 4322, region = "Piemonte" },
         { name = "Naso del Liskamm", elev = 4272, region = "Regione Autonoma Valle d'Aosta" },
@@ -111,6 +112,7 @@ return {
         { name = "Monte Viso", elev = 3841, region = "Piemonte" },
         { name = "Punta Carrel", elev = 3841, region = "Regione Autonoma Valle d'Aosta" },
         { name = "Punta Lioy", elev = 3820, region = "Regione Autonoma Valle d'Aosta" },
+        { name = "Mont Dolent", elev = 3820, region = "Regione Autonoma Valle d'Aosta" },
         { name = "Tête de Valpelline", elev = 3798, region = "Regione Autonoma Valle d'Aosta" },
         { name = "Cima di Jazzi", elev = 3796, region = "Piemonte" },
         { name = "Punta Bianca", elev = 3793, region = "Regione Autonoma Valle d'Aosta" },
@@ -118,6 +120,7 @@ return {
         { name = "Monte Cevedale", elev = 3769, region = "Lombardia" },
         { name = "Cima Cevedale II", elev = 3757, region = "Lombardia" },
         { name = "Becca di Guin", elev = 3757, region = "Regione Autonoma Valle d'Aosta" },
+        { name = "Weisskugel", elev = 3739, region = "Trentino-Alto Adige" },
         { name = "Monte Zebrù", elev = 3735, region = "Trentino-Alto Adige" },
         { name = "Testa del Leone", elev = 3714, region = "Regione Autonoma Valle d'Aosta" },
         { name = "la Gengla", elev = 3714, region = "Regione Autonoma Valle d'Aosta" },
@@ -133,6 +136,9 @@ return {
         { name = "Petit Bouquetin", elev = 3670, region = "Regione Autonoma Valle d'Aosta" },
         { name = "Dents des Bouquetins Sud", elev = 3668, region = "Regione Autonoma Valle d'Aosta" },
         { name = "Weissgrat", elev = 3659, region = "Piemonte" },
+        { name = "Similaun", elev = 3606, region = "Trentino-Alto Adige" },
+        { name = "Hochfeiler", elev = 3509, region = "Trentino-Alto Adige" },
+        { name = "Mangart", elev = 2679, region = "" },
     },
 
     lakes = {

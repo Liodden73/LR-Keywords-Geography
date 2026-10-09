@@ -42,6 +42,7 @@ return {
         { name = "Großvenediger", elev = 3662, region = "Tirol" },
         { name = "Glocknerhorn", elev = 3643, region = "Kärnten" },
         { name = "Hinterer Brochkogel", elev = 3635, region = "Tirol" },
+        { name = "Similaun", elev = 3606, region = "Tirol" },
         { name = "Großes Wiesbachhorn", elev = 3564, region = "Salzburg" },
         { name = "Rainerhorn", elev = 3559, region = "Tirol" },
         { name = "Ramolkogel", elev = 3550, region = "Tirol" },
@@ -92,6 +93,9 @@ return {
         { name = "Großer Bärenkopf", elev = 3396, region = "Kärnten" },
         { name = "Schrandele", elev = 3393, region = "Tirol" },
         { name = "Hohe Geige", elev = 3393, region = "Tirol" },
+        { name = "Piz Buin", elev = 3312, region = "Vorarlberg" },
+        { name = "Zugspitze", elev = 2962, region = "Tirol" },
+        { name = "Hochstuhl", elev = 2237, region = "Kärnten" },
     },
 
     lakes = {

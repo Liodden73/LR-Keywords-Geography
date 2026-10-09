@@ -61,6 +61,7 @@ return {
         { name = "Mont Blanc", elev = 4806, region = "Auvergne-Rhône-Alpes" },
         { name = "Mont Maudit", elev = 4465, region = "Auvergne-Rhône-Alpes" },
         { name = "Mont Blanc du Tacul", elev = 4248, region = "Auvergne-Rhône-Alpes" },
+        { name = "Grandes Jorasses", elev = 4208, region = "Auvergne-Rhône-Alpes" },
         { name = "Aiguille Verte", elev = 4122, region = "Auvergne-Rhône-Alpes" },
         { name = "Les Écrins", elev = 4101, region = "Provence-Alpes-Côte d'Azur" },
         { name = "Aiguille de Bionnassay", elev = 4052, region = "Auvergne-Rhône-Alpes" },
@@ -80,6 +81,7 @@ return {
         { name = "Aiguille du Midi", elev = 3842, region = "Auvergne-Rhône-Alpes" },
         { name = "Aiguille du Chardonnet", elev = 3824, region = "Auvergne-Rhône-Alpes" },
         { name = "le Pave", elev = 3823, region = "Auvergne-Rhône-Alpes" },
+        { name = "Mont Dolent", elev = 3820, region = "Auvergne-Rhône-Alpes" },
         { name = "Aiguille du Glacier", elev = 3817, region = "Auvergne-Rhône-Alpes" },
         { name = "Le Rateau", elev = 3809, region = "Auvergne-Rhône-Alpes" },
         { name = "La Tour Ronde", elev = 3792, region = "Auvergne-Rhône-Alpes" },
@@ -118,6 +120,9 @@ return {
         { name = "Dôme de Chasseforêt", elev = 3586, region = "Auvergne-Rhône-Alpes" },
         { name = "Grand Roc Noir", elev = 3582, region = "Auvergne-Rhône-Alpes" },
         { name = "Dôme des Nants", elev = 3570, region = "Auvergne-Rhône-Alpes" },
+        { name = "Vignemale", elev = 3298, region = "Occitanie" },
+        { name = "Balaitous", elev = 3144, region = "Occitanie" },
+        { name = "Pica d'Estats", elev = 3143, region = "Occitanie" },
     },
 
     lakes = {

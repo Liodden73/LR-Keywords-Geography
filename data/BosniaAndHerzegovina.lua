@@ -495,10 +495,10 @@ return {
     { name = "Četovičko Brdo", elev = 2060, region = "Federation of Bosnia and Herzegovina" },
     { name = "Barice", elev = 2059, region = "Federation of Bosnia and Herzegovina" },
     { name = "Mala Vlahinja", elev = 2054, region = "Federation of Bosnia and Herzegovina" },
+    { name = "Treskavica", elev = 2038, region = "" },
     { name = "Pesti Brdo", elev = 2035, region = "Federation of Bosnia and Herzegovina" },
     { name = "Velika Lelija", elev = 2032, region = "Republika Srpska" },
     { name = "Vran", elev = 2022, region = "Federation of Bosnia and Herzegovina" },
-    { name = "Treskavica", elev = 2038, region = "" },
     { name = "Bregoč", elev = 2014, region = "Republika Srpska" },
     { name = "Velika Vlahinja", elev = 1995, region = "Federation of Bosnia and Herzegovina" },
     { name = "Velika Radovina", elev = 1993, region = "Republika Srpska" },
@@ -545,6 +545,7 @@ return {
     { name = "Smiljeva Kosa", elev = 1873, region = "Federation of Bosnia and Herzegovina" },
     { name = "Veliki Šator", elev = 1873, region = "Federation of Bosnia and Herzegovina" },
     { name = "Velika Košuta", elev = 1872, region = "Republika Srpska" },
+    { name = "Dinara", elev = 1831, region = "Federation of Bosnia and Herzegovina" },
   },
 
   lakes = {

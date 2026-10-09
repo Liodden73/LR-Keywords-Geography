@@ -1270,6 +1270,7 @@ return {
     { name = "Nevado Santa Isabel", elev = 4950, region = "Departamento de Tolima" },
     { name = "La Olleta Volcano", elev = 4875, region = "Departamento de Caldas" },
     { name = "Nevado del Quindío", elev = 4760, region = "Quindio Department" },
+    { name = "Volcán Chiles", elev = 4748, region = "Departamento de Narino" },
     { name = "Nevado del Cisne", elev = 4700, region = "Departamento de Caldas" },
     { name = "La Piraña Volcano", elev = 4600, region = "Departamento de Tolima" },
     { name = "Paramillo de Santa Rosa", elev = 4600, region = "Departamento de Risaralda" },

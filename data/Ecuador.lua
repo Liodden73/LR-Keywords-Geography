@@ -62,6 +62,7 @@ return {
         { name = "Cerro Sincholagua", elev = 4899, region = "Pichincha" },
         { name = "Lliniza Norte", elev = 4890, region = "Pichincha" },
         { name = "Corazón", elev = 4790, region = "Pichincha" },
+        { name = "Volcán Chiles", elev = 4748, region = "Carchi" },
         { name = "Cerro Antisana", elev = 4747, region = "Pichincha" },
         { name = "Rumiñahui", elev = 4721, region = "Cotopaxi" },
         { name = "Chacana", elev = 4643, region = "Pichincha" },

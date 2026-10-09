@@ -36,7 +36,9 @@ return {
 
         mountains = {
                 { name = "Phou Bia", elev = 2819, region = "Xaisomboun" },
+                { name = "Pu Xai Lai Leng", elev = 2720, region = "Xiangkhouang" },
                 { name = "Phou San", elev = 2218, region = "Xiangkhouang" },
+                { name = "Phu Soi Dao", elev = 2102, region = "Xaignabouli" },
                 { name = "Phou Khe", elev = 2079, region = "Xaignabouli" },
                 { name = "Phou Pan-Gnai", elev = 2079, region = "Houaphan" },
                 { name = "Phou Leuy", elev = 2062, region = "Houaphan" },

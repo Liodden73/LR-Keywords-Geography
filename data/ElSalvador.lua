@@ -129,6 +129,7 @@ return {
   },
 
   mountains = {
+    { name = "Cerro El Pital", elev = 2730, region = "Chalatenango" },
     { name = "Volcán de Guazapa", elev = 1438, region = "" },
     { name = "Volcán Conchagua", elev = 1225, region = "Departamento de La Union" },
   },

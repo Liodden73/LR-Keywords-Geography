@@ -39,6 +39,7 @@ return {
 
         mountains = {
                 { name = "Inyangani", elev = 2592, region = "Manicaland" },
+                { name = "Mount Binga", elev = 2436, region = "Manicaland" },
                 { name = "Rukotso", elev = 2404, region = "Manicaland" },
                 { name = "Nyangui", elev = 2227, region = "Manicaland" },
                 { name = "Manyoli", elev = 2161, region = "Manicaland" },

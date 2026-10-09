@@ -77,6 +77,7 @@ return {
                 { name = "Kio Mae Pan", elev = 2324, region = "Chiang Mai" },
                 { name = "Doi Pha Luang", elev = 2291, region = "Chiang Mai" },
                 { name = "Doi Luang Chiang Dao", elev = 2138, region = "Chiang Mai" },
+                { name = "Phu Soi Dao", elev = 2102, region = "Uttaradit" },
                 { name = "Khao Yai", elev = 2022, region = "Tak" },
                 { name = "Doi Pong Sa Yaen", elev = 2008, region = "Chiang Mai" },
                 { name = "Doi Lang Ka", elev = 2001, region = "Chiang Rai" },

@@ -1,10 +1,10 @@
 -- Lesotho geography data for LR Geography Builder
 -- Admin divisions and cities: GeoNames.org (CC BY 4.0); national parks, reserves
 -- and viewpoints: curated lists. No commas in any name (Lightroom constraint).
--- Data version 0.1.0  generated 2026-10-09
+-- Data version 0.1.1  generated 2026-10-09
 return {
         meta = {
-                version      = "0.1.0",
+                version      = "0.1.1",
                 country      = "Lesotho",
                 native_name  = "Lesotho",
                 continent    = "Africa",
@@ -27,6 +27,7 @@ return {
 
         mountains = {
                 { name = "Thabana Ntlenyana", elev = 3482, region = "Mokhotlong" },
+                { name = "Mafadi", elev = 3450, region = "Mokhotlong" },
                 { name = "Njesuthi", elev = 3408, region = "Mokhotlong" },
                 { name = "Mont-Aux-Sources", elev = 3282, region = "Mokhotlong" },
                 { name = "Thaba Putsoa", elev = 3096, region = "Thaba-Tseka" },

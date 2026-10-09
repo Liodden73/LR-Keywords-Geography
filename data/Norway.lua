@@ -185,6 +185,7 @@ return {
                 { name = "Hettpiggen", elev = 1900, region = "mainland" },
                 { name = "Gjuvtinden", elev = 1898, region = "svalbard" },
                 { name = "Blåhøe", elev = 1897, region = "mainland" },
+                { name = "Halti", elev = 1365, region = "mainland" },
         },
 
         fjords = {

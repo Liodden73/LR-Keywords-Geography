@@ -110,6 +110,7 @@ return {
         { name = "Rakoń", elev = 1879, region = "Lesser Poland" },
         { name = "Pośredni Wierch Goryczkowy", elev = 1874, region = "Lesser Poland" },
         { name = "Zadni Ornak", elev = 1867, region = "Lesser Poland" },
+        { name = "Sniezka", elev = 1603, region = "Lower Silesian" },
     },
 
     lakes = {

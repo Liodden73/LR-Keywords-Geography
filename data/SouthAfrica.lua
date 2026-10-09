@@ -241,6 +241,7 @@ return {
         { name = "Champagne Castle", elev = 3377, region = "KwaZulu-Natal" },
         { name = "Popple Peak", elev = 3331, region = "" },
         { name = "Giant’s Castle", elev = 3315, region = "KwaZulu-Natal" },
+        { name = "Mont-aux-Sources", elev = 3282, region = "KwaZulu-Natal" },
         { name = "Namahadi Peak", elev = 3275, region = "Free State" },
         { name = "Elephant", elev = 3144, region = "KwaZulu-Natal" },
         { name = "Triplets", elev = 3136, region = "KwaZulu-Natal" },

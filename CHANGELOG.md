@@ -1,3 +1,47 @@
+## 0.9.269 — 2026-10-09
+
+### Grensetopper lagt til i eldre land
+
+Topper som deles mellom to eller flere land ligger nå i alle landene som har del i dem (f.eks. Matterhorn i både Sveits og Italia, Cho Oyu i både Nepal og Kina).
+
+- **China:** Makalu, Jongsong Peak, Gasherbrum II, Gangkhar Puensum, Jomolhari, Khan Tengri, Jengish Chokusu, Khuiten Peak, Gamlang Razi
+- **Nepal:** Cho Oyu, Gyachung Kang, Pumori, Jongsong Peak
+- **Tajikistan:** Khazret Sultan
+- **Russia:** Belukha, Munku-Sardyk, Shkhara, Mount Kazbek, Mount Tebulosmta, Bazarduzu
+- **Kazakhstan:** Belukha
+- **Mongolia:** Munku-Sardyk
+- **Armenia:** Kaputjugh
+- **Italy:** Matterhorn, Mont Dolent, Weisskugel, Similaun, Hochfeiler, Mangart
+- **Switzerland:** Dent d'Herens, Mont Dolent, Piz Buin, Grauspitz
+- **France:** Grandes Jorasses, Mont Dolent, Vignemale, Balaitous, Pica d'Estats
+- **Austria:** Similaun, Piz Buin, Zugspitze, Hochstuhl
+- **Spain:** Pica d'Estats
+- **Slovakia:** Rysy
+- **Poland:** Sniezka
+- **Norway:** Halti
+- **Albania:** Korab
+- **Montenegro:** Zla Kolata
+- **BosniaAndHerzegovina:** Dinara
+- **Serbia:** Midzor
+- **NorthMacedonia:** Kajmakcalan, Ruen
+- **Canada:** Mount Saint Elias, Mount Vancouver, Mount Fairweather
+- **Mexico:** Volcán Tacaná
+- **Guatemala:** Volcán Tacaná
+- **ElSalvador:** Cerro El Pital
+- **Guyana:** Mount Roraima
+- **Brazil:** Mount Roraima
+- **Ecuador:** Volcán Chiles
+- **Colombia:** Volcán Chiles
+- **Argentina:** Ojos del Salado, Volcán Llullaillaco, Volcán Tupungato, Volcán Lanín, Monte Tronador, Cerro Fitz Roy
+- **Chile:** Nevado Pomerape, Cerro Marmolejo, Volcán Acotango, Volcán Licancabur, Volcán Lanín, Monte Tronador, Cerro Fitz Roy
+- **Bolivia:** Volcán Parinacota, Volcán Licancabur
+- **Lesotho:** Mafadi
+- **SouthAfrica:** Mont-aux-Sources
+- **Zimbabwe:** Mount Binga
+- **Thailand:** Phu Soi Dao
+- **Laos:** Phu Soi Dao, Pu Xai Lai Leng
+- **Vietnam:** Pu Xai Lai Leng
+
 ## 0.9.268 — 2026-10-09
 ### Ti nye land: Saudi-Arabia, Qatar, Singapore, Myanmar, Pakistan, Tadsjikistan, Lesotho, Eswatini, Gabon og DR Kongo
 - **Saudi Arabia** (Asia): 13 regioner, 122 guvernement, 143 byer. Høyeste fjell: Jabal Sawda 3015 m.

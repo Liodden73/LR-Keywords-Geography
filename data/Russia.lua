@@ -72,7 +72,9 @@ return {
     mountains = {
         { name = "Mount Elbrus", elev = 5642, region = "Kabardino-Balkarskaya Respublika" },
         { name = "Gora Dykhtau", elev = 5204, region = "Kabardino-Balkarskaya Respublika" },
+        { name = "Shkhara", elev = 5193, region = "Kabardino-Balkarskaya Respublika" },
         { name = "Gora Koshtantau", elev = 5152, region = "Kabardino-Balkarskaya Respublika" },
+        { name = "Mount Kazbek", elev = 5054, region = "North Ossetia" },
         { name = "Gora Katyntau", elev = 4780, region = "" },
         { name = "Gora Uilpata", elev = 4646, region = "North Ossetia" },
         { name = "Gora Saukhokh", elev = 4636, region = "North Ossetia" },
@@ -80,7 +82,10 @@ return {
         { name = "Gora Mailikhokh", elev = 4532, region = "North Ossetia" },
         { name = "Gora Ulluauzna", elev = 4527, region = "Kabardino-Balkarskaya Respublika" },
         { name = "Gora Salynngantau", elev = 4507, region = "Kabardino-Balkarskaya Respublika" },
+        { name = "Belukha", elev = 4506, region = "" },
+        { name = "Mount Tebulosmta", elev = 4493, region = "Chechenskaya Respublika" },
         { name = "Gora Sugan", elev = 4489, region = "Kabardino-Balkarskaya Respublika" },
+        { name = "Bazarduzu", elev = 4466, region = "Dagestan" },
         { name = "Gora Tepli", elev = 4431, region = "North Ossetia" },
         { name = "Mta Chat’ini", elev = 4411, region = "" },
         { name = "Gora Tyutyubashi", elev = 4404, region = "Kabardino-Balkarskaya Respublika" },
@@ -130,6 +135,7 @@ return {
         { name = "Gora Khashkharva", elev = 3971, region = "Dagestan" },
         { name = "Subaschi", elev = 3968, region = "Kabardino-Balkarskaya Respublika" },
         { name = "Gora Balyksubashi", elev = 3932, region = "Kabardino-Balkarskaya Respublika" },
+        { name = "Munku-Sardyk", elev = 3491, region = "" },
     },
 
     lakes = {
