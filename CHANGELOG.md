@@ -1,3 +1,53 @@
+## 0.9.277 — 2026-10-09
+
+### Ti nye land i Vest-Afrika: Guinea, Liberia, Sierra Leone, Guinea-Bissau, Togo, Benin, Mali, Burkina Faso, Niger, Mauritania
+
+- **Guinea**: 8 regioner, 33 prefekturer, 83 byer. Høyeste topp Mount Nimba (1752 m).
+- **Liberia**: 15 counties med 40 byer rett under (ingen distriktsnivå – GeoNames-distriktene er for rotete og overlappende). Høyeste topp Mount Wuteve (1440 m).
+- **Sierra Leone**: 5 provinser, 16 distrikter (inkl. Falaba og Karene), 78 tettsteder. Høyeste topp Mount Bintumani (1945 m).
+- **Guinea-Bissau**: 9 regioner, 38 sektorer, 35 tettsteder. Ingen fjell i GeoNames (flatt land); Bijagos-øyene under NATURE.
+- **Togo**: 5 regioner, 30 prefekturer, 32 byer. Høyeste topp Mount Agou (986 m).
+- **Benin**: 12 departementer, 77 kommuner, 85 byer. Høyeste topp Mont Sokbaro (658 m).
+- **Mali**: 11 regioner, 48 kretser (cercles), 91 byer. Høyeste topp Hombori Tondo (1155 m).
+- **Burkina Faso**: 13 regioner, 45 provinser (med de nye provinsnavnene fra GeoNames, f.eks. Gobnangou, Djelgodji, Bassitenga), 111 byer. Høyeste topp Tenakourou (749 m).
+- **Niger**: 8 regioner, 65 departementer, 65 byer. Høyeste topp Mont Idoukal-n-Taghes (2022 m) i Aïr.
+- **Mauritania**: 15 regioner, 55 departementer, 58 byer. Høyeste topp Kediet ej Jill (915 m).
+
+### Fjellhøyder
+
+- For topper der GeoNames bare har modellert høyde (SRTM) og ikke målt høyde, brukes den modellerte høyden. Det gir fulle fjellister for Guinea, Liberia, Sierra Leone og Togo, men høydene kan avvike noe fra offisielle tall.
+
+### Grensetopper
+
+- **Mount Nimba** (1752 m) ligger nå i både Guinea og Elfenbenskysten.
+
+### Verdenskart
+
+- Alle ti land er lagt inn på kartet.
+
+## 0.9.276 — 2026-10-09
+
+### Ti nye land: Algerie, Elfenbenskysten, Gambia, Republikken Kongo, Den sentralafrikanske republikk, Ekvatorial-Guinea, São Tomé og Príncipe, Burundi, Barbados, Saint Lucia
+
+- **Algerie** (Afrika): 58 wilayaer (inkl. de nye fra 2019/2021), flat struktur med 324 byer direkte under wilaya. Høyeste topp Mount Tahat (2908 m).
+- **Elfenbenskysten** (Afrika): 14 distrikter, 31 regioner, 228 byer. Høyeste topp Mount Nimba (1752 m).
+- **Gambia** (Afrika): 6 divisjoner, 37 distrikter, 127 tettsteder. Ingen fjell i GeoNames (flatt land) — kun elver, øyer og utsiktspunkter under NATURE.
+- **Republikken Kongo** (Afrika): 12 departementer, 87 distrikter, 48 byer. Høyeste topp Mont Nabemba (1020 m).
+- **Den sentralafrikanske republikk** (Afrika): 20 prefekturer, 70 subprefekturer, 47 byer. Høyeste topp Mont Ngaoui (1410 m).
+- **Ekvatorial-Guinea** (Afrika): 8 provinser, 32 distrikter, 26 tettsteder. Høyeste topp Pico Basile (3011 m).
+- **São Tomé og Príncipe** (Afrika): 2 provinser, 7 distrikter, 23 tettsteder. Høyeste topp Pico de São Tomé (2024 m).
+- **Burundi** (Afrika): 18 provinser, 119 kommuner, 31 tettsteder. Høyeste topp Mount Heha (2670 m).
+- **Barbados** (Nord-Amerika): 11 sogn, 19 tettsteder. Høyeste punkt Mount Hillaby (340 m).
+- **Saint Lucia** (Nord-Amerika): 10 kvarterer, 30 tettsteder. Høyeste topp Mount Gimie (950 m).
+
+### Grensetopper
+
+- Ingen nye grensetopper: Mount Nimba deles med Guinea og Liberia, som ennå ikke er i pluginen.
+
+### Verdenskart
+
+- Alle ti land er lagt inn på kartet; São Tomé og Príncipe, Barbados og Saint Lucia vises som små markører.
+
 ## 0.9.275 — 2026-10-09
 
 ### Ti nye land: Bangladesh, Brunei, Timor-Leste, Bahrain, Kuwait, Libanon, Kamerun, Angola, Kapp Verde, Trinidad og Tobago
