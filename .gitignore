@@ -1,0 +1,11 @@
+# Build / agent artifacts — must never be bundled with the distributed plugin
+.logs/
+**/.logs/
+*.retcode
+*.out
+*.err
+.abacus*
+
+# macOS junk
+.DS_Store
+._*

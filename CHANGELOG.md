@@ -1,3 +1,20 @@
+## 0.9.279 — 2026-10-09
+
+### Ti nye land: Afghanistan, Iran, Syria, Turkmenistan, Nord-Korea, Kosovo, Antigua og Barbuda, Dominica, Grenada, Saint Kitts og Nevis
+
+- **Afghanistan**: 34 provinser, 398 distrikter, 317 byer. Høyeste topp Noshaq (7485 m).
+- **Iran**: 31 provinser, 433 counties, 683 byer. Høyeste topp Mount Damavand (5610 m).
+- **Syria**: 14 guvernement, 60 distrikter, 304 byer. Høyeste topp Mount Hermon (2814 m).
+- **Turkmenistan**: 6 regioner, 55 distrikter, 111 byer. Høyeste topp Ayrybaba (3139 m).
+- **Nord-Korea**: 13 provinser, 201 counties, 124 byer. Høyeste topp Mount Paektu (2744 m, lagt til manuelt).
+- **Kosovo**: 7 distrikter, 38 kommuner, 61 byer. Høyeste topp Gjeravica (2656 m). Kommunenavn normalisert fra albansk genitivform (f.eks. Ferizajt → Ferizaj, North/South Mitrovica).
+- **Antigua og Barbuda**: 8 sogn/områder med 23 tettsteder. Høyeste topp Mount Obama (402 m). Redonda er en ubebodd øy uten byer.
+- **Dominica**: 10 sogn med 20 tettsteder. Høyeste topp Morne Diablotins (1447 m).
+- **Grenada**: 7 sogn/områder med 11 tettsteder. Høyeste topp Mount Saint Catherine (840 m).
+- **Saint Kitts og Nevis**: 14 sogn med 18 tettsteder. Høyeste topp Mount Liamuiga (1156 m).
+- Kjent begrensning: en del distrikter i Afghanistan, Iran og Nord-Korea har ingen byer fordi GeoNames mangler befolkningsdata.
+- Alle 10 land er lagt til på verdenskartet (de fire karibiske som markører).
+
 ## 0.9.278 — 2026-10-09
 
 ### Ti nye land: Tsjad, Sudan, Sør-Sudan, Eritrea, Djibouti, Somalia, Libya, Komorene, Jemen, Irak

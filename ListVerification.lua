@@ -368,6 +368,16 @@ local COUNTRIES = {
         addCountry { id = "Comoros", name = "Comoros", code = "KM-174", filename = "Comoros.lua", continent = "Africa", admin_label = "Islands & Areas", mountain_max = 2361, remoteIslandNames = {} },
         addCountry { id = "Yemen", name = "Yemen", code = "YE-887", filename = "Yemen.lua", continent = "Asia", admin_label = "Governorates & Areas", mountain_max = 3666, remoteIslandNames = {} },
         addCountry { id = "Iraq", name = "Iraq", code = "IQ-368", filename = "Iraq.lua", continent = "Asia", admin_label = "Governorates & Areas", mountain_max = 3611, remoteIslandNames = {} },
+        addCountry { id = "Afghanistan", name = "Afghanistan", code = "AF-004", filename = "Afghanistan.lua", continent = "Asia", admin_label = "Provinces & Areas", mountain_max = 7485, remoteIslandNames = {} },
+        addCountry { id = "Iran", name = "Iran", code = "IR-364", filename = "Iran.lua", continent = "Asia", admin_label = "Provinces & Areas", mountain_max = 5610, remoteIslandNames = {} },
+        addCountry { id = "Syria", name = "Syria", code = "SY-760", filename = "Syria.lua", continent = "Asia", admin_label = "Governorates & Areas", mountain_max = 2814, remoteIslandNames = {} },
+        addCountry { id = "Turkmenistan", name = "Turkmenistan", code = "TM-795", filename = "Turkmenistan.lua", continent = "Asia", admin_label = "Regions & Areas", mountain_max = 3139, remoteIslandNames = {} },
+        addCountry { id = "NorthKorea", name = "North Korea", code = "KP-408", filename = "NorthKorea.lua", continent = "Asia", admin_label = "Provinces & Areas", mountain_max = 2744, remoteIslandNames = {} },
+        addCountry { id = "Kosovo", name = "Kosovo", code = "XK-383", filename = "Kosovo.lua", continent = "Europe", admin_label = "Districts & Areas", mountain_max = 2656, remoteIslandNames = {} },
+        addCountry { id = "AntiguaAndBarbuda", name = "Antigua and Barbuda", code = "AG-028", filename = "AntiguaAndBarbuda.lua", continent = "North America", admin_label = "Parishes & Areas", mountain_max = 402, remoteIslandNames = {} },
+        addCountry { id = "Dominica", name = "Dominica", code = "DM-212", filename = "Dominica.lua", continent = "North America", admin_label = "Parishes & Areas", mountain_max = 1447, remoteIslandNames = {} },
+        addCountry { id = "Grenada", name = "Grenada", code = "GD-308", filename = "Grenada.lua", continent = "North America", admin_label = "Parishes & Areas", mountain_max = 840, remoteIslandNames = {} },
+        addCountry { id = "SaintKittsAndNevis", name = "Saint Kitts and Nevis", code = "KN-659", filename = "SaintKittsAndNevis.lua", continent = "North America", admin_label = "Parishes & Areas", mountain_max = 1156, remoteIslandNames = {} },
         addCountry { id = "Antarctica",  name = "Antarctica",   code = "AQ-010", filename = "Antarctica.lua",  continent = "Antarctica",    admin_label = "Regions & Areas",    mountain_max = 4892, remoteIslandNames = {} },
 }
 
@@ -530,6 +540,16 @@ local LABELS = {
         Comoros       = { county = "Island", muni = "Area", city = "Town" },
         Yemen         = { county = "Governorate", muni = "District", city = "City" },
         Iraq          = { county = "Governorate", muni = "District", city = "City" },
+        Afghanistan   = { county = "Province", muni = "District", city = "City" },
+        Iran          = { county = "Province", muni = "County", city = "City" },
+        Syria         = { county = "Governorate", muni = "District", city = "City" },
+        Turkmenistan  = { county = "Region", muni = "District", city = "City" },
+        NorthKorea    = { county = "Province", muni = "County", city = "City" },
+        Kosovo        = { county = "District", muni = "Municipality", city = "Town" },
+        AntiguaAndBarbuda = { county = "Parish", muni = "Area", city = "Town" },
+        Dominica      = { county = "Parish", muni = "Area", city = "Town" },
+        Grenada       = { county = "Parish", muni = "Area", city = "Town" },
+        SaintKittsAndNevis = { county = "Parish", muni = "Area", city = "Town" },
 }
 local DEFAULT_LABELS = { county = "County", muni = "Municipality", city = "City" }
 
@@ -682,6 +702,16 @@ local WIKIDATA_TYPES = {
         Comoros       = { co = nil, mu = nil, ci = nil },
         Yemen         = { co = nil, mu = nil, ci = nil },
         Iraq          = { co = nil, mu = nil, ci = nil },
+        Afghanistan   = { co = nil, mu = nil, ci = nil },
+        Iran          = { co = nil, mu = nil, ci = nil },
+        Syria         = { co = nil, mu = nil, ci = nil },
+        Turkmenistan  = { co = nil, mu = nil, ci = nil },
+        NorthKorea    = { co = nil, mu = nil, ci = nil },
+        Kosovo        = { co = nil, mu = nil, ci = nil },
+        AntiguaAndBarbuda = { co = nil, mu = nil, ci = nil },
+        Dominica      = { co = nil, mu = nil, ci = nil },
+        Grenada       = { co = nil, mu = nil, ci = nil },
+        SaintKittsAndNevis = { co = nil, mu = nil, ci = nil },
 }
 
 -- Preferred label language(s) per country for the Wikidata label service.
@@ -841,6 +871,16 @@ local WIKIDATA_LANG = {
         Comoros       = "fr,ar,en",
         Yemen         = "ar,en",
         Iraq          = "ar,ku,en",
+        Afghanistan   = "ps,fa,en",
+        Iran          = "fa,en",
+        Syria         = "ar,en",
+        Turkmenistan  = "tk,ru,en",
+        NorthKorea    = "ko,en",
+        Kosovo        = "sq,sr,en",
+        AntiguaAndBarbuda = "en",
+        Dominica      = "en",
+        Grenada       = "en",
+        SaintKittsAndNevis = "en",
 }
 
 -- Percent-encode a string for safe inclusion in a URL query parameter.
