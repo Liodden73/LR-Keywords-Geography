@@ -378,6 +378,18 @@ local COUNTRIES = {
         addCountry { id = "Dominica", name = "Dominica", code = "DM-212", filename = "Dominica.lua", continent = "North America", admin_label = "Parishes & Areas", mountain_max = 1447, remoteIslandNames = {} },
         addCountry { id = "Grenada", name = "Grenada", code = "GD-308", filename = "Grenada.lua", continent = "North America", admin_label = "Parishes & Areas", mountain_max = 840, remoteIslandNames = {} },
         addCountry { id = "SaintKittsAndNevis", name = "Saint Kitts and Nevis", code = "KN-659", filename = "SaintKittsAndNevis.lua", continent = "North America", admin_label = "Parishes & Areas", mountain_max = 1156, remoteIslandNames = {} },
+        addCountry { id = "SaintVincentAndTheGrenadines", name = "Saint Vincent and the Grenadines", code = "VC-670", filename = "SaintVincentAndTheGrenadines.lua", continent = "North America", admin_label = "Parishes & Areas", mountain_max = 1234, remoteIslandNames = {} },
+        addCountry { id = "Palestine", name = "Palestine", code = "PS-275", filename = "Palestine.lua", continent = "Asia", admin_label = "Territories & Areas", mountain_max = 1030, remoteIslandNames = {} },
+        addCountry { id = "SolomonIslands", name = "Solomon Islands", code = "SB-090", filename = "SolomonIslands.lua", continent = "Oceania", admin_label = "Provinces & Areas", mountain_max = 2335, remoteIslandNames = {} },
+        addCountry { id = "Vanuatu", name = "Vanuatu", code = "VU-548", filename = "Vanuatu.lua", continent = "Oceania", admin_label = "Provinces & Areas", mountain_max = 1877, remoteIslandNames = {} },
+        addCountry { id = "Samoa", name = "Samoa", code = "WS-882", filename = "Samoa.lua", continent = "Oceania", admin_label = "Districts & Areas", mountain_max = 1858, remoteIslandNames = {} },
+        addCountry { id = "Tonga", name = "Tonga", code = "TO-776", filename = "Tonga.lua", continent = "Oceania", admin_label = "Divisions & Areas", mountain_max = 1046, remoteIslandNames = {} },
+        addCountry { id = "Kiribati", name = "Kiribati", code = "KI-296", filename = "Kiribati.lua", continent = "Oceania", admin_label = "Island Groups & Areas", mountain_max = 0, remoteIslandNames = {} },
+        addCountry { id = "MarshallIslands", name = "Marshall Islands", code = "MH-584", filename = "MarshallIslands.lua", continent = "Oceania", admin_label = "Atolls & Areas", mountain_max = 0, remoteIslandNames = {} },
+        addCountry { id = "Micronesia", name = "Micronesia", code = "FM-583", filename = "Micronesia.lua", continent = "Oceania", admin_label = "States & Areas", mountain_max = 791, remoteIslandNames = {} },
+        addCountry { id = "Palau", name = "Palau", code = "PW-585", filename = "Palau.lua", continent = "Oceania", admin_label = "States & Areas", mountain_max = 242, remoteIslandNames = {} },
+        addCountry { id = "Nauru", name = "Nauru", code = "NR-520", filename = "Nauru.lua", continent = "Oceania", admin_label = "Districts & Areas", mountain_max = 71, remoteIslandNames = {} },
+        addCountry { id = "Tuvalu", name = "Tuvalu", code = "TV-798", filename = "Tuvalu.lua", continent = "Oceania", admin_label = "Islands & Areas", mountain_max = 0, remoteIslandNames = {} },
         addCountry { id = "Antarctica",  name = "Antarctica",   code = "AQ-010", filename = "Antarctica.lua",  continent = "Antarctica",    admin_label = "Regions & Areas",    mountain_max = 4892, remoteIslandNames = {} },
 }
 
@@ -550,6 +562,18 @@ local LABELS = {
         Dominica      = { county = "Parish", muni = "Area", city = "Town" },
         Grenada       = { county = "Parish", muni = "Area", city = "Town" },
         SaintKittsAndNevis = { county = "Parish", muni = "Area", city = "Town" },
+        SaintVincentAndTheGrenadines = { county = "Parish", muni = "Area", city = "Town" },
+        Palestine     = { county = "Territory", muni = "Governorate", city = "City" },
+        SolomonIslands = { county = "Province", muni = "Area", city = "Town" },
+        Vanuatu       = { county = "Province", muni = "Area", city = "Town" },
+        Samoa         = { county = "District", muni = "Area", city = "Village" },
+        Tonga         = { county = "Division", muni = "Area", city = "Village" },
+        Kiribati      = { county = "Island Group", muni = "Area", city = "Village" },
+        MarshallIslands = { county = "Atoll", muni = "Area", city = "Village" },
+        Micronesia    = { county = "State", muni = "Area", city = "Town" },
+        Palau         = { county = "State", muni = "Area", city = "Hamlet" },
+        Nauru         = { county = "District", muni = "Area", city = "Village" },
+        Tuvalu        = { county = "Island", muni = "Area", city = "Village" },
 }
 local DEFAULT_LABELS = { county = "County", muni = "Municipality", city = "City" }
 
@@ -712,6 +736,18 @@ local WIKIDATA_TYPES = {
         Dominica      = { co = nil, mu = nil, ci = nil },
         Grenada       = { co = nil, mu = nil, ci = nil },
         SaintKittsAndNevis = { co = nil, mu = nil, ci = nil },
+        SaintVincentAndTheGrenadines = { co = nil, mu = nil, ci = nil },
+        Palestine     = { co = nil, mu = nil, ci = nil },
+        SolomonIslands = { co = nil, mu = nil, ci = nil },
+        Vanuatu       = { co = nil, mu = nil, ci = nil },
+        Samoa         = { co = nil, mu = nil, ci = nil },
+        Tonga         = { co = nil, mu = nil, ci = nil },
+        Kiribati      = { co = nil, mu = nil, ci = nil },
+        MarshallIslands = { co = nil, mu = nil, ci = nil },
+        Micronesia    = { co = nil, mu = nil, ci = nil },
+        Palau         = { co = nil, mu = nil, ci = nil },
+        Nauru         = { co = nil, mu = nil, ci = nil },
+        Tuvalu        = { co = nil, mu = nil, ci = nil },
 }
 
 -- Preferred label language(s) per country for the Wikidata label service.
@@ -881,6 +917,18 @@ local WIKIDATA_LANG = {
         Dominica      = "en",
         Grenada       = "en",
         SaintKittsAndNevis = "en",
+        SaintVincentAndTheGrenadines = "en",
+        Palestine     = "ar,en",
+        SolomonIslands = "en",
+        Vanuatu       = "bi,fr,en",
+        Samoa         = "sm,en",
+        Tonga         = "to,en",
+        Kiribati      = "gil,en",
+        MarshallIslands = "mh,en",
+        Micronesia    = "en",
+        Palau         = "pau,en",
+        Nauru         = "na,en",
+        Tuvalu        = "tvl,en",
 }
 
 -- Percent-encode a string for safe inclusion in a URL query parameter.

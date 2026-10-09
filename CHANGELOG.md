@@ -1,3 +1,21 @@
+## 0.9.280 — 2026-10-09
+
+### Tolv nye land: Saint Vincent og Grenadinene, Palestina og ti stillehavsstater
+
+- **Saint Vincent og Grenadinene**: 6 sogn med 21 tettsteder. Høyeste topp La Soufriere (1234 m).
+- **Palestina**: Vestbredden og Gazastripen, 16 guvernement, 107 byer. Høyeste topp Mount Nabi Yunis (1030 m). Bydeler i Jerusalem og israelske bosetninger er utelatt fordi de allerede ligger under Israel.
+- **Salomonøyene**: 10 provinser med 15 byer. Høyeste topp Mount Popomanaseu (2335 m). Bydeler i Honiara oppført som egne byer er fjernet.
+- **Vanuatu**: 6 provinser med 19 byer. Høyeste topp Tabwemasana (1877 m).
+- **Samoa**: 11 distrikter med 33 landsbyer. Høyeste topp Mount Silisili (1858 m).
+- **Tonga**: 5 divisjoner med 26 landsbyer. Høyeste topp Kao (1046 m, lagt til manuelt sammen med Tofua og Mount Talau).
+- **Kiribati**: 3 øygrupper med 27 landsbyer. Ingen fjell.
+- **Marshalløyene**: 33 atoller og øyer med 31 tettsteder. Ingen fjell. 9 ubebodde atoller (bl.a. Bikini) har ingen byer.
+- **Mikronesiaføderasjonen**: 4 delstater med 55 tettsteder. Høyeste topp Mount Dolohmwar (791 m).
+- **Palau**: 16 delstater med 28 tettsteder. Høyeste topp Mount Ngerchelchuus (242 m, lagt til manuelt).
+- **Nauru**: 14 distrikter med 15 tettsteder. Høyeste punkt Command Ridge (71 m).
+- **Tuvalu**: 8 øyer med 18 landsbyer. Ingen fjell.
+- Alle 12 land er lagt til på verdenskartet (alle unntatt Palestina, Salomonøyene og Vanuatu som markører).
+
 ## 0.9.279 — 2026-10-09
 
 ### Ti nye land: Afghanistan, Iran, Syria, Turkmenistan, Nord-Korea, Kosovo, Antigua og Barbuda, Dominica, Grenada, Saint Kitts og Nevis
