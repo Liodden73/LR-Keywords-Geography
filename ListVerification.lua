@@ -318,6 +318,16 @@ local COUNTRIES = {
         addCountry { id = "Taiwan", name = "Taiwan", code = "TW-158", filename = "Taiwan.lua", continent = "Asia", admin_label = "Counties & Areas", mountain_max = 3952, remoteIslandNames = {} },
         addCountry { id = "PapuaNewGuinea", name = "Papua New Guinea", code = "PG-598", filename = "PapuaNewGuinea.lua", continent = "Oceania", admin_label = "Provinces & Areas", mountain_max = 4509, remoteIslandNames = {} },
         addCountry { id = "Malawi", name = "Malawi", code = "MW-454", filename = "Malawi.lua", continent = "Africa", admin_label = "Regions & Areas", mountain_max = 3002, remoteIslandNames = {} },
+        addCountry { id = "SaudiArabia", name = "Saudi Arabia", code = "SA-682", filename = "SaudiArabia.lua", continent = "Asia", admin_label = "Regions & Areas", mountain_max = 3015, remoteIslandNames = {} },
+        addCountry { id = "Qatar", name = "Qatar", code = "QA-634", filename = "Qatar.lua", continent = "Asia", admin_label = "Municipalities & Areas", mountain_max = 103, remoteIslandNames = {} },
+        addCountry { id = "Singapore", name = "Singapore", code = "SG-702", filename = "Singapore.lua", continent = "Asia", admin_label = "Regions & Areas", mountain_max = 164, remoteIslandNames = {} },
+        addCountry { id = "Myanmar", name = "Myanmar", code = "MM-104", filename = "Myanmar.lua", continent = "Asia", admin_label = "States & Areas", mountain_max = 5881, remoteIslandNames = {} },
+        addCountry { id = "Pakistan", name = "Pakistan", code = "PK-586", filename = "Pakistan.lua", continent = "Asia", admin_label = "Provinces & Areas", mountain_max = 8611, remoteIslandNames = {} },
+        addCountry { id = "Tajikistan", name = "Tajikistan", code = "TJ-762", filename = "Tajikistan.lua", continent = "Asia", admin_label = "Regions & Areas", mountain_max = 7495, remoteIslandNames = {} },
+        addCountry { id = "Lesotho", name = "Lesotho", code = "LS-426", filename = "Lesotho.lua", continent = "Africa", admin_label = "Districts & Areas", mountain_max = 3482, remoteIslandNames = {} },
+        addCountry { id = "Eswatini", name = "Eswatini", code = "SZ-748", filename = "Eswatini.lua", continent = "Africa", admin_label = "Regions & Areas", mountain_max = 1862, remoteIslandNames = {} },
+        addCountry { id = "Gabon", name = "Gabon", code = "GA-266", filename = "Gabon.lua", continent = "Africa", admin_label = "Provinces & Areas", mountain_max = 1070, remoteIslandNames = {} },
+        addCountry { id = "DRCongo", name = "DR Congo", code = "CD-180", filename = "DRCongo.lua", continent = "Africa", admin_label = "Provinces & Areas", mountain_max = 5109, remoteIslandNames = {} },
         addCountry { id = "Antarctica",  name = "Antarctica",   code = "AQ-010", filename = "Antarctica.lua",  continent = "Antarctica",    admin_label = "Regions & Areas",    mountain_max = 4892, remoteIslandNames = {} },
 }
 
@@ -430,6 +440,16 @@ local LABELS = {
         Taiwan        = { county = "County", muni = "Township", city = "City" },
         PapuaNewGuinea = { county = "Province", muni = "District", city = "City" },
         Malawi        = { county = "Region", muni = "District", city = "City" },
+        SaudiArabia   = { county = "Region", muni = "Governorate", city = "City" },
+        Qatar         = { county = "Municipality", muni = "Zone", city = "City" },
+        Singapore     = { county = "Region", muni = "Planning Area", city = "Area" },
+        Myanmar       = { county = "State", muni = "District", city = "City" },
+        Pakistan      = { county = "Province", muni = "District", city = "City" },
+        Tajikistan    = { county = "Region", muni = "District", city = "City" },
+        Lesotho       = { county = "District", muni = "Constituency", city = "City" },
+        Eswatini      = { county = "Region", muni = "Inkhundla", city = "City" },
+        Gabon         = { county = "Province", muni = "Department", city = "City" },
+        DRCongo       = { county = "Province", muni = "Territory", city = "City" },
 }
 local DEFAULT_LABELS = { county = "County", muni = "Municipality", city = "City" }
 
@@ -532,6 +552,16 @@ local WIKIDATA_TYPES = {
         Taiwan        = { co = nil, mu = nil, ci = nil },
         PapuaNewGuinea = { co = nil, mu = nil, ci = nil },
         Malawi        = { co = nil, mu = nil, ci = nil },
+        SaudiArabia   = { co = nil, mu = nil, ci = nil },
+        Qatar         = { co = nil, mu = nil, ci = nil },
+        Singapore     = { co = nil, mu = nil, ci = nil },
+        Myanmar       = { co = nil, mu = nil, ci = nil },
+        Pakistan      = { co = nil, mu = nil, ci = nil },
+        Tajikistan    = { co = nil, mu = nil, ci = nil },
+        Lesotho       = { co = nil, mu = nil, ci = nil },
+        Eswatini      = { co = nil, mu = nil, ci = nil },
+        Gabon         = { co = nil, mu = nil, ci = nil },
+        DRCongo       = { co = nil, mu = nil, ci = nil },
 }
 
 -- Preferred label language(s) per country for the Wikidata label service.
@@ -641,6 +671,16 @@ local WIKIDATA_LANG = {
         Taiwan        = "zh,en",
         PapuaNewGuinea = "en,tpi",
         Malawi        = "en,ny",
+        SaudiArabia   = "ar,en",
+        Qatar         = "ar,en",
+        Singapore     = "en,ms,zh,ta",
+        Myanmar       = "my,en",
+        Pakistan      = "ur,en",
+        Tajikistan    = "tg,ru,en",
+        Lesotho       = "en,st",
+        Eswatini      = "en,ss",
+        Gabon         = "fr,en",
+        DRCongo       = "fr,en",
 }
 
 -- Percent-encode a string for safe inclusion in a URL query parameter.

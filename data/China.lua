@@ -69,8 +69,11 @@ return {
     },
 
     mountains = {
+        { name = "K2", elev = 8611, region = "Xinjiang" },
         { name = "Lhotse Shār", elev = 8383, region = "" },
         { name = "Cho Oyu", elev = 8188, region = "" },
+        { name = "Gasherbrum I", elev = 8080, region = "Xinjiang" },
+        { name = "Broad Peak", elev = 8051, region = "Xinjiang" },
         { name = "Xixabangma Feng", elev = 8027, region = "Tibet" },
         { name = "Gyachung Kang", elev = 7952, region = "Tibet" },
         { name = "Chomo Lonzo", elev = 7818, region = "" },

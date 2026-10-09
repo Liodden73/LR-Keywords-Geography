@@ -237,6 +237,7 @@ return {
 
     mountains = {
         { name = "Mafadi", elev = 3450, region = "" },
+        { name = "Njesuthi", elev = 3408, region = "KwaZulu-Natal" },
         { name = "Champagne Castle", elev = 3377, region = "KwaZulu-Natal" },
         { name = "Popple Peak", elev = 3331, region = "" },
         { name = "Giant’s Castle", elev = 3315, region = "KwaZulu-Natal" },
@@ -296,6 +297,7 @@ return {
         { name = "Corner", elev = 2703, region = "KwaZulu-Natal" },
         { name = "Snowdon", elev = 2694, region = "Eastern Cape" },
         { name = "Generaalskop", elev = 2694, region = "Free State" },
+        { name = "Emlembe", elev = 1862, region = "Mpumalanga" },
     },
 
     lakes = {

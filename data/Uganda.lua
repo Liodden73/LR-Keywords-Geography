@@ -447,6 +447,8 @@ return {
   },
 
   mountains = {
+    { name = "Margherita Peak", elev = 5109, region = "Western Region" },
+    { name = "Mount Stanley", elev = 5109, region = "Western Region" },
     { name = "Mount Speke", elev = 4990, region = "Western Region" },
     { name = "Baker", elev = 4752, region = "Western Region" },
     { name = "Mount Gessi", elev = 4715, region = "Western Region" },
@@ -455,8 +457,11 @@ return {
     { name = "Watamagufu", elev = 4253, region = "Western Region" },
     { name = "Mubiyi", elev = 4209, region = "Eastern Region" },
     { name = "Rukenga", elev = 4152, region = "Western Region" },
+    { name = "Mount Muhabura", elev = 4127, region = "Western Region" },
     { name = "Nyamyalilo", elev = 4008, region = "Western Region" },
+    { name = "Mount Sabyinyo", elev = 3634, region = "Western Region" },
     { name = "Ruato", elev = 3536, region = "Western Region" },
+    { name = "Mount Mgahinga", elev = 3474, region = "Western Region" },
     { name = "Mount Elgon", elev = 3340, region = "Eastern Region" },
     { name = "Moroto", elev = 3083, region = "Northern Region" },
     { name = "Kadam", elev = 3063, region = "Northern Region" },

@@ -1,3 +1,21 @@
+## 0.9.268 — 2026-10-09
+### Ti nye land: Saudi-Arabia, Qatar, Singapore, Myanmar, Pakistan, Tadsjikistan, Lesotho, Eswatini, Gabon og DR Kongo
+- **Saudi Arabia** (Asia): 13 regioner, 122 guvernement, 143 byer. Høyeste fjell: Jabal Sawda 3015 m.
+- **Qatar** (Asia): 8 kommuner, 21 byer (flat). Høyeste punkt: Qurayn Abu al Bawl 103 m.
+- **Singapore** (Asia): 5 regioner med 51 planområder (kuratert, GeoNames har ingen inndeling). Høyeste punkt: Bukit Timah Hill 164 m. Vises som markør på kartet.
+- **Myanmar** (Asia): 15 stater/regioner, 73 distrikter, 225 byer. Høyeste fjell: Hkakabo Razi 5881 m.
+- **Pakistan** (Asia): 7 provinser/territorier, 156 distrikter, 362 byer. Høyeste fjell: K2 8611 m.
+- **Tajikistan** (Asia): 5 regioner, 98 byer (flat). Høyeste fjell: Ismoil Somoni Peak 7495 m.
+- **Lesotho** (Afrika): 10 distrikter, 37 byer (flat). Høyeste fjell: Thabana Ntlenyana 3482 m.
+- **Eswatini** (Afrika): 4 regioner, 23 byer (flat). Høyeste fjell: Emlembe 1862 m.
+- **Gabon** (Afrika): 9 provinser, 44 byer (flat). Høyeste fjell: Mont Iboundji 1070 m.
+- **DR Congo** (Afrika): 26 provinser, 116 byer (flat). Høyeste fjell: Margherita Peak 5109 m.
+- Alle ti er registrert i List Overview og på verdenskartet. Dataversjon 0.1.0.
+
+### Grensetopper tas med i alle land som deler dem
+- Nye land beholder grensetopper og knytter dem til nærmeste region på egen side av grensen.
+- Lagt til delte topper i eksisterende land: **China** (K2, Gasherbrum I, Broad Peak), **Uganda** (Margherita Peak, Mount Stanley, Muhabura, Sabyinyo, Mgahinga), **Rwanda** (Karisimbi, Muhabura, Bisoke, Sabyinyo, Mgahinga), **South Africa** (Njesuthi, Emlembe).
+
 ## 0.9.267 — 2026-10-09
 ### Ti nye land: Armenia, Aserbajdsjan, Kasakhstan, Kirgisistan, Usbekistan, Oman, Laos, Taiwan, Papua Ny-Guinea og Malawi
 - **Armenia** (Asia): 11 provinser, 258 byer (flat). Høyeste fjell: Mount Aragats 4090 m.

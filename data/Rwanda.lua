@@ -29,6 +29,11 @@ return {
     },
 
     mountains = {
+        { name = "Mount Karisimbi", elev = 4507, region = "Northern Province" },
+        { name = "Mount Muhabura", elev = 4127, region = "Northern Province" },
+        { name = "Mount Bisoke", elev = 3711, region = "Northern Province" },
+        { name = "Mount Sabyinyo", elev = 3634, region = "Northern Province" },
+        { name = "Mount Mgahinga", elev = 3474, region = "Northern Province" },
         { name = "Muhungwe", elev = 2928, region = "Western Province" },
         { name = "Mount Muwogo", elev = 2885, region = "Western Province" },
         { name = "Rutare", elev = 2884, region = "Western Province" },
