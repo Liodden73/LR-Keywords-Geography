@@ -1,3 +1,28 @@
+## 0.9.275 — 2026-10-09
+
+### Ti nye land: Bangladesh, Brunei, Timor-Leste, Bahrain, Kuwait, Libanon, Kamerun, Angola, Kapp Verde, Trinidad og Tobago
+
+- **Bangladesh** (Asia): 8 divisjoner, 64 distrikter, 144 byer. Høyeste topp Saka Haphong (1052 m). Sundarbans, Cox's Bazar m.m. under NATURE.
+- **Brunei** (Asia): 4 distrikter, 41 tettsteder. Høyeste topp Bukit Pagon (1850 m). Ulu Temburong nasjonalpark.
+- **Timor-Leste** (Asia): 13 kommuner, 31 tettsteder. Høyeste topp Mount Ramelau (2963 m). Nino Konis Santana nasjonalpark, Atauro.
+- **Bahrain** (Asia): 4 guvernementer, 33 byer/områder. Høyeste punkt Jabal ad Dukhan (134 m).
+- **Kuwait** (Asia): 6 guvernementer, 30 områder. Høyeste punkt Mutla Ridge (145 m).
+- **Libanon** (Asia): 8 guvernementer, 24 distrikter (kaza), 47 byer. Høyeste topp Qurnat as Sawda (3088 m). Mount Hermon (2814 m) er med.
+- **Kamerun** (Afrika): 10 regioner, 58 departementer, 93 byer. Høyeste topp Mount Cameroon (4095 m).
+- **Angola** (Afrika): 21 provinser (inkl. de nye provinsene Icolo e Bengo, Moxico Leste, Cuando og Cubango fra 2024-reformen), 161 kommuner, 549 byer. Høyeste topp Mount Moco (2620 m).
+- **Kapp Verde** (Afrika): gruppert etter de 9 bebodde øyene → 22 kommuner, 76 tettsteder. Høyeste topp Pico do Fogo (2829 m).
+- **Trinidad og Tobago** (Nord-Amerika): 15 regioner/bydeler, 35 tettsteder. Høyeste topp El Cerro del Aripo (940 m).
+
+### Grensetopper i nabolandene
+
+- **Nigeria:** Chappal Waddi (2419 m, Taraba) — delt med Kamerun.
+- **Myanmar:** Saka Haphong (1052 m) og Mowdok Mual (905 m), Chin — delt med Bangladesh.
+- Bukit Pagon (Brunei/Malaysia) og Mount Hermon (Libanon/Israel) fantes allerede i nabolandet.
+
+### Verdenskart
+
+- Alle ti land er lagt inn på kartet; Bahrain og Kapp Verde vises som små markører.
+
 ## 0.9.274 — 2026-10-09
 
 ### Ingen «/» i søkeord eller synonymer

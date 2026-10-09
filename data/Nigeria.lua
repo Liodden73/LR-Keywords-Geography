@@ -2466,6 +2466,7 @@ return {
   },
 
   mountains = {
+    { name = "Chappal Waddi", elev = 2419, region = "Taraba" },
     { name = "Dimlang", elev = 2042, region = "Adamawa State" },
     { name = "Maisajeh Hill", elev = 1593, region = "Bauchi State" },
     { name = "Saiya Hill", elev = 1506, region = "Bauchi State" },

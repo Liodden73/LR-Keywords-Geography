@@ -141,6 +141,8 @@ return {
                 { name = "Loi Tawngmyawk", elev = 1473, region = "Shan" },
                 { name = "Loi Na-lao", elev = 1468, region = "Shan" },
                 { name = "Loi Nimpon", elev = 1465, region = "Kayah" },
+                { name = "Saka Haphong", elev = 1052, region = "Chin" },
+                { name = "Mowdok Mual", elev = 905, region = "Chin" },
         },
 
         lakes = {

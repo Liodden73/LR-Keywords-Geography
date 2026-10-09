@@ -328,6 +328,16 @@ local COUNTRIES = {
         addCountry { id = "Eswatini", name = "Eswatini", code = "SZ-748", filename = "Eswatini.lua", continent = "Africa", admin_label = "Regions & Areas", mountain_max = 1862, remoteIslandNames = {} },
         addCountry { id = "Gabon", name = "Gabon", code = "GA-266", filename = "Gabon.lua", continent = "Africa", admin_label = "Provinces & Areas", mountain_max = 1070, remoteIslandNames = {} },
         addCountry { id = "DRCongo", name = "DR Congo", code = "CD-180", filename = "DRCongo.lua", continent = "Africa", admin_label = "Provinces & Areas", mountain_max = 5109, remoteIslandNames = {} },
+        addCountry { id = "Bangladesh", name = "Bangladesh", code = "BD-050", filename = "Bangladesh.lua", continent = "Asia", admin_label = "Divisions & Areas", mountain_max = 1052, remoteIslandNames = {} },
+        addCountry { id = "Brunei", name = "Brunei", code = "BN-096", filename = "Brunei.lua", continent = "Asia", admin_label = "Districts & Areas", mountain_max = 1850, remoteIslandNames = {} },
+        addCountry { id = "TimorLeste", name = "Timor-Leste", code = "TL-626", filename = "TimorLeste.lua", continent = "Asia", admin_label = "Municipalities & Areas", mountain_max = 2963, remoteIslandNames = {} },
+        addCountry { id = "Bahrain", name = "Bahrain", code = "BH-048", filename = "Bahrain.lua", continent = "Asia", admin_label = "Governorates & Areas", mountain_max = 134, remoteIslandNames = {} },
+        addCountry { id = "Kuwait", name = "Kuwait", code = "KW-414", filename = "Kuwait.lua", continent = "Asia", admin_label = "Governorates & Areas", mountain_max = 145, remoteIslandNames = {} },
+        addCountry { id = "Lebanon", name = "Lebanon", code = "LB-422", filename = "Lebanon.lua", continent = "Asia", admin_label = "Governorates & Areas", mountain_max = 3088, remoteIslandNames = {} },
+        addCountry { id = "Cameroon", name = "Cameroon", code = "CM-120", filename = "Cameroon.lua", continent = "Africa", admin_label = "Regions & Areas", mountain_max = 4095, remoteIslandNames = {} },
+        addCountry { id = "Angola", name = "Angola", code = "AO-024", filename = "Angola.lua", continent = "Africa", admin_label = "Provinces & Areas", mountain_max = 2620, remoteIslandNames = {} },
+        addCountry { id = "CapeVerde", name = "Cape Verde", code = "CV-132", filename = "CapeVerde.lua", continent = "Africa", admin_label = "Islands & Areas", mountain_max = 2829, remoteIslandNames = {} },
+        addCountry { id = "TrinidadAndTobago", name = "Trinidad and Tobago", code = "TT-780", filename = "TrinidadAndTobago.lua", continent = "North America", admin_label = "Regions & Areas", mountain_max = 940, remoteIslandNames = {} },
         addCountry { id = "Antarctica",  name = "Antarctica",   code = "AQ-010", filename = "Antarctica.lua",  continent = "Antarctica",    admin_label = "Regions & Areas",    mountain_max = 4892, remoteIslandNames = {} },
 }
 
@@ -450,6 +460,16 @@ local LABELS = {
         Eswatini      = { county = "Region", muni = "Inkhundla", city = "City" },
         Gabon         = { county = "Province", muni = "Department", city = "City" },
         DRCongo       = { county = "Province", muni = "Territory", city = "City" },
+        Bangladesh    = { county = "Division", muni = "District", city = "City" },
+        Brunei        = { county = "District", muni = "Mukim", city = "Town" },
+        TimorLeste    = { county = "Municipality", muni = "Post", city = "Town" },
+        Bahrain       = { county = "Governorate", muni = "Area", city = "City" },
+        Kuwait        = { county = "Governorate", muni = "Area", city = "Area" },
+        Lebanon       = { county = "Governorate", muni = "District", city = "City" },
+        Cameroon      = { county = "Region", muni = "Department", city = "City" },
+        Angola        = { county = "Province", muni = "Municipality", city = "City" },
+        CapeVerde     = { county = "Island", muni = "Municipality", city = "Town" },
+        TrinidadAndTobago = { county = "Region", muni = "Area", city = "Town" },
 }
 local DEFAULT_LABELS = { county = "County", muni = "Municipality", city = "City" }
 
@@ -562,6 +582,16 @@ local WIKIDATA_TYPES = {
         Eswatini      = { co = nil, mu = nil, ci = nil },
         Gabon         = { co = nil, mu = nil, ci = nil },
         DRCongo       = { co = nil, mu = nil, ci = nil },
+        Bangladesh    = { co = nil, mu = nil, ci = nil },
+        Brunei        = { co = nil, mu = nil, ci = nil },
+        TimorLeste    = { co = nil, mu = nil, ci = nil },
+        Bahrain       = { co = nil, mu = nil, ci = nil },
+        Kuwait        = { co = nil, mu = nil, ci = nil },
+        Lebanon       = { co = nil, mu = nil, ci = nil },
+        Cameroon      = { co = nil, mu = nil, ci = nil },
+        Angola        = { co = nil, mu = nil, ci = nil },
+        CapeVerde     = { co = nil, mu = nil, ci = nil },
+        TrinidadAndTobago = { co = nil, mu = nil, ci = nil },
 }
 
 -- Preferred label language(s) per country for the Wikidata label service.
@@ -681,6 +711,16 @@ local WIKIDATA_LANG = {
         Eswatini      = "en,ss",
         Gabon         = "fr,en",
         DRCongo       = "fr,en",
+        Bangladesh    = "bn,en",
+        Brunei        = "ms,en",
+        TimorLeste    = "pt,tet,en",
+        Bahrain       = "ar,en",
+        Kuwait        = "ar,en",
+        Lebanon       = "ar,fr,en",
+        Cameroon      = "fr,en",
+        Angola        = "pt,en",
+        CapeVerde     = "pt,en",
+        TrinidadAndTobago = "en",
 }
 
 -- Percent-encode a string for safe inclusion in a URL query parameter.
