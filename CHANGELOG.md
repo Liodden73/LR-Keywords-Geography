@@ -1,3 +1,10 @@
+## 0.9.270 — 2026-10-09
+
+### Opprydding i fjell-lister
+
+- Fjernet doble fjelloppføringer (samme navn og høyde) i Albania (Maja e Madhe), Brazil, Canada, Croatia, Egypt, Mexico, Montenegro, Serbia, Slovenia og Venezuela.
+- China: Teram Kangri Peak og Sia Kangri hadde feil region (Fujian) – rettet til Xinjiang.
+
 ## 0.9.269 — 2026-10-09
 
 ### Grensetopper lagt til i eldre land

@@ -157,7 +157,6 @@ return {
     { name = "Revuša", elev = 1690, region = "Central Serbia" },
     { name = "Mali Vrh", elev = 1678, region = "Central Serbia" },
     { name = "Gradina", elev = 1677, region = "Central Serbia" },
-    { name = "Gradina", elev = 1677, region = "Central Serbia" },
     { name = "Zvijezda", elev = 1673, region = "Central Serbia" },
     { name = "Litica", elev = 1672, region = "Central Serbia" },
     { name = "Kula", elev = 1663, region = "Central Serbia" },

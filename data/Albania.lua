@@ -302,8 +302,6 @@ return {
     { name = "Maja e Mardomit", elev = 2183, region = "Qarku i Shkodres" },
     { name = "Maja e Marlulës", elev = 2183, region = "Qarku i Shkodres" },
     { name = "Maja e Madhe", elev = 2146, region = "Qarku i Shkodres" },
-    { name = "Maja e Madhe", elev = 2146, region = "Qarku i Shkodres" },
-    { name = "Maja e Madhe", elev = 2146, region = "Qarku i Shkodres" },
     { name = "Maja e Bridashës", elev = 2126, region = "Qarku i Shkodres" },
     { name = "Maja e Këndrevicës", elev = 2121, region = "Qarku i Gjirokastres" },
     { name = "Tomova Glava", elev = 2121, region = "Qarku i Shkodres" },

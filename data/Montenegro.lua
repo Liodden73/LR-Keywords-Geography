@@ -122,7 +122,6 @@ return {
     { name = "Maglić", elev = 2139, region = "" },
     { name = "Međeđi Vrh", elev = 2139, region = "" },
     { name = "Crna Glava", elev = 2138, region = "" },
-    { name = "Crna Glava", elev = 2138, region = "" },
     { name = "Kurozeb", elev = 2124, region = "" },
     { name = "Jajac", elev = 2099, region = "" },
     { name = "Troglava", elev = 2079, region = "" },

@@ -1171,7 +1171,6 @@ return {
     { name = "Pico Mucuñuque", elev = 4609, region = "Estado Merida" },
     { name = "Pico El Águila", elev = 4118, region = "Estado Merida" },
     { name = "Cerro Pintado", elev = 3660, region = "" },
-    { name = "Pico El Toro", elev = 4755, region = "Estado Merida" },
     { name = "Páramo Colorado", elev = 3350, region = "Estado Tachira" },
     { name = "Pico da Neblina", elev = 2994, region = "Estado Amazonas" },
     { name = "Cerro Marahuaca", elev = 2832, region = "Estado Amazonas" },

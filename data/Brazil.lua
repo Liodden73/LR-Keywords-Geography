@@ -4690,8 +4690,6 @@ return {
     { name = "Pico Ciririca", elev = 1705, region = "Parana" },
     { name = "Pico Dedo de Deus", elev = 1692, region = "Rio de Janeiro" },
     { name = "Pico Agudo", elev = 1629, region = "Sao Paulo" },
-    { name = "Pico Agudo", elev = 1629, region = "Sao Paulo" },
-    { name = "Pico Agudo", elev = 1629, region = "Sao Paulo" },
     { name = "Pico do Itabirito", elev = 1586, region = "Minas Gerais" },
     { name = "Pico do Olimpo", elev = 1539, region = "Parana" },
     { name = "Pedra da Ermitage", elev = 1515, region = "Rio de Janeiro" },

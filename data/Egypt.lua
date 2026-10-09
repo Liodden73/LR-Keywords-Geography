@@ -287,7 +287,6 @@ return {
     { name = "Jabal al Mushayyah", elev = 1532, region = "South Sinai Governorate" },
     { name = "Jabal Umm Ruways", elev = 1530, region = "South Sinai Governorate" },
     { name = "Jabal Umm Ikhliş", elev = 1510, region = "South Sinai Governorate" },
-    { name = "Jabal al Banāt", elev = 1750, region = "South Sinai Governorate" },
     { name = "Jabal Muzaymar", elev = 1492, region = "South Sinai Governorate" },
     { name = "Jabal Ma’in", elev = 1487, region = "South Sinai Governorate" },
     { name = "Jabal Manādir", elev = 1481, region = "South Sinai Governorate" },
