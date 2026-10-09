@@ -1,3 +1,7 @@
+## 0.9.273 — 2026-10-09
+
+- Rettet skrivefeil: synonymet `{water}` under [LAKE] er endret til `{Water}`.
+
 ## 0.9.272 — 2026-10-09
 
 ### Synonymer lagt til på naturkategorier
@@ -5,7 +9,7 @@
 For å sikre at kategori-søkeord eksporteres fra Lightroom er følgende synonymer lagt til på container-nodene:
 
 - **[MOUNTAIN]** → {Mountain}
-- **[LAKE]** → {Lake}, {water}
+- **[LAKE]** → {Lake}, {Water}
 - **[RIVER]** → {Water}
 - **[ISLAND]** → {Island}
 

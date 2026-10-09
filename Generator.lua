@@ -243,7 +243,7 @@ function Generator.generate(data, prefs)
                                 for i = 1, math.min(maxN, #data.lakes) do picked[#picked + 1] = data.lakes[i] end
                                 add(5, container("Lake"))
                                 addSynonym(6, "{Lake}")
-                                addSynonym(6, "{water}")
+                                addSynonym(6, "{Water}")
                                 picked = sortedCopy(picked)
                                 for _, name in ipairs(picked) do add(6, name) end
                         end
