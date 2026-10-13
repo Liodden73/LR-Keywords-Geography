@@ -216,7 +216,6 @@ local COUNTRIES = {
                 "Anguilla",
                 "Ascension Island",
                 "Bermuda",
-                "British Antarctic Territory",
                 "British Indian Ocean Territory",
                 "British Virgin Islands",
                 "Cayman Islands",

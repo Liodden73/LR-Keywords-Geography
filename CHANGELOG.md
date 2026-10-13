@@ -1,3 +1,17 @@
+## 0.9.285 — 2026-10-13
+
+### United Kingdom: British Antarctic Territory fjernet
+
+- **British Antarctic Territory** er fjernet fra Remote Islands under United Kingdom, i tråd med beslutningen om å ikke ta med kravområder i Antarktis.
+
+## 0.9.284 — 2026-10-13
+
+### [TERRITORIES] for France, Netherlands og United States (fase 1)
+
+- **France:** Saint Barthélemy, Saint Martin (`{Caribbean}`), Saint Pierre and Miquelon (`{North Atlantic Ocean}`), Clipperton Island (`{Pacific Ocean}`), French Polynesia, New Caledonia, Wallis and Futuna (`{South Pacific Ocean}`), Îles Éparses (`{Indian Ocean}`, ny i Remote Islands). Alle med `{France}`.
+- **Netherlands:** Aruba, Curaçao, Sint Maarten – `{Netherlands}` og `{Caribbean}`.
+- **United States:** American Samoa (`{South Pacific Ocean}`), Guam, Northern Mariana Islands (`{Pacific Ocean}`) – alle med `{United States}`.
+
 ## 0.9.283 — 2026-10-13
 
 ### [TERRITORIES] for alle United Kingdom-territorier i fase 1
