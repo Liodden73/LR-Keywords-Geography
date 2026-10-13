@@ -176,7 +176,15 @@ local COUNTRIES = {
         addCountry { id = "Norway",       name = "Norway",        code = "NO-578", filename = "Norway.lua",       continent = "Europe",        admin_label = "Counties & Areas",  mountain_max = 2469, remoteIslandNames = { "Bouvetøya", "Dronning Mauds Land", "Jan Mayen", "Peter 1. Island", "Svalbard" } },
         addCountry { id = "Sweden",       name = "Sweden",        code = "SE-752", filename = "Sweden.lua",       continent = "Europe",        admin_label = "Counties & Areas",  mountain_max = 2097, remoteIslandNames = {} },
         addCountry { id = "Panama",       name = "Panama",        code = "PA-591", filename = "Panama.lua",       continent = "North America", admin_label = "Provinces & Areas", mountain_max = 3474, remoteIslandNames = {} },
-        addCountry { id = "UnitedStates", name = "United States", code = "US-840", filename = "UnitedStates.lua", continent = "North America", admin_label = "States & Areas",    mountain_max = 6194, remoteIslandNames = { "American Samoa", "Guam", "Northern Mariana Islands", "Puerto Rico", "US Virgin Islands" } },
+        addCountry { id = "UnitedStates", name = "United States", code = "US-840", filename = "UnitedStates.lua", continent = "North America", admin_label = "States & Areas",    mountain_max = 6194, remoteIslandNames = { "American Samoa", "Guam", "Northern Mariana Islands", "Puerto Rico", "US Virgin Islands" },
+        -- Territories: listed under the sovereign country in the UI, but exported
+        -- under [WORLD] > [<continent>] > [TERRITORIES] > <name> with synonyms.
+        territories = {
+                -- Oceania
+                ["American Samoa"]          = { continent = "Oceania", synonyms = { "United States", "South Pacific Ocean" } },
+                ["Guam"]                    = { continent = "Oceania", synonyms = { "United States", "Pacific Ocean" } },
+                ["Northern Mariana Islands"]= { continent = "Oceania", synonyms = { "United States", "Pacific Ocean" } },
+        } },
         addCountry { id = "Chile",        name = "Chile",         code = "CL-152", filename = "Chile.lua",        continent = "South America", admin_label = "Regions & Areas",   mountain_max = 6893, remoteIslandNames = { "Archipiélago Juan Fernández", "Isla de Pascua" } },
         addCountry { id = "Venezuela",    name = "Venezuela",     code = "VE-862", filename = "Venezuela.lua",    continent = "South America", admin_label = "States & Areas",      mountain_max = 4981, remoteIslandNames = {} },
         addCountry { id = "Brazil",       name = "Brazil",        code = "BR-076", filename = "Brazil.lua",       continent = "South America", admin_label = "States & Areas",      mountain_max = 2973, remoteIslandNames = {} },
@@ -263,10 +271,35 @@ local COUNTRIES = {
         addCountry { id = "Namibia",     name = "Namibia",      code = "NA-516", filename = "Namibia.lua",     continent = "Africa",        admin_label = "Regions & Areas",    mountain_max = 2606, remoteIslandNames = {} },
         addCountry { id = "Australia",   name = "Australia",    code = "AU-036", filename = "Australia.lua",   continent = "Oceania",       admin_label = "States & Areas",     mountain_max = 2228, remoteIslandNames = { "Christmas Island", "Cocos Islands", "Heard Island", "Lord Howe Island", "Macquarie Island", "Norfolk Island" } },
         addCountry { id = "Hungary",     name = "Hungary",      code = "HU-348", filename = "Hungary.lua",     continent = "Europe",        admin_label = "Counties & Areas",   mountain_max = 1014, remoteIslandNames = {} },
-        addCountry { id = "Netherlands", name = "Netherlands",  code = "NL-528", filename = "Netherlands.lua", continent = "Europe",        admin_label = "Provinces & Areas",  mountain_max = 323,  remoteIslandNames = { "Aruba", "Bonaire", "Curaçao", "Saba", "Sint Eustatius", "Sint Maarten" } },
+        addCountry { id = "Netherlands", name = "Netherlands",  code = "NL-528", filename = "Netherlands.lua", continent = "Europe",        admin_label = "Provinces & Areas",  mountain_max = 323,  remoteIslandNames = { "Aruba", "Bonaire", "Curaçao", "Saba", "Sint Eustatius", "Sint Maarten" },
+        -- Territories: listed under the sovereign country in the UI, but exported
+        -- under [WORLD] > [<continent>] > [TERRITORIES] > <name> with synonyms.
+        territories = {
+                -- North America (Caribbean)
+                ["Aruba"]        = { continent = "North America", synonyms = { "Netherlands", "Caribbean" } },
+                ["Curaçao"]      = { continent = "North America", synonyms = { "Netherlands", "Caribbean" } },
+                ["Sint Maarten"] = { continent = "North America", synonyms = { "Netherlands", "Caribbean" } },
+        } },
         addCountry { id = "China",        name = "China",         code = "CN-156", filename = "China.lua",        continent = "Asia",          admin_label = "Provinces & Areas",       mountain_max = 8849, remoteIslandNames = {} },
         addCountry { id = "Russia",      name = "Russia",       code = "RU-643", filename = "Russia.lua",      continent = "Europe",        admin_label = "Federal Subjects & Areas", mountain_max = 5642, remoteIslandNames = {} },
-        addCountry { id = "France",      name = "France",       code = "FR-250", filename = "France.lua",      continent = "Europe",        admin_label = "Regions & Areas",    mountain_max = 4808, remoteIslandNames = { "Amsterdam Island", "Clipperton Island", "Crozet Islands", "French Guiana", "French Polynesia", "Guadeloupe", "Kerguelen Islands", "Martinique", "Mayotte", "New Caledonia", "Réunion", "Saint Barthélemy", "Saint Martin", "Saint Pierre and Miquelon", "Saint-Paul Island", "Wallis and Futuna" } },
+        addCountry { id = "France",      name = "France",       code = "FR-250", filename = "France.lua",      continent = "Europe",        admin_label = "Regions & Areas",    mountain_max = 4808, remoteIslandNames = { "Amsterdam Island", "Clipperton Island", "Crozet Islands", "French Guiana", "French Polynesia", "Guadeloupe", "Îles Éparses", "Kerguelen Islands", "Martinique", "Mayotte", "New Caledonia", "Réunion", "Saint Barthélemy", "Saint Martin", "Saint Pierre and Miquelon", "Saint-Paul Island", "Wallis and Futuna" },
+        -- Territories: listed under the sovereign country in the UI, but exported
+        -- under [WORLD] > [<continent>] > [TERRITORIES] > <name> with synonyms.
+        territories = {
+                -- North America (Caribbean)
+                ["Saint Barthélemy"]          = { continent = "North America", synonyms = { "France", "Caribbean" } },
+                ["Saint Martin"]              = { continent = "North America", synonyms = { "France", "Caribbean" } },
+                -- North America (North Atlantic)
+                ["Saint Pierre and Miquelon"] = { continent = "North America", synonyms = { "France", "North Atlantic Ocean" } },
+                -- North America (Pacific)
+                ["Clipperton Island"]         = { continent = "North America", synonyms = { "France", "Pacific Ocean" } },
+                -- Oceania
+                ["French Polynesia"]          = { continent = "Oceania", synonyms = { "France", "South Pacific Ocean" } },
+                ["New Caledonia"]             = { continent = "Oceania", synonyms = { "France", "South Pacific Ocean" } },
+                ["Wallis and Futuna"]         = { continent = "Oceania", synonyms = { "France", "South Pacific Ocean" } },
+                -- Africa (Indian Ocean)
+                ["Îles Éparses"]              = { continent = "Africa", synonyms = { "France", "Indian Ocean" } },
+        } },
         addCountry { id = "Denmark",     name = "Denmark",      code = "DK-208", filename = "Denmark.lua",     continent = "Europe",        admin_label = "Regions & Areas",    mountain_max = 171,  remoteIslandNames = { "Faroe Islands" } },
         addCountry { id = "Iceland",     name = "Iceland",      code = "IS-352", filename = "Iceland.lua",     continent = "Europe",        admin_label = "Regions & Areas",    mountain_max = 2110, remoteIslandNames = {} },
         addCountry { id = "Germany",     name = "Germany",      code = "DE-276", filename = "Germany.lua",     continent = "Europe",        admin_label = "States & Areas",     mountain_max = 2962, remoteIslandNames = {} },
