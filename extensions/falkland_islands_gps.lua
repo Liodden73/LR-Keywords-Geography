@@ -2,7 +2,7 @@
     falkland_islands_gps.lua — GPS Extension for Falkland Islands
     Part of: LR-Geography-Builder  (Geography Keyword Builder plugin)
 
-    Named regions with polygon boundaries for Falkland Islands (Islas Malvinas),
+    Named regions with polygon boundaries for Falkland Islands,
     a British Overseas Territory in the South Atlantic Ocean.
 
     Format mirrors svalbard_gps.lua and south_georgia_gps.lua structure:
@@ -13,8 +13,11 @@
       [GEOGRAPHY]
         [WORLD]
           [SOUTH AMERICA]
-            Falkland Islands
-              <name>
+            [TERRITORIES]
+              Falkland Islands
+                  {United Kingdom}
+                  {South Atlantic Ocean}
+                <name>
 
     Coordinate system: WGS 84 (lat/lon decimal degrees).
     Negative values = South / West.
@@ -25,19 +28,22 @@
 
 return {
     meta = {
-        version = "1.0.0",
+        version = "1.1.0",
         name = "Falkland Islands GPS Extension",
         region = "Falkland Islands",
         country = "Falkland Islands",
         continent = "South America",
         -- Keyword path template using container convention:
-        -- [GEOGRAPHY] > [WORLD] > [SOUTH AMERICA] > Falkland Islands > {place}
+        -- [GEOGRAPHY] > [WORLD] > [SOUTH AMERICA] > [TERRITORIES] > Falkland Islands > {place}
         keyword_path = {
             "[GEOGRAPHY]",
             "[WORLD]",
             "[SOUTH AMERICA]",
+            "[TERRITORIES]",
             "Falkland Islands"
-        }
+        },
+        -- Synonyms on the territory node (sovereign country + geographic context)
+        synonyms = { "United Kingdom", "South Atlantic Ocean" }
     },
 
     falkland_islands = {

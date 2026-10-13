@@ -108,6 +108,10 @@ end
 --   counties = { ["Akershus"] = true, ... },    -- keyed by county display name
 --   remote_islands_names    = { "Svalbard", ... }, -- ordered list of RI for this country
 --   remote_islands_selected = { ["Svalbard"] = true, ... }, -- which ones to include
+--   territories = { ["South Georgia"] = { continent = "South America",
+--                   synonyms = { "United Kingdom", ... } }, ... },
+--                 -- remote islands listed here are exported under
+--                 -- [WORLD] > [<continent>] > [TERRITORIES] instead of the country
 --   country_synonym = bool,  -- add {Country} synonym to nature features (default false)
 --   norway_synonym = bool,   -- LEGACY alias for country_synonym; still accepted
 -- }
@@ -198,15 +202,37 @@ function Generator.generate(data, prefs)
                         if prefsCounties[county.name] then anyCounty = true break end
                 end
         end
+        -- Selected remote islands are split in two: ordinary remote islands stay
+        -- under the country node; territories (prefs.territories[name] set) are
+        -- exported under [WORLD] > [<their continent>] > [TERRITORIES] > name.
+        local territories = prefs.territories or {}
         local anyRI = false
+        local terrPicks = {}   -- continent -> { names }
+        local terrConts = {}   -- ordered continent list
         for _, riName in ipairs(riNames) do
-                if riSelected[riName] then anyRI = true break end
+                if riSelected[riName] then
+                        local t = territories[riName]
+                        if t then
+                                local cont = t.continent or "Other"
+                                if not terrPicks[cont] then
+                                        terrPicks[cont] = {}
+                                        terrConts[#terrConts + 1] = cont
+                                end
+                                local list = terrPicks[cont]
+                                list[#list + 1] = riName
+                        else
+                                anyRI = true
+                        end
+                end
         end
+        local anyTerritory = prefs.administrative and #terrConts > 0
 
         -- Only emit [WORLD] wrapper when there is something to show.
         local anyAdmin = prefs.administrative and (anyCounty or anyRI)
-        if anyNature or anyAdmin then
+        if anyNature or anyAdmin or anyTerritory then
                 add(1, container("World"))
+        end
+        if anyNature or anyAdmin then
                 add(2, container(data.meta and data.meta.continent or "Europe"))
                 add(3, countryName)
                 if nativeName then
@@ -354,7 +380,7 @@ function Generator.generate(data, prefs)
 
                 -- ── Remote islands ───────────────────────────────────────────────
                 for _, riName in ipairs(riNames) do
-                        if riSelected[riName] then
+                        if riSelected[riName] and not territories[riName] then
                                 add(4, riName)
                                 if adminDetail >= 2 then
                                         if riName == "Svalbard" and data.svalbard then
@@ -368,6 +394,24 @@ function Generator.generate(data, prefs)
                         end
                 end
         end  -- anyNature or anyAdmin
+
+        -- ── Territories ──────────────────────────────────────────────────────
+        -- [WORLD] > [SOUTH AMERICA] > [TERRITORIES] > South Georgia
+        --                                               {United Kingdom} ...
+        if anyTerritory then
+                for _, cont in ipairs(terrConts) do
+                        add(2, container(cont))
+                        add(3, container("Territories"))
+                        for _, name in ipairs(sortedCopy(terrPicks[cont])) do
+                                add(4, name)
+                                for _, syn in ipairs(territories[name].synonyms or {}) do
+                                        for _, alt in ipairs(splitAlternatives(sanitize(syn))) do
+                                                addSynonym(5, "{" .. alt .. "}")
+                                        end
+                                end
+                        end
+                end
+        end
 
         return table.concat(lines, "\n") .. "\n"
 end

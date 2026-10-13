@@ -14,8 +14,11 @@
       [GEOGRAPHY]
         [WORLD]
           [SOUTH AMERICA]
-            South Georgia & South Sandwich Islands
+            [TERRITORIES]
               South Georgia
+                  {United Kingdom}
+                  {Subantarctic island}
+                  {South Atlantic Ocean}
                 <name>
 
     Coordinate system: WGS 84 (lat/lon decimal degrees).
@@ -24,19 +27,22 @@
 
 return {
     meta = {
-        version = "1.0.0",
+        version = "1.1.0",
         name = "South Georgia GPS Extension",
         region = "South Georgia",
         country = "South Georgia",
         continent = "South America",
         -- Keyword path template using container convention:
-        -- [GEOGRAPHY] > [WORLD] > [SOUTH AMERICA] > South Georgia > {place}
+        -- [GEOGRAPHY] > [WORLD] > [SOUTH AMERICA] > [TERRITORIES] > South Georgia > {place}
         keyword_path = {
             "[GEOGRAPHY]",
             "[WORLD]",
             "[SOUTH AMERICA]",
+            "[TERRITORIES]",
             "South Georgia"
-        }
+        },
+        -- Synonyms on the territory node (sovereign country + geographic context)
+        synonyms = { "United Kingdom", "Subantarctic island", "South Atlantic Ocean" }
     },
 
     south_georgia = {

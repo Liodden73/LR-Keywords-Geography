@@ -223,6 +223,13 @@ local COUNTRIES = {
                 "South Sandwich Islands",
                 "Tristan da Cunha",
                 "Turks and Caicos Islands",
+        },
+        -- Territories: listed under the sovereign country in the UI, but exported
+        -- under [WORLD] > [<continent>] > [TERRITORIES] > <name> with synonyms.
+        territories = {
+                ["Falkland Islands"]       = { continent = "South America", synonyms = { "United Kingdom", "South Atlantic Ocean" } },
+                ["South Georgia"]          = { continent = "South America", synonyms = { "United Kingdom", "Subantarctic island", "South Atlantic Ocean" } },
+                ["South Sandwich Islands"] = { continent = "South America", synonyms = { "United Kingdom", "South Atlantic Ocean" } },
         } },
         addCountry { id = "India",        name = "India",         code = "IN-356", filename = "India.lua",        continent = "Asia",          admin_label = "States & Areas",         mountain_max = 8586, remoteIslandNames = { "Andaman and Nicobar Islands", "Lakshadweep" } },
         addCountry { id = "Argentina",   name = "Argentina",    code = "AR-032", filename = "Argentina.lua",   continent = "South America", admin_label = "Provinces & Areas",  mountain_max = 6961, remoteIslandNames = { "Isla de los Estados", "Tierra del Fuego" } },
@@ -1548,8 +1555,12 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                 local riCount  = #riNames
                 props.ri_count        = riCount
                 props.show_ri_section = riCount > 0
+                local terr = country.territories or {}
                 for i = 1, riCount do
-                        props[ "ri_name_"  .. i ] = riNames[ i ]
+                        -- Display label only (selection is keyed by riNames[i]):
+                        -- territories show the continent they are exported under.
+                        local t = terr[ riNames[ i ] ]
+                        props[ "ri_name_"  .. i ] = t and ( riNames[ i ] .. " - " .. t.continent ) or riNames[ i ]
                         props[ "ri_value_" .. i ] = savedRI[ riNames[ i ] ] and true or false
                 end
                 for i = riCount + 1, maxRemoteIslands do
@@ -1637,6 +1648,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                 math.floor( (state.feat_admin_detail or 3) + 0.5 ) ) ),
                         remote_islands_names    = country.remoteIslandNames or {},
                         remote_islands_selected = state.ri or {},
+                        territories             = country.territories or {},
                         counties            = state.counties or {},
                 }
         end
@@ -1673,6 +1685,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                         administrative      = more,
                         admin_detail        = (all and 3 or 2),
                         country_synonym     = false,
+                        territories             = country.territories or {},
                         remote_islands_names    = country.remoteIslandNames or {},
                         remote_islands_selected = (function()
                                 local t = {}

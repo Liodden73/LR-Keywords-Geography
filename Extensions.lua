@@ -50,8 +50,8 @@ local Extensions = {}
 -- ── Extension catalogue ──────────────────────────────────────────────────────
 local EXTENSIONS = {
         { id = "svalbard",      name = "Svalbard GPS Extension",         description = "98 GPS-mapped keyword names · Norway › Svalbard",            filesize = "42 KB", buy_url = "https://liodden.com/extensions/svalbard/",         pref_key = "ext_activated_svalbard",      filename = "svalbard_gps.lua",     coming_soon = false },
-        { id = "south_georgia", name = "South Georgia GPS Extension",     description = "37 GPS-mapped regions · South America › South Georgia",     filesize = "~13 KB", buy_url = "https://liodden.com/extensions/south-georgia/",    pref_key = "ext_activated_south_georgia", filename = "south_georgia_gps.lua",    coming_soon = false },
-        { id = "falklands",     name = "Falkland Islands GPS Extension",  description = "22 GPS-mapped regions · South America › Falkland Islands",    filesize = "~12 KB", buy_url = "https://liodden.com/extensions/falkland-islands/", pref_key = "ext_activated_falklands",     filename = "falkland_islands_gps.lua", coming_soon = false },
+        { id = "south_georgia", name = "South Georgia GPS Extension",     description = "37 GPS-mapped regions · South America › Territories › South Georgia",     filesize = "~13 KB", buy_url = "https://liodden.com/extensions/south-georgia/",    pref_key = "ext_activated_south_georgia", filename = "south_georgia_gps.lua",    coming_soon = false },
+        { id = "falklands",     name = "Falkland Islands GPS Extension",  description = "22 GPS-mapped regions · South America › Territories › Falkland Islands",    filesize = "~12 KB", buy_url = "https://liodden.com/extensions/falkland-islands/", pref_key = "ext_activated_falklands",     filename = "falkland_islands_gps.lua", coming_soon = false },
         { id = "antarctica",    name = "Antarctica GPS Extension",        description = "GPS-mapped keyword names · Antarctica",                      filesize = "—",     buy_url = "https://liodden.com/extensions/antarctica/",       pref_key = "ext_activated_antarctica",    filename = "antarctica_gps.lua",   coming_soon = true  },
 }
 

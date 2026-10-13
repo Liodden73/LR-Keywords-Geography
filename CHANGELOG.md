@@ -1,3 +1,19 @@
+## 0.9.282 — 2026-10-13
+
+### Nytt: [TERRITORIES] for territorier i en annen verdensdel enn landet med suverenitet
+
+- Nytt felt `territories` på landoppføringen i ListVerification.lua (Alternativ A). Hvert territorium har en verdensdel og en liste med synonymer.
+- Territoriene vises fortsatt under landet med suverenitet i Geography Keyword Builder, men med verdensdel i etiketten, f.eks. «South Georgia - South America».
+- Ved eksport legges de under riktig verdensdel:
+  `[GEOGRAPHY] > [WORLD] > [SOUTH AMERICA] > [TERRITORIES] > South Georgia` med `{United Kingdom}`, `{Subantarctic island}`, `{South Atlantic Ocean}`.
+- Første runde (United Kingdom):
+  - **Falkland Islands** – South America – {United Kingdom} {South Atlantic Ocean}
+  - **South Georgia** – South America – {United Kingdom} {Subantarctic island} {South Atlantic Ocean}
+  - **South Sandwich Islands** – South America – {United Kingdom} {South Atlantic Ocean}
+- Andre fjerne øyer (f.eks. Gibraltar, Svalbard) ligger som før under landet.
+- **GPS Extensions**: South Georgia og Falkland Islands (v1.1.0) har fått `keyword_path` med `[TERRITORIES]` og nytt felt `synonyms`. Beskrivelsen i Extensions-fanen er oppdatert.
+- **Verdenskart**: Falklandsøyene er fargelagt som en del av United Kingdom.
+
 ## 0.9.281 — 2026-10-09
 
 ### Verdenskart: to grå flekker i Afrika fjernet
