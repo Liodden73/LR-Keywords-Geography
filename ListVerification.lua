@@ -227,9 +227,23 @@ local COUNTRIES = {
         -- Territories: listed under the sovereign country in the UI, but exported
         -- under [WORLD] > [<continent>] > [TERRITORIES] > <name> with synonyms.
         territories = {
+                -- South America
                 ["Falkland Islands"]       = { continent = "South America", synonyms = { "United Kingdom", "South Atlantic Ocean" } },
                 ["South Georgia"]          = { continent = "South America", synonyms = { "United Kingdom", "Subantarctic island", "South Atlantic Ocean" } },
-                ["South Sandwich Islands"] = { continent = "South America", synonyms = { "United Kingdom", "South Atlantic Ocean" } },
+                ["South Sandwich Islands"] = { continent = "South America", synonyms = { "United Kingdom", "Subantarctic island", "South Atlantic Ocean" } },
+                -- North America (Caribbean)
+                ["Anguilla"]              = { continent = "North America", synonyms = { "United Kingdom", "Caribbean" } },
+                ["Bermuda"]               = { continent = "North America", synonyms = { "United Kingdom", "North Atlantic Ocean" } },
+                ["British Virgin Islands"]= { continent = "North America", synonyms = { "United Kingdom", "Caribbean" } },
+                ["Cayman Islands"]        = { continent = "North America", synonyms = { "United Kingdom", "Caribbean" } },
+                ["Montserrat"]            = { continent = "North America", synonyms = { "United Kingdom", "Caribbean" } },
+                ["Turks and Caicos Islands"] = { continent = "North America", synonyms = { "United Kingdom", "Caribbean" } },
+                -- Africa (South Atlantic)
+                ["Saint Helena"]          = { continent = "Africa", synonyms = { "United Kingdom", "South Atlantic Ocean" } },
+                ["Ascension Island"]      = { continent = "Africa", synonyms = { "United Kingdom", "South Atlantic Ocean" } },
+                ["Tristan da Cunha"]      = { continent = "Africa", synonyms = { "United Kingdom", "South Atlantic Ocean" } },
+                -- Oceania
+                ["Pitcairn Islands"]      = { continent = "Oceania", synonyms = { "United Kingdom", "South Pacific Ocean" } },
         } },
         addCountry { id = "India",        name = "India",         code = "IN-356", filename = "India.lua",        continent = "Asia",          admin_label = "States & Areas",         mountain_max = 8586, remoteIslandNames = { "Andaman and Nicobar Islands", "Lakshadweep" } },
         addCountry { id = "Argentina",   name = "Argentina",    code = "AR-032", filename = "Argentina.lua",   continent = "South America", admin_label = "Provinces & Areas",  mountain_max = 6961, remoteIslandNames = { "Isla de los Estados", "Tierra del Fuego" } },

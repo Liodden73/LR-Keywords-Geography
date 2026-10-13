@@ -1,3 +1,13 @@
+## 0.9.283 — 2026-10-13
+
+### [TERRITORIES] for alle United Kingdom-territorier i fase 1
+
+- **South Sandwich Islands** får nå `{Subantarctic island}` som synonym (på linje med South Georgia). Begge øygruppene ligger i den subantarktiske sonen (54–60°S).
+- **North America (Karibia):** Anguilla, Bermuda, British Virgin Islands, Cayman Islands, Montserrat, Turks and Caicos Islands – alle med `{United Kingdom}` og `{Caribbean}`. Bermuda er Nord-Atlanteren og får `{North Atlantic Ocean}` i stedet for `{Caribbean}`.
+- **Africa (Sør-Atlanteren):** Saint Helena, Ascension Island, Tristan da Cunha – alle med `{United Kingdom}` og `{South Atlantic Ocean}`.
+- **Oceania:** Pitcairn Islands – med `{United Kingdom}` og `{South Pacific Ocean}`.
+- Territorier som ligger i samme verdensdel som United Kingdom (Europa) er uendret: Gibraltar, Isle of Man, Channel Islands, British Antarctic Territory, British Indian Ocean Territory.
+
 ## 0.9.282 — 2026-10-13
 
 ### Nytt: [TERRITORIES] for territorier i en annen verdensdel enn landet med suverenitet
