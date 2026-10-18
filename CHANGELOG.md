@@ -1,3 +1,13 @@
+## 0.9.286 — 2026-10-13
+
+### United Kingdom fullført
+
+- **British Indian Ocean Territory** eksporteres nå under `[WORLD] > [AFRICA] > [TERRITORIES]` med `{United Kingdom}` og `{Indian Ocean}`.
+- **Channel Islands** er delt i **Jersey** og **Guernsey** (to separate Crown Dependencies). Begge får `{Channel Islands}` og `{English Channel}`. Guernsey får Alderney, Herm og Sark som underliggende steder (admin-detalj 2 eller høyere).
+- **Gibraltar** får `{Mediterranean Sea}` og **Isle of Man** får `{Irish Sea}`. Begge blir liggende under United Kingdom.
+- Nytt felt `remoteIslandDetails` i ListVerification.lua gir synonymer og understeder til vanlige Remote Islands (som blir liggende under landet).
+- NB: Har du tidligere valgt «Channel Islands», må du nå krysse av for Jersey og/eller Guernsey på nytt.
+
 ## 0.9.285 — 2026-10-13
 
 ### United Kingdom: British Antarctic Territory fjernet

@@ -112,6 +112,9 @@ end
 --                   synonyms = { "United Kingdom", ... } }, ... },
 --                 -- remote islands listed here are exported under
 --                 -- [WORLD] > [<continent>] > [TERRITORIES] instead of the country
+--   remote_islands_details = { ["Guernsey"] = { synonyms = { "Channel Islands" },
+--                   places = { "Sark", ... } }, ... },
+--                 -- optional synonyms / sub-places for ordinary remote islands
 --   country_synonym = bool,  -- add {Country} synonym to nature features (default false)
 --   norway_synonym = bool,   -- LEGACY alias for country_synonym; still accepted
 -- }
@@ -191,6 +194,7 @@ function Generator.generate(data, prefs)
 
         local riNames    = prefs.remote_islands_names    or {}
         local riSelected = prefs.remote_islands_selected or {}
+        local riDetails  = prefs.remote_islands_details  or {}
         local prefsCounties = prefs.counties or {}
         -- admin_detail: 1=Less (counties only), 2=More (counties+municipalities),
         --               3=All (municipalities+cities+districts). Default=All.
@@ -382,7 +386,18 @@ function Generator.generate(data, prefs)
                 for _, riName in ipairs(riNames) do
                         if riSelected[riName] and not territories[riName] then
                                 add(4, riName)
+                                local det = riDetails[riName]
+                                if det then
+                                        for _, syn in ipairs(det.synonyms or {}) do
+                                                for _, alt in ipairs(splitAlternatives(sanitize(syn))) do
+                                                        addSynonym(5, "{" .. alt .. "}")
+                                                end
+                                        end
+                                end
                                 if adminDetail >= 2 then
+                                        if det and det.places then
+                                                for _, s in ipairs(sortedCopy(det.places)) do add(5, sanitize(s)) end
+                                        end
                                         if riName == "Svalbard" and data.svalbard then
                                                 local settlements = sortedCopy(data.svalbard.settlements or {})
                                                 for _, s in ipairs(settlements) do add(5, s) end

@@ -219,10 +219,11 @@ local COUNTRIES = {
                 "British Indian Ocean Territory",
                 "British Virgin Islands",
                 "Cayman Islands",
-                "Channel Islands",
                 "Falkland Islands",
                 "Gibraltar",
+                "Guernsey",
                 "Isle of Man",
+                "Jersey",
                 "Montserrat",
                 "Pitcairn Islands",
                 "Saint Helena",
@@ -251,6 +252,16 @@ local COUNTRIES = {
                 ["Tristan da Cunha"]      = { continent = "Africa", synonyms = { "United Kingdom", "South Atlantic Ocean" } },
                 -- Oceania
                 ["Pitcairn Islands"]      = { continent = "Oceania", synonyms = { "United Kingdom", "South Pacific Ocean" } },
+                -- Africa (Indian Ocean)
+                ["British Indian Ocean Territory"] = { continent = "Africa", synonyms = { "United Kingdom", "Indian Ocean" } },
+        },
+        -- Remote islands that stay under the country node (same continent),
+        -- with optional synonyms and sub-places (sub-places need admin detail >= 2).
+        remoteIslandDetails = {
+                ["Gibraltar"]   = { synonyms = { "Mediterranean Sea" } },
+                ["Guernsey"]    = { synonyms = { "Channel Islands", "English Channel" }, places = { "Alderney", "Herm", "Sark" } },
+                ["Isle of Man"] = { synonyms = { "Irish Sea" } },
+                ["Jersey"]      = { synonyms = { "Channel Islands", "English Channel" } },
         } },
         addCountry { id = "India",        name = "India",         code = "IN-356", filename = "India.lua",        continent = "Asia",          admin_label = "States & Areas",         mountain_max = 8586, remoteIslandNames = { "Andaman and Nicobar Islands", "Lakshadweep" } },
         addCountry { id = "Argentina",   name = "Argentina",    code = "AR-032", filename = "Argentina.lua",   continent = "South America", admin_label = "Provinces & Areas",  mountain_max = 6961, remoteIslandNames = { "Isla de los Estados", "Tierra del Fuego" } },
@@ -1695,6 +1706,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                         remote_islands_names    = country.remoteIslandNames or {},
                         remote_islands_selected = state.ri or {},
                         territories             = country.territories or {},
+                        remote_islands_details  = country.remoteIslandDetails or {},
                         counties            = state.counties or {},
                 }
         end
@@ -1732,6 +1744,7 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                         admin_detail        = (all and 3 or 2),
                         country_synonym     = false,
                         territories             = country.territories or {},
+                        remote_islands_details  = country.remoteIslandDetails or {},
                         remote_islands_names    = country.remoteIslandNames or {},
                         remote_islands_selected = (function()
                                 local t = {}
