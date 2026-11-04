@@ -1,0 +1,33 @@
+LR-Geography-Oceans-and-Seas - Change log
+=========================================
+
+v1.1  (2026-11-04)  - first published version
+----------------------------------------------
+
+File: LR-Geography-Oceans-and-Seas-LioddenMedia-v1-1.txt
+Lightroom keyword import file (UTF-8, TAB indented).
+
+Structure:
+  [GEOGRAPHY] > [WORLD] > [OCEANS AND SEAS] {Ocean} {Sea}
+    Arctic Ocean / Atlantic Ocean (North + South) / Indian Ocean /
+    Pacific Ocean (North + South) / Southern Ocean
+      > named seas > gulfs, bays and straits
+
+Contents: 122 keywords, 8 synonyms.
+Synonyms: {Ocean}, {Sea}, {Framstredet}, {Norskehavet}, {La Manche},
+{Mar Argentino}, {Sea of Cortez}, {Antarctic Ocean}
+
+Decisions:
+- Local waters (Svalbard, Falkland Islands, South Georgia, South Orkney
+  Islands, Antarctic Peninsula) are NOT in this list; they are handled by
+  GPS polygons (see tools/polygon-editors/).
+- Politically sensitive synonyms removed ({East Sea}, {Arabian Gulf},
+  {Mar de Hoces}); no Malvinas names.
+- Great Australian Bight placed under Southern Ocean (Australian usage).
+- Gulf of Guinea placed under North Atlantic Ocean.
+- Most Norwegian synonyms removed on user's request.
+
+Checks: no commas, no slashes, no duplicate keywords.
+Not yet import-tested in Lightroom.
+
+Development history (drafts v0-1 to v0-4) kept outside the repository.

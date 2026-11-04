@@ -1,0 +1,133 @@
+[GEOGRAPHY]
+	[WORLD]
+		[OCEANS AND SEAS]
+			{Ocean}
+			{Sea}
+			Arctic Ocean
+				Baffin Bay
+				Barents Sea
+				Beaufort Sea
+				Chukchi Sea
+				Davis Strait
+				East Siberian Sea
+				Greenland Sea
+					Fram Strait
+						{Framstredet}
+				Hudson Bay
+				Hudson Strait
+				Kara Sea
+				Laptev Sea
+				Lincoln Sea
+				Norwegian Sea
+					{Norskehavet}
+				Wandel Sea
+				White Sea
+			Atlantic Ocean
+				North Atlantic Ocean
+					Baltic Sea
+						Gulf of Bothnia
+						Gulf of Finland
+						Gulf of Riga
+					Bay of Biscay
+					Bay of Fundy
+					Caribbean Sea
+					Celtic Sea
+					Denmark Strait
+					English Channel
+						{La Manche}
+					Gulf of Guinea
+					Gulf of Maine
+					Gulf of Mexico
+					Gulf of Saint Lawrence
+					Irish Sea
+					Kattegat
+					Labrador Sea
+					Mediterranean Sea
+						Adriatic Sea
+						Aegean Sea
+						Alboran Sea
+						Balearic Sea
+						Black Sea
+							Sea of Azov
+						Ionian Sea
+						Levantine Sea
+						Ligurian Sea
+						Sea of Marmara
+						Strait of Gibraltar
+						Tyrrhenian Sea
+					North Sea
+						Wadden Sea
+					Sargasso Sea
+					Sea of the Hebrides
+					Skagerrak
+				South Atlantic Ocean
+					Argentine Sea
+						{Mar Argentino}
+					Río de la Plata
+					Scotia Sea
+			Indian Ocean
+				Andaman Sea
+				Arabian Sea
+				Bay of Bengal
+				Gulf of Aden
+				Gulf of Oman
+				Laccadive Sea
+				Mozambique Channel
+				Persian Gulf
+					Strait of Hormuz
+				Red Sea
+					Gulf of Aqaba
+					Gulf of Suez
+				Strait of Malacca
+				Timor Sea
+			Pacific Ocean
+				North Pacific Ocean
+					Bering Sea
+					Celebes Sea
+					East China Sea
+					Gulf of Alaska
+					Gulf of California
+						{Sea of Cortez}
+					Gulf of Panama
+					Philippine Sea
+					Salish Sea
+					Sea of Japan
+					Sea of Okhotsk
+					Seto Inland Sea
+					South China Sea
+						Gulf of Thailand
+						Gulf of Tonkin
+					Sulu Sea
+					Yellow Sea
+						Bohai Sea
+				South Pacific Ocean
+					Arafura Sea
+					Banda Sea
+					Bass Strait
+					Bismarck Sea
+					Ceram Sea
+					Coral Sea
+					Flores Sea
+					Gulf of Carpentaria
+					Java Sea
+					Savu Sea
+					Solomon Sea
+					Tasman Sea
+					Torres Strait
+			Southern Ocean
+				{Antarctic Ocean}
+				Amundsen Sea
+				Bellingshausen Sea
+				Cooperation Sea
+				Cosmonauts Sea
+				D'Urville Sea
+				Davis Sea
+				Drake Passage
+				Great Australian Bight
+				King Haakon VII Sea
+				Lazarev Sea
+				Mawson Sea
+				Riiser-Larsen Sea
+				Ross Sea
+				Somov Sea
+				Weddell Sea
