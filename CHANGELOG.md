@@ -1,3 +1,15 @@
+## 0.9.296 — 2026-11-04
+
+### Border cases kept under their country, with place and ocean synonyms
+
+- Principle: an area goes under `[TERRITORIES]` only if the UN regional scheme (M49) lists it as a separate area in another continent than the sovereign country. Canary Islands, Ceuta, Melilla, Madeira, Easter Island and Hawaii are part of their country in M49 and stay under it.
+- **Spain** (data 0.1.2): region synonyms Canary Islands `{Islas Canarias}` `{North Atlantic Ocean}`; Ceuta and Melilla `{North Africa}`.
+- **Portugal**: remote island Madeira `{North Atlantic Ocean}`.
+- **Chile**: remote island Isla de Pascua `{Easter Island}` `{Rapa Nui}` `{Polynesia}` `{South Pacific Ocean}`.
+- **United States** (data 0.7.22): state Hawaii `{Hawaiian Islands}` `{North Pacific Ocean}`.
+- Country-level keyword list unchanged (v1.7).
+- Not yet tested in Lightroom.
+
 ## 0.9.295 — 2026-11-04
 
 ### French overseas departments and Caribbean Netherlands as territories

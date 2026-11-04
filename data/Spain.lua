@@ -5,7 +5,7 @@
 return {
 
     meta = {
-        version     = "0.1.1",
+        version     = "0.1.2",
         country     = "Spain",
         native_name = "España",
         continent   = "Europe",
@@ -522,6 +522,7 @@ return {
         },
         {
             name = "Canary Islands",
+            synonyms = { "Islas Canarias", "North Atlantic Ocean" },
             municipalities = {
                 {
                     name = "Provincia de Las Palmas",
@@ -652,6 +653,7 @@ return {
         },
         {
             name = "Ceuta",
+            synonyms = { "North Africa" },
             municipalities = {
                 {
                     name = "Ceuta",
@@ -752,6 +754,7 @@ return {
         },
         {
             name = "Melilla",
+            synonyms = { "North Africa" },
             municipalities = {
                 {
                     name = "Melilla",

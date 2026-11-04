@@ -205,7 +205,11 @@ local COUNTRIES = {
                 ["Navassa Island"]          = { continent = "North America", synonyms = { "United States", "Caribbean" },
                         places = { "Navassa Island National Wildlife Refuge" } },
         } },
-        addCountry { id = "Chile",        name = "Chile",         code = "CL-152", filename = "Chile.lua",        continent = "South America", admin_label = "Regions & Areas",   mountain_max = 6893, remoteIslandNames = { "Archipiélago Juan Fernández", "Isla de Pascua" } },
+        addCountry { id = "Chile",        name = "Chile",         code = "CL-152", filename = "Chile.lua",        continent = "South America", admin_label = "Regions & Areas",   mountain_max = 6893, remoteIslandNames = { "Archipiélago Juan Fernández", "Isla de Pascua" },
+        -- Easter Island is part of Chile (UN M49); stays under the country.
+        remoteIslandDetails = {
+                ["Isla de Pascua"] = { synonyms = { "Easter Island", "Rapa Nui", "Polynesia", "South Pacific Ocean" } },
+        } },
         addCountry { id = "Venezuela",    name = "Venezuela",     code = "VE-862", filename = "Venezuela.lua",    continent = "South America", admin_label = "States & Areas",      mountain_max = 4981, remoteIslandNames = {} },
         addCountry { id = "Brazil",       name = "Brazil",        code = "BR-076", filename = "Brazil.lua",       continent = "South America", admin_label = "States & Areas",      mountain_max = 2973, remoteIslandNames = {} },
         addCountry { id = "Paraguay",     name = "Paraguay",      code = "PY-600", filename = "Paraguay.lua",     continent = "South America", admin_label = "Departments & Areas", mountain_max = 842,  remoteIslandNames = {} },
@@ -395,7 +399,11 @@ local COUNTRIES = {
         addCountry { id = "Iceland",     name = "Iceland",      code = "IS-352", filename = "Iceland.lua",     continent = "Europe",        admin_label = "Regions & Areas",    mountain_max = 2110, remoteIslandNames = {} },
         addCountry { id = "Germany",     name = "Germany",      code = "DE-276", filename = "Germany.lua",     continent = "Europe",        admin_label = "States & Areas",     mountain_max = 2962, remoteIslandNames = {} },
         addCountry { id = "Spain",       name = "Spain",        code = "ES-724", filename = "Spain.lua",       continent = "Europe",        admin_label = "Communities & Areas", mountain_max = 3715, remoteIslandNames = {} },
-        addCountry { id = "Portugal",    name = "Portugal",     code = "PT-620", filename = "Portugal.lua",    continent = "Europe",        admin_label = "Districts & Areas",     mountain_max = 2351, remoteIslandNames = { "Azores", "Madeira" } },
+        addCountry { id = "Portugal",    name = "Portugal",     code = "PT-620", filename = "Portugal.lua",    continent = "Europe",        admin_label = "Districts & Areas",     mountain_max = 2351, remoteIslandNames = { "Azores", "Madeira" },
+        -- Madeira is part of Portugal (UN M49); stays under the country.
+        remoteIslandDetails = {
+                ["Madeira"] = { synonyms = { "North Atlantic Ocean" } },
+        } },
         addCountry { id = "Italy",       name = "Italy",        code = "IT-380", filename = "Italy.lua",       continent = "Europe",        admin_label = "Regions & Areas",       mountain_max = 4810, remoteIslandNames = {} },
         addCountry { id = "Austria",     name = "Austria",      code = "AT-040", filename = "Austria.lua",     continent = "Europe",        admin_label = "States & Areas",        mountain_max = 3798, remoteIslandNames = {} },
         addCountry { id = "Belgium",     name = "Belgium",      code = "BE-056", filename = "Belgium.lua",     continent = "Europe",        admin_label = "Regions & Areas",       mountain_max = 694,  remoteIslandNames = {} },

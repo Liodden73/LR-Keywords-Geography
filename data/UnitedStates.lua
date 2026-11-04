@@ -5,7 +5,7 @@
 
 return {
 
-	meta = { version = "0.7.21", country = "United States", native_name = "United States",
+	meta = { version = "0.7.22", country = "United States", native_name = "United States",
 	 min_city_pop = 1000,
 	 continent = "North America" },
 
@@ -549,6 +549,7 @@ return {
           },
         },
         { name = "Hawaii",
+          synonyms = { "Hawaiian Islands", "North Pacific Ocean" },
           municipalities = {
             { name = "Kauai County", cities = { "Kapa‘a", "Lihue", "Wailua Homesteads", "Waimea" } },
             { name = "Maui County", cities = { "Haiku-Pauwela", "Haʻikū", "Kahului", "Kula", "Kīhei", "Lahaina", "Makawao", "Napili-Honokowai", "Pukalani", "Spreckelsville", "Waihee-Waiehu", "Wailea", "Wailea-Makena", "Wailuku" } },
