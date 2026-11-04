@@ -1,0 +1,115 @@
+[GEOGRAPHY]
+	[WORLD]
+		[EUROPE]
+			Norway
+				{Norge}
+				Svalbard
+					Barentsøya
+						Freemansundet
+						Heleysundet
+					Edgeøya
+						Kapp Lee
+						Tjuvfjorden
+						Tusenøyane
+					Hinlopenstretet
+						Bastianøyane
+						Kiepertøya
+						Langøya
+						Von Otterøya
+						Wahlbergøya
+						Wilhelmøya
+					Nordaustlandet
+						Austfonna
+						Brennvinsfjorden
+						Bråsvellbreen
+						Duvefjorden
+						Gimlebreen
+						Lady Franklinfjorden
+						Murchisonfjorden
+						Palanderbukta
+						Rijpfjorden
+						Torellneset
+						Vibebukta
+						Wahlenbergfjorden
+					Spitsbergen
+						Agardhbukta
+						Akseløya
+						Alkefjellet
+						Alkehornet
+						Barentsburg
+						Bellsund
+						Billefjorden
+						Blomstrandhalvøya
+						Bochfjorden
+						Borebukta
+						Dicksonfjorden
+						Dunérbukta
+						Ekmanfjorden
+						Fjortende Julibukta
+						Forlandsundet
+						Fuglefjorden
+						Gullybukta
+						Hamiltonbukta
+						Hochstetterbreen
+						Hornsund
+						Inglefjeldbreen
+						Isbukta
+						Isfjord Radio
+						Isfjorden
+						Kongsfjorden
+						Krossfjorden
+						Liefdefjorden
+						Lilliehööksbreen
+						Lilliehööksfjorden
+						Lomfjorden
+						Longyearbyen
+						Magdalenefjorden
+						Mohnbukta
+						Monacobreen
+						Negribreen
+						Ny-Ålesund
+						Nybyen
+						Pyramiden
+						Raudfjorden
+						Sarstangen
+						Skansebukta
+						Smeerenburgbreen
+						Smeerenburgfjorden
+						Sonklarbreen
+						Sorgfjorden
+						St. Jonsfjorden
+						Svea
+						Tempelfjorden
+						Trygghamna
+						Van Keulenfjorden
+						Van Mijenfjorden
+						Widjefjorden
+						Woodfjorden
+						Ymerbukta
+						Yoldiabukta
+					Storfjorden
+					Amsterdamøya
+					Bjørnøya
+					Brochøya
+					Danskeøya
+					Foynøya
+					Fuglesongen
+					Haugen
+					Herwighamma
+					Hopen
+					Hopen Radio
+					Indre Norskøya
+					Karl XII Island
+					Klovningen
+					Kong Karls Land
+					Kvitøya
+					Lågøya
+					Moffen
+					Poolepynten
+					Prins Karls Forland
+					Sjuøyane
+					Smeerenburg
+					Storøya
+					Svenskeøya
+					Virgohamna
+					Ytre Norskeøya

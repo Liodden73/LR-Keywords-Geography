@@ -1,3 +1,15 @@
+## 0.9.298 — 2026-11-04
+
+### Svalbard GPS Extension 1.1.0 (3 levels)
+
+- `extensions/svalbard_gps.lua` 1.1.0 with the owner's polygons from the Svalbard polygon editor: 97 Level-1 place polygons plus the Moffen and Karl XII Island boxes, 6 Level-2 regions (Spitsbergen, Nordaustlandet, Barentsøya, Edgeøya, Hinlopenstretet, Storfjorden) and a Level-3 `country_polygon` for all of Svalbard incl. surrounding sea.
+- New Level-1 places: Bastianøyane, Freemansundet, Heleysundet, Langøya, Svenskeøya, Tjuvfjorden, Tusenøyane, Von Otterøya. Spitsbergen, Nordaustlandet, Barentsøya, Edgeøya, Hinlopenstretet and Storfjorden moved from Level 1 to Level 2. Pack ice removed.
+- New `place_regions` table: the Level-2 parent of each place (keyword hierarchy Norway > Svalbard > Spitsbergen > Longyearbyen). DRAFT: assigned by point-in-polygon test, 14 places set by hand and marked DRAFT; 22 places outside all regions stay directly under Svalbard. To be checked by the owner.
+- New keyword list `keyword-lists/LR-Geography-Svalbard-GPS-LioddenMedia-v1-1.txt` (GitHub only) with the region level.
+- Svalbard polygon editor defaults updated to the new data (data version 1.1.0); stored editor work in the browser is not overwritten.
+- Extensions panel: Svalbard description "105 GPS-mapped areas".
+- Not yet tested in Lightroom.
+
 ## 0.9.297 — 2026-11-04
 
 ### South Georgia GPS Extension 1.3.0 bundled
