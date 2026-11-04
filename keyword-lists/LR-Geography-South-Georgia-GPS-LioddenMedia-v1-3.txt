@@ -1,0 +1,48 @@
+[GEOGRAPHY]
+	[WORLD]
+		[SOUTH AMERICA]
+			[TERRITORIES]
+				South Georgia
+					{United Kingdom}
+					{Subantarctic island}
+					{South Atlantic Ocean}
+					Albatross Island
+					Annenkov Island
+					Antarctic Bay
+					Bird Island
+					Church Bay
+					Cooper Bay
+					Cooper Island
+					Cumberland East Bay
+					Cumberland West Bay
+					Drygalski Fjord
+					Elsehul
+					Fortuna Bay
+					Godthul
+					Gold Harbour
+					Grytviken
+					Hound Bay
+					Husvik Harbour
+					Ice Fjord
+					Iris Bay
+					King Haakon Bay
+					Leith Harbour
+					Moltke Harbour
+					Moraine Fjord
+					Newark Bay
+					Ocean Harbour
+					Possession Bay
+					Prince Olav Harbour
+					Prion Island
+					Queen Maud Bay
+					Right Whale Bay
+					Rosita Harbour
+					Royal Bay
+					Salisbury Plain
+					St Andrews Bay
+					Stromness
+					Stromness Bay
+					Sunset Fjord
+					Twitcher Bay
+					Undine South Harbour
+					Willis Islands

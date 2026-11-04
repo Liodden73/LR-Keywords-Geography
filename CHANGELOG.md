@@ -7,6 +7,7 @@
 - Extensions panel: South Georgia description updated from 37 to 40 GPS-mapped regions.
 - Polygon editors (`tools/polygon-editors/`, GitHub only, not in the plugin package): South Georgia, Falkland Islands and Svalbard editors now share the same 3-level design (City/State/Country) with automatic storage migration (South Georgia v2 -> v3, Falkland Islands v3 -> v4, Svalbard v2 -> v3). Falkland Islands and Svalbard get a draft Level 3 polygon; their GPS data files are unchanged.
 - Note: Level 2 and Level 3 are not used by any GPS conversion code in this plugin; GPS-to-keyword conversion is done by the LR Wildlife plugin.
+- New keyword list `keyword-lists/LR-Geography-South-Georgia-GPS-LioddenMedia-v1-3.txt` (GitHub only): the 40 GPS place names from South Georgia GPS Extension 1.3.0 under `[GEOGRAPHY] > [WORLD] > [SOUTH AMERICA] > [TERRITORIES] > South Georgia`, with the same synonyms as the territory node. Replaces the old Wildlife list (`Geography > World > South America > South Georgia`): Trinity Island removed; Moltke Harbour, Rosita Harbour, Twitcher Bay and Willis Islands added.
 - Not yet tested in Lightroom.
 
 ## 0.9.296 — 2026-11-04
