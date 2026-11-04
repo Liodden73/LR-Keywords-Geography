@@ -1,3 +1,10 @@
+## 0.9.291 — 2026-11-04
+
+### Fix: "function at line 1250 has more than 60 upvalues"
+
+- v0.9.290 did not start in Lightroom: the new About Disputed Areas helper was a top-level local, which pushed the main function past Lua 5.1's limit of 60 upvalues. The helper is now defined inside the main function. The button works as described in 0.9.290.
+- Build check: every .lua file is now compiled with real Lua 5.1 before a release zip is built, so this kind of error is caught before shipping.
+
 ## 0.9.290 — 2026-11-04
 
 ### About Disputed Areas button, Western Sahara as a territory

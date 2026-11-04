@@ -49,27 +49,6 @@ local function http()
     return _LrHttp
 end
 
--- ── About Disputed Areas ─────────────────────────────────────────────────────
--- Opens Disputed-Areas.txt (shipped in the plug-in folder) in the default
--- browser, using the same file:// approach as "Show Interactive Map in Browser".
-local function openDisputedAreasFile()
-    local path = LrPathUtils.child( pluginPath, "Disputed-Areas.txt" )
-    local LrFileUtils = import 'LrFileUtils'
-    if not LrFileUtils.exists( path ) then
-        LrDialogs.message( "About Disputed Areas",
-            "Could not find Disputed-Areas.txt in the plug-in folder:\n" .. path, "warning" )
-        return
-    end
-    local url
-    if WIN_ENV then
-        url = "file:///" .. path:gsub( "\\", "/" )
-    else
-        url = "file://" .. path
-    end
-    url = url:gsub( " ", "%%20" )
-    http().openUrlInBrowser( url )
-end
-
 -- ── Diagnostic timing log ─────────────────────────────────────────────────────
 -- Appends millisecond timestamps to <Documents>/LR-Geography-Builder-timing.log
 -- so we can pinpoint exactly which dialog-open step is slow, should the ~75 s
@@ -1248,6 +1227,29 @@ end
 
 tlog( "module load DONE (COUNTRIES built) — entering main entry point" )
 LrFunctionContext.callWithContext( "ListVerification", function( context )
+
+        -- ── About Disputed Areas ─────────────────────────────────────────────────────
+        -- Opens Disputed-Areas.txt (shipped in the plug-in folder) in the default
+        -- browser, using the same file:// approach as "Show Interactive Map in Browser".
+        -- Defined inside the main function: Lua 5.1 allows max 60 upvalues per function,
+        -- and the main function is at that limit, so no new top-level locals may be used here.
+        local function openDisputedAreasFile()
+            local path = LrPathUtils.child( pluginPath, "Disputed-Areas.txt" )
+            local LrFileUtils = import 'LrFileUtils'
+            if not LrFileUtils.exists( path ) then
+                LrDialogs.message( "About Disputed Areas",
+                    "Could not find Disputed-Areas.txt in the plug-in folder:\n" .. path, "warning" )
+                return
+            end
+            local url
+            if WIN_ENV then
+                url = "file:///" .. path:gsub( "\\", "/" )
+            else
+                url = "file://" .. path
+            end
+            url = url:gsub( " ", "%%20" )
+            http().openUrlInBrowser( url )
+        end
 
         tlog( "  [t] A0: entered callWithContext (before LrPrefs)" )
         local prefs = LrPrefs.prefsForPlugin()
