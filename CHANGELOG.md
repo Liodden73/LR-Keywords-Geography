@@ -1,3 +1,9 @@
+## Unreleased
+
+- **South Georgia GPS data v1.2.0** (`extensions/south_georgia_gps.lua`): 40 Level 1 polygons; Trinity Island renamed Willis Islands; new Rosita Harbour, Moltke Harbour and Twitcher Bay; new `regions` (Level 2, empty) and `country_polygon` (Level 3, draft).
+- **Polygon editor** (`tools/polygon-editors/south_georgia_polygon_editor.html`): now supports 3 levels (City/State/Country) with v2 -> v3 storage migration.
+- Note: the levels are not yet used by GPSConverter in Lightroom.
+
 ## 0.9.296 — 2026-11-04
 
 ### Border cases kept under their country, with place and ocean synonyms

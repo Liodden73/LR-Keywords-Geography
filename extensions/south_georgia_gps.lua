@@ -2,13 +2,18 @@
     south_georgia_gps.lua — GPS Extension for South Georgia
     Part of: LR-Geography-Builder  (Geography Keyword Builder plugin)
 
-    37 named regions with polygon boundaries derived from the interactive
+    40 named regions with polygon boundaries derived from the interactive
     South Georgia polygon editor.  Each region is stored as a polygon so it
     can be refined by re-exporting from the editor and replacing these entries.
 
-    Format mirrors Norway.lua's  data.svalbard  structure:
-      polygons       = { { name = "…", points = { {lat=,lon=}, … } }, … }
-      bounding_boxes = { { name = "…", south=, north=, west=, east= }, … }
+    3-level structure (tested in this order; first hit wins):
+      polygons        = Level 1 — city / detailed place  (IPTC City)
+                        { { name = "…", points = { {lat=,lon=}, … } }, … }
+      regions         = Level 2 — state / large region   (IPTC State)
+                        same format as polygons; empty for South Georgia
+      country_polygon = Level 3 — country / catch-all     (IPTC Country)
+                        { name = "South Georgia", points = { … } }
+      bounding_boxes  = legacy rectangles, kept empty for backwards compat
 
     Keyword hierarchy (for Wildlife-plugin GPS keyword generation):
       [GEOGRAPHY]
@@ -27,7 +32,7 @@
 
 return {
     meta = {
-        version = "1.1.0",
+        version = "1.2.0",
         name = "South Georgia GPS Extension",
         region = "South Georgia",
         country = "South Georgia",
@@ -47,7 +52,7 @@ return {
 
     south_georgia = {
 
-        -- ── Precise polygons (point-in-polygon tested first) ─────────────────
+        -- ── Level 1 — detailed place polygons (IPTC City; tested first) ──────
         polygons = {
             { name = "Bird Island", points = {
                 { lat = -54.0023, lon = -38.1016 },
@@ -55,7 +60,7 @@ return {
                 { lat = -54.0030, lon = -38.0005 },
                 { lat = -54.0330, lon = -38.0815 },
             } },
-            { name = "Trinity Island", points = {
+            { name = "Willis Islands", points = {
                 { lat = -53.9702, lon = -38.2359 },
                 { lat = -53.9840, lon = -38.1123 },
                 { lat = -54.0412, lon = -38.1226 },
@@ -76,10 +81,11 @@ return {
                 { lat = -54.0719, lon = -37.1695 },
             } },
             { name = "Fortuna Bay", points = {
-                { lat = -54.0832, lon = -36.8344 },
-                { lat = -54.0993, lon = -36.7534 },
+                { lat = -54.0795, lon = -36.8282 },
+                { lat = -54.0971, lon = -36.7407 },
                 { lat = -54.1817, lon = -36.7706 },
                 { lat = -54.1785, lon = -36.8447 },
+                { lat = -54.1293, lon = -36.8464 },
             } },
             { name = "Stromness Bay", points = {
                 { lat = -54.1206, lon = -36.6394 },
@@ -91,8 +97,8 @@ return {
                 { lat = -54.2436, lon = -36.4712 },
                 { lat = -54.2468, lon = -36.3963 },
                 { lat = -54.3686, lon = -36.3043 },
-                { lat = -54.3930, lon = -36.3332 },
-                { lat = -54.3774, lon = -36.4169 },
+                { lat = -54.4175, lon = -36.3534 },
+                { lat = -54.4077, lon = -36.4173 },
                 { lat = -54.3201, lon = -36.4327 },
                 { lat = -54.3057, lon = -36.4962 },
                 { lat = -54.2977, lon = -36.4923 },
@@ -101,8 +107,8 @@ return {
             { name = "St Andrews Bay", points = {
                 { lat = -54.3762, lon = -36.1574 },
                 { lat = -54.4680, lon = -36.0338 },
-                { lat = -54.4920, lon = -36.1656 },
-                { lat = -54.4365, lon = -36.2748 },
+                { lat = -54.4890, lon = -36.1594 },
+                { lat = -54.4171, lon = -36.2371 },
             } },
             { name = "Royal Bay", points = {
                 { lat = -54.5047, lon = -35.9754 },
@@ -111,10 +117,14 @@ return {
                 { lat = -54.6107, lon = -36.1169 },
                 { lat = -54.5770, lon = -36.1941 },
                 { lat = -54.5179, lon = -36.1471 },
+                { lat = -54.5364, lon = -36.0812 },
+                { lat = -54.5207, lon = -36.0389 },
+                { lat = -54.5113, lon = -36.0492 },
             } },
             { name = "Gold Harbour", points = {
                 { lat = -54.6208, lon = -35.9953 },
-                { lat = -54.5987, lon = -35.9129 },
+                { lat = -54.5995, lon = -35.9583 },
+                { lat = -54.6011, lon = -35.9164 },
                 { lat = -54.6333, lon = -35.9026 },
                 { lat = -54.6577, lon = -35.9263 },
             } },
@@ -183,15 +193,12 @@ return {
             { name = "Albatross Island", points = {
                 { lat = -54.0316, lon = -37.3556 },
                 { lat = -54.0347, lon = -37.3206 },
-                { lat = -54.0219, lon = -37.3091 },
-                { lat = -54.0145, lon = -37.3417 },
+                { lat = -54.0181, lon = -37.3154 },
+                { lat = -54.0100, lon = -37.3346 },
             } },
             { name = "Right Whale Bay", points = {
                 { lat = -54.0207, lon = -37.6989 },
-                { lat = -54.0300, lon = -37.5358 },
-                { lat = -54.0243, lon = -37.4850 },
-                { lat = -54.0074, lon = -37.4603 },
-                { lat = -53.9912, lon = -37.4531 },
+                { lat = -54.0110, lon = -37.6282 },
                 { lat = -53.9848, lon = -37.6735 },
                 { lat = -54.0070, lon = -37.7106 },
             } },
@@ -237,9 +244,10 @@ return {
             } },
             { name = "Iris Bay", points = {
                 { lat = -54.6845, lon = -35.9857 },
-                { lat = -54.7409, lon = -35.9988 },
-                { lat = -54.7433, lon = -35.8470 },
-                { lat = -54.6853, lon = -35.9061 },
+                { lat = -54.6863, lon = -36.0273 },
+                { lat = -54.7082, lon = -35.9710 },
+                { lat = -54.7222, lon = -35.9146 },
+                { lat = -54.6988, lon = -35.9064 },
             } },
             { name = "Moraine Fjord", points = {
                 { lat = -54.3860, lon = -36.4976 },
@@ -248,12 +256,11 @@ return {
                 { lat = -54.3780, lon = -36.5316 },
             } },
             { name = "Sunset Fjord", points = {
-                { lat = -54.0707, lon = -37.5106 },
+                { lat = -54.0691, lon = -37.5042 },
                 { lat = -54.0691, lon = -37.4071 },
                 { lat = -54.0441, lon = -37.3810 },
-                { lat = -54.0032, lon = -37.3968 },
-                { lat = -54.0082, lon = -37.4483 },
-                { lat = -54.0206, lon = -37.4670 },
+                { lat = -54.0346, lon = -37.4270 },
+                { lat = -54.0429, lon = -37.4582 },
             } },
             { name = "Church Bay", points = {
                 { lat = -54.0277, lon = -37.8438 },
@@ -293,9 +300,52 @@ return {
                 { lat = -54.4856, lon = -36.5371 },
                 { lat = -54.5179, lon = -36.6531 },
             } },
+            { name = "Rosita Harbour", points = {
+                { lat = -54.0051, lon = -37.4479 },
+                { lat = -54.0223, lon = -37.4685 },
+                { lat = -54.0265, lon = -37.4369 },
+                { lat = -54.0078, lon = -37.3892 },
+            } },
+            { name = "Moltke Harbour", points = {
+                { lat = -54.5113, lon = -36.0492 },
+                { lat = -54.5207, lon = -36.0389 },
+                { lat = -54.5364, lon = -36.0812 },
+                { lat = -54.5193, lon = -36.1038 },
+                { lat = -54.5103, lon = -36.0726 },
+            } },
+            { name = "Twitcher Bay", points = {
+                { lat = -54.6863, lon = -36.0273 },
+                { lat = -54.7064, lon = -36.0448 },
+                { lat = -54.7450, lon = -35.9565 },
+                { lat = -54.7339, lon = -35.9013 },
+                { lat = -54.7222, lon = -35.9146 },
+                { lat = -54.7082, lon = -35.9710 },
+            } },
         },
 
-        -- ── Broad rectangular catch-alls (empty — polygons cover all regions) ─
+        -- ── Level 2 — no large sub-regions for South Georgia (IPTC State) ────
+        regions = {},
+
+        -- ── Level 3 — country / catch-all polygon (IPTC Country; tested last)
+        -- Follows the island's NW-SE diagonal with a ~20 km sea buffer.
+        -- Approximate; may be refined in the polygon editor.
+        country_polygon = {
+            name = "South Georgia",
+            points = {
+                { lat = -53.75, lon = -38.75 },  -- NW
+                { lat = -53.78, lon = -37.80 },
+                { lat = -53.90, lon = -36.80 },
+                { lat = -54.10, lon = -35.90 },
+                { lat = -54.50, lon = -35.40 },
+                { lat = -54.90, lon = -35.45 },
+                { lat = -55.05, lon = -36.00 },
+                { lat = -55.00, lon = -37.20 },
+                { lat = -54.60, lon = -38.60 },
+                { lat = -54.10, lon = -38.80 },
+            },
+        },
+
+        -- ── Legacy rectangular catch-alls (kept empty for backwards compat) ──
         bounding_boxes = {},
     },
 }
