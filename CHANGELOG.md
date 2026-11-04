@@ -1,7 +1,7 @@
 ## Unreleased
 
-- **South Georgia GPS data v1.2.0** (`extensions/south_georgia_gps.lua`): 40 Level 1 polygons; Trinity Island renamed Willis Islands; new Rosita Harbour, Moltke Harbour and Twitcher Bay; new `regions` (Level 2, empty) and `country_polygon` (Level 3, draft).
-- **Polygon editor** (`tools/polygon-editors/south_georgia_polygon_editor.html`): now supports 3 levels (City/State/Country) with v2 -> v3 storage migration.
+- **South Georgia GPS data v1.3.0** (`extensions/south_georgia_gps.lua`): 40 Level 1 polygons; Trinity Island renamed Willis Islands; new Rosita Harbour, Moltke Harbour and Twitcher Bay; `regions` (Level 2, empty); `country_polygon` (Level 3) set to the owner's 5-point polygon.
+- **Polygon editors** (`tools/polygon-editors/`): South Georgia, Falkland Islands and Svalbard editors now share the same 3-level design (City/State/Country) with automatic storage migration (South Georgia v2 -> v3, Falkland Islands v3 -> v4, Svalbard v2 -> v3). Falkland Islands and Svalbard get a draft Level 3 polygon (Svalbard: the Svalbard Treaty area 74-81 N and 10-35 E); their GPS data files are unchanged.
 - Note: the levels are not yet used by GPSConverter in Lightroom.
 
 ## 0.9.296 — 2026-11-04

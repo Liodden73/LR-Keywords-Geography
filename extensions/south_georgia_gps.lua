@@ -32,7 +32,7 @@
 
 return {
     meta = {
-        version = "1.2.0",
+        version = "1.3.0",
         name = "South Georgia GPS Extension",
         region = "South Georgia",
         country = "South Georgia",
@@ -326,22 +326,15 @@ return {
         -- ── Level 2 — no large sub-regions for South Georgia (IPTC State) ────
         regions = {},
 
-        -- ── Level 3 — country / catch-all polygon (IPTC Country; tested last)
-        -- Follows the island's NW-SE diagonal with a ~20 km sea buffer.
-        -- Approximate; may be refined in the polygon editor.
+        -- ── Level 3 — catch-all for the whole territory (IPTC Country) ───────
         country_polygon = {
             name = "South Georgia",
             points = {
-                { lat = -53.75, lon = -38.75 },  -- NW
-                { lat = -53.78, lon = -37.80 },
-                { lat = -53.90, lon = -36.80 },
-                { lat = -54.10, lon = -35.90 },
-                { lat = -54.50, lon = -35.40 },
-                { lat = -54.90, lon = -35.45 },
-                { lat = -55.05, lon = -36.00 },
-                { lat = -55.00, lon = -37.20 },
-                { lat = -54.60, lon = -38.60 },
-                { lat = -54.10, lon = -38.80 },
+                { lat = -53.2192, lon = -39.2047 },
+                { lat = -53.4619, lon = -36.6943 },
+                { lat = -54.4828, lon = -34.8267 },
+                { lat = -55.5535, lon = -35.6396 },
+                { lat = -54.2781, lon = -39.8364 },
             },
         },
 

@@ -16,13 +16,26 @@
   html, body { height: 100%; margin: 0; font-family: -apple-system, Segoe UI, Roboto, sans-serif; }
   #wrap { display: flex; height: 100%; }
   #map  { flex: 1 1 auto; height: 100%; }
-  #side { width: 340px; flex: 0 0 340px; background: #1f1f1f; color: #e8e8e8;
+  #side { width: 360px; flex: 0 0 360px; background: #1f1f1f; color: #e8e8e8;
           overflow-y: auto; padding: 14px 16px; box-sizing: border-box; }
   #side h1 { font-size: 16px; margin: 0 0 6px; }
   #side p  { font-size: 12px; line-height: 1.5; color: #bdbdbd; }
-  .region { display: flex; align-items: center; gap: 6px; padding: 5px 0;
+  .level-section { margin-top: 12px; }
+  .level-head { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600;
+                padding: 6px 8px; background: #2c2c2c; border-radius: 6px; }
+  .level-head .title { flex: 1 1 auto; }
+  .level-head .count { font-size: 11px; font-weight: 400; color: #bdbdbd; }
+  .level-head label  { font-size: 11px; font-weight: 400; color: #bdbdbd; cursor: pointer;
+                       display: flex; align-items: center; gap: 3px; }
+  .level-head .lvl-sample { width: 18px; height: 10px; border: 2px solid #ccc; flex: 0 0 18px;
+                            box-sizing: border-box; border-radius: 2px; }
+  .lvl-sample.l1 { border-style: solid; background: rgba(255,255,255,0.25); }
+  .lvl-sample.l2 { border-style: dashed; border-width: 3px; background: rgba(255,255,255,0.15); }
+  .lvl-sample.l3 { border-style: dotted; background: rgba(255,255,255,0.04); }
+  .empty-hint { font-size: 11px; color: #8a8a8a; font-style: italic; padding: 6px 8px; }
+  .region { display: flex; align-items: center; gap: 6px; padding: 5px 0 5px 4px;
             font-size: 13px; border-bottom: 1px solid #333; }
-  .swatch { width: 14px; height: 14px; border-radius: 3px; flex: 0 0 14px; }
+  .swatch { width: 14px; height: 14px; border-radius: 3px; flex: 0 0 14px; box-sizing: border-box; }
   .region .nm       { flex: 1 1 auto; }
   .region .zoom     { font-size: 11px; color: #8ab4f8; cursor: pointer; white-space: nowrap; }
   .region .conv-btn    { font-size: 11px; color: #ffcc80; cursor: pointer; white-space: nowrap; }
@@ -31,6 +44,8 @@
   .region .rename-btn:hover  { opacity: 1; }
   .region .del-btn     { font-size: 13px; cursor: pointer; opacity: 0.55; flex: 0 0 auto; }
   .region .del-btn:hover     { opacity: 1; }
+  .region select.lvl-sel { font-size: 11px; background: #111; color: #e8e8e8; border: 1px solid #555;
+                           border-radius: 4px; padding: 1px 2px; flex: 0 0 auto; }
   button { font-size: 13px; padding: 8px 12px; border: 0; border-radius: 6px;
            cursor: pointer; margin: 4px 4px 4px 0; }
   #exportBtn    { background: #2e7d32; color: #fff; }
@@ -44,10 +59,18 @@
   #out { width: 100%; height: 220px; margin-top: 8px; font-family: monospace;
          font-size: 11px; background: #111; color: #b7f7b7; border: 1px solid #333;
          border-radius: 6px; padding: 8px; box-sizing: border-box; white-space: pre; }
+  #exportWarn { font-size: 11px; color: #ffcc80; margin-top: 4px; }
   .hint { font-size: 11px; color: #9e9e9e; margin-top: 10px; }
   .badge { display:inline-block; font-size:10px; padding:1px 6px; border-radius:8px;
            background:#333; color:#ccc; margin-left:4px; }
   .btn-row { display: flex; align-items: center; flex-wrap: wrap; margin-top: 10px; gap: 0; }
+
+  /* Melding: migrerte data / nye standarddata tilgjengelig */
+  #notice { display: none; background: #3e2f00; border: 1px solid #8d6e00; color: #ffe082;
+            border-radius: 6px; padding: 8px 10px; font-size: 12px; line-height: 1.45; margin: 8px 0; }
+  #notice.open { display: block; }
+  #notice .x { float: right; cursor: pointer; margin-left: 8px; opacity: 0.7; }
+  #notice .x:hover { opacity: 1; }
 
   /* Modal: navngi nytt område */
   #nameModal {
@@ -61,12 +84,13 @@
     min-width: 300px; color: #e8e8e8; box-shadow: 0 8px 32px rgba(0,0,0,0.6);
   }
   #nameBox h2    { font-size: 15px; margin: 0 0 12px; font-weight: 600; }
-  #nameInput {
+  #nameInput, #levelSelect {
     width: 100%; padding: 9px 10px; font-size: 14px;
     border-radius: 6px; border: 1px solid #555;
     background: #111; color: #e8e8e8; box-sizing: border-box; outline: none;
   }
-  #nameInput:focus  { border-color: #8ab4f8; }
+  #nameInput:focus, #levelSelect:focus { border-color: #8ab4f8; }
+  #nameBox label    { display: block; font-size: 12px; color: #bdbdbd; margin: 12px 0 4px; }
   #nameBtns         { margin-top: 14px; display: flex; gap: 8px; justify-content: flex-end; }
   #nameCancelBtn    { background: #444; color: #e8e8e8; }
   #nameOkBtn        { background: #2e7d32; color: #fff; }
@@ -80,7 +104,7 @@
   #resetModal.open { display: flex; }
   #resetBox {
     background: #2a2a2a; border-radius: 10px; padding: 24px 26px;
-    min-width: 300px; color: #e8e8e8; box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+    min-width: 300px; max-width: 440px; color: #e8e8e8; box-shadow: 0 8px 32px rgba(0,0,0,0.6);
   }
   #resetBox h2   { font-size: 15px; margin: 0 0 10px; font-weight: 600; color: #ef9a9a; }
   #resetBox p    { font-size: 13px; color: #bdbdbd; margin: 0 0 16px; line-height: 1.5; }
@@ -91,11 +115,17 @@
 </head>
 <body>
 
-<!-- Modal: navngi nytt område -->
+<!-- Modal: navngi nytt område / endre navn og nivå -->
 <div id="nameModal">
   <div id="nameBox">
-    <h2>Navn på nytt område</h2>
-    <input id="nameInput" type="text" placeholder="F.eks. Port Howard" autocomplete="off" />
+    <h2 id="nameTitle">Navn på nytt område</h2>
+    <input id="nameInput" type="text" placeholder="F.eks. Husvik" autocomplete="off" />
+    <label for="levelSelect">Nivå</label>
+    <select id="levelSelect">
+      <option value="1">Nivå 1 – City (detaljert sted)</option>
+      <option value="2">Nivå 2 – State (større område, f.eks. stor øy)</option>
+      <option value="3">Nivå 3 – Country (stort bakgrunnspolygon)</option>
+    </select>
     <div id="nameBtns">
       <button id="nameCancelBtn">Avbryt</button>
       <button id="nameOkBtn">Legg til</button>
@@ -107,7 +137,7 @@
 <div id="resetModal">
   <div id="resetBox">
     <h2>Tilbakestill til standarddata?</h2>
-    <p>Dette vil slette alle lagrede endringer og gjenopprette de opprinnelige startpolygonene for Falkland Islands. Handlingen kan ikke angres.</p>
+    <p id="resetText"></p>
     <div id="resetBtns">
       <button id="resetCancelBtn">Avbryt</button>
       <button id="resetOkBtn">Tilbakestill</button>
@@ -124,6 +154,8 @@
        Klikk <b>Eksporter Lua</b> når du er fornøyd, og lim resultatet inn i
        <code>falkland_islands_gps.lua</code>.</p>
 
+    <div id="notice"></div>
+
     <div id="list"></div>
 
     <div class="btn-row">
@@ -139,16 +171,21 @@
       <button id="exportBtn">Eksporter Lua</button>
       <button id="copyBtn">Kopier</button>
     </div>
+    <div id="exportWarn"></div>
     <textarea id="out" readonly placeholder="Lua-kode vises her etter eksport..."></textarea>
     <div class="btn-row" style="margin-top:8px;">
       <button id="resetBtn">↺ Tilbakestill</button>
     </div>
 
     <p class="hint">
+      <b>Nivå 1 – City</b> — detaljerte steder (testes først).<br>
+      <b>Nivå 2 – State</b> — større områder, f.eks. store øyer (stiplet kant).<br>
+      <b>Nivå 3 – Country</b> — stort bakgrunnspolygon (prikket kant, ligger bakerst).<br>
+      Endringer lagres automatisk i nettleseren.<br>
       <b>💾 Lagre</b> — lagrer i nettleseren (mistes ved ny VM-URL).<br>
       <b>⬇ Last ned JSON</b> — lagrer til fil på din Mac (trygt ved VM-restart).<br>
       <b>⬆ Last inn JSON</b> — laster inn tidligere nedlastet fil.<br>
-      <b>✏️</b> — gi nytt navn til et område.<br>
+      <b>✏️</b> — gi nytt navn / endre nivå. Nivå kan også byttes i nedtrekkslista.<br>
       <b>→ Polygon</b> — konverter boks til polygon.<br>
       Bytt mellom satellitt og kart oppe til høyre på kartet.
     </p>
@@ -156,7 +193,24 @@
 </div>
 
 <script>
-// ── Startdata — Falkland Islands (approx. polygoner, klar for redigering) ─────
+// ── Konfigurasjon (gjenbrukbar for andre områder: Falklands, Svalbard …) ──────
+var CONFIG = {
+  regionLabel:  'Falkland Islands',
+  luaTable:     'falkland_islands',
+  dataVersion:  '1.0.0',
+  center:       [-51.70, -59.00],
+  zoom:         8,
+  storageKey:   'falkland_islands_editor_v4',
+  legacyKeys:   ['falkland_islands_editor_v3'],
+  jsonFilename: 'falkland_islands_editor.json'
+};
+
+var LEVELS = {
+  1: { label: 'Nivå 1 – City',    lua: 'polygons' },
+  2: { label: 'Nivå 2 – State',   lua: 'regions' },
+  3: { label: 'Nivå 3 – Country', lua: 'country_polygon' }
+};
+
 var PALETTE = [
   "#e53935","#8e24aa","#3949ab","#00897b","#fb8c00","#c0ca33",
   "#d81b60","#00acc1","#7cb342","#f4511e","#1e88e5","#6d4c41",
@@ -168,76 +222,118 @@ var PALETTE = [
   "#006064","#558b2f","#e65100"
 ];
 
-// Falkland Islands: approx. GPS-polygon-grenser (kan justeres i editoren).
+// ── Startdata — hentet ordrett fra extensions/falkland_islands_gps.lua ──────────
 // Koordinater: [lat, lon] — negative tall for Sør og Vest.
-// East Falkland og West Falkland adskilt av Falkland Sound.
-// Loaded from extensions/falkland_islands_gps.lua
+/*__DEFAULTS_BEGIN__*/
 var DEFAULT_POLYGONS = [
-  { name: "Port Stanley", color: "#e53935", pts: [[-51.6823,-57.9258],[-51.6829,-57.7519],[-51.6916,-57.7788],[-51.7005,-57.7838],[-51.7,-57.85],[-51.6952,-57.9247]] },
-  { name: "Mount Pleasant", color: "#8e24aa", pts: [[-51.8002,-58.4934],[-51.816,-58.4152],[-51.8352,-58.4232],[-51.8359,-58.4984]] },
-  { name: "Carcass Island", color: "#3949ab", pts: [[-51.2197,-60.6694],[-51.2314,-60.5342],[-51.3275,-60.4904],[-51.3142,-60.6296]] },
-  { name: "Saunders Island", color: "#00897b", pts: [[-51.2404,-60.3465],[-51.2838,-60.0739],[-51.3375,-60.0334],[-51.4073,-60.0938],[-51.4232,-60.3225]] },
-  { name: "West Point Island", color: "#fb8c00", pts: [[-51.3288,-60.7498],[-51.322,-60.7199],[-51.3462,-60.6569],[-51.3761,-60.6783],[-51.3871,-60.7132]] },
-  { name: "Pebble Island", color: "#c0ca33", pts: [[-51.2348,-59.8274],[-51.2868,-59.3111],[-51.3611,-59.4711],[-51.3533,-59.5892],[-51.3233,-59.6187],[-51.3177,-59.7169],[-51.2898,-59.8508]] },
-  { name: "New Island", color: "#d81b60", pts: [[-51.6757,-61.347],[-51.674,-61.1981],[-51.7495,-61.2218],[-51.7723,-61.3166]] },
-  { name: "Bleaker Island", color: "#00acc1", pts: [[-52.1133,-58.8218],[-52.1773,-58.8023],[-52.223,-58.8342],[-52.2621,-58.9969],[-52.2259,-59.0234]] },
-  { name: "Falkland Sound", color: "#7cb342", pts: [[-51.3821,-59.2973],[-51.3958,-58.9224],[-51.6836,-58.9828],[-52.1588,-59.6049],[-52.0026,-60.0032]] },
-  { name: "Sea Lion Island", color: "#f4511e", pts: [[-52.443,-59.0199],[-52.4656,-59.1579],[-52.4259,-59.1813],[-52.394,-59.0289]] },
-  { name: "Barren Island", color: "#1e88e5", pts: [[-52.3894,-59.7594],[-52.3144,-59.6571],[-52.3919,-59.6125],[-52.415,-59.7237]] },
-  { name: "George Island", color: "#6d4c41", pts: [[-52.3051,-59.7855],[-52.2887,-59.6613],[-52.3144,-59.6571],[-52.3894,-59.7594],[-52.3681,-59.8501]] },
-  { name: "Speedwell Island", color: "#546e7a", pts: [[-52.3051,-59.7855],[-52.2887,-59.6613],[-52.1777,-59.6599],[-52.1255,-59.7849],[-52.1916,-59.837]] },
-  { name: "Bay of Harbours", color: "#43a047", pts: [[-52.3563,-59.3172],[-52.2621,-58.9969],[-52.2259,-59.0234],[-52.1002,-59.3797],[-52.1331,-59.4992],[-52.3261,-59.3887]] },
-  { name: "Dyke Island", color: "#fdd835", pts: [[-51.9481,-60.8691],[-52.0157,-60.8279],[-52.0204,-60.9267],[-51.9929,-60.9714]] },
-  { name: "Beaver Island", color: "#039be5", pts: [[-51.8286,-61.382],[-51.893,-61.2344],[-51.8146,-61.1691],[-51.7785,-61.2138],[-51.8112,-61.3943]] },
-  { name: "Weddell Island", color: "#e91e63", pts: [[-51.9929,-60.9714],[-51.9481,-60.8691],[-51.7542,-60.8327],[-51.7627,-61.0874],[-51.8146,-61.1691],[-51.893,-61.2344],[-51.987,-61.1499]] },
-  { name: "Keppel Island", color: "#00bcd4", pts: [[-51.2838,-60.0739],[-51.3375,-60.0334],[-51.3688,-59.9393],[-51.3152,-59.8707],[-51.2688,-59.9668]] },
-  { name: "Golding Island", color: "#ff5722", pts: [[-51.3724,-59.6595],[-51.3904,-59.7996],[-51.3576,-59.8346],[-51.3049,-59.7785],[-51.3177,-59.7169],[-51.3416,-59.7193],[-51.3608,-59.6908],[-51.3662,-59.6575]] },
-  { name: "Gypsy Cove", color: "#9c27b0", pts: [[-51.6712,-57.815],[-51.6827,-57.8135],[-51.6828,-57.7845],[-51.6701,-57.7847]] },
-  { name: "Kidney Cove", color: "#2196f3", pts: [[-51.6384,-57.7618],[-51.6314,-57.7524],[-51.6194,-57.7683],[-51.6237,-57.7721]] },
-  { name: "Berkeley Sound", color: "#4caf50", pts: [[-51.6237,-57.7721],[-51.5967,-58.0669],[-51.5515,-58.1747],[-51.5293,-58.1692],[-51.507,-58.1149],[-51.4946,-57.9831],[-51.5395,-57.762],[-51.6194,-57.7683]] },
+  { name: "Port Stanley", level: 1, color: "#e53935", pts: [[-51.6823,-57.9258],[-51.6829,-57.7519],[-51.6916,-57.7788],[-51.7005,-57.7838],[-51.7,-57.85],[-51.6952,-57.9247]] },
+  { name: "Mount Pleasant", level: 1, color: "#8e24aa", pts: [[-51.8002,-58.4934],[-51.816,-58.4152],[-51.8352,-58.4232],[-51.8359,-58.4984]] },
+  { name: "Carcass Island", level: 1, color: "#3949ab", pts: [[-51.2197,-60.6694],[-51.2314,-60.5342],[-51.3275,-60.4904],[-51.3142,-60.6296]] },
+  { name: "Saunders Island", level: 1, color: "#00897b", pts: [[-51.2404,-60.3465],[-51.2838,-60.0739],[-51.3375,-60.0334],[-51.4073,-60.0938],[-51.4232,-60.3225]] },
+  { name: "West Point Island", level: 1, color: "#fb8c00", pts: [[-51.3288,-60.7498],[-51.322,-60.7199],[-51.3462,-60.6569],[-51.3761,-60.6783],[-51.3871,-60.7132]] },
+  { name: "Pebble Island", level: 1, color: "#c0ca33", pts: [[-51.2348,-59.8274],[-51.2868,-59.3111],[-51.3611,-59.4711],[-51.3533,-59.5892],[-51.3233,-59.6187],[-51.3177,-59.7169],[-51.2898,-59.8508]] },
+  { name: "New Island", level: 1, color: "#d81b60", pts: [[-51.6757,-61.347],[-51.674,-61.1981],[-51.7495,-61.2218],[-51.7723,-61.3166]] },
+  { name: "Bleaker Island", level: 1, color: "#00acc1", pts: [[-52.1133,-58.8218],[-52.1773,-58.8023],[-52.223,-58.8342],[-52.2621,-58.9969],[-52.2259,-59.0234]] },
+  { name: "Falkland Sound", level: 1, color: "#7cb342", pts: [[-51.3821,-59.2973],[-51.3958,-58.9224],[-51.6836,-58.9828],[-52.1588,-59.6049],[-52.0026,-60.0032]] },
+  { name: "Sea Lion Island", level: 1, color: "#f4511e", pts: [[-52.443,-59.0199],[-52.4656,-59.1579],[-52.4259,-59.1813],[-52.394,-59.0289]] },
+  { name: "Barren Island", level: 1, color: "#1e88e5", pts: [[-52.3894,-59.7594],[-52.3144,-59.6571],[-52.3919,-59.6125],[-52.415,-59.7237]] },
+  { name: "George Island", level: 1, color: "#6d4c41", pts: [[-52.3051,-59.7855],[-52.2887,-59.6613],[-52.3144,-59.6571],[-52.3894,-59.7594],[-52.3681,-59.8501]] },
+  { name: "Speedwell Island", level: 1, color: "#546e7a", pts: [[-52.3051,-59.7855],[-52.2887,-59.6613],[-52.1777,-59.6599],[-52.1255,-59.7849],[-52.1916,-59.837]] },
+  { name: "Bay of Harbours", level: 1, color: "#43a047", pts: [[-52.3563,-59.3172],[-52.2621,-58.9969],[-52.2259,-59.0234],[-52.1002,-59.3797],[-52.1331,-59.4992],[-52.3261,-59.3887]] },
+  { name: "Dyke Island", level: 1, color: "#fdd835", pts: [[-51.9481,-60.8691],[-52.0157,-60.8279],[-52.0204,-60.9267],[-51.9929,-60.9714]] },
+  { name: "Beaver Island", level: 1, color: "#039be5", pts: [[-51.8286,-61.382],[-51.893,-61.2344],[-51.8146,-61.1691],[-51.7785,-61.2138],[-51.8112,-61.3943]] },
+  { name: "Weddell Island", level: 1, color: "#e91e63", pts: [[-51.9929,-60.9714],[-51.9481,-60.8691],[-51.7542,-60.8327],[-51.7627,-61.0874],[-51.8146,-61.1691],[-51.893,-61.2344],[-51.987,-61.1499]] },
+  { name: "Keppel Island", level: 1, color: "#00bcd4", pts: [[-51.2838,-60.0739],[-51.3375,-60.0334],[-51.3688,-59.9393],[-51.3152,-59.8707],[-51.2688,-59.9668]] },
+  { name: "Golding Island", level: 1, color: "#ff5722", pts: [[-51.3724,-59.6595],[-51.3904,-59.7996],[-51.3576,-59.8346],[-51.3049,-59.7785],[-51.3177,-59.7169],[-51.3416,-59.7193],[-51.3608,-59.6908],[-51.3662,-59.6575]] },
+  { name: "Gypsy Cove", level: 1, color: "#9c27b0", pts: [[-51.6712,-57.815],[-51.6827,-57.8135],[-51.6828,-57.7845],[-51.6701,-57.7847]] },
+  { name: "Kidney Cove", level: 1, color: "#2196f3", pts: [[-51.6384,-57.7618],[-51.6314,-57.7524],[-51.6194,-57.7683],[-51.6237,-57.7721]] },
+  { name: "Berkeley Sound", level: 1, color: "#4caf50", pts: [[-51.6237,-57.7721],[-51.5967,-58.0669],[-51.5515,-58.1747],[-51.5293,-58.1692],[-51.507,-58.1149],[-51.4946,-57.9831],[-51.5395,-57.762],[-51.6194,-57.7683]] },
+  // Nivå 3: UTKAST – juster i editoren.
+  { name: "Falkland Islands", level: 3, color: "#fdd835", pts: [[-51.82,-61.64],[-51.83,-61.63],[-52.01,-61.4],[-52.56,-59.78],[-52.6,-59.03],[-52.56,-58.86],[-51.68,-57.5],[-51.62,-57.5],[-51.52,-57.51],[-51.47,-57.74],[-51.15,-59.19],[-51.1,-59.94],[-51.15,-60.89],[-51.67,-61.6]] }
 ];
-var DEFAULT_BOXES = [
 
-];
+var DEFAULT_BOXES = [];
+/*__DEFAULTS_END__*/
 
-var STORAGE_KEY = 'falkland_islands_editor_v3';
+var STORAGE_KEY = CONFIG.storageKey;
+var NOTICE_KEY  = STORAGE_KEY + '_notice';
 
-// ── localStorage: last inn / lagre / reset ───────────────────────────────────
+function normLevel(v) {
+  var n = parseInt(v, 10);
+  return (n === 1 || n === 2 || n === 3) ? n : 1;
+}
+
+// ── localStorage: last inn / lagre / migrering ───────────────────────────────
+// Returnerer { data, migratedFrom } eller null.
 function loadStoredData() {
   try {
     var raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return null;
-    return JSON.parse(raw);
-  } catch(e) { return null; }
+    if (raw) return { data: JSON.parse(raw), migratedFrom: null };
+    for (var i = 0; i < CONFIG.legacyKeys.length; i++) {
+      var old = localStorage.getItem(CONFIG.legacyKeys[i]);
+      if (old) {
+        var data = JSON.parse(old);
+        if (Array.isArray(data)) return { data: data, migratedFrom: CONFIG.legacyKeys[i] };
+      }
+    }
+  } catch(e) { console.warn('Kunne ikke lese lagrede data:', e); }
+  return null;
+}
+
+function defaultCounts() {
+  var c = { 1: 0, 2: 0, 3: 0 };
+  DEFAULT_POLYGONS.forEach(function(p) { c[normLevel(p.level)]++; });
+  DEFAULT_BOXES.forEach(function(b) { c[normLevel(b.level)]++; });
+  return c;
+}
+function defaultsDescription() {
+  var c = defaultCounts(), parts = [];
+  if (c[1]) parts.push(c[1] + ' Nivå 1-polygoner');
+  if (c[2]) parts.push(c[2] + ' Nivå 2-polygoner');
+  if (c[3]) parts.push(c[3] === 1 ? 'Nivå 3-polygonet («' + firstDefaultName(3) + '»)' : c[3] + ' Nivå 3-polygoner');
+  return parts.join(' + ');
+}
+function firstDefaultName(level) {
+  for (var i = 0; i < DEFAULT_POLYGONS.length; i++)
+    if (normLevel(DEFAULT_POLYGONS[i].level) === level) return DEFAULT_POLYGONS[i].name;
+  return '';
 }
 
 function buildDefaultData() {
   var polys = DEFAULT_POLYGONS.map(function(p) {
-    return { name: p.name, color: p.color, shape: 'polygon', pts: p.pts };
+    return { name: p.name, color: p.color, shape: 'polygon', level: normLevel(p.level), pts: p.pts };
   });
   var boxes = DEFAULT_BOXES.map(function(b) {
-    return { name: b.name, color: b.color, shape: 'box',
+    return { name: b.name, color: b.color, shape: 'box', level: normLevel(b.level),
              south: b.south, north: b.north, west: b.west, east: b.east };
   });
   return polys.concat(boxes);
 }
 
+function serialize() {
+  return layers.map(function(o) {
+    if (o.shape === 'polygon') {
+      var ll = o.layer.getLatLngs()[0];
+      return { name: o.name, color: o.color, shape: 'polygon', level: o.level,
+               pts: ll.map(function(p) { return [p.lat, p.lng]; }) };
+    }
+    var b = o.layer.getBounds();
+    return { name: o.name, color: o.color, shape: 'box', level: o.level,
+             south: b.getSouth(), north: b.getNorth(),
+             west:  b.getWest(),  east:  b.getEast() };
+  });
+}
+
 function saveState() {
   try {
-    var data = layers.map(function(o) {
-      if (o.shape === 'polygon') {
-        var ll = o.layer.getLatLngs()[0];
-        return { name: o.name, color: o.color, shape: 'polygon',
-                 pts: ll.map(function(p) { return [p.lat, p.lng]; }) };
-      } else {
-        var b = o.layer.getBounds();
-        return { name: o.name, color: o.color, shape: 'box',
-                 south: b.getSouth(), north: b.getNorth(),
-                 west:  b.getWest(),  east:  b.getEast() };
-      }
-    });
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  } catch(e) { console.warn('Lagring feilet:', e); }
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(serialize()));
+    return true;
+  } catch(e) { console.warn('Lagring feilet:', e); return false; }
+}
+
+// Autolagring: kalles etter hver endring.
+function changed() {
+  if (saveState()) showSaveStatus('✓ Autolagret', '#80cbc4');
 }
 
 function showSaveStatus(msg, color) {
@@ -248,16 +344,34 @@ function showSaveStatus(msg, color) {
   el._t = setTimeout(function() { el.textContent = ''; }, 2500);
 }
 
+function showNotice(html) {
+  var n = document.getElementById('notice');
+  n.innerHTML = '<span class="x" title="Skjul">✕</span>' + html;
+  n.classList.add('open');
+  n.querySelector('.x').onclick = function() {
+    n.classList.remove('open');
+    localStorage.removeItem(NOTICE_KEY);
+  };
+}
+function hideNotice() {
+  document.getElementById('notice').classList.remove('open');
+  localStorage.removeItem(NOTICE_KEY);
+}
+function migrationNoticeHtml() {
+  return 'Viser dine tidligere lagrede endringer (fra eldre editor-versjon, alle satt til Nivå 1). ' +
+         'Nye standarddata (v' + CONFIG.dataVersion + ': ' + defaultsDescription() + ') ' +
+         'er tilgjengelig via <b>↺ Tilbakestill</b>. Last gjerne ned JSON først for å ta vare på endringene dine.';
+}
+
 // ── Kart ──────────────────────────────────────────────────────────────────────
 var sat = L.tileLayer(
   'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
   { maxZoom: 13, attribution: 'Tiles © Esri — World Imagery' });
 var osm = L.tileLayer(
-  'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-  { maxZoom: 18, attribution: '© OpenStreetMap contributors' });
+  'https://upload.wikimedia.org/wikipedia/commons/0/03/Tiled_web_map_Stevage.png?utm_source=en.wikipedia.org&utm_campaign=index&utm_content=original',
+  { maxZoom: 18, attribution: '© OpenStreetMap' });
 
-// Falkland Islands: sentrum ~51.7°S, 59°V
-var map = L.map('map', { center: [-51.70, -59.00], zoom: 8, layers: [sat] });
+var map = L.map('map', { center: CONFIG.center, zoom: CONFIG.zoom, layers: [sat] });
 L.control.layers({ 'Satellitt (Esri)': sat, 'Kart (OSM)': osm }, null,
                  { position: 'topright' }).addTo(map);
 
@@ -270,8 +384,9 @@ map.pm.addControls({
   rotateMode: false, removalMode: true
 });
 
-// ── Lag-lagring ───────────────────────────────────────────────────────────────
-var layers = [];
+// ── Lag-lagring og stil per nivå ─────────────────────────────────────────────
+var layers = [];          // { layer, name, color, shape, level }
+var hiddenLevels = {};    // nivå -> true når skjult på kartet
 var paletteIdx = 0;
 function nextColor() {
   var c = PALETTE[paletteIdx % PALETTE.length];
@@ -279,20 +394,82 @@ function nextColor() {
   return c;
 }
 
-// Navn-modal
+function styleFor(level, color) {
+  if (level === 3) return { color: color, fillColor: color, fillOpacity: 0.05, weight: 2.5, dashArray: '2 7', lineCap: 'round' };
+  if (level === 2) return { color: color, fillColor: color, fillOpacity: 0.15, weight: 3.5, dashArray: '10 6', lineCap: 'butt' };
+  return { color: color, fillColor: color, fillOpacity: 0.25, weight: 2, dashArray: null, lineCap: 'round' };
+}
+function applyStyle(o) { o.layer.setStyle(styleFor(o.level, o.color)); }
+
+// Nivå 2 bak nivå 1, nivå 3 bakerst, slik at små polygoner forblir klikkbare.
+function restack() {
+  [2, 3].forEach(function(lv) {
+    layers.forEach(function(o) {
+      if (o.level === lv && map.hasLayer(o.layer)) o.layer.bringToBack();
+    });
+  });
+}
+
+function attachLayerEvents(layer) {
+  layer.on('pm:edit', changed);
+  layer.on('pm:dragend', changed);
+}
+
+function setLevelVisible(level, visible) {
+  hiddenLevels[level] = !visible;
+  layers.forEach(function(o) {
+    if (o.level !== level) return;
+    if (visible && !map.hasLayer(o.layer)) { o.layer.addTo(map); o.layer.pm.enable(); }
+    if (!visible && map.hasLayer(o.layer)) { o.layer.pm.disable(); map.removeLayer(o.layer); }
+  });
+  restack();
+}
+
+// Sørg for at et lag vises/skjules i tråd med nivåets synlighet.
+function syncVisibility(o) {
+  var visible = !hiddenLevels[o.level];
+  if (visible && !map.hasLayer(o.layer)) { o.layer.addTo(map); o.layer.pm.enable(); }
+  if (!visible && map.hasLayer(o.layer)) { o.layer.pm.disable(); map.removeLayer(o.layer); }
+}
+
+function setItemLevel(idx, level) {
+  var o = layers[idx];
+  o.level = normLevel(level);
+  applyStyle(o);
+  syncVisibility(o);
+  restack();
+  renderList();
+  changed();
+}
+
+function removeItem(idx) {
+  var o = layers[idx];
+  if (map.hasLayer(o.layer)) map.removeLayer(o.layer);
+  layers.splice(idx, 1);
+  renderList();
+  changed();
+}
+
+// ── Navn-modal ────────────────────────────────────────────────────────────────
 var pendingLayer = null;
 var pendingShape = null;
 var renameTarget = null;
 
 function openNameModal(layer, shape) {
   pendingLayer = layer; pendingShape = shape; renameTarget = null;
+  document.getElementById('nameTitle').textContent = 'Navn på nytt område';
+  document.getElementById('nameOkBtn').textContent = 'Legg til';
   document.getElementById('nameInput').value = '';
+  document.getElementById('levelSelect').value = '1';
   document.getElementById('nameModal').classList.add('open');
   setTimeout(function() { document.getElementById('nameInput').focus(); }, 50);
 }
 function openRenameModal(idx) {
   pendingLayer = null; pendingShape = null; renameTarget = idx;
+  document.getElementById('nameTitle').textContent = 'Endre navn / nivå';
+  document.getElementById('nameOkBtn').textContent = 'Lagre';
   document.getElementById('nameInput').value = layers[idx].name;
+  document.getElementById('levelSelect').value = String(layers[idx].level);
   document.getElementById('nameModal').classList.add('open');
   setTimeout(function() {
     var el = document.getElementById('nameInput');
@@ -301,9 +478,7 @@ function openRenameModal(idx) {
 }
 function closeNameModal() {
   document.getElementById('nameModal').classList.remove('open');
-  if (pendingLayer && renameTarget === null) {
-    map.removeLayer(pendingLayer);
-  }
+  if (pendingLayer && renameTarget === null) map.removeLayer(pendingLayer);
   pendingLayer = null; pendingShape = null; renameTarget = null;
 }
 
@@ -316,190 +491,251 @@ document.getElementById('nameInput').addEventListener('keydown', function(e) {
 document.getElementById('nameOkBtn').onclick = function() {
   var name = document.getElementById('nameInput').value.trim();
   if (!name) return;
+  var level = normLevel(document.getElementById('levelSelect').value);
   document.getElementById('nameModal').classList.remove('open');
 
   if (renameTarget !== null) {
-    layers[renameTarget].name = name;
-    renderList();
-    saveState();
+    var idx = renameTarget;
     renameTarget = null;
+    layers[idx].name = name;
+    if (layers[idx].level !== level) { setItemLevel(idx, level); return; }
+    renderList();
+    changed();
     return;
   }
 
-  var color = nextColor();
-  pendingLayer.setStyle({ color: color, fillColor: color, fillOpacity: 0.25, weight: 2 });
-  var obj = { name: name, color: color, shape: pendingShape, layer: pendingLayer };
+  var obj = { name: name, color: nextColor(), shape: pendingShape, layer: pendingLayer, level: level };
+  applyStyle(obj);
+  attachLayerEvents(pendingLayer);
   layers.push(obj);
+  syncVisibility(obj);
+  restack();
   renderList();
-  saveState();
+  changed();
   pendingLayer = null; pendingShape = null;
 };
 
 // ── Kart-hendelser ────────────────────────────────────────────────────────────
 map.on('pm:create', function(e) {
-  var layer = e.layer;
   var shape = (e.shape === 'Rectangle') ? 'box' : 'polygon';
-  openNameModal(layer, shape);
+  openNameModal(e.layer, shape);
 });
 
 map.on('pm:remove', function(e) {
   layers = layers.filter(function(o) { return o.layer !== e.layer; });
   renderList();
-  saveState();
+  changed();
 });
 
-map.on('pm:edit', function() { saveState(); });
+// ── Lag-liste (tre seksjoner) ────────────────────────────────────────────────
+function buildRow(o, idx) {
+  var row = document.createElement('div');
+  row.className = 'region';
+  row.dataset.level = o.level;
 
-// ── Lag-liste ─────────────────────────────────────────────────────────────────
+  var sw = document.createElement('span');
+  sw.className = 'swatch';
+  sw.style.background = o.color;
+  if (o.level === 2) { sw.style.border = '2px dashed #fff'; }
+  if (o.level === 3) { sw.style.border = '2px dotted #fff'; sw.style.opacity = '0.7'; }
+
+  var nm = document.createElement('span');
+  nm.className = 'nm';
+  nm.textContent = o.name;
+  if (o.shape === 'box') {
+    var badge = document.createElement('span');
+    badge.className = 'badge';
+    badge.textContent = 'boks';
+    nm.appendChild(badge);
+  }
+
+  var zoom = document.createElement('span');
+  zoom.className = 'zoom';
+  zoom.textContent = 'zoom';
+  zoom.onclick = function() {
+    if (hiddenLevels[o.level]) { setLevelVisible(o.level, true); renderList(); }
+    map.fitBounds(o.layer.getBounds(), { padding: [30,30] });
+  };
+
+  var sel = document.createElement('select');
+  sel.className = 'lvl-sel';
+  sel.title = 'Endre nivå';
+  [1, 2, 3].forEach(function(lv) {
+    var op = document.createElement('option');
+    op.value = lv; op.textContent = 'N' + lv;
+    op.title = LEVELS[lv].label;
+    if (lv === o.level) op.selected = true;
+    sel.appendChild(op);
+  });
+  sel.onchange = function() { setItemLevel(idx, sel.value); };
+
+  var ren = document.createElement('span');
+  ren.className = 'rename-btn';
+  ren.title = 'Endre navn / nivå';
+  ren.textContent = '✏️';
+  ren.onclick = function() { openRenameModal(idx); };
+
+  var del = document.createElement('span');
+  del.className = 'del-btn';
+  del.title = 'Slett';
+  del.textContent = '🗑️';
+  del.onclick = function() { removeItem(idx); };
+
+  row.appendChild(sw);
+  row.appendChild(nm);
+  row.appendChild(zoom);
+
+  if (o.shape === 'box') {
+    var conv = document.createElement('span');
+    conv.className = 'conv-btn';
+    conv.title = 'Konverter til polygon';
+    conv.textContent = '→ Polygon';
+    conv.onclick = function() {
+      var b = o.layer.getBounds();
+      var pts = [
+        [b.getSouth(), b.getWest()],
+        [b.getNorth(), b.getWest()],
+        [b.getNorth(), b.getEast()],
+        [b.getSouth(), b.getEast()]
+      ];
+      var newLayer = L.polygon(pts, styleFor(o.level, o.color));
+      if (map.hasLayer(o.layer)) map.removeLayer(o.layer);
+      o.layer = newLayer;
+      o.shape = 'polygon';
+      attachLayerEvents(newLayer);
+      syncVisibility(o);
+      if (map.hasLayer(newLayer)) newLayer.pm.enable();
+      restack();
+      renderList();
+      changed();
+    };
+    row.appendChild(conv);
+  }
+
+  row.appendChild(sel);
+  row.appendChild(ren);
+  row.appendChild(del);
+  return row;
+}
+
 function renderList() {
   var list = document.getElementById('list');
   list.innerHTML = '';
-  layers.forEach(function(o, idx) {
-    var row = document.createElement('div');
-    row.className = 'region';
+  [1, 2, 3].forEach(function(lv) {
+    var sec = document.createElement('div');
+    sec.className = 'level-section';
+    sec.id = 'level-' + lv;
 
-    var sw = document.createElement('span');
-    sw.className = 'swatch';
-    sw.style.background = o.color;
+    var items = [];
+    layers.forEach(function(o, idx) { if (o.level === lv) items.push(idx); });
 
-    var nm = document.createElement('span');
-    nm.className = 'nm';
-    nm.textContent = o.name;
-    if (o.shape === 'box') {
-      var badge = document.createElement('span');
-      badge.className = 'badge';
-      badge.textContent = 'boks';
-      nm.appendChild(badge);
+    var head = document.createElement('div');
+    head.className = 'level-head';
+    var sample = document.createElement('span');
+    sample.className = 'lvl-sample l' + lv;
+    var title = document.createElement('span');
+    title.className = 'title';
+    title.textContent = LEVELS[lv].label + ' ';
+    var cnt = document.createElement('span');
+    cnt.className = 'count';
+    cnt.textContent = '(' + items.length + ')';
+    title.appendChild(cnt);
+    var lab = document.createElement('label');
+    lab.title = 'Vis/skjul dette nivået på kartet';
+    var cb = document.createElement('input');
+    cb.type = 'checkbox';
+    cb.checked = !hiddenLevels[lv];
+    cb.onchange = function() { setLevelVisible(lv, cb.checked); };
+    lab.appendChild(cb);
+    lab.appendChild(document.createTextNode('vis'));
+    head.appendChild(sample);
+    head.appendChild(title);
+    head.appendChild(lab);
+    sec.appendChild(head);
+
+    if (!items.length) {
+      var hint = document.createElement('div');
+      hint.className = 'empty-hint';
+      hint.textContent = 'Ingen områder på dette nivået.';
+      sec.appendChild(hint);
+    } else {
+      items.forEach(function(idx) { sec.appendChild(buildRow(layers[idx], idx)); });
     }
-
-    var zoom = document.createElement('span');
-    zoom.className = 'zoom';
-    zoom.textContent = 'zoom';
-    zoom.onclick = (function(layer) {
-      return function() { map.fitBounds(layer.getBounds(), { padding: [30,30] }); };
-    })(o.layer);
-
-    var ren = document.createElement('span');
-    ren.className = 'rename-btn';
-    ren.title = 'Endre navn';
-    ren.textContent = '✏️';
-    ren.onclick = (function(i) { return function() { openRenameModal(i); }; })(idx);
-
-    var del = document.createElement('span');
-    del.className = 'del-btn';
-    del.title = 'Slett';
-    del.textContent = '🗑️';
-    del.onclick = (function(i) {
-      return function() {
-        map.removeLayer(layers[i].layer);
-        layers.splice(i, 1);
-        renderList();
-        saveState();
-      };
-    })(idx);
-
-    row.appendChild(sw);
-    row.appendChild(nm);
-    row.appendChild(zoom);
-
-    if (o.shape === 'box') {
-      var conv = document.createElement('span');
-      conv.className = 'conv-btn';
-      conv.title = 'Konverter til polygon';
-      conv.textContent = '→ Polygon';
-      conv.onclick = (function(i) {
-        return function() {
-          var b = layers[i].layer.getBounds();
-          var pts = [
-            [b.getSouth(), b.getWest()],
-            [b.getNorth(), b.getWest()],
-            [b.getNorth(), b.getEast()],
-            [b.getSouth(), b.getEast()]
-          ];
-          var newLayer = L.polygon(pts, {
-            color: layers[i].color,
-            fillColor: layers[i].color,
-            fillOpacity: 0.25,
-            weight: 2
-          }).addTo(map);
-          newLayer.pm.enable();
-          map.removeLayer(layers[i].layer);
-          layers[i].layer = newLayer;
-          layers[i].shape = 'polygon';
-          newLayer.on('pm:edit', function() { saveState(); });
-          renderList();
-          saveState();
-        };
-      })(idx);
-      row.appendChild(conv);
-    }
-
-    row.appendChild(ren);
-    row.appendChild(del);
-    list.appendChild(row);
+    list.appendChild(sec);
   });
 }
 
 // ── Last inn data ─────────────────────────────────────────────────────────────
 function addLayersFromData(data) {
-  data.forEach(function(o) {
+  (data || []).forEach(function(o) {
     var color = o.color || nextColor();
+    var level = normLevel(o.level);
+    var style = styleFor(level, color);
     var layer;
-    if (o.shape === 'polygon') {
-      layer = L.polygon(o.pts, {
-        color: color, fillColor: color, fillOpacity: 0.25, weight: 2
-      }).addTo(map);
+    if (o.shape === 'box') {
+      layer = L.rectangle([L.latLng(o.south, o.west), L.latLng(o.north, o.east)], style);
     } else {
-      var sw = L.latLng(o.south, o.west);
-      var ne = L.latLng(o.north, o.east);
-      layer = L.rectangle([sw, ne], {
-        color: color, fillColor: color, fillOpacity: 0.25, weight: 2
-      }).addTo(map);
+      layer = L.polygon(o.pts, style);
     }
-    layer.pm.enable();
-    layer.on('pm:edit', function() { saveState(); });
-    layers.push({ name: o.name, color: color, shape: o.shape, layer: layer });
+    attachLayerEvents(layer);
+    var obj = { name: o.name, color: color, shape: o.shape === 'box' ? 'box' : 'polygon', level: level, layer: layer };
+    layers.push(obj);
+    syncVisibility(obj);
   });
+  restack();
+}
+
+function clearLayers() {
+  layers.forEach(function(o) { if (map.hasLayer(o.layer)) map.removeLayer(o.layer); });
+  layers = [];
 }
 
 // ── Initialisering ────────────────────────────────────────────────────────────
 var stored = loadStoredData();
 if (stored) {
-  addLayersFromData(stored);
+  addLayersFromData(stored.data);
+  if (stored.migratedFrom) {
+    saveState();                         // migrerte data lagres under ny nøkkel
+    localStorage.setItem(NOTICE_KEY, '1');
+  }
+  if (localStorage.getItem(NOTICE_KEY)) showNotice(migrationNoticeHtml());
 } else {
-  var defData = buildDefaultData();
-  addLayersFromData(defData);
+  addLayersFromData(buildDefaultData());
+  saveState();
 }
+paletteIdx = layers.length;
 renderList();
+document.getElementById('resetText').textContent =
+  'Dette sletter alle lagrede endringer og gjenoppretter standarddataene for ' + CONFIG.regionLabel +
+  ' (v' + CONFIG.dataVersion + '): ' + defaultsDescription() + '. Handlingen kan ikke angres – ' +
+  'last ned JSON først hvis du vil ta vare på endringene dine.';
 
 // ── Lagre-knapp ───────────────────────────────────────────────────────────────
 document.getElementById('saveBtn').onclick = function() {
-  saveState();
-  showSaveStatus('✓ Lagret');
+  if (saveState()) showSaveStatus('✓ Lagret');
+  else showSaveStatus('Lagring feilet', '#ef9a9a');
 };
 
 // ── Last ned JSON ─────────────────────────────────────────────────────────────
 document.getElementById('downloadBtn').onclick = function() {
-  var data = layers.map(function(o) {
-    if (o.shape === 'polygon') {
-      var ll = o.layer.getLatLngs()[0];
-      return { name: o.name, color: o.color, shape: 'polygon',
-               pts: ll.map(function(p) { return [p.lat, p.lng]; }) };
-    } else {
-      var b = o.layer.getBounds();
-      return { name: o.name, color: o.color, shape: 'box',
-               south: b.getSouth(), north: b.getNorth(),
-               west:  b.getWest(),  east:  b.getEast() };
-    }
-  });
-  var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  var blob = new Blob([JSON.stringify(serialize(), null, 2)], { type: 'application/json' });
   var a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = 'falkland_islands_editor.json';
+  a.download = CONFIG.jsonFilename;
   a.click();
 };
 
 // ── Last inn JSON ─────────────────────────────────────────────────────────────
+function loadJsonText(text) {
+  var data = JSON.parse(text);
+  if (!Array.isArray(data)) throw new Error('Forventet en liste med områder');
+  clearLayers();
+  addLayersFromData(data);
+  paletteIdx = layers.length;
+  renderList();
+  saveState();
+  hideNotice();
+}
 document.getElementById('uploadBtn').onclick = function() {
   document.getElementById('uploadInput').click();
 };
@@ -509,12 +745,7 @@ document.getElementById('uploadInput').onchange = function(e) {
   var reader = new FileReader();
   reader.onload = function(ev) {
     try {
-      var data = JSON.parse(ev.target.result);
-      layers.forEach(function(o) { map.removeLayer(o.layer); });
-      layers = [];
-      addLayersFromData(data);
-      renderList();
-      saveState();
+      loadJsonText(ev.target.result);
       showSaveStatus('✓ JSON lastet inn');
     } catch(ex) {
       alert('Kunne ikke lese JSON: ' + ex.message);
@@ -533,44 +764,103 @@ document.getElementById('resetCancelBtn').onclick = function() {
 };
 document.getElementById('resetOkBtn').onclick = function() {
   document.getElementById('resetModal').classList.remove('open');
-  layers.forEach(function(o) { map.removeLayer(o.layer); });
-  layers = [];
+  clearLayers();
   paletteIdx = 0;
   localStorage.removeItem(STORAGE_KEY);
-  var defData = buildDefaultData();
-  addLayersFromData(defData);
+  hideNotice();
+  addLayersFromData(buildDefaultData());
+  paletteIdx = layers.length;
+  saveState();
   renderList();
-  map.setView([-51.70, -59.00], 8);
+  map.setView(CONFIG.center, CONFIG.zoom);
+  showSaveStatus('✓ Standarddata gjenopprettet');
 };
 
 // ── Eksport til Lua ───────────────────────────────────────────────────────────
+// Format og innrykk matcher extensions/<område>_gps.lua (4 mellomrom per nivå).
 function f4(n) { return (Math.round(n * 10000) / 10000).toFixed(4); }
+function luaStr(s) { return '"' + String(s).replace(/\\/g, '\\\\').replace(/"/g, '\\"') + '"'; }
+function pad(n) { return new Array(n * 4 + 1).join(' '); }
+
+function itemPoints(o) {
+  if (o.shape === 'polygon') {
+    return o.layer.getLatLngs()[0].map(function(p) { return [p.lat, p.lng]; });
+  }
+  var b = o.layer.getBounds();
+  return [[b.getSouth(), b.getWest()], [b.getNorth(), b.getWest()],
+          [b.getNorth(), b.getEast()], [b.getSouth(), b.getEast()]];
+}
+function pointLines(pts, depth) {
+  return pts.map(function(p) {
+    return pad(depth) + '{ lat = ' + f4(p[0]) + ', lon = ' + f4(p[1]) + ' },';
+  }).join('\n');
+}
+function polygonList(key, items) {
+  if (!items.length) return pad(2) + key + ' = {},';
+  var body = items.map(function(o) {
+    return pad(3) + '{ name = ' + luaStr(o.name) + ', points = {\n'
+         + pointLines(itemPoints(o), 4) + '\n' + pad(3) + '} },';
+  }).join('\n');
+  return pad(2) + key + ' = {\n' + body + '\n' + pad(2) + '},';
+}
 
 function exportLua() {
-  var polyOut = [], boxOut = [];
+  var l1 = [], l2 = [], l3 = [], boxes = [];
   layers.forEach(function(o) {
-    if (o.shape === 'polygon') {
-      var ll  = o.layer.getLatLngs()[0];
-      var pts = ll.map(function(p) {
-        return '                        { lat = ' + f4(p.lat) + ', lon = ' + f4(p.lng) + ' },';
-      }).join('\n');
-      polyOut.push(
-        '                    { name = "' + o.name + '", points = {\n'
-        + pts + '\n                    } },');
-    } else {
+    if (o.shape === 'box') { boxes.push(o); return; }
+    if (o.level === 3) l3.push(o);
+    else if (o.level === 2) l2.push(o);
+    else l1.push(o);
+  });
+  // Bokser på nivå 3 kan også brukes som country_polygon hvis ingen polygon finnes.
+  if (!l3.length) {
+    boxes.forEach(function(o) { if (o.level === 3) l3.push(o); });
+  }
+
+  var out = [];
+  var warn = '';
+  out.push(polygonList('polygons', l1));
+  out.push('');
+  out.push(polygonList('regions', l2));
+  out.push('');
+  if (l3.length) {
+    var c = l3[0];
+    if (l3.length > 1) {
+      warn = 'Advarsel: ' + l3.length + ' Nivå 3-områder funnet. Bare det første («' + c.name +
+             '») er eksportert som country_polygon.';
+      out.push(pad(2) + '-- ADVARSEL: ' + l3.length + ' Nivå 3-områder i editoren; bare det første ("'
+               + c.name.replace(/"/g, "'") + '") er eksportert.');
+    }
+    out.push(pad(2) + 'country_polygon = {');
+    out.push(pad(3) + 'name = ' + luaStr(c.name) + ',');
+    out.push(pad(3) + 'points = {');
+    out.push(pointLines(itemPoints(c), 4));
+    out.push(pad(3) + '},');
+    out.push(pad(2) + '},');
+  } else {
+    warn = 'Merk: Ingen Nivå 3-polygon (Country) – country_polygon er ikke med i eksporten.';
+    out.push(pad(2) + '-- Ingen Nivå 3-polygon definert (country_polygon utelatt).');
+  }
+  out.push('');
+  var boxOut = boxes.filter(function(o) { return !(l3.indexOf(o) === 0 && o.level === 3); });
+  if (!boxOut.length) {
+    out.push(pad(2) + 'bounding_boxes = {},');
+  } else {
+    out.push(pad(2) + 'bounding_boxes = {');
+    boxOut.forEach(function(o) {
       var b = o.layer.getBounds();
-      boxOut.push(
-        '                    { name = "' + o.name + '"'
+      out.push(pad(3) + '{ name = ' + luaStr(o.name)
         + ', south = ' + f4(b.getSouth())
         + ', north = ' + f4(b.getNorth())
         + ', west = '  + f4(b.getWest())
-        + ', east = '  + f4(b.getEast()) + ' },');
-    }
-  });
-  var lua =
-    '            polygons = {\n' + polyOut.join('\n') + '\n            },\n'
-    + '            bounding_boxes = {\n' + boxOut.join('\n') + '\n            },';
-  document.getElementById('out').value = lua;
+        + ', east = '  + f4(b.getEast())
+        + ', level = ' + o.level + ' },');
+    });
+    out.push(pad(2) + '},');
+  }
+  document.getElementById('out').value = out.join('\n');
+  document.getElementById('exportWarn').textContent = warn;
+  return out.join('\n');
 }
 
 document.getElementById('exportBtn').onclick = exportLua;
