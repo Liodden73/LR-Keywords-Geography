@@ -1,8 +1,13 @@
-## Unreleased
+## 0.9.297 — 2026-11-04
 
-- **South Georgia GPS data v1.3.0** (`extensions/south_georgia_gps.lua`): 40 Level 1 polygons; Trinity Island renamed Willis Islands; new Rosita Harbour, Moltke Harbour and Twitcher Bay; `regions` (Level 2, empty); `country_polygon` (Level 3) set to the owner's 5-point polygon.
-- **Polygon editors** (`tools/polygon-editors/`): South Georgia, Falkland Islands and Svalbard editors now share the same 3-level design (City/State/Country) with automatic storage migration (South Georgia v2 -> v3, Falkland Islands v3 -> v4, Svalbard v2 -> v3). Falkland Islands and Svalbard get a draft Level 3 polygon (Svalbard: the Svalbard Treaty area 74-81 N and 10-35 E); their GPS data files are unchanged.
-- Note: the levels are not yet used by GPSConverter in Lightroom.
+### South Georgia GPS Extension 1.3.0 bundled
+
+- `extensions/south_georgia_gps.lua` 1.3.0 is now included in the plugin package: 40 Level-1 place polygons (unchanged from 1.2.0), empty Level-2 `regions`, and the new 5-point Level-3 `country_polygon` drawn in the polygon editor.
+- The file is backwards compatible: `polygons` and `bounding_boxes` keep the same format as 1.1.0; `regions` and `country_polygon` are new keys that older readers ignore.
+- Extensions panel: South Georgia description updated from 37 to 40 GPS-mapped regions.
+- Polygon editors (`tools/polygon-editors/`, GitHub only, not in the plugin package): South Georgia, Falkland Islands and Svalbard editors now share the same 3-level design (City/State/Country) with automatic storage migration (South Georgia v2 -> v3, Falkland Islands v3 -> v4, Svalbard v2 -> v3). Falkland Islands and Svalbard get a draft Level 3 polygon; their GPS data files are unchanged.
+- Note: Level 2 and Level 3 are not used by any GPS conversion code in this plugin; GPS-to-keyword conversion is done by the LR Wildlife plugin.
+- Not yet tested in Lightroom.
 
 ## 0.9.296 — 2026-11-04
 
