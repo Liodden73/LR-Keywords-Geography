@@ -49,6 +49,27 @@ local function http()
     return _LrHttp
 end
 
+-- ── About Disputed Areas ─────────────────────────────────────────────────────
+-- Opens Disputed-Areas.txt (shipped in the plug-in folder) in the default
+-- browser, using the same file:// approach as "Show Interactive Map in Browser".
+local function openDisputedAreasFile()
+    local path = LrPathUtils.child( pluginPath, "Disputed-Areas.txt" )
+    local LrFileUtils = import 'LrFileUtils'
+    if not LrFileUtils.exists( path ) then
+        LrDialogs.message( "About Disputed Areas",
+            "Could not find Disputed-Areas.txt in the plug-in folder:\n" .. path, "warning" )
+        return
+    end
+    local url
+    if WIN_ENV then
+        url = "file:///" .. path:gsub( "\\", "/" )
+    else
+        url = "file://" .. path
+    end
+    url = url:gsub( " ", "%%20" )
+    http().openUrlInBrowser( url )
+end
+
 -- ── Diagnostic timing log ─────────────────────────────────────────────────────
 -- Appends millisecond timestamps to <Documents>/LR-Geography-Builder-timing.log
 -- so we can pinpoint exactly which dialog-open step is slow, should the ~75 s
@@ -270,7 +291,14 @@ local COUNTRIES = {
         addCountry { id = "Botswana",    name = "Botswana",     code = "BW-072", filename = "Botswana.lua",    continent = "Africa",        admin_label = "Districts & Areas",  mountain_max = 1491, remoteIslandNames = {} },
         addCountry { id = "SouthAfrica", name = "South Africa", code = "ZA-710", filename = "SouthAfrica.lua", continent = "Africa",        admin_label = "Provinces & Areas",  mountain_max = 3482, remoteIslandNames = { "Marion Island", "Prince Edward Island" } },
         addCountry { id = "Egypt",       name = "Egypt",        code = "EG-818", filename = "Egypt.lua",       continent = "Africa",        admin_label = "Governorates & Areas", mountain_max = 2629, remoteIslandNames = {} },
-        addCountry { id = "Morocco",     name = "Morocco",      code = "MA-504", filename = "Morocco.lua",     continent = "Africa",        admin_label = "Regions & Areas",    mountain_max = 4167, remoteIslandNames = {} },
+        addCountry { id = "Morocco",     name = "Morocco",      code = "MA-504", filename = "Morocco.lua",     continent = "Africa",        admin_label = "Regions & Areas",    mountain_max = 4167, remoteIslandNames = { "Western Sahara" },
+            -- Western Sahara: non-self-governing territory (UN), status not decided.
+            -- Exported under [WORLD] > [AFRICA] > [TERRITORIES] with neutral synonyms
+            -- only (no {Morocco}); see Disputed-Areas.txt.
+            territories = {
+                ["Western Sahara"] = { continent = "Africa", synonyms = { "Sahara Occidental" },
+                        places = { "Aousserd", "Boujdour", "Dakhla", "Dakhla National Park", "Gueltat Zemmour", "Imlili", "Laâyoune", "Smara" } },
+        } },
         addCountry { id = "Tunisia",     name = "Tunisia",      code = "TN-788", filename = "Tunisia.lua",     continent = "Africa",        admin_label = "Governorates & Areas", mountain_max = 1544, remoteIslandNames = {} },
         addCountry { id = "Nigeria",     name = "Nigeria",      code = "NG-566", filename = "Nigeria.lua",     continent = "Africa",        admin_label = "States & Areas",     mountain_max = 2419, remoteIslandNames = {} },
         addCountry { id = "Ghana",       name = "Ghana",        code = "GH-288", filename = "Ghana.lua",       continent = "Africa",        admin_label = "Regions & Areas",    mountain_max = 885,  remoteIslandNames = {} },
@@ -3239,6 +3267,25 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                         f:spacer { height = 8 },
 
                         ----------------------------------------------------------------
+                        -- Disputed areas
+                        ----------------------------------------------------------------
+                        f:static_text { title = "Disputed areas", font = "<system/bold>" },
+                        f:spacer { height = 3 },
+                        f:static_text {
+                                title           = "Some countries, areas and names are disputed. The plug-in follows "
+                                                .. "the UN and internationally recognised borders where possible. "
+                                                .. "Read how each disputed case is handled, and how to change it.",
+                                width           = CONTENT_W,
+                                height_in_lines = 2,
+                        },
+                        f:spacer { height = 3 },
+                        f:push_button {
+                                title  = "About Disputed Areas",
+                                action = function() openDisputedAreasFile() end,
+                        },
+                        f:spacer { height = 6 },
+
+                        ----------------------------------------------------------------
                         -- Data limits
                         ----------------------------------------------------------------
                         f:static_text { title = "Data limits", font = "<system/bold>" },
@@ -4492,6 +4539,11 @@ LrFunctionContext.callWithContext( "ListVerification", function( context )
                                                         end
                                                 end )
                                         end,
+                                },
+                                f:spacer { width = 8 },
+                                f:push_button {
+                                        title  = "About Disputed Areas",
+                                        action = function() openDisputedAreasFile() end,
                                 },
                                 f:spacer { fill_horizontal = 1 },
                         },

@@ -1,8 +1,8 @@
 LR-Geography - Disputed countries, areas and names
 ==================================================
-Version 1.0 - 2026-11-04 - Liodden Media
-Applies to: LR-Geography-Countries-LioddenMedia-v1-2.txt and
-            Geography Keyword Builder plugin v0.9.289
+Version 1.1 - 2026-11-04 - Liodden Media
+Applies to: LR-Geography-Countries-LioddenMedia-v1-3.txt and
+            Geography Keyword Builder plugin v0.9.290
 
 PLEASE READ BEFORE IMPORTING THE KEYWORD LIST.
 
@@ -30,7 +30,8 @@ We follow the United Nations as far as possible:
     positions (for example on Crimea and Northern Cyprus).
   - Territories: listed under [TERRITORIES] with the administering
     country as a synonym, as on the UN list of non-self-governing
-    territories.
+    territories. Exception: Western Sahara has no country synonym,
+    because who should administer it is the dispute itself (section 4).
 
 Exceptions, and why:
 
@@ -128,12 +129,20 @@ Asia
     Taiwan claim them as Diaoyu / Diaoyutai.
 
 Africa
-  Western Sahara - its two regions (Laâyoune-Sakia El Hamra and
-    Dakhla-Oued Ed-Dahab) are under Morocco.
-    DIFFERS FROM UN: the UN lists Western Sahara as a non-self-governing
+  Western Sahara - listed on its own under [AFRICA] > [TERRITORIES]
+    with the synonym {Sahara Occidental}, and deliberately WITHOUT a
+    country synonym. The UN lists Western Sahara as a non-self-governing
     territory whose final status has not been decided. Morocco controls
     most of it; the Polisario Front (Sahrawi Arab Democratic Republic)
-    claims it.
+    claims it. In the plugin, Western Sahara is ticked under Morocco
+    only because that is where the data comes from; the keyword itself
+    is exported under [TERRITORIES], not under Morocco. Its towns
+    (Laâyoune, Dakhla, Smara, Boujdour and others) are added below it
+    at detail level 2 or higher. The Moroccan region Laâyoune-Sakia El
+    Hamra now only contains Tarfaya Province, which lies north of
+    Western Sahara. (Changed in plugin v0.9.290: earlier versions put
+    the Western Sahara regions under Morocco. If you imported those,
+    move or delete them in Lightroom.)
   Somaliland - under Somalia. It has governed itself since 1991 but is
     not recognised by the UN or by most countries.
   Mayotte - French overseas department. Comoros claims it, and older UN

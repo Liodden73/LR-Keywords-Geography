@@ -1,6 +1,20 @@
 LR-Geography-Countries - Change log
 ===================================
 
+v1.3  (2026-11-04)
+------------------
+
+File: LR-Geography-Countries-LioddenMedia-v1-3.txt
+
+- Western Sahara added as a territory under
+  [WORLD] > [AFRICA] > [TERRITORIES], with {Sahara Occidental} as a
+  synonym and no country synonym (its status is the dispute itself).
+- Companion file updated to LR-Geography-Disputed-Areas-LioddenMedia-v1-1.txt.
+
+Contents: 199 countries, 29 territories, plus 131 ocean/sea lines
+(534 lines in total). Western Sahara compared against Generator.lua
+(plugin v0.9.290): identical. Not yet import-tested in Lightroom.
+
 v1.2  (2026-11-04)
 ------------------
 

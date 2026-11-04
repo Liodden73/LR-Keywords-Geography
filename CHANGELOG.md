@@ -1,3 +1,13 @@
+## 0.9.290 — 2026-11-04
+
+### About Disputed Areas button, Western Sahara as a territory
+
+- New button **About Disputed Areas** on the opening window (to the right of "Show Interactive Map in Browser") and near the top of the Help window. It opens `Disputed-Areas.txt` in the browser.
+- **Western Sahara** is now a territory: `[WORLD] > [AFRICA] > [TERRITORIES] > Western Sahara {Sahara Occidental}`, with no country synonym. It is ticked under Morocco ▸ Remote Islands ("Western Sahara - Africa"). At admin detail 2+ the towns are added under it: Aousserd, Boujdour, Dakhla, Dakhla National Park, Gueltat Zemmour, Imlili, Laâyoune, Smara.
+- Morocco data 0.1.3: the regions Dakhla-Oued Ed-Dahab and the Western Sahara part of Laâyoune-Sakia El Hamra are removed; Tarfaya (north of 27°40') stays under Morocco. Dakhla National Park moved to the territory. NOTE: if you imported the old Morocco regions for Western Sahara, move or delete them in Lightroom.
+- Generator: when a territory is on the same continent as its country, the continent node is no longer written twice.
+- Disputed-Areas.txt v1.1 and country-level keyword list v1.3 (`keyword-lists/`).
+
 ## 0.9.289 — 2026-11-04
 
 ### Scattered Islands, Dokdo and disputed areas

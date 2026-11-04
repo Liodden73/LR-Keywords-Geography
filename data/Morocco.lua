@@ -5,7 +5,7 @@
 
 return {
   meta = {
-    version = "0.1.2",
+    version = "0.1.3",
     country = "Morocco",
     native_name = "المغرب",
     continent = "Africa",
@@ -259,24 +259,8 @@ return {
     },
     { name = "Laâyoune-Sakia El Hamra",
       municipalities = {
-        { name = "Boujdour",
-          cities = { "Akhfennir", "Gueltat Zemmour" },
-        },
-        { name = "Es-Semara",
-          cities = { "Smara" },
-        },
         { name = "Tarfaya",
-          cities = { "Tarfaya" },
-        },
-      },
-    },
-    { name = "Dakhla-Oued Ed-Dahab",
-      municipalities = {
-        { name = "Aousserd",
-          cities = { "Aousserd" },
-        },
-        { name = "Oued-Ed-Dahab",
-          cities = { "Imlili" },
+          cities = { "Akhfennir", "Tarfaya" },
         },
       },
     },
@@ -289,7 +273,6 @@ return {
     "Iriqui National Park",
     "Khenifiss National Park",
     "Khenifra National Park",
-    "Dakhla National Park",
     "Souss-Massa National Park",
     "Talassemtane National Park",
     "Tazekka National Park",

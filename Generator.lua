@@ -127,6 +127,7 @@ end
 --   remote_islands_selected = { ["Svalbard"] = true, ... }, -- which ones to include
 --   territories = { ["South Georgia"] = { continent = "South America",
 --                   synonyms = { "United Kingdom", ... } }, ... },
+--                 -- optional places = { ... } are added at admin_detail 2+
 --                 -- remote islands listed here are exported under
 --                 -- [WORLD] > [<continent>] > [TERRITORIES] instead of the country
 --   remote_islands_details = { ["Guernsey"] = { synonyms = { "Channel Islands" },
@@ -431,14 +432,26 @@ function Generator.generate(data, prefs)
         -- [WORLD] > [SOUTH AMERICA] > [TERRITORIES] > South Georgia
         --                                               {United Kingdom} ...
         if anyTerritory then
+                local ownCont = data.meta and data.meta.continent or "Europe"
                 for _, cont in ipairs(terrConts) do
-                        add(2, container(cont))
+                        -- Same continent as the country (e.g. Western Sahara under
+                        -- Morocco/Africa): reuse the continent node already emitted
+                        -- above instead of writing a second [AFRICA] line.
+                        if not ((anyNature or anyAdmin) and cont == ownCont) then
+                                add(2, container(cont))
+                        end
                         add(3, container("Territories"))
                         for _, name in ipairs(sortedCopy(terrPicks[cont])) do
                                 add(4, name)
                                 for _, syn in ipairs(territories[name].synonyms or {}) do
                                         for _, alt in ipairs(splitAlternatives(sanitize(syn))) do
                                                 addSynonym(5, "{" .. alt .. "}")
+                                        end
+                                end
+                                -- Optional sub-places (e.g. Western Sahara towns) at detail 2+
+                                if adminDetail >= 2 and territories[name].places then
+                                        for _, pl in ipairs(sortedCopy(territories[name].places)) do
+                                                add(5, sanitize(pl))
                                         end
                                 end
                         end
