@@ -1,0 +1,224 @@
+LR-Geography - Disputed countries, areas and names
+==================================================
+Version 1.0 - 2026-11-04 - Liodden Media
+Applies to: LR-Geography-Countries-LioddenMedia-v1-2.txt and
+            Geography Keyword Builder plugin v0.9.289
+
+PLEASE READ BEFORE IMPORTING THE KEYWORD LIST.
+
+
+1. WHY THIS FILE EXISTS
+-----------------------
+Some countries, regions and place names on the list are disputed. The
+keyword lists are a tool for finding your photos again. They are not a
+political statement. This file explains:
+
+  - the principle we follow (section 2)
+  - what each dispute is about and how it is shown in the list (3 to 6)
+  - how you can change any of it in your own catalogue (section 7)
+
+Lightroom keyword files cannot contain comments: every line in the .txt
+file becomes a keyword. That is why this explanation is a separate file.
+
+
+2. OUR PRINCIPLE
+----------------
+We follow the United Nations as far as possible:
+
+  - Countries: the 193 UN member states.
+  - Borders and regions: the UN General Assembly and Security Council
+    positions (for example on Crimea and Northern Cyprus).
+  - Territories: listed under [TERRITORIES] with the administering
+    country as a synonym, as on the UN list of non-self-governing
+    territories.
+
+Exceptions, and why:
+
+  - A few places that are not UN member states are still included
+    because photographers travel there and need a keyword for them:
+    Vatican City, Palestine, Kosovo, Taiwan, Greenland and Antarctica
+    (section 3).
+  - Where the UN has no position on a line of control (for example
+    Kashmir), we follow the authority that administers the area today.
+  - In a few places the plugin data does not yet follow the UN position.
+    These are marked "DIFFERS FROM UN" below and are being reviewed.
+
+
+3. ENTRIES THAT ARE NOT UN MEMBER STATES
+----------------------------------------
+Palestine
+  The UN has recognised Palestine as a non-member observer state since
+  2012, and most UN member states recognise it. Israel and some other
+  countries do not. The list shows Palestine as a country, with the
+  Gaza Strip and the West Bank under it.
+
+Kosovo
+  Kosovo declared independence from Serbia in 2008. About half of the UN
+  member states recognise it. Serbia, Russia, China and others do not.
+  Kosovo is not a UN member. The list shows Kosovo as a country, and the
+  Serbia data does not include Kosovo, so there is no double entry.
+
+Taiwan
+  Since 1971 China's UN seat has been held by the People's Republic of
+  China, which regards Taiwan as part of China. Taiwan (Republic of
+  China) governs itself, and only a few states recognise it formally.
+  The list shows Taiwan as its own entry because it is a separate
+  travel destination with its own administration. Kinmen and Lienchiang
+  (Matsu) are under Taiwan.
+
+Greenland
+  Greenland is an autonomous territory within the Kingdom of Denmark,
+  not an independent country. It is listed on its own (as in the ISO
+  country code list) because it is a major destination with its own
+  geography. Its status has been the subject of public debate, including
+  interest from the United States.
+
+Vatican City
+  The Holy See is a UN observer state. It is not disputed.
+
+Antarctica
+  Under the Antarctic Treaty, territorial claims are frozen. The list
+  includes Antarctica as one entry and does NOT include national claims
+  (Norwegian, British, Argentine, Chilean, French, Australian or
+  New Zealand sectors).
+
+
+4. DISPUTED REGIONS INSIDE COUNTRIES
+------------------------------------
+These are not on the country-level list itself. They appear when you
+generate more detail for a country in the plugin.
+
+Europe
+  Crimea and Sevastopol - under Ukraine. Annexed by Russia in 2014; the
+    UN General Assembly (resolution 68/262) affirms Ukraine's borders.
+  Donetsk, Luhansk, Zaporizhzhia, Kherson - under Ukraine. Russia claimed
+    to annex them in 2022; the UN General Assembly (ES-11/4) rejected
+    this. The Russia data has 83 regions, without these areas.
+  Abkhazia and South Ossetia (Tskhinvali region) - under Georgia.
+    Recognised as states only by Russia and a few others.
+  Transnistria - under Moldova, as "Administrative-Territorial Units of
+    the Left Bank of the Dniester". Not recognised by any UN member.
+  Northern Cyprus - Kyrenia and Famagusta are under Cyprus. Only Turkey
+    recognises the "Turkish Republic of Northern Cyprus" (UN Security
+    Council resolution 541).
+  Nagorno-Karabakh - under Azerbaijan. Azerbaijan took full control in
+    2023, and most of the Armenian population left.
+  Ceuta and Melilla - under Spain. Morocco claims them.
+  Gibraltar - under the United Kingdom. Spain claims it.
+
+Asia
+  Kashmir - divided. Jammu and Kashmir and Ladakh are under India; Azad
+    Jammu and Kashmir and Gilgit-Baltistan are under Pakistan. India and
+    Pakistan both claim the whole region, and China controls Aksai Chin.
+    We follow the line of control.
+  Arunachal Pradesh - under India. China claims it as "South Tibet".
+  Golan Heights - under Israel (Golan Sub-district, Northern District).
+    DIFFERS FROM UN: Israel annexed the area in 1981, and the UN Security
+    Council (resolution 497) declared this null and void. The UN regards
+    it as occupied Syrian territory.
+  East Jerusalem - under Israel (Jerusalem District).
+    DIFFERS FROM UN: the UN regards East Jerusalem as occupied
+    Palestinian territory (Security Council resolution 478).
+  Kuril Islands (Iturup, Kunashir, Shikotan, Habomai) - under Russia.
+    Japan claims the four southern islands as its "Northern Territories".
+  Dokdo / Takeshima - under South Korea, which administers the islets.
+    Japan claims them as Takeshima. (Moved from Japan to South Korea in
+    plugin v0.9.289.)
+  Senkaku Islands - under Japan, which administers them. China and
+    Taiwan claim them as Diaoyu / Diaoyutai.
+
+Africa
+  Western Sahara - its two regions (Laâyoune-Sakia El Hamra and
+    Dakhla-Oued Ed-Dahab) are under Morocco.
+    DIFFERS FROM UN: the UN lists Western Sahara as a non-self-governing
+    territory whose final status has not been decided. Morocco controls
+    most of it; the Polisario Front (Sahrawi Arab Democratic Republic)
+    claims it.
+  Somaliland - under Somalia. It has governed itself since 1991 but is
+    not recognised by the UN or by most countries.
+  Mayotte - French overseas department. Comoros claims it, and older UN
+    General Assembly resolutions support Comoros.
+  Scattered Islands {Îles Éparses} - French. Madagascar claims Glorioso,
+    Juan de Nova, Europa and Bassas da India; Mauritius claims Tromelin.
+  British Indian Ocean Territory (Chagos Islands) - listed under
+    [TERRITORIES] with {United Kingdom}. The International Court of
+    Justice (2019) and the UN General Assembly (resolution 73/295) said
+    the islands should be returned to Mauritius. The UK and Mauritius
+    agreed on a transfer of sovereignty in 2025. This entry will be
+    updated when the transfer takes effect.
+
+Americas
+  Falkland Islands, South Georgia and South Sandwich Islands - under
+    [TERRITORIES] with {United Kingdom}. Argentina claims them (Islas
+    Malvinas). The UN lists the Falkland Islands as a non-self-governing
+    territory administered by the UK. The list follows the actual
+    administration and does not use the name Malvinas as a synonym.
+  Essequibo - under Guyana. Venezuela claims the region.
+
+
+5. DISPUTED NAMES
+-----------------
+  North Macedonia - name agreed with Greece in 2018 (Prespa agreement).
+  Turkey {Türkiye} - the UN has used "Türkiye" since 2022.
+  Ivory Coast - the official name is Côte d'Ivoire.
+  Myanmar - also known as Burma.
+  Eswatini - formerly Swaziland.
+  Persian Gulf - Arab states use "Arabian Gulf".
+  Sea of Japan - Korea uses "East Sea".
+  South China Sea - name accepted, but the sea is heavily disputed
+    (Spratly and Paracel Islands).
+
+The list uses the most common English name. Add the other name as a
+synonym if you need it (section 7).
+
+
+6. SYNONYMS IN NON-LATIN SCRIPTS
+--------------------------------
+Country synonyms are only included when they are written in Latin
+letters (accented letters such as Ísland, Việt Nam and Österreich are
+included). Names in Arabic, Cyrillic, Greek, Hebrew, Chinese, Japanese,
+Korean, Thai and other scripts are left out. This keeps the list
+readable for most users. It is not a judgement of any language, and you
+are welcome to add your own synonyms in any script.
+
+
+7. HOW TO CHANGE THE STATUS OF A COUNTRY OR AREA
+------------------------------------------------
+Your Lightroom catalogue is yours. You can change any of this.
+
+A) Before importing (edit the .txt file)
+   Open the file in a plain text editor (TextEdit in plain-text mode,
+   Notepad, BBEdit, VS Code). Each level of the hierarchy is ONE TAB.
+   - Delete an entry: delete its line and all more-indented lines below.
+   - Move an entry: cut its line (and the lines below it) and paste it
+     under another parent, adjusting the number of TABs.
+   - Add a synonym: add a line with {Name} one TAB deeper than the entry.
+   Do NOT use commas or slashes in any name: Lightroom will reject the
+   file. Save as UTF-8.
+
+B) After importing (in Lightroom Classic)
+   - Move: in the Keyword List panel, drag the keyword onto its new
+     parent. All photos keep the keyword.
+   - Rename or add synonyms: right-click the keyword > Edit Keyword Tag.
+     Write synonyms in the Synonyms field.
+   - Delete: right-click > Delete. Photos lose the keyword.
+   - Hide from export: in Edit Keyword Tag, untick "Include on Export".
+
+C) In the Geography Keyword Builder plugin
+   - When you generate a country, untick the regions you do not want
+     (for example Crimea under Ukraine). Then create them yourself in
+     Lightroom under the parent you prefer.
+   - Territories can be ticked or unticked individually under Remote
+     Islands for the administering country.
+   - Note: keywords you move in Lightroom will be created again in the
+     original place if you later re-import a list from the plugin. Move
+     or delete them again after importing, or edit the .txt first (A).
+   - Note: GPS lookup uses the country returned by the map service
+     (OpenStreetMap), which can differ from the list for disputed areas.
+
+
+8. FEEDBACK
+-----------
+If you find a mistake, or think an entry should follow the UN more
+closely, contact Liodden Media (liodden.com) or open an issue on GitHub:
+https://github.com/Liodden73/LR-Keywords-Geography

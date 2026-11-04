@@ -1,6 +1,23 @@
 LR-Geography-Countries - Change log
 ===================================
 
+v1.2  (2026-11-04)
+------------------
+
+File: LR-Geography-Countries-LioddenMedia-v1-2.txt
+
+- Îles Éparses renamed to Scattered Islands, with {Îles Éparses} as a
+  synonym (still {France} and {Indian Ocean}), under
+  [WORLD] > [AFRICA] > [TERRITORIES].
+- New companion file LR-Geography-Disputed-Areas-LioddenMedia-v1-0.txt:
+  explains disputed countries, areas and names and how to change them.
+  Read it before importing.
+
+Contents: 199 countries, 28 territories, 169 synonyms, plus 131
+ocean/sea lines (532 lines in total). Same checks as v1.1; compared
+against Generator.lua (plugin v0.9.289) for all 199 countries:
+0 differences. Not yet import-tested in Lightroom.
+
 v1.1  (2026-11-04)
 ------------------
 

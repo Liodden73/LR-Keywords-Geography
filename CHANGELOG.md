@@ -1,3 +1,12 @@
+## 0.9.289 — 2026-11-04
+
+### Scattered Islands, Dokdo and disputed areas
+
+- **Scattered Islands** is now the main name for the French territory, with `{Îles Éparses}` as a synonym (plus `{France}` and `{Indian Ocean}`). NOTE: if you had ticked "Îles Éparses" under France ▸ Remote Islands, tick "Scattered Islands" again. A keyword "Îles Éparses" imported earlier must be renamed in Lightroom.
+- **Dokdo Island Natural Reserve** moved from Japan to South Korea (South Korea administers the islets; Japan claims them as Takeshima). Data versions: Japan 0.1.2, South Korea 0.1.2.
+- New file **Disputed-Areas.txt**: explains disputed countries, areas and names, our principle (follow the UN as far as possible) and how users can change the status of a country or area. Linked from README.md.
+- Country-level keyword list **v1.2** (`keyword-lists/`) with Scattered Islands.
+
 ## 0.9.288 — 2026-11-04
 
 ### Country synonyms: Latin script only

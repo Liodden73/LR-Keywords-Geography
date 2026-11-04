@@ -47,6 +47,17 @@ LR-Geography-Builder.lrplugin/
 
 ---
 
+## Disputed countries, areas and names — please read
+
+Some countries, regions and names in the keyword lists are disputed
+(for example Crimea, Kosovo, Taiwan, Western Sahara, Kashmir and the
+Falkland Islands). We follow the United Nations as far as possible.
+`Disputed-Areas.txt` (also in `keyword-lists/`) explains the principle,
+what each dispute is about, and how you can move, rename or remove any
+entry in your own catalogue.
+
+---
+
 ## Installation
 
 1. Copy the whole **`LR-Geography-Builder.lrplugin`** folder to a permanent

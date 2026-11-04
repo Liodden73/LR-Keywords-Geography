@@ -292,7 +292,7 @@ local COUNTRIES = {
         } },
         addCountry { id = "China",        name = "China",         code = "CN-156", filename = "China.lua",        continent = "Asia",          admin_label = "Provinces & Areas",       mountain_max = 8849, remoteIslandNames = {} },
         addCountry { id = "Russia",      name = "Russia",       code = "RU-643", filename = "Russia.lua",      continent = "Europe",        admin_label = "Federal Subjects & Areas", mountain_max = 5642, remoteIslandNames = {} },
-        addCountry { id = "France",      name = "France",       code = "FR-250", filename = "France.lua",      continent = "Europe",        admin_label = "Regions & Areas",    mountain_max = 4808, remoteIslandNames = { "Amsterdam Island", "Clipperton Island", "Crozet Islands", "French Guiana", "French Polynesia", "Guadeloupe", "Îles Éparses", "Kerguelen Islands", "Martinique", "Mayotte", "New Caledonia", "Réunion", "Saint Barthélemy", "Saint Martin", "Saint Pierre and Miquelon", "Saint-Paul Island", "Wallis and Futuna" },
+        addCountry { id = "France",      name = "France",       code = "FR-250", filename = "France.lua",      continent = "Europe",        admin_label = "Regions & Areas",    mountain_max = 4808, remoteIslandNames = { "Amsterdam Island", "Clipperton Island", "Crozet Islands", "French Guiana", "French Polynesia", "Guadeloupe", "Kerguelen Islands", "Martinique", "Mayotte", "New Caledonia", "Réunion", "Saint Barthélemy", "Saint Martin", "Saint Pierre and Miquelon", "Saint-Paul Island", "Scattered Islands", "Wallis and Futuna" },
         -- Territories: listed under the sovereign country in the UI, but exported
         -- under [WORLD] > [<continent>] > [TERRITORIES] > <name> with synonyms.
         territories = {
@@ -308,7 +308,7 @@ local COUNTRIES = {
                 ["New Caledonia"]             = { continent = "Oceania", synonyms = { "France", "South Pacific Ocean" } },
                 ["Wallis and Futuna"]         = { continent = "Oceania", synonyms = { "France", "South Pacific Ocean" } },
                 -- Africa (Indian Ocean)
-                ["Îles Éparses"]              = { continent = "Africa", synonyms = { "France", "Indian Ocean" } },
+                ["Scattered Islands"]         = { continent = "Africa", synonyms = { "Îles Éparses", "France", "Indian Ocean" } },
         } },
         addCountry { id = "Denmark",     name = "Denmark",      code = "DK-208", filename = "Denmark.lua",     continent = "Europe",        admin_label = "Regions & Areas",    mountain_max = 171,  remoteIslandNames = { "Faroe Islands" } },
         addCountry { id = "Iceland",     name = "Iceland",      code = "IS-352", filename = "Iceland.lua",     continent = "Europe",        admin_label = "Regions & Areas",    mountain_max = 2110, remoteIslandNames = {} },
