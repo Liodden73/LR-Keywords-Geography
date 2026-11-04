@@ -31,14 +31,14 @@ We follow the United Nations as far as possible:
   - Territories: listed under [TERRITORIES] with the administering
     country as a synonym, as on the UN list of non-self-governing
     territories. Exception: Western Sahara has no country synonym,
-    because who should administer it is the dispute itself (section 4).
+    because who should administer it is the dispute itself (section 3).
 
 Exceptions, and why:
 
   - A few places that are not UN member states are still included
     because photographers travel there and need a keyword for them:
-    Vatican City, Palestine, Kosovo, Taiwan, Greenland and Antarctica
-    (section 3).
+    Vatican City, Palestine, Kosovo, Taiwan, Greenland, Antarctica and
+    the territory Western Sahara (section 3).
   - Where the UN has no position on a line of control (for example
     Kashmir), we follow the authority that administers the area today.
   - In a few places the plugin data does not yet follow the UN position.
@@ -71,11 +71,27 @@ Greenland
   Greenland is an autonomous territory within the Kingdom of Denmark,
   not an independent country. It is listed on its own (as in the ISO
   country code list) because it is a major destination with its own
-  geography. Its status has been the subject of public debate, including
-  interest from the United States.
+  geography. Its status has been the subject of public debate.
 
 Vatican City
-  The Holy See is a UN observer state. It is not disputed.
+  Vatican City is not a UN member state, but it has observer status at
+  the UN (formally held by the Holy See, the Pope's government of the
+  Catholic Church). Its status is not disputed.
+
+Western Sahara
+  The UN lists Western Sahara as a non-self-governing territory whose
+  final status has not been decided. Morocco controls most of it; the
+  Polisario Front (Sahrawi Arab Democratic Republic) claims it. The
+  list shows Western Sahara under [AFRICA] > [TERRITORIES] with the
+  synonym {Sahara Occidental}, and deliberately WITHOUT a country
+  synonym. In the plugin it is ticked under Morocco ("Western Sahara -
+  Africa") only because that is where the data comes from; the keyword
+  itself is exported under [TERRITORIES], not under Morocco. Its towns
+  (Laâyoune, Dakhla, Smara, Boujdour and others) are added below it at
+  detail level 2 or higher. The Moroccan region Laâyoune-Sakia El Hamra
+  only contains Tarfaya Province, which lies north of Western Sahara.
+  If you imported Western Sahara regions under Morocco from an earlier
+  version of the plugin, move or delete them in Lightroom.
 
 Antarctica
   Under the Antarctic Treaty, territorial claims are frozen. The list
@@ -123,26 +139,11 @@ Asia
   Kuril Islands (Iturup, Kunashir, Shikotan, Habomai) - under Russia.
     Japan claims the four southern islands as its "Northern Territories".
   Dokdo / Takeshima - under South Korea, which administers the islets.
-    Japan claims them as Takeshima. (Moved from Japan to South Korea in
-    plugin v0.9.289.)
+    Japan claims them as Takeshima.
   Senkaku Islands - under Japan, which administers them. China and
     Taiwan claim them as Diaoyu / Diaoyutai.
 
 Africa
-  Western Sahara - listed on its own under [AFRICA] > [TERRITORIES]
-    with the synonym {Sahara Occidental}, and deliberately WITHOUT a
-    country synonym. The UN lists Western Sahara as a non-self-governing
-    territory whose final status has not been decided. Morocco controls
-    most of it; the Polisario Front (Sahrawi Arab Democratic Republic)
-    claims it. In the plugin, Western Sahara is ticked under Morocco
-    only because that is where the data comes from; the keyword itself
-    is exported under [TERRITORIES], not under Morocco. Its towns
-    (Laâyoune, Dakhla, Smara, Boujdour and others) are added below it
-    at detail level 2 or higher. The Moroccan region Laâyoune-Sakia El
-    Hamra now only contains Tarfaya Province, which lies north of
-    Western Sahara. (Changed in plugin v0.9.290: earlier versions put
-    the Western Sahara regions under Morocco. If you imported those,
-    move or delete them in Lightroom.)
   Somaliland - under Somalia. It has governed itself since 1991 but is
     not recognised by the UN or by most countries.
   Mayotte - French overseas department. Comoros claims it, and older UN
@@ -178,7 +179,7 @@ Americas
     (Spratly and Paracel Islands).
 
 The list uses the most common English name. Add the other name as a
-synonym if you need it (section 7).
+synonym if you prefer it (section 7).
 
 
 6. SYNONYMS IN NON-LATIN SCRIPTS
@@ -218,7 +219,8 @@ C) In the Geography Keyword Builder plugin
      (for example Crimea under Ukraine). Then create them yourself in
      Lightroom under the parent you prefer.
    - Territories can be ticked or unticked individually under Remote
-     Islands for the administering country.
+     Islands for the administering country. Western Sahara is found
+     under Morocco.
    - Note: keywords you move in Lightroom will be created again in the
      original place if you later re-import a list from the plugin. Move
      or delete them again after importing, or edit the .txt first (A).
@@ -229,5 +231,4 @@ C) In the Geography Keyword Builder plugin
 8. FEEDBACK
 -----------
 If you find a mistake, or think an entry should follow the UN more
-closely, contact Liodden Media (liodden.com) or open an issue on GitHub:
-https://github.com/Liodden73/LR-Keywords-Geography
+closely, contact Liodden Media at email: contact@liodden.com
