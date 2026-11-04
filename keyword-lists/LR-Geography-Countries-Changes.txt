@@ -1,6 +1,26 @@
 LR-Geography-Countries - Change log
 ===================================
 
+v1.7  (2026-11-04)
+------------------
+
+File: LR-Geography-Countries-LioddenMedia-v1-7.txt
+
+- New territories under [NORTH AMERICA] > [TERRITORIES]: Guadeloupe and
+  Martinique ({France} {Overseas department} {Caribbean}); Bonaire, Saba
+  and Sint Eustatius ({Netherlands} {Caribbean Netherlands} {Caribbean};
+  Sint Eustatius also {Statia}).
+- New territory under [SOUTH AMERICA] > [TERRITORIES]: French Guiana
+  ({Guyane} {France} {Overseas department} {North Atlantic Ocean}).
+- New territories under [AFRICA] > [TERRITORIES]: Mayotte and Réunion
+  ({France} {Overseas department} {Indian Ocean}; Réunion also
+  {La Réunion}).
+- Companion file unchanged: LR-Geography-Disputed-Areas-LioddenMedia-v1-4.txt.
+
+Contents: 199 countries, 60 territories, 251 synonyms, plus 131
+ocean/sea lines (646 lines in total). Not yet import-tested in
+Lightroom.
+
 v1.6  (2026-11-04)
 ------------------
 

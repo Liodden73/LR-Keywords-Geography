@@ -1,3 +1,14 @@
+## 0.9.295 — 2026-11-04
+
+### French overseas departments and Caribbean Netherlands as territories
+
+- **France**: Guadeloupe and Martinique (`{Caribbean}`), French Guiana (`{Guyane}`, `{North Atlantic Ocean}`, under South America), Mayotte and Réunion (`{La Réunion}`, `{Indian Ocean}`, under Africa) are now exported under `[WORLD] > [<continent>] > [TERRITORIES]` with `{France}` and `{Overseas department}`. Main towns, islands and parks are added below them at admin detail 2+.
+- **Netherlands**: Bonaire, Saba and Sint Eustatius (`{Statia}`) are now exported under `[WORLD] > [NORTH AMERICA] > [TERRITORIES]` with `{Netherlands}` `{Caribbean Netherlands}` `{Caribbean}`, with main places at admin detail 2+.
+- **France** (data 0.1.2): Guadeloupe National Park and Réunion National Park moved from France ▸ National Parks to their territories.
+- NOTE: if you imported these places earlier under France or Netherlands (Remote Islands), move them to the new [TERRITORIES] nodes in Lightroom.
+- Country-level keyword list v1.7 (`keyword-lists/`).
+- Not yet tested in Lightroom.
+
 ## 0.9.294 — 2026-11-04
 
 ### Remote territories, Argentine claims, West Bank settlements, blank-line fix

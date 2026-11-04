@@ -345,6 +345,13 @@ local COUNTRIES = {
                 ["Aruba"]        = { continent = "North America", synonyms = { "Netherlands", "Caribbean" } },
                 ["Curaçao"]      = { continent = "North America", synonyms = { "Netherlands", "Caribbean" } },
                 ["Sint Maarten"] = { continent = "North America", synonyms = { "Netherlands", "Caribbean" } },
+                -- Caribbean Netherlands (special municipalities)
+                ["Bonaire"]        = { continent = "North America", synonyms = { "Netherlands", "Caribbean Netherlands", "Caribbean" },
+                        places = { "Bonaire National Marine Park", "Klein Bonaire", "Kralendijk", "Washington Slagbaai National Park" } },
+                ["Saba"]           = { continent = "North America", synonyms = { "Netherlands", "Caribbean Netherlands", "Caribbean" },
+                        places = { "Mount Scenery", "The Bottom", "Windwardside" } },
+                ["Sint Eustatius"] = { continent = "North America", synonyms = { "Statia", "Netherlands", "Caribbean Netherlands", "Caribbean" },
+                        places = { "Oranjestad", "The Quill" } },
         } },
         addCountry { id = "China",        name = "China",         code = "CN-156", filename = "China.lua",        continent = "Asia",          admin_label = "Provinces & Areas",       mountain_max = 8849, remoteIslandNames = {} },
         addCountry { id = "Russia",      name = "Russia",       code = "RU-643", filename = "Russia.lua",      continent = "Europe",        admin_label = "Federal Subjects & Areas", mountain_max = 5642, remoteIslandNames = {} },
@@ -355,6 +362,13 @@ local COUNTRIES = {
                 -- North America (Caribbean)
                 ["Saint Barthélemy"]          = { continent = "North America", synonyms = { "France", "Caribbean" } },
                 ["Saint Martin"]              = { continent = "North America", synonyms = { "France", "Caribbean" } },
+                ["Guadeloupe"]                = { continent = "North America", synonyms = { "France", "Overseas department", "Caribbean" },
+                        places = { "Basse-Terre", "Grande-Terre", "Guadeloupe National Park", "La Désirade", "Les Saintes", "Marie-Galante", "Pointe-à-Pitre" } },
+                ["Martinique"]                = { continent = "North America", synonyms = { "France", "Overseas department", "Caribbean" },
+                        places = { "Fort-de-France", "Mount Pelée" } },
+                -- South America (Atlantic coast)
+                ["French Guiana"]             = { continent = "South America", synonyms = { "Guyane", "France", "Overseas department", "North Atlantic Ocean" },
+                        places = { "Cayenne", "Guiana Amazonian Park", "Îles du Salut", "Kourou", "Saint-Laurent-du-Maroni" } },
                 -- North America (North Atlantic)
                 ["Saint Pierre and Miquelon"] = { continent = "North America", synonyms = { "France", "North Atlantic Ocean" } },
                 -- North America (Pacific)
@@ -365,6 +379,10 @@ local COUNTRIES = {
                 ["Wallis and Futuna"]         = { continent = "Oceania", synonyms = { "France", "South Pacific Ocean" } },
                 -- Africa (Indian Ocean)
                 ["Scattered Islands"]         = { continent = "Africa", synonyms = { "Îles Éparses", "France", "Indian Ocean" } },
+                ["Mayotte"]                   = { continent = "Africa", synonyms = { "France", "Overseas department", "Indian Ocean" },
+                        places = { "Grande-Terre", "Mamoudzou", "Petite-Terre" } },
+                ["Réunion"]                   = { continent = "Africa", synonyms = { "La Réunion", "France", "Overseas department", "Indian Ocean" },
+                        places = { "Piton de la Fournaise", "Réunion National Park", "Saint-Denis", "Saint-Paul", "Saint-Pierre" } },
                 -- Africa (southern Indian Ocean): French Southern Territories; the
                 -- UN regional scheme (M49) places them in Africa.
                 ["Amsterdam Island"]          = { continent = "Africa", synonyms = { "France", "Subantarctic island", "Indian Ocean" } },

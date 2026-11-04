@@ -5,7 +5,7 @@
 return {
 
     meta = {
-        version     = "0.1.1",
+        version     = "0.1.2",
         country     = "France",
         native_name = "France",
         continent   = "Europe",
@@ -15,11 +15,9 @@ return {
             "Calanques National Park",
             "Cévennes National Park",
             "Forests National Park",
-            "Guadeloupe National Park",
             "Mercantour National Park",
             "Port-Cros National Park",
             "Pyrénées National Park",
-            "Réunion National Park",
             "Vanoise National Park",
             "Écrins National Park",
     },
