@@ -1,8 +1,8 @@
 LR-Geography - Disputed countries, areas and names
 ==================================================
-Version 1.2 - 2026-11-04 - Liodden Media
-Applies to: LR-Geography-Countries-LioddenMedia-v1-4.txt and
-            Geography Keyword Builder plugin v0.9.292
+Version 1.3 - 2026-11-04 - Liodden Media
+Applies to: LR-Geography-Countries-LioddenMedia-v1-5.txt and
+            Geography Keyword Builder plugin v0.9.293
 
 PLEASE READ BEFORE IMPORTING THE KEYWORD LIST.
 
@@ -32,6 +32,12 @@ We follow the United Nations as far as possible:
     country as a synonym, as on the UN list of non-self-governing
     territories. Exception: Western Sahara has no country synonym,
     because who should administer it is the dispute itself (section 3).
+    The same treatment is used for a few areas that are not on the UN
+    list but are not part of any UN member state's core territory
+    either: uninhabited islands (for example the US Minor Outlying
+    Islands and Australia's Coral Sea Islands) and the Cook Islands and
+    Niue, which are self-governing in free association with New Zealand
+    but are not UN members.
 
 Exceptions, and why:
 
@@ -41,8 +47,8 @@ Exceptions, and why:
     the territory Western Sahara (section 3).
   - Where the UN has no position on a line of control (for example
     Kashmir), we follow the authority that administers the area today.
-  - In a few places the plugin data does not yet follow the UN position.
-    These are marked "DIFFERS FROM UN" below and are being reviewed.
+  - Special administrative regions are listed as regions of their
+    country: Hong Kong {Hong Kong SAR} and Macau {Macao} under China.
 
 
 3. ENTRIES THAT ARE NOT UN MEMBER STATES
@@ -94,14 +100,16 @@ Western Sahara
   version of the plugin, move or delete them in Lightroom.
 
 Antarctica
-  Under the Antarctic Treaty, territorial claims are frozen. The
-  country-level list includes Antarctica as one entry and does NOT
-  include national claims. In the plugin, Norway's claims Dronning
-  Mauds Land and Peter 1. Island can be ticked under Norway; they are
-  exported under [ANTARCTICA] > [TERRITORIES] with {Norway} and
-  {Southern Ocean}, not under Norway. The other claims (British,
-  Argentine, Chilean, French, Australian and New Zealand sectors) will
-  be reviewed together with a coming Antarctica GPS extension.
+  Under the Antarctic Treaty, territorial claims are frozen. The list
+  includes Antarctica as one entry and does NOT include any national
+  claims (Norwegian, British, Argentine, Chilean, French, Australian or
+  New Zealand), neither in the country-level list nor in the plugin.
+  How claims should be shown, if at all, will be decided together with
+  a coming Antarctica GPS extension. Sub-Antarctic islands north of
+  60 degrees south (for example Bouvetøya, South Georgia and Heard
+  Island) are not covered by the treaty and are listed normally.
+  If you imported Dronning Mauds Land or Peter 1. Island from plugin
+  v0.9.292 or earlier, move or delete them in Lightroom.
 
 
 4. DISPUTED REGIONS INSIDE COUNTRIES
@@ -126,6 +134,11 @@ Europe
     2023, and most of the Armenian population left.
   Ceuta and Melilla - under Spain. Morocco claims them.
   Gibraltar - under the United Kingdom. Spain claims it.
+  Akrotiri and Dhekelia - under the United Kingdom (Remote Islands),
+    with {Cyprus} and {Mediterranean Sea}. These British Sovereign Base
+    Areas lie on the island of Cyprus. Cyprus has asked for them to be
+    returned, but they are not on the UN list of non-self-governing
+    territories.
 
 Asia
   Kashmir - divided. Jammu and Kashmir and Ladakh are under India; Azad
@@ -133,13 +146,23 @@ Asia
     Pakistan both claim the whole region, and China controls Aksai Chin.
     We follow the line of control.
   Arunachal Pradesh - under India. China claims it as "South Tibet".
-  Golan Heights - under Israel (Golan Sub-district, Northern District).
-    DIFFERS FROM UN: Israel annexed the area in 1981, and the UN Security
-    Council (resolution 497) declared this null and void. The UN regards
-    it as occupied Syrian territory.
-  East Jerusalem - under Israel (Jerusalem District).
-    DIFFERS FROM UN: the UN regards East Jerusalem as occupied
-    Palestinian territory (Security Council resolution 478).
+  Golan Heights - under Syria, as the region "Golan" with the synonym
+    {Golan Heights} (Katzrin, Majdal Shams, Mas'ade, Buq'ata). Israel
+    has controlled the area since 1967 and annexed it in 1981; the UN
+    Security Council (resolution 497) declared the annexation null and
+    void, and the UN regards it as occupied Syrian territory. Banias,
+    Gamla, Nimrod Fortress, Mount Avital, Bental Hill and Lake Ram are
+    also under Syria. Mount Hermon is under Syria and Lebanon.
+  East Jerusalem - under Palestine (West Bank > Jerusalem Governorate),
+    with the Old City and its four quarters, Mount Scopus, the Mount of
+    Olives, Pisgat Ze'ev and Ramot. The UN regards East Jerusalem as
+    occupied Palestinian territory (Security Council resolution 478).
+    Israel regards the whole city as its capital. "Jerusalem" under
+    Israel covers West Jerusalem, which is not disputed in the UN.
+    If you imported these areas under Israel from plugin v0.9.292 or
+    earlier, move or delete them in Lightroom.
+  Hong Kong and Macau - regions under China (special administrative
+    regions), with {Hong Kong SAR} and {Macao}.
   Kuril Islands (Iturup, Kunashir, Shikotan, Habomai) - under Russia.
     Japan claims the four southern islands as its "Northern Territories".
   Dokdo / Takeshima - under South Korea, which administers the islets.
@@ -233,6 +256,8 @@ C) In the Geography Keyword Builder plugin
      or delete them again after importing, or edit the .txt first (A).
    - Note: GPS lookup uses the country returned by the map service
      (OpenStreetMap), which can differ from the list for disputed areas.
+     For example, OpenStreetMap usually returns Israel for the Golan
+     Heights and East Jerusalem.
 
 
 8. FEEDBACK

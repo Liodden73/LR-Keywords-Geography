@@ -1,10 +1,10 @@
 -- Syria geography data for LR Geography Builder
 -- Admin divisions and cities: GeoNames.org (CC BY 4.0); national parks, reserves
 -- and viewpoints: curated lists. No commas in any name (Lightroom constraint).
--- Data version 0.1.1  generated 2026-10-09
+-- Data version 0.1.2  generated 2026-10-09
 return {
         meta = {
-                version      = "0.1.1",
+                version      = "0.1.2",
                 country      = "Syria",
                 native_name  = "Suriya",
                 continent    = "Asia",
@@ -14,6 +14,9 @@ return {
 
         national_parks = {
                 "Abu Qubeis Protected Area",
+                "Nimrod Fortress National Park",
+                "Gamla National Park",
+                "Banias National Park",
                 "Al-Fernlok Forest Reserve",
                 "Al-Lajat Protected Area",
                 "Al-Talila Nature Reserve",
@@ -130,10 +133,13 @@ return {
                 { name = "Sadr al Mudrib", elev = 2072, region = "Damascus Countryside" },
                 { name = "Harf al Mahmadan", elev = 2060, region = "Damascus Countryside" },
                 { name = "Qurnat Shumays Tamm al Mal", elev = 2056, region = "Damascus Countryside" },
+                { name = "Mount Avital", elev = 1204, region = "Golan" },
+                { name = "Bental Hill", elev = 1171, region = "Golan" },
         },
 
         lakes = {
                 "Lake Assad",
+                "Lake Ram",
                 "Lake Qattinah",
                 "Sabkhat al-Jabbul",
                 "Lake Mzeirib",
@@ -312,6 +318,10 @@ return {
                 { name = "Mount Qasioun" },
                 { name = "Kassab" },
                 { name = "Slenfeh" },
+                { name = "Banias viewpoint" },
+                { name = "Gamla viewpoint" },
+                { name = "Mount Hermon viewpoint" },
+                { name = "Nimrod Fortress viewpoint" },
         },
 
         counties = {
@@ -381,6 +391,13 @@ return {
                         { name = "Mayadin", cities = { "Al 'Asharah", "Al Busayrah", "Al Mayadin", "Dhiban", "Subaykhan" } },
                   },
                 },
+                -- Golan Heights: occupied by Israel since 1967 (annexation 1981 declared
+                -- null and void by UN Security Council resolution 497). Listed under Syria
+                -- in line with the UN position; see Disputed-Areas.txt.
+                { name = "Golan",
+                  synonyms = { "Golan Heights" },
+                  cities = { "Buq'ata", "Katzrin", "Majdal Shams", "Mas'ade" },
+                },
                 { name = "Hama",
                   municipalities = {
                         { name = "Al-Salamiyah", cities = { "Uqayribat" } },
@@ -420,7 +437,7 @@ return {
                 { name = "Quneitra",
                   municipalities = {
                         { name = "Fiq", cities = {  } },
-                        { name = "Quneitra", cities = { "Al Qunaytirah", "Buq'ata", "Jaba", "Khan Arnabah", "Majdal Shams", "Mas'adah" } },
+                        { name = "Quneitra", cities = { "Al Qunaytirah", "Jaba", "Khan Arnabah" } },
                   },
                 },
                 { name = "Tartus",

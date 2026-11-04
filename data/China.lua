@@ -5,7 +5,7 @@
 return {
 
     meta = {
-        version     = "0.1.1",
+        version     = "0.1.2",
         country     = "China",
         native_name = "中国",
         continent   = "Asia",
@@ -1262,6 +1262,25 @@ return {
             },
         },
         {
+            -- Special Administrative Region of China
+            name = "Hong Kong",
+            synonyms = { "Hong Kong SAR" },
+            municipalities = {
+                {
+                    name = "Hong Kong Island",
+                    cities = { "Central and Western District", "Eastern District", "Southern District", "Wan Chai District" },
+                },
+                {
+                    name = "Kowloon",
+                    cities = { "Kowloon City District", "Kwun Tong District", "Sham Shui Po District", "Wong Tai Sin District", "Yau Tsim Mong District" },
+                },
+                {
+                    name = "New Territories",
+                    cities = { "Islands District", "Kwai Tsing District", "North District", "Sai Kung District", "Sha Tin District", "Tai Po District", "Tsuen Wan District", "Tuen Mun District", "Yuen Long District" },
+                },
+            },
+        },
+        {
             name = "Hubei",
             municipalities = {
                 {
@@ -1745,6 +1764,12 @@ return {
                     cities = { "Yingkou" },
                 },
             },
+        },
+        {
+            -- Special Administrative Region of China
+            name = "Macau",
+            synonyms = { "Macao", "Macau SAR" },
+            cities = { "Coloane", "Cotai", "Macau Peninsula", "Taipa" },
         },
         {
             name = "Ningxia",

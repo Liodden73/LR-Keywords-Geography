@@ -1,3 +1,18 @@
+## 0.9.293 — 2026-11-04
+
+### UN principle: Antarctic claims removed, Golan and East Jerusalem, new territories
+
+- **Dronning Mauds Land** and **Peter 1. Island** removed from Norway ▸ Remote Islands (reverts the 0.9.292 change). No national Antarctic claims are included until all claims are handled together with the Antarctica GPS work. NOTE: if you imported them earlier, delete them in Lightroom.
+- **Golan Heights** moved from Israel to **Syria** as the region `Golan` with `{Golan Heights}` (Buq'ata, Katzrin, Majdal Shams, Mas'ade). Banias, Gamla and Nimrod Fortress (national parks and viewpoints), Mount Hermon viewpoint, Mount Avital, Bental Hill and Lake Ram moved to Syria; Mount Hermon removed from Israel (still under Syria and Lebanon). Israel's highest peak is now Mount Meron (1208 m). Data: Israel 0.5.4, Syria 0.1.2.
+- **East Jerusalem** moved from Israel to **Palestine** ▸ West Bank ▸ Jerusalem Governorate, with Armenian/Christian/Jewish/Muslim Quarter, Old City, Mount Scopus, Pisgat Ze'ev and Ramot as districts. Mount Scopus, Mount of Olives, Mount of Olives viewpoint and Tower of David moved to Palestine. "Jerusalem" (West Jerusalem) stays under Israel. Data: Palestine 0.1.2.
+- **Hong Kong** `{Hong Kong SAR}` and **Macau** `{Macao}` `{Macau SAR}` added as regions under China (data 0.1.2). Hong Kong has its 18 districts under Hong Kong Island, Kowloon and New Territories.
+- **Region synonyms**: the Generator now writes optional `synonyms` for regions (used by Golan, Hong Kong and Macau).
+- **Australia**: Ashmore and Cartier Islands (`{Timor Sea}`) and Coral Sea Islands (`{Coral Sea}`) added, exported under `[WORLD] > [OCEANIA] > [TERRITORIES]` with `{Australia}`.
+- **New Zealand**: Cook Islands, Niue and Tokelau added, exported under `[WORLD] > [OCEANIA] > [TERRITORIES]` with `{New Zealand}` and `{South Pacific Ocean}`. Main islands/villages are added below them at admin detail 2+.
+- **United Kingdom**: Akrotiri and Dhekelia added under Remote Islands with `{Cyprus}` and `{Mediterranean Sea}`.
+- Disputed-Areas.txt v1.3 (all "DIFFERS FROM UN" notes removed) and country-level keyword list v1.5 (`keyword-lists/`).
+- Not yet tested in Lightroom.
+
 ## 0.9.292 — 2026-11-04
 
 ### New territories, Antarctic claims, country names

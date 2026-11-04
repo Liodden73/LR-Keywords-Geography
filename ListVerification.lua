@@ -173,13 +173,9 @@ local function lazyGHSync()
 end
 
 local COUNTRIES = {
-        addCountry { id = "Norway",       name = "Norway",        code = "NO-578", filename = "Norway.lua",       continent = "Europe",        admin_label = "Counties & Areas",  mountain_max = 2469, remoteIslandNames = { "Bouvetøya", "Dronning Mauds Land", "Jan Mayen", "Peter 1. Island", "Svalbard" },
-        -- Antarctic claims: exported under [WORLD] > [ANTARCTICA] > [TERRITORIES]
-        -- (not under Norway), in line with the Antarctic Treaty principle.
-        territories = {
-                ["Dronning Mauds Land"] = { continent = "Antarctica", synonyms = { "Norway", "Southern Ocean" } },
-                ["Peter 1. Island"]     = { continent = "Antarctica", synonyms = { "Norway", "Southern Ocean" } },
-        } },
+        addCountry { id = "Norway",       name = "Norway",        code = "NO-578", filename = "Norway.lua",       continent = "Europe",        admin_label = "Counties & Areas",  mountain_max = 2469, remoteIslandNames = { "Bouvetøya", "Jan Mayen", "Svalbard" } },
+        -- Antarctic claims (Dronning Mauds Land, Peter 1. Island) are left out until
+        -- all national claims are handled together with the Antarctica GPS work.
         addCountry { id = "Sweden",       name = "Sweden",        code = "SE-752", filename = "Sweden.lua",       continent = "Europe",        admin_label = "Counties & Areas",  mountain_max = 2097, remoteIslandNames = {} },
         addCountry { id = "Panama",       name = "Panama",        code = "PA-591", filename = "Panama.lua",       continent = "North America", admin_label = "Provinces & Areas", mountain_max = 3474, remoteIslandNames = {} },
         addCountry { id = "UnitedStates", name = "United States", code = "US-840", filename = "UnitedStates.lua", continent = "North America", admin_label = "States & Areas",    mountain_max = 6194, remoteIslandNames = { "American Samoa", "Baker Island", "Guam", "Howland Island", "Jarvis Island", "Johnston Atoll", "Kingman Reef", "Midway Atoll", "Navassa Island", "Northern Mariana Islands", "Palmyra Atoll", "Puerto Rico", "US Virgin Islands", "Wake Island" },
@@ -223,7 +219,18 @@ local COUNTRIES = {
         addCountry { id = "Guyana",       name = "Guyana",        code = "GY-328", filename = "Guyana.lua",       continent = "South America", admin_label = "Regions & Areas",     mountain_max = 2775, remoteIslandNames = {} },
         addCountry { id = "Surinam",      name = "Suriname",      code = "SR-740", filename = "Surinam.lua",      continent = "South America", admin_label = "Districts & Areas",   mountain_max = 1280, remoteIslandNames = {} },
         addCountry { id = "Kenya",        name = "Kenya",         code = "KE-404", filename = "Kenya.lua",        continent = "Africa",        admin_label = "Counties & Areas",  mountain_max = 5199, remoteIslandNames = {} },
-        addCountry { id = "NewZealand",   name = "New Zealand",   code = "NZ-554", filename = "NewZealand.lua",   continent = "Oceania",       admin_label = "Regions & Areas",   mountain_max = 3724, remoteIslandNames = { "Auckland Islands", "Bounty Islands", "Campbell Island", "Chatham Islands", "Great Barrier Island", "Kermadec Islands", "Poor Knights Islands", "The Antipodes Islands", "The Snares" } },
+        addCountry { id = "NewZealand",   name = "New Zealand",   code = "NZ-554", filename = "NewZealand.lua",   continent = "Oceania",       admin_label = "Regions & Areas",   mountain_max = 3724, remoteIslandNames = { "Auckland Islands", "Bounty Islands", "Campbell Island", "Chatham Islands", "Cook Islands", "Great Barrier Island", "Kermadec Islands", "Niue", "Poor Knights Islands", "The Antipodes Islands", "The Snares", "Tokelau" },
+        -- Realm of New Zealand: Cook Islands and Niue (free association, not UN
+        -- members) and Tokelau (UN non-self-governing territory) are exported under
+        -- [WORLD] > [OCEANIA] > [TERRITORIES] with synonyms.
+        territories = {
+                ["Cook Islands"] = { continent = "Oceania", synonyms = { "New Zealand", "South Pacific Ocean" },
+                        places = { "Aitutaki", "Atiu", "Mangaia", "Manihiki", "Mauke", "Mitiaro", "Penrhyn", "Pukapuka", "Rarotonga", "Suwarrow" } },
+                ["Niue"]         = { continent = "Oceania", synonyms = { "New Zealand", "South Pacific Ocean" },
+                        places = { "Alofi" } },
+                ["Tokelau"]      = { continent = "Oceania", synonyms = { "New Zealand", "South Pacific Ocean" },
+                        places = { "Atafu", "Fakaofo", "Nukunonu" } },
+        } },
         addCountry { id = "Greenland",    name = "Greenland",     code = "GL-304", filename = "Greenland.lua",    continent = "North America", admin_label = "Municipalities & Areas", mountain_max = 3694, remoteIslandNames = {} },
         addCountry { id = "Canada",       name = "Canada",        code = "CA-124", filename = "Canada.lua",       continent = "North America", admin_label = "Provinces & Areas", mountain_max = 5959, remoteIslandNames = {} },
         addCountry { id = "Mexico",       name = "Mexico",        code = "MX-484", filename = "Mexico.lua",       continent = "North America", admin_label = "States & Areas",    mountain_max = 5636, remoteIslandNames = {} },
@@ -231,6 +238,7 @@ local COUNTRIES = {
         addCountry { id = "CostaRica",    name = "Costa Rica",    code = "CR-188", filename = "CostaRica.lua",    continent = "North America", admin_label = "Provinces & Areas", mountain_max = 3820, remoteIslandNames = {} },
         addCountry { id = "Finland",      name = "Finland",       code = "FI-246", filename = "Finland.lua",      continent = "Europe",        admin_label = "Regions & Areas",        mountain_max = 1328, remoteIslandNames = { "Åland Islands" } },
         addCountry { id = "UnitedKingdom",name = "United Kingdom",code = "GB-826", filename = "UnitedKingdom.lua",continent = "Europe",        admin_label = "Countries & Areas",      mountain_max = 1345, remoteIslandNames = {
+                "Akrotiri and Dhekelia",
                 "Anguilla",
                 "Ascension Island",
                 "Bermuda",
@@ -276,6 +284,7 @@ local COUNTRIES = {
         -- Remote islands that stay under the country node (same continent),
         -- with optional synonyms and sub-places (sub-places need admin detail >= 2).
         remoteIslandDetails = {
+                ["Akrotiri and Dhekelia"] = { synonyms = { "Cyprus", "Mediterranean Sea" } },
                 ["Gibraltar"]   = { synonyms = { "Mediterranean Sea" } },
                 ["Guernsey"]    = { synonyms = { "Channel Islands", "English Channel" }, places = { "Alderney", "Herm", "Sark" } },
                 ["Isle of Man"] = { synonyms = { "Irish Sea" } },
@@ -304,7 +313,13 @@ local COUNTRIES = {
         addCountry { id = "Ethiopia",    name = "Ethiopia",     code = "ET-231", filename = "Ethiopia.lua",    continent = "Africa",        admin_label = "Regions & Areas",    mountain_max = 4550, remoteIslandNames = {} },
         addCountry { id = "Uganda",      name = "Uganda",       code = "UG-800", filename = "Uganda.lua",      continent = "Africa",        admin_label = "Regions & Areas",    mountain_max = 5109, remoteIslandNames = {} },
         addCountry { id = "Namibia",     name = "Namibia",      code = "NA-516", filename = "Namibia.lua",     continent = "Africa",        admin_label = "Regions & Areas",    mountain_max = 2606, remoteIslandNames = {} },
-        addCountry { id = "Australia",   name = "Australia",    code = "AU-036", filename = "Australia.lua",   continent = "Oceania",       admin_label = "States & Areas",     mountain_max = 2228, remoteIslandNames = { "Christmas Island", "Cocos Islands", "Heard Island", "Lord Howe Island", "Macquarie Island", "Norfolk Island" } },
+        addCountry { id = "Australia",   name = "Australia",    code = "AU-036", filename = "Australia.lua",   continent = "Oceania",       admin_label = "States & Areas",     mountain_max = 2228, remoteIslandNames = { "Ashmore and Cartier Islands", "Christmas Island", "Cocos Islands", "Coral Sea Islands", "Heard Island", "Lord Howe Island", "Macquarie Island", "Norfolk Island" },
+        -- Territories: uninhabited external territories, exported under
+        -- [WORLD] > [OCEANIA] > [TERRITORIES] with synonyms.
+        territories = {
+                ["Ashmore and Cartier Islands"] = { continent = "Oceania", synonyms = { "Australia", "Timor Sea" } },
+                ["Coral Sea Islands"]           = { continent = "Oceania", synonyms = { "Australia", "Coral Sea" } },
+        } },
         addCountry { id = "Hungary",     name = "Hungary",      code = "HU-348", filename = "Hungary.lua",     continent = "Europe",        admin_label = "Counties & Areas",   mountain_max = 1014, remoteIslandNames = {} },
         addCountry { id = "Netherlands", name = "Netherlands",  code = "NL-528", filename = "Netherlands.lua", continent = "Europe",        admin_label = "Provinces & Areas",  mountain_max = 323,  remoteIslandNames = { "Aruba", "Bonaire", "Curaçao", "Saba", "Sint Eustatius", "Sint Maarten" },
         -- Territories: listed under the sovereign country in the UI, but exported
@@ -367,7 +382,7 @@ local COUNTRIES = {
         addCountry { id = "Turkey",      name = "Turkey",       code = "TR-792", filename = "Turkey.lua",      continent = "Europe",        admin_label = "Provinces & Areas",     mountain_max = 5137, remoteIslandNames = {} },
         addCountry { id = "Luxembourg",  name = "Luxembourg",   code = "LU-442", filename = "Luxembourg.lua",  continent = "Europe",        admin_label = "Cantons & Areas",       mountain_max = 560,  remoteIslandNames = {} },
         addCountry { id = "Malta",       name = "Malta",        code = "MT-470", filename = "Malta.lua",       continent = "Europe",        admin_label = "Local Councils & Areas", mountain_max = 253, remoteIslandNames = {} },
-        addCountry { id = "Israel",      name = "Israel",       code = "IL-376", filename = "Israel.lua",      continent = "Asia",          admin_label = "Districts & Areas",     mountain_max = 2814, remoteIslandNames = {} },
+        addCountry { id = "Israel",      name = "Israel",       code = "IL-376", filename = "Israel.lua",      continent = "Asia",          admin_label = "Districts & Areas",     mountain_max = 1208, remoteIslandNames = {} },
         addCountry { id = "Cyprus",      name = "Cyprus",       code = "CY-196", filename = "Cyprus.lua",      continent = "Europe",        admin_label = "Districts & Areas",     mountain_max = 1952, remoteIslandNames = {} },
         addCountry { id = "Andorra",     name = "Andorra",      code = "AD-020", filename = "Andorra.lua",     continent = "Europe",        admin_label = "Parishes & Areas",      mountain_max = 2942, remoteIslandNames = {} },
         addCountry { id = "Monaco",      name = "Monaco",       code = "MC-492", filename = "Monaco.lua",      continent = "Europe",        admin_label = "Wards & Areas",         mountain_max = 161,  remoteIslandNames = {} },

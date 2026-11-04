@@ -368,6 +368,12 @@ function Generator.generate(data, prefs)
                         for _, county in ipairs(data.counties) do
                                 if prefsCounties[county.name] then
                                         add(4, county.name)
+                                        -- Optional region synonyms, e.g. Hong Kong {Hong Kong SAR}
+                                        for _, syn in ipairs(county.synonyms or {}) do
+                                                for _, alt in ipairs(splitAlternatives(sanitize(syn))) do
+                                                        addSynonym(5, "{" .. alt .. "}")
+                                                end
+                                        end
 
                                         -- Flat structure: cities directly under the county
                                         -- (no municipality level, e.g. Uruguay, Moldova, Slovenia,

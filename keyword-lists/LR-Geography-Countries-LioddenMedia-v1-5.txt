@@ -1,0 +1,576 @@
+[GEOGRAPHY]
+	[WORLD]
+		[AFRICA]
+			Algeria
+				{Al Jaza'ir}
+			Angola
+			Benin
+			Botswana
+			Burkina Faso
+			Burundi
+				{Uburundi}
+			Cameroon
+				{Cameroun}
+			Cape Verde
+				{Cabo Verde}
+			Central African Republic
+				{Republique centrafricaine}
+			Chad
+				{Tchad}
+			Comoros
+				{Komori}
+			Djibouti
+				{Jabuuti}
+			DR Congo
+				{Republique Democratique du Congo}
+			Egypt
+			Equatorial Guinea
+				{Guinea Ecuatorial}
+			Eritrea
+				{Ertra}
+			Eswatini
+				{eSwatini}
+			Ethiopia
+			Gabon
+			Gambia
+				{The Gambia}
+			Ghana
+			Guinea
+				{Guinee}
+			Guinea-Bissau
+				{Guine-Bissau}
+			Ivory Coast
+				{Côte d'Ivoire}
+			Kenya
+			Lesotho
+			Liberia
+			Libya
+				{Libiya}
+			Madagascar
+				{Madagasikara}
+			Malawi
+			Mali
+			Mauritania
+				{Muritaniya}
+			Mauritius
+				{Moris}
+			Morocco
+			Mozambique
+			Namibia
+			Niger
+			Nigeria
+			Republic of the Congo
+				{Republique du Congo}
+			Rwanda
+			Sao Tome and Principe
+				{Sao Tome e Principe}
+			Senegal
+				{Sénégal}
+			Seychelles
+				{Sesel}
+			Sierra Leone
+			Somalia
+				{Soomaaliya}
+			South Africa
+			South Sudan
+			Sudan
+				{As-Sudan}
+			Tanzania
+			Togo
+			Tunisia
+			Uganda
+			Zambia
+			Zimbabwe
+			[TERRITORIES]
+				Ascension Island
+					{United Kingdom}
+					{South Atlantic Ocean}
+				British Indian Ocean Territory
+					{United Kingdom}
+					{Indian Ocean}
+				Saint Helena
+					{United Kingdom}
+					{South Atlantic Ocean}
+				Scattered Islands
+					{Îles Éparses}
+					{France}
+					{Indian Ocean}
+				Tristan da Cunha
+					{United Kingdom}
+					{South Atlantic Ocean}
+				Western Sahara
+					{Sahara Occidental}
+		[ANTARCTICA]
+			Antarctica
+		[ASIA]
+			Afghanistan
+			Armenia
+				{Hayastan}
+			Azerbaijan
+				{Azerbaycan}
+			Bahrain
+				{Al Bahrayn}
+			Bangladesh
+			Bhutan
+				{Druk Yul}
+			Brunei
+				{Negara Brunei Darussalam}
+			Cambodia
+			China
+			Georgia
+				{Sakartvelo}
+			India
+				{Bhārat}
+			Indonesia
+			Iran
+			Iraq
+				{Al-Iraq}
+			Israel
+			Japan
+			Jordan
+			Kazakhstan
+				{Qazaqstan}
+			Kuwait
+				{Dawlat al Kuwayt}
+			Kyrgyzstan
+			Laos
+				{Lao}
+			Lebanon
+				{Lubnan}
+			Malaysia
+			Maldives
+			Mongolia
+				{Mongol Uls}
+			Myanmar
+				{Myanma}
+			Nepal
+			North Korea
+				{Choson}
+			Oman
+				{Uman}
+			Pakistan
+			Palestine
+				{Filastin}
+			Philippines
+				{Pilipinas}
+			Qatar
+				{Dawlat Qatar}
+			Saudi Arabia
+				{Al Mamlakah al Arabiyah as Suudiyah}
+			Singapore
+				{Singapura}
+			South Korea
+			Sri Lanka
+			Syria
+				{Suriya}
+			Taiwan
+			Tajikistan
+				{Tojikiston}
+			Thailand
+			Timor-Leste
+				{Timor Lorosa'e}
+			Turkmenistan
+			United Arab Emirates
+			Uzbekistan
+				{O'zbekiston}
+			Vietnam
+				{Việt Nam}
+			Yemen
+				{Al-Yaman}
+		[EUROPE]
+			Albania
+				{Shqipëria}
+			Andorra
+			Austria
+				{Österreich}
+			Belarus
+			Belgium
+				{België}
+				{Belgique}
+			Bosnia and Herzegovina
+				{Bosna i Hercegovina}
+			Bulgaria
+			Croatia
+				{Hrvatska}
+			Cyprus
+			Czech Republic
+				{Česko}
+			Denmark
+				{Danmark}
+			Estonia
+				{Eesti}
+			Finland
+				{Suomi}
+			France
+			Germany
+				{Deutschland}
+			Greece
+			Hungary
+				{Magyarország}
+			Iceland
+				{Ísland}
+			Ireland
+				{Éire}
+			Italy
+				{Italia}
+			Kosovo
+				{Kosova}
+			Latvia
+				{Latvija}
+			Liechtenstein
+			Lithuania
+				{Lietuva}
+			Luxembourg
+				{Lëtzebuerg}
+			Malta
+			Moldova
+			Monaco
+			Montenegro
+				{Crna Gora}
+			Netherlands
+				{Nederland}
+			North Macedonia
+			Norway
+				{Norge}
+			Poland
+				{Polska}
+			Portugal
+			Romania
+				{România}
+			Russia
+			San Marino
+			Serbia
+			Slovakia
+				{Slovensko}
+			Slovenia
+				{Slovenija}
+			Spain
+				{España}
+			Sweden
+				{Sverige}
+			Switzerland
+				{Schweiz}
+				{Suisse}
+				{Svizzera}
+			Turkey
+				{Türkiye}
+			Ukraine
+			United Kingdom
+			Vatican City
+				{Città del Vaticano}
+		[NORTH AMERICA]
+			Antigua and Barbuda
+			Bahamas
+			Barbados
+			Belize
+			Canada
+			Costa Rica
+			Cuba
+			Dominica
+				{Dominique}
+			Dominican Republic
+				{República Dominicana}
+			El Salvador
+			Greenland
+				{Kalaallit Nunaat}
+			Grenada
+			Guatemala
+			Haiti
+				{Haïti}
+			Honduras
+			Jamaica
+			Mexico
+				{México}
+			Nicaragua
+			Panama
+				{Panamá}
+			Saint Kitts and Nevis
+			Saint Lucia
+				{Sainte-Lucie}
+			Saint Vincent and the Grenadines
+			Trinidad and Tobago
+			United States
+			[TERRITORIES]
+				Anguilla
+					{United Kingdom}
+					{Caribbean}
+				Aruba
+					{Netherlands}
+					{Caribbean}
+				Bermuda
+					{United Kingdom}
+					{North Atlantic Ocean}
+				British Virgin Islands
+					{United Kingdom}
+					{Caribbean}
+				Cayman Islands
+					{United Kingdom}
+					{Caribbean}
+				Clipperton Island
+					{France}
+					{Pacific Ocean}
+				Curaçao
+					{Netherlands}
+					{Caribbean}
+				Montserrat
+					{United Kingdom}
+					{Caribbean}
+				Navassa Island
+					{United States}
+					{Caribbean}
+				Saint Barthélemy
+					{France}
+					{Caribbean}
+				Saint Martin
+					{France}
+					{Caribbean}
+				Saint Pierre and Miquelon
+					{France}
+					{North Atlantic Ocean}
+				Sint Maarten
+					{Netherlands}
+					{Caribbean}
+				Turks and Caicos Islands
+					{United Kingdom}
+					{Caribbean}
+		[OCEANIA]
+			Australia
+			Fiji
+				{Viti}
+			Kiribati
+			Marshall Islands
+				{Aorokin Majel}
+			Micronesia
+			Nauru
+				{Naoero}
+			New Zealand
+				{Aotearoa}
+			Palau
+				{Belau}
+			Papua New Guinea
+				{Papua Niugini}
+			Samoa
+			Solomon Islands
+			Tonga
+			Tuvalu
+			Vanuatu
+			[TERRITORIES]
+				American Samoa
+					{United States}
+					{South Pacific Ocean}
+				Ashmore and Cartier Islands
+					{Australia}
+					{Timor Sea}
+				Baker Island
+					{United States}
+					{North Pacific Ocean}
+				Cook Islands
+					{New Zealand}
+					{South Pacific Ocean}
+				Coral Sea Islands
+					{Australia}
+					{Coral Sea}
+				French Polynesia
+					{France}
+					{South Pacific Ocean}
+				Guam
+					{United States}
+					{Pacific Ocean}
+				Howland Island
+					{United States}
+					{North Pacific Ocean}
+				Jarvis Island
+					{United States}
+					{South Pacific Ocean}
+				Johnston Atoll
+					{United States}
+					{North Pacific Ocean}
+				Kingman Reef
+					{United States}
+					{North Pacific Ocean}
+				Midway Atoll
+					{United States}
+					{North Pacific Ocean}
+				New Caledonia
+					{France}
+					{South Pacific Ocean}
+				Niue
+					{New Zealand}
+					{South Pacific Ocean}
+				Northern Mariana Islands
+					{United States}
+					{Pacific Ocean}
+				Palmyra Atoll
+					{United States}
+					{North Pacific Ocean}
+				Pitcairn Islands
+					{United Kingdom}
+					{South Pacific Ocean}
+				Tokelau
+					{New Zealand}
+					{South Pacific Ocean}
+				Wake Island
+					{United States}
+					{North Pacific Ocean}
+				Wallis and Futuna
+					{France}
+					{South Pacific Ocean}
+		[SOUTH AMERICA]
+			Argentina
+			Bolivia
+			Brazil
+				{Brasil}
+			Chile
+			Colombia
+			Ecuador
+			Guyana
+			Paraguay
+			Peru
+				{Perú}
+			Suriname
+				{Surinam}
+			Uruguay
+			Venezuela
+			[TERRITORIES]
+				Falkland Islands
+					{United Kingdom}
+					{South Atlantic Ocean}
+				South Georgia
+					{United Kingdom}
+					{Subantarctic island}
+					{South Atlantic Ocean}
+				South Sandwich Islands
+					{United Kingdom}
+					{Subantarctic island}
+					{South Atlantic Ocean}
+		[OCEANS AND SEAS]
+			{Ocean}
+			{Sea}
+			Arctic Ocean
+				Baffin Bay
+				Barents Sea
+				Beaufort Sea
+				Chukchi Sea
+				Davis Strait
+				East Siberian Sea
+				Greenland Sea
+					Fram Strait
+						{Framstredet}
+				Hudson Bay
+				Hudson Strait
+				Kara Sea
+				Laptev Sea
+				Lincoln Sea
+				Norwegian Sea
+					{Norskehavet}
+				Wandel Sea
+				White Sea
+			Atlantic Ocean
+				North Atlantic Ocean
+					Baltic Sea
+						Gulf of Bothnia
+						Gulf of Finland
+						Gulf of Riga
+					Bay of Biscay
+					Bay of Fundy
+					Caribbean Sea
+					Celtic Sea
+					Denmark Strait
+					English Channel
+						{La Manche}
+					Gulf of Guinea
+					Gulf of Maine
+					Gulf of Mexico
+					Gulf of Saint Lawrence
+					Irish Sea
+					Kattegat
+					Labrador Sea
+					Mediterranean Sea
+						Adriatic Sea
+						Aegean Sea
+						Alboran Sea
+						Balearic Sea
+						Black Sea
+							Sea of Azov
+						Ionian Sea
+						Levantine Sea
+						Ligurian Sea
+						Sea of Marmara
+						Strait of Gibraltar
+						Tyrrhenian Sea
+					North Sea
+						Wadden Sea
+					Sargasso Sea
+					Sea of the Hebrides
+					Skagerrak
+				South Atlantic Ocean
+					Argentine Sea
+						{Mar Argentino}
+					Río de la Plata
+					Scotia Sea
+			Indian Ocean
+				Andaman Sea
+				Arabian Sea
+				Bay of Bengal
+				Gulf of Aden
+				Gulf of Oman
+				Laccadive Sea
+				Mozambique Channel
+				Persian Gulf
+					Strait of Hormuz
+				Red Sea
+					Gulf of Aqaba
+					Gulf of Suez
+				Strait of Malacca
+				Timor Sea
+			Pacific Ocean
+				North Pacific Ocean
+					Bering Sea
+					Celebes Sea
+					East China Sea
+					Gulf of Alaska
+					Gulf of California
+						{Sea of Cortez}
+					Gulf of Panama
+					Philippine Sea
+					Salish Sea
+					Sea of Japan
+					Sea of Okhotsk
+					Seto Inland Sea
+					South China Sea
+						Gulf of Thailand
+						Gulf of Tonkin
+					Sulu Sea
+					Yellow Sea
+						Bohai Sea
+				South Pacific Ocean
+					Arafura Sea
+					Banda Sea
+					Bass Strait
+					Bismarck Sea
+					Ceram Sea
+					Coral Sea
+					Flores Sea
+					Gulf of Carpentaria
+					Java Sea
+					Savu Sea
+					Solomon Sea
+					Tasman Sea
+					Torres Strait
+			Southern Ocean
+				{Antarctic Ocean}
+				Amundsen Sea
+				Bellingshausen Sea
+				Cooperation Sea
+				Cosmonauts Sea
+				D'Urville Sea
+				Davis Sea
+				Drake Passage
+				Great Australian Bight
+				King Haakon VII Sea
+				Lazarev Sea
+				Mawson Sea
+				Riiser-Larsen Sea
+				Ross Sea
+				Somov Sea
+				Weddell Sea

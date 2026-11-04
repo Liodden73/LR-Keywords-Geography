@@ -1,6 +1,27 @@
 LR-Geography-Countries - Change log
 ===================================
 
+v1.5  (2026-11-04)
+------------------
+
+File: LR-Geography-Countries-LioddenMedia-v1-5.txt
+
+- Dronning Mauds Land and Peter 1. Island removed from
+  [ANTARCTICA] > [TERRITORIES] (reverts v1.4). No national Antarctic
+  claims are included.
+- New territories under [OCEANIA] > [TERRITORIES]:
+  Ashmore and Cartier Islands ({Australia} {Timor Sea}),
+  Coral Sea Islands ({Australia} {Coral Sea}), and Cook Islands, Niue
+  and Tokelau ({New Zealand} {South Pacific Ocean}).
+- Companion file updated to LR-Geography-Disputed-Areas-LioddenMedia-v1-3.txt.
+- Not on the country level (plugin only): Golan under Syria, East
+  Jerusalem under Palestine, Hong Kong and Macau under China, Akrotiri
+  and Dhekelia under the United Kingdom.
+
+Contents: 199 countries, 43 territories, 198 synonyms, plus 131
+ocean/sea lines (576 lines in total). Not yet import-tested in
+Lightroom.
+
 v1.4  (2026-11-04)
 ------------------
 
