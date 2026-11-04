@@ -1,8 +1,8 @@
 LR-Geography - Disputed countries, areas and names
 ==================================================
-Version 1.1 - 2026-11-04 - Liodden Media
-Applies to: LR-Geography-Countries-LioddenMedia-v1-3.txt and
-            Geography Keyword Builder plugin v0.9.290
+Version 1.2 - 2026-11-04 - Liodden Media
+Applies to: LR-Geography-Countries-LioddenMedia-v1-4.txt and
+            Geography Keyword Builder plugin v0.9.292
 
 PLEASE READ BEFORE IMPORTING THE KEYWORD LIST.
 
@@ -94,10 +94,14 @@ Western Sahara
   version of the plugin, move or delete them in Lightroom.
 
 Antarctica
-  Under the Antarctic Treaty, territorial claims are frozen. The list
-  includes Antarctica as one entry and does NOT include national claims
-  (Norwegian, British, Argentine, Chilean, French, Australian or
-  New Zealand sectors).
+  Under the Antarctic Treaty, territorial claims are frozen. The
+  country-level list includes Antarctica as one entry and does NOT
+  include national claims. In the plugin, Norway's claims Dronning
+  Mauds Land and Peter 1. Island can be ticked under Norway; they are
+  exported under [ANTARCTICA] > [TERRITORIES] with {Norway} and
+  {Southern Ocean}, not under Norway. The other claims (British,
+  Argentine, Chilean, French, Australian and New Zealand sectors) will
+  be reviewed together with a coming Antarctica GPS extension.
 
 
 4. DISPUTED REGIONS INSIDE COUNTRIES
@@ -164,13 +168,16 @@ Americas
     territory administered by the UK. The list follows the actual
     administration and does not use the name Malvinas as a synonym.
   Essequibo - under Guyana. Venezuela claims the region.
+  Navassa Island - under [NORTH AMERICA] > [TERRITORIES] with
+    {United States} and {Caribbean}. The United States administers the
+    uninhabited island as a wildlife refuge; Haiti claims it.
 
 
 5. DISPUTED NAMES
 -----------------
   North Macedonia - name agreed with Greece in 2018 (Prespa agreement).
   Turkey {Türkiye} - the UN has used "Türkiye" since 2022.
-  Ivory Coast - the official name is Côte d'Ivoire.
+  Ivory Coast {Côte d'Ivoire} - the official name is Côte d'Ivoire.
   Myanmar - also known as Burma.
   Eswatini - formerly Swaziland.
   Persian Gulf - Arab states use "Arabian Gulf".

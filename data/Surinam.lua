@@ -1,13 +1,13 @@
 -- ==========================================================
--- Surinam Geography Data
+-- Suriname Geography Data
 -- Auto-generated from GeoNames.org
 -- ==========================================================
 
 return {
   meta = {
-    version = "0.1.1",
-    country = "Surinam",
-    native_name = "Suriname",
+    version = "0.1.2",
+    country = "Suriname",
+    native_name = "Surinam",
     continent = "South America",
     min_city_pop = 1000,
   },

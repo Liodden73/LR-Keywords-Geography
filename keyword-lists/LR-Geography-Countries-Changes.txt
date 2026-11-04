@@ -1,6 +1,27 @@
 LR-Geography-Countries - Change log
 ===================================
 
+v1.4  (2026-11-04)
+------------------
+
+File: LR-Geography-Countries-LioddenMedia-v1-4.txt
+
+- New US territories under [OCEANIA] > [TERRITORIES] with
+  {United States}: Baker Island, Howland Island, Johnston Atoll, Kingman
+  Reef, Midway Atoll, Palmyra Atoll and Wake Island ({North Pacific
+  Ocean}), and Jarvis Island ({South Pacific Ocean}).
+- Navassa Island under [NORTH AMERICA] > [TERRITORIES] with
+  {United States} and {Caribbean}.
+- Dronning Mauds Land and Peter 1. Island under
+  [ANTARCTICA] > [TERRITORIES] with {Norway} and {Southern Ocean}.
+- Surinam renamed to Suriname, with {Surinam} as a synonym.
+- Ivory Coast synonym corrected to {Côte d'Ivoire} (with accent).
+- Companion file updated to LR-Geography-Disputed-Areas-LioddenMedia-v1-2.txt.
+
+Contents: 199 countries, 40 territories, 192 synonyms, plus 131
+ocean/sea lines (568 lines in total). Not yet import-tested in
+Lightroom.
+
 v1.3  (2026-11-04)
 ------------------
 

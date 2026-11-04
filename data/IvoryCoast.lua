@@ -1,12 +1,12 @@
 -- Ivory Coast geography data for LR Geography Builder
 -- Admin divisions and cities: GeoNames.org (CC BY 4.0); national parks, reserves
 -- and viewpoints: curated lists. No commas in any name (Lightroom constraint).
--- Data version 0.1.1  generated 2026-10-09
+-- Data version 0.1.2  (Côte d'Ivoire synonym 2026-11-04)
 return {
         meta = {
-                version      = "0.1.1",
+                version      = "0.1.2",
                 country      = "Ivory Coast",
-                native_name  = "Cote d'Ivoire",
+                native_name  = "Côte d'Ivoire",
                 continent    = "Africa",
                 generated    = "2026-10-09",
                 min_city_pop = 15000,

@@ -5,7 +5,7 @@
 
 return {
   meta = {
-    version = "0.1.1",
+    version = "0.1.2",
     country = "Haiti",
     native_name = "Haïti",
     continent = "North America",
@@ -186,13 +186,10 @@ return {
 
   national_parks = {
     "La Visite National Park",
-    "Parc National la Visite",
-    "Parc National Macaya",
     "Pic Macaya National Park",
   },
 
   nature_reserves = {
-    "Navassa Island National Wildlife Refuge",
     "La Hotte Biosphere Reserve",
     "La Selle",
   },

@@ -173,10 +173,16 @@ local function lazyGHSync()
 end
 
 local COUNTRIES = {
-        addCountry { id = "Norway",       name = "Norway",        code = "NO-578", filename = "Norway.lua",       continent = "Europe",        admin_label = "Counties & Areas",  mountain_max = 2469, remoteIslandNames = { "Bouvetøya", "Dronning Mauds Land", "Jan Mayen", "Peter 1. Island", "Svalbard" } },
+        addCountry { id = "Norway",       name = "Norway",        code = "NO-578", filename = "Norway.lua",       continent = "Europe",        admin_label = "Counties & Areas",  mountain_max = 2469, remoteIslandNames = { "Bouvetøya", "Dronning Mauds Land", "Jan Mayen", "Peter 1. Island", "Svalbard" },
+        -- Antarctic claims: exported under [WORLD] > [ANTARCTICA] > [TERRITORIES]
+        -- (not under Norway), in line with the Antarctic Treaty principle.
+        territories = {
+                ["Dronning Mauds Land"] = { continent = "Antarctica", synonyms = { "Norway", "Southern Ocean" } },
+                ["Peter 1. Island"]     = { continent = "Antarctica", synonyms = { "Norway", "Southern Ocean" } },
+        } },
         addCountry { id = "Sweden",       name = "Sweden",        code = "SE-752", filename = "Sweden.lua",       continent = "Europe",        admin_label = "Counties & Areas",  mountain_max = 2097, remoteIslandNames = {} },
         addCountry { id = "Panama",       name = "Panama",        code = "PA-591", filename = "Panama.lua",       continent = "North America", admin_label = "Provinces & Areas", mountain_max = 3474, remoteIslandNames = {} },
-        addCountry { id = "UnitedStates", name = "United States", code = "US-840", filename = "UnitedStates.lua", continent = "North America", admin_label = "States & Areas",    mountain_max = 6194, remoteIslandNames = { "American Samoa", "Guam", "Northern Mariana Islands", "Puerto Rico", "US Virgin Islands" },
+        addCountry { id = "UnitedStates", name = "United States", code = "US-840", filename = "UnitedStates.lua", continent = "North America", admin_label = "States & Areas",    mountain_max = 6194, remoteIslandNames = { "American Samoa", "Baker Island", "Guam", "Howland Island", "Jarvis Island", "Johnston Atoll", "Kingman Reef", "Midway Atoll", "Navassa Island", "Northern Mariana Islands", "Palmyra Atoll", "Puerto Rico", "US Virgin Islands", "Wake Island" },
         -- Territories: listed under the sovereign country in the UI, but exported
         -- under [WORLD] > [<continent>] > [TERRITORIES] > <name> with synonyms.
         territories = {
@@ -184,6 +190,18 @@ local COUNTRIES = {
                 ["American Samoa"]          = { continent = "Oceania", synonyms = { "United States", "South Pacific Ocean" } },
                 ["Guam"]                    = { continent = "Oceania", synonyms = { "United States", "Pacific Ocean" } },
                 ["Northern Mariana Islands"]= { continent = "Oceania", synonyms = { "United States", "Pacific Ocean" } },
+                -- Oceania: uninhabited US Minor Outlying Islands
+                ["Baker Island"]            = { continent = "Oceania", synonyms = { "United States", "North Pacific Ocean" } },
+                ["Howland Island"]          = { continent = "Oceania", synonyms = { "United States", "North Pacific Ocean" } },
+                ["Jarvis Island"]           = { continent = "Oceania", synonyms = { "United States", "South Pacific Ocean" } },
+                ["Johnston Atoll"]          = { continent = "Oceania", synonyms = { "United States", "North Pacific Ocean" } },
+                ["Kingman Reef"]            = { continent = "Oceania", synonyms = { "United States", "North Pacific Ocean" } },
+                ["Midway Atoll"]            = { continent = "Oceania", synonyms = { "United States", "North Pacific Ocean" } },
+                ["Palmyra Atoll"]           = { continent = "Oceania", synonyms = { "United States", "North Pacific Ocean" } },
+                ["Wake Island"]             = { continent = "Oceania", synonyms = { "United States", "North Pacific Ocean" } },
+                -- North America (Caribbean): uninhabited; Haiti also claims it
+                ["Navassa Island"]          = { continent = "North America", synonyms = { "United States", "Caribbean" },
+                        places = { "Navassa Island National Wildlife Refuge" } },
         } },
         addCountry { id = "Chile",        name = "Chile",         code = "CL-152", filename = "Chile.lua",        continent = "South America", admin_label = "Regions & Areas",   mountain_max = 6893, remoteIslandNames = { "Archipiélago Juan Fernández", "Isla de Pascua" } },
         addCountry { id = "Venezuela",    name = "Venezuela",     code = "VE-862", filename = "Venezuela.lua",    continent = "South America", admin_label = "States & Areas",      mountain_max = 4981, remoteIslandNames = {} },
@@ -203,7 +221,7 @@ local COUNTRIES = {
         addCountry { id = "DominicanRepublic", name = "Dominican Republic", code = "DO-214", filename = "DominicanRepublic.lua", continent = "North America", admin_label = "Provinces & Areas", mountain_max = 3098, remoteIslandNames = {} },
         addCountry { id = "Bahamas",      name = "Bahamas",       code = "BS-044", filename = "Bahamas.lua",      continent = "North America", admin_label = "Districts & Areas",   mountain_max = 63,   remoteIslandNames = {} },
         addCountry { id = "Guyana",       name = "Guyana",        code = "GY-328", filename = "Guyana.lua",       continent = "South America", admin_label = "Regions & Areas",     mountain_max = 2775, remoteIslandNames = {} },
-        addCountry { id = "Surinam",      name = "Surinam",       code = "SR-740", filename = "Surinam.lua",      continent = "South America", admin_label = "Districts & Areas",   mountain_max = 1280, remoteIslandNames = {} },
+        addCountry { id = "Surinam",      name = "Suriname",      code = "SR-740", filename = "Surinam.lua",      continent = "South America", admin_label = "Districts & Areas",   mountain_max = 1280, remoteIslandNames = {} },
         addCountry { id = "Kenya",        name = "Kenya",         code = "KE-404", filename = "Kenya.lua",        continent = "Africa",        admin_label = "Counties & Areas",  mountain_max = 5199, remoteIslandNames = {} },
         addCountry { id = "NewZealand",   name = "New Zealand",   code = "NZ-554", filename = "NewZealand.lua",   continent = "Oceania",       admin_label = "Regions & Areas",   mountain_max = 3724, remoteIslandNames = { "Auckland Islands", "Bounty Islands", "Campbell Island", "Chatham Islands", "Great Barrier Island", "Kermadec Islands", "Poor Knights Islands", "The Antipodes Islands", "The Snares" } },
         addCountry { id = "Greenland",    name = "Greenland",     code = "GL-304", filename = "Greenland.lua",    continent = "North America", admin_label = "Municipalities & Areas", mountain_max = 3694, remoteIslandNames = {} },

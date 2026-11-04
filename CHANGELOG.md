@@ -1,3 +1,15 @@
+## 0.9.292 — 2026-11-04
+
+### New territories, Antarctic claims, country names
+
+- **US Minor Outlying Islands** added under United States ▸ Remote Islands and exported under `[WORLD] > [OCEANIA] > [TERRITORIES]` with `{United States}`: Baker Island, Howland Island, Johnston Atoll, Kingman Reef, Midway Atoll, Palmyra Atoll, Wake Island (`{North Pacific Ocean}`) and Jarvis Island (`{South Pacific Ocean}`).
+- **Navassa Island** added under United States ▸ Remote Islands, exported under `[WORLD] > [NORTH AMERICA] > [TERRITORIES]` with `{United States}` and `{Caribbean}`. "Navassa Island National Wildlife Refuge" moved from Haiti to below Navassa Island (admin detail 2+).
+- **Dronning Mauds Land** and **Peter 1. Island** (Norway ▸ Remote Islands) are now exported under `[WORLD] > [ANTARCTICA] > [TERRITORIES]` with `{Norway}` and `{Southern Ocean}`, not under Norway. NOTE: if you imported them under Norway earlier, move or delete them in Lightroom.
+- **Suriname**: country renamed from "Surinam" to "Suriname", with `{Surinam}` as a synonym (data 0.1.2). The nature container is now `[NATURE SURINAME]`.
+- **Ivory Coast**: synonym corrected to `{Côte d'Ivoire}` (data 0.1.2).
+- **Haiti** (data 0.1.2): duplicate French park names removed ("Parc National la Visite", "Parc National Macaya"); the English names remain.
+- Disputed-Areas.txt v1.2 (Antarctica and Navassa Island) and country-level keyword list v1.4 (`keyword-lists/`).
+
 ## 0.9.291 — 2026-11-04
 
 ### Fix: "function at line 1250 has more than 60 upvalues"
