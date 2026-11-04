@@ -1,14 +1,14 @@
 -- Palestine geography data for LR Geography Builder
 -- Admin divisions and cities: GeoNames.org (CC BY 4.0); national parks, reserves
 -- and viewpoints: curated lists. No commas in any name (Lightroom constraint).
--- Data version 0.1.2  generated 2026-10-09
+-- Data version 0.1.3  generated 2026-11-04
 return {
         meta = {
-                version      = "0.1.2",
+                version      = "0.1.3",
                 country      = "Palestine",
                 native_name  = "Filastin",
                 continent    = "Asia",
-                generated    = "2026-10-09",
+                generated    = "2026-11-04",
                 min_city_pop = 5000,
         },
 
@@ -16,6 +16,7 @@ return {
                 "Battir Hills Landscape",
                 "Herodium",
                 "Mar Saba Wilderness",
+                "Tel Shiloh National Park",
                 "Umm Al-Rihan Forest",
                 "Wadi Gaza Nature Reserve",
                 "Wadi Qelt",
@@ -140,7 +141,7 @@ return {
                 },
                 { name = "West Bank",
                   municipalities = {
-                        { name = "Bethlehem", cities = { "Ad Dawhah", "Al 'Ubaydiyah", "Al Khadir", "Bayt Fajjar", "Beit Jala", "Beit Sahour", "Bethlehem", "Husan", "Jannatah", "Nahhalin", "Za'tarah" } },
+                        { name = "Bethlehem", cities = { "Ad Dawhah", "Al 'Ubaydiyah", "Al Khadir", "Bayt Fajjar", "Beit Jala", "Beit Sahour", "Beitar Illit", "Bethlehem", "Husan", "Jannatah", "Nahhalin", "Za'tarah" } },
                         { name = "Hebron", cities = { "As Samu'", "Ash Shuyukh", "Az Zahiriyah", "Bani Na'im", "Bayt 'Awwa", "Bayt Kahil", "Bayt Ula", "Bayt Ummar", "Dayr Samit", "Dura", "Halhul", "Hebron", "Idhna", "Kharas", "Sa'ir", "Surif City", "Taffuh", "Tarqumya", "Yatta" } },
                         { name = "Jenin", cities = { "Al Yamun", "Arrabah", "Birqin", "Dayr Abu Da'if", "Jenin", "Maythalun", "Qabatiyah", "Silat al Harithiyah", "Silat az Zahr", "Ya'bad" } },
                         { name = "Jericho", cities = { "Jericho" } },
@@ -148,10 +149,10 @@ return {
                           -- East Jerusalem: occupied Palestinian territory in the UN view
                           -- (Security Council resolution 478); see Disputed-Areas.txt.
                           districts = { "Armenian Quarter", "Christian Quarter", "Jewish Quarter", "Mount Scopus", "Muslim Quarter", "Old City", "Pisgat Ze'ev", "Ramot" },
-                          cities = { "Abu Dis", "Al 'Ayzariyah", "Anata", "Ar-Ram", "Hizma", "Qatanah" } },
+                          cities = { "Abu Dis", "Al 'Ayzariyah", "Anata", "Ar-Ram", "Givat Ze'ev", "Hizma", "Qatanah" } },
                         { name = "Nablus", cities = { "Aqraba", "Asirah ash Shamaliyah", "Awarta", "Balatah", "Bayt Furik", "Bayta al Fawqa", "Huwara", "Jaba'", "Nablus", "Qabalan" } },
                         { name = "Qalqilya", cities = { "Azzun", "Hablah", "Qalqilya" } },
-                        { name = "Ramallah", cities = { "Al-Bireh", "Az Zaytuniyah", "Bayt Liqya", "Baytunya", "Biddu", "Bir Zayt", "Dayr Dibwan", "Kharbatha al Misbah", "Ramallah", "Silwad", "Sinjil" } },
+                        { name = "Ramallah", cities = { "Al-Bireh", "Az Zaytuniyah", "Bayt Liqya", "Baytunya", "Biddu", "Bir Zayt", "Dayr Dibwan", "Kharbatha al Misbah", "Modi'in Illit", "Ramallah", "Silwad", "Sinjil" } },
                         { name = "Salfit", cities = { "Bani Zayd", "Bani Zayd ash Sharqiyah", "Bidya", "Jamma'in", "Salfit" } },
                         { name = "Tubas", cities = { "Tammun", "Tubas" } },
                         { name = "Tulkarm", cities = { "Anabta", "Attil", "Bal'a", "Bayt Lid", "Dayr al Ghusun", "Dhannabah", "Illar", "Kafr Ra'i", "Qaffin", "Tulkarm" } },

@@ -173,7 +173,13 @@ local function lazyGHSync()
 end
 
 local COUNTRIES = {
-        addCountry { id = "Norway",       name = "Norway",        code = "NO-578", filename = "Norway.lua",       continent = "Europe",        admin_label = "Counties & Areas",  mountain_max = 2469, remoteIslandNames = { "Bouvetøya", "Jan Mayen", "Svalbard" } },
+        addCountry { id = "Norway",       name = "Norway",        code = "NO-578", filename = "Norway.lua",       continent = "Europe",        admin_label = "Counties & Areas",  mountain_max = 2469, remoteIslandNames = { "Bouvetøya", "Jan Mayen", "Svalbard" },
+        -- Bouvetøya: uninhabited dependency; the UN regional scheme (M49) places
+        -- Bouvet Island in South America. Exported under
+        -- [WORLD] > [SOUTH AMERICA] > [TERRITORIES] with synonyms.
+        territories = {
+                ["Bouvetøya"] = { continent = "South America", synonyms = { "Bouvet Island", "Norway", "Subantarctic island", "South Atlantic Ocean" } },
+        } },
         -- Antarctic claims (Dronning Mauds Land, Peter 1. Island) are left out until
         -- all national claims are handled together with the Antarctica GPS work.
         addCountry { id = "Sweden",       name = "Sweden",        code = "SE-752", filename = "Sweden.lua",       continent = "Europe",        admin_label = "Counties & Areas",  mountain_max = 2097, remoteIslandNames = {} },
@@ -313,12 +319,22 @@ local COUNTRIES = {
         addCountry { id = "Ethiopia",    name = "Ethiopia",     code = "ET-231", filename = "Ethiopia.lua",    continent = "Africa",        admin_label = "Regions & Areas",    mountain_max = 4550, remoteIslandNames = {} },
         addCountry { id = "Uganda",      name = "Uganda",       code = "UG-800", filename = "Uganda.lua",      continent = "Africa",        admin_label = "Regions & Areas",    mountain_max = 5109, remoteIslandNames = {} },
         addCountry { id = "Namibia",     name = "Namibia",      code = "NA-516", filename = "Namibia.lua",     continent = "Africa",        admin_label = "Regions & Areas",    mountain_max = 2606, remoteIslandNames = {} },
-        addCountry { id = "Australia",   name = "Australia",    code = "AU-036", filename = "Australia.lua",   continent = "Oceania",       admin_label = "States & Areas",     mountain_max = 2228, remoteIslandNames = { "Ashmore and Cartier Islands", "Christmas Island", "Cocos Islands", "Coral Sea Islands", "Heard Island", "Lord Howe Island", "Macquarie Island", "Norfolk Island" },
-        -- Territories: uninhabited external territories, exported under
-        -- [WORLD] > [OCEANIA] > [TERRITORIES] with synonyms.
+        addCountry { id = "Australia",   name = "Australia",    code = "AU-036", filename = "Australia.lua",   continent = "Oceania",       admin_label = "States & Areas",     mountain_max = 2228, remoteIslandNames = { "Ashmore and Cartier Islands", "Christmas Island", "Cocos Islands", "Coral Sea Islands", "Heard Island and McDonald Islands", "Lord Howe Island", "Macquarie Island", "Norfolk Island" },
+        -- Territories: external territories (not part of an Australian state),
+        -- exported under [WORLD] > [OCEANIA] > [TERRITORIES] with synonyms. The UN
+        -- regional scheme (M49) places all of them in Oceania. Lord Howe Island
+        -- (New South Wales) and Macquarie Island (Tasmania) stay remote islands.
         territories = {
                 ["Ashmore and Cartier Islands"] = { continent = "Oceania", synonyms = { "Australia", "Timor Sea" } },
+                ["Christmas Island"]            = { continent = "Oceania", synonyms = { "Australia", "Indian Ocean" },
+                        places = { "Christmas Island National Park", "Flying Fish Cove" } },
+                ["Cocos Islands"]               = { continent = "Oceania", synonyms = { "Cocos (Keeling) Islands", "Australia", "Indian Ocean" },
+                        places = { "Direction Island", "Home Island", "West Island" } },
                 ["Coral Sea Islands"]           = { continent = "Oceania", synonyms = { "Australia", "Coral Sea" } },
+                ["Heard Island and McDonald Islands"] = { continent = "Oceania", synonyms = { "Australia", "Subantarctic island", "Indian Ocean" },
+                        places = { "Heard Island", "McDonald Islands" } },
+                ["Norfolk Island"]              = { continent = "Oceania", synonyms = { "Australia", "South Pacific Ocean" },
+                        places = { "Burnt Pine", "Kingston", "Norfolk Island National Park", "Phillip Island" } },
         } },
         addCountry { id = "Hungary",     name = "Hungary",      code = "HU-348", filename = "Hungary.lua",     continent = "Europe",        admin_label = "Counties & Areas",   mountain_max = 1014, remoteIslandNames = {} },
         addCountry { id = "Netherlands", name = "Netherlands",  code = "NL-528", filename = "Netherlands.lua", continent = "Europe",        admin_label = "Provinces & Areas",  mountain_max = 323,  remoteIslandNames = { "Aruba", "Bonaire", "Curaçao", "Saba", "Sint Eustatius", "Sint Maarten" },
@@ -349,6 +365,13 @@ local COUNTRIES = {
                 ["Wallis and Futuna"]         = { continent = "Oceania", synonyms = { "France", "South Pacific Ocean" } },
                 -- Africa (Indian Ocean)
                 ["Scattered Islands"]         = { continent = "Africa", synonyms = { "Îles Éparses", "France", "Indian Ocean" } },
+                -- Africa (southern Indian Ocean): French Southern Territories; the
+                -- UN regional scheme (M49) places them in Africa.
+                ["Amsterdam Island"]          = { continent = "Africa", synonyms = { "France", "Subantarctic island", "Indian Ocean" } },
+                ["Crozet Islands"]            = { continent = "Africa", synonyms = { "France", "Subantarctic island", "Indian Ocean" } },
+                ["Kerguelen Islands"]         = { continent = "Africa", synonyms = { "France", "Subantarctic island", "Indian Ocean" },
+                        places = { "Port-aux-Français" } },
+                ["Saint-Paul Island"]         = { continent = "Africa", synonyms = { "France", "Subantarctic island", "Indian Ocean" } },
         } },
         addCountry { id = "Denmark",     name = "Denmark",      code = "DK-208", filename = "Denmark.lua",     continent = "Europe",        admin_label = "Regions & Areas",    mountain_max = 171,  remoteIslandNames = { "Faroe Islands" } },
         addCountry { id = "Iceland",     name = "Iceland",      code = "IS-352", filename = "Iceland.lua",     continent = "Europe",        admin_label = "Regions & Areas",    mountain_max = 2110, remoteIslandNames = {} },

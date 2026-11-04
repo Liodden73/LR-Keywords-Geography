@@ -5,7 +5,7 @@
 return {
 
     meta = {
-        version     = "0.1.2",
+        version     = "0.1.3",
         country     = "Antarctica",
         native_name = "Antarctica",
         continent   = "Antarctica",
@@ -362,7 +362,6 @@ return {
         "Horseshoe Island",
         "Howard Island",
         "Humble Island",
-        "Iles Kerguelen",
         "Inaccessible Island",
         "Jones Island",
         "Joinville Island",

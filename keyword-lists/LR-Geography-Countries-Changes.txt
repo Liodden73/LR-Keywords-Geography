@@ -1,6 +1,31 @@
 LR-Geography-Countries - Change log
 ===================================
 
+v1.6  (2026-11-04)
+------------------
+
+File: LR-Geography-Countries-LioddenMedia-v1-6.txt
+
+- New territories under [AFRICA] > [TERRITORIES]: Amsterdam Island,
+  Crozet Islands, Kerguelen Islands and Saint-Paul Island
+  ({France} {Subantarctic island} {Indian Ocean}).
+- New territories under [OCEANIA] > [TERRITORIES]: Christmas Island
+  ({Australia} {Indian Ocean}), Cocos Islands ({Cocos (Keeling) Islands}
+  {Australia} {Indian Ocean}), Heard Island and McDonald Islands
+  ({Australia} {Subantarctic island} {Indian Ocean}) and Norfolk Island
+  ({Australia} {South Pacific Ocean}).
+- New territory under [SOUTH AMERICA] > [TERRITORIES]: Bouvetøya
+  ({Bouvet Island} {Norway} {Subantarctic island} {South Atlantic Ocean}).
+- Companion file updated to LR-Geography-Disputed-Areas-LioddenMedia-v1-4.txt.
+- Not on the country level (plugin only): Argentine Antarctica and Islas
+  del Atlántico Sur removed from Argentina; Beitar Illit, Givat Ze'ev,
+  Modi'in Illit and Tel Shiloh National Park moved from Israel to
+  Palestine (West Bank).
+
+Contents: 199 countries, 52 territories, 224 synonyms, plus 131
+ocean/sea lines (611 lines in total). Not yet import-tested in
+Lightroom.
+
 v1.5  (2026-11-04)
 ------------------
 

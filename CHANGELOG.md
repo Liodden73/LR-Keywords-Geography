@@ -1,3 +1,18 @@
+## 0.9.294 — 2026-11-04
+
+### Remote territories, Argentine claims, West Bank settlements, blank-line fix
+
+- **French sub-Antarctic islands**: Amsterdam Island, Crozet Islands, Kerguelen Islands (with Port-aux-Français at admin detail 2+) and Saint-Paul Island are now exported under `[WORLD] > [AFRICA] > [TERRITORIES]` with `{France}` `{Subantarctic island}` `{Indian Ocean}` (UN M49 places the French Southern Territories in Africa).
+- **Bouvetøya** (Norway) is now exported under `[WORLD] > [SOUTH AMERICA] > [TERRITORIES]` with `{Bouvet Island}` `{Norway}` `{Subantarctic island}` `{South Atlantic Ocean}` (UN M49 places Bouvet Island in South America).
+- **Australian external territories** exported under `[WORLD] > [OCEANIA] > [TERRITORIES]` with `{Australia}`: Christmas Island (`{Indian Ocean}`), Cocos Islands (`{Cocos (Keeling) Islands}` `{Indian Ocean}`), Norfolk Island (`{South Pacific Ocean}`) and **Heard Island and McDonald Islands** (renamed from "Heard Island"; `{Subantarctic island}` `{Indian Ocean}`). Main places are added below them at admin detail 2+. Lord Howe Island and Macquarie Island stay remote islands (part of NSW and Tasmania).
+- **Argentina** (data 0.1.3): "Argentine Antarctica" and "Islas del Atlántico Sur" (claims on Antarctica and on the Falkland Islands/South Georgia) removed from Tierra del Fuego Province.
+- **Israel → Palestine**: Beitar Illit (to Bethlehem), Givat Ze'ev (to Jerusalem Governorate), Modi'in Illit (to Ramallah) and Tel Shiloh National Park moved to Palestine ▸ West Bank. Data: Israel 0.5.5, Palestine 0.1.3.
+- **Antarctica** (data 0.1.3): "Iles Kerguelen" removed from the Antarctic islands list (Kerguelen is not in Antarctica; it is now a French territory).
+- **Fix (Generator)**: municipalities with an empty `primary_city` wrote a blank keyword line at admin detail "All" (1539 blank lines across all countries, e.g. Greece and Ukraine); the primary city is also no longer repeated among the cities.
+- NOTE: if you imported Heard Island, Argentine Antarctica, Islas del Atlántico Sur, or the four West Bank places under Israel earlier, move or delete them in Lightroom. Territories that used to be under the country (e.g. Kerguelen Islands under France) should be moved to the new [TERRITORIES] node.
+- Disputed-Areas.txt v1.4 and country-level keyword list v1.6 (`keyword-lists/`).
+- Not yet tested in Lightroom.
+
 ## 0.9.293 — 2026-11-04
 
 ### UN principle: Antarctic claims removed, Golan and East Jerusalem, new territories

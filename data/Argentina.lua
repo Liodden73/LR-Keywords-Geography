@@ -5,7 +5,7 @@
 return {
 
     meta = {
-        version     = "0.1.2",
+        version     = "0.1.3",
         country     = "Argentina",
         native_name = "Argentina",
         continent   = "South America",
@@ -3094,16 +3094,6 @@ return {
         {
             name = "Tierra del Fuego Province",
             municipalities = {
-                {
-                    name = "Argentine Antarctica",
-                    primary_city = "",
-                    cities = {},
-                },
-                {
-                    name = "Islas del Atlántico Sur",
-                    primary_city = "",
-                    cities = {},
-                },
                 {
                     name = "Río Grande",
                     primary_city = "Río Grande",

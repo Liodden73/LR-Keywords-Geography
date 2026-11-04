@@ -390,14 +390,19 @@ function Generator.generate(data, prefs)
                                                         add(5, muni.name)
                                                         -- Level 3 (All): include cities and districts
                                                         if adminDetail >= 3 then
-                                                                if muni.primary_city then
-                                                                        add(6, muni.primary_city)
+                                                                -- Skip empty primary_city (would write a blank
+                                                                -- line) and don't repeat it among the cities.
+                                                                local pc = muni.primary_city
+                                                                if pc and pc ~= "" then
+                                                                        add(6, pc)
                                                                         for _, d in ipairs(muni.districts or {}) do
                                                                                 add(7, d)
                                                                         end
                                                                 end
                                                                 for _, cityName in ipairs(muni.cities or {}) do
-                                                                        add(6, cityName)
+                                                                        if cityName ~= "" and cityName ~= pc then
+                                                                                add(6, cityName)
+                                                                        end
                                                                 end
                                                         end
                                                 end

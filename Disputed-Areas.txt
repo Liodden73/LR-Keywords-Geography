@@ -1,8 +1,8 @@
 LR-Geography - Disputed countries, areas and names
 ==================================================
-Version 1.3 - 2026-11-04 - Liodden Media
-Applies to: LR-Geography-Countries-LioddenMedia-v1-5.txt and
-            Geography Keyword Builder plugin v0.9.293
+Version 1.4 - 2026-11-04 - Liodden Media
+Applies to: LR-Geography-Countries-LioddenMedia-v1-6.txt and
+            Geography Keyword Builder plugin v0.9.294
 
 PLEASE READ BEFORE IMPORTING THE KEYWORD LIST.
 
@@ -34,10 +34,16 @@ We follow the United Nations as far as possible:
     because who should administer it is the dispute itself (section 3).
     The same treatment is used for a few areas that are not on the UN
     list but are not part of any UN member state's core territory
-    either: uninhabited islands (for example the US Minor Outlying
-    Islands and Australia's Coral Sea Islands) and the Cook Islands and
-    Niue, which are self-governing in free association with New Zealand
-    but are not UN members.
+    either: remote external territories and uninhabited islands (for
+    example the US Minor Outlying Islands, Bouvetøya, Australia's
+    external territories such as Christmas Island, Norfolk Island and
+    Heard Island and McDonald Islands, and the French sub-Antarctic
+    islands Kerguelen, Crozet, Amsterdam and Saint-Paul), and the Cook
+    Islands and Niue, which are self-governing in free association with
+    New Zealand but are not UN members. Each territory is placed under
+    the continent used by the UN regional scheme (M49): for example
+    Bouvetøya under South America and the French sub-Antarctic islands
+    under Africa.
 
 Exceptions, and why:
 
@@ -106,10 +112,14 @@ Antarctica
   New Zealand), neither in the country-level list nor in the plugin.
   How claims should be shown, if at all, will be decided together with
   a coming Antarctica GPS extension. Sub-Antarctic islands north of
-  60 degrees south (for example Bouvetøya, South Georgia and Heard
-  Island) are not covered by the treaty and are listed normally.
+  60 degrees south (for example Bouvetøya, South Georgia, Heard Island
+  and Kerguelen) are not covered by the treaty and are listed under
+  [TERRITORIES] with the administering country as a synonym.
+  The Argentina data no longer contains "Argentine Antarctica" (the
+  Argentine claim) under Tierra del Fuego Province.
   If you imported Dronning Mauds Land or Peter 1. Island from plugin
-  v0.9.292 or earlier, move or delete them in Lightroom.
+  v0.9.292 or earlier, or Argentine Antarctica from v0.9.293 or
+  earlier, move or delete them in Lightroom.
 
 
 4. DISPUTED REGIONS INSIDE COUNTRIES
@@ -161,6 +171,14 @@ Asia
     Israel covers West Jerusalem, which is not disputed in the UN.
     If you imported these areas under Israel from plugin v0.9.292 or
     earlier, move or delete them in Lightroom.
+  Israeli settlements in the West Bank - under Palestine (West Bank):
+    Beitar Illit (Bethlehem), Givat Ze'ev (Jerusalem Governorate),
+    Modi'in Illit (Ramallah) and Tel Shiloh National Park. Israel
+    administers them; the UN regards the West Bank as occupied
+    Palestinian territory and the settlements as having no legal
+    validity (Security Council resolution 2334). If you imported them
+    under Israel from plugin v0.9.293 or earlier, move or delete them
+    in Lightroom.
   Hong Kong and Macau - regions under China (special administrative
     regions), with {Hong Kong SAR} and {Macao}.
   Kuril Islands (Iturup, Kunashir, Shikotan, Habomai) - under Russia.
@@ -190,6 +208,8 @@ Americas
     Malvinas). The UN lists the Falkland Islands as a non-self-governing
     territory administered by the UK. The list follows the actual
     administration and does not use the name Malvinas as a synonym.
+    The Argentina data no longer contains "Islas del Atlántico Sur"
+    (Argentina's name for its claim) under Tierra del Fuego Province.
   Essequibo - under Guyana. Venezuela claims the region.
   Navassa Island - under [NORTH AMERICA] > [TERRITORIES] with
     {United States} and {Caribbean}. The United States administers the
