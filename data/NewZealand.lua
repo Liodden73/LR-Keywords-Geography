@@ -4,7 +4,7 @@
 return {
         meta = {
                 version     = "0.1.2",
-                country     = "NewZealand",
+                country     = "New Zealand",
                 native_name = "Aotearoa",
                 continent   = "Oceania",
                 generated   = "2026-08-30",

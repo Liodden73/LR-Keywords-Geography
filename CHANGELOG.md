@@ -1,3 +1,15 @@
+## 0.9.287 — 2026-11-04
+
+### Country names fixed for New Zealand and Dominican Republic
+
+- `data/NewZealand.lua` and `data/DominicanRepublic.lua` had `meta.country` set to the internal ID ("NewZealand", "DominicanRepublic"). Generator.lua uses `meta.country` as the country keyword, so generated lists contained "NewZealand" and "DominicanRepublic" instead of "New Zealand" and "Dominican Republic". GPS lookups already used the correct names, which put GPS keywords in a different node than the generated list.
+- Both are now "New Zealand" and "Dominican Republic".
+- NOTE: If you have imported keywords named "NewZealand" or "DominicanRepublic" in Lightroom, merge them into "New Zealand" / "Dominican Republic" (drag the photos over or rename the keyword).
+
+### New country-level keyword list (keyword-lists/)
+
+- `LR-Geography-Countries-LioddenMedia-v1-0.txt`: all 199 countries and 28 territories down to country level, as a starting point for all users. Built from the same data as the plugin and verified to be identical to the Generator output for all 199 countries.
+
 ## 0.9.286 — 2026-10-13
 
 ### United Kingdom fullført

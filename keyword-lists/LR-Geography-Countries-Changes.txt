@@ -1,0 +1,40 @@
+LR-Geography-Countries - Change log
+===================================
+
+v1.0  (2026-11-04)  - first published version
+----------------------------------------------
+
+File: LR-Geography-Countries-LioddenMedia-v1-0.txt
+Lightroom keyword import file (UTF-8, TAB indented).
+
+Purpose: a starting point with ALL countries down to country level. More
+detail (counties, municipalities, cities, nature) is generated per country
+in the Geography Keyword Builder plugin and merges into the same nodes.
+
+Structure (identical to Generator.lua output):
+  [GEOGRAPHY] > [WORLD] > [CONTINENT] > Country {native name(s)}
+  [GEOGRAPHY] > [WORLD] > [CONTINENT] > [TERRITORIES] > Territory {synonyms}
+
+Contents: 199 countries, 28 territories, 183 synonyms (423 lines).
+  Africa          54 countries,  5 territories
+  Antarctica       1 country,    0 territories
+  Asia            47 countries,  0 territories
+  Europe          47 countries,  0 territories
+  North America   24 countries, 13 territories
+  Oceania         14 countries,  7 territories
+  South America   12 countries,  3 territories
+
+Countries: 193 UN member states + Vatican City, Palestine, Kosovo, Taiwan,
+Greenland and Antarctica.
+
+Source: plugin v0.9.287 (ListVerification.lua COUNTRIES + data/*.lua meta).
+Country names, continents and native-name synonyms are taken from the
+plugin; territories and their synonyms from the `territories` field.
+
+Not included (by design): remote islands that stay under their country
+(e.g. Svalbard, Faroe Islands, Puerto Rico - phase 2/3 of the territories
+plan), Antarctic claims, oceans and seas (separate list).
+
+Checks: no commas, no slashes, no duplicate keywords, correct TAB depth;
+compared against Generator.lua output for all 199 countries: 0 differences.
+Not yet import-tested in Lightroom.

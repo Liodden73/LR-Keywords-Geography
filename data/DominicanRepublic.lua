@@ -6,7 +6,7 @@
 return {
   meta = {
     version = "0.1.1",
-    country = "DominicanRepublic",
+    country = "Dominican Republic",
     native_name = "República Dominicana",
     continent = "North America",
     min_city_pop = 1000,
