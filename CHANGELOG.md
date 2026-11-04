@@ -1,3 +1,15 @@
+## 0.9.288 — 2026-11-04
+
+### Country synonyms: Latin script only
+
+- The country's native name is now only added as a synonym when it is written in Latin script (incl. accented letters such as Ísland, Việt Nam, Österreich). Synonyms in Arabic, Cyrillic, Greek, Hebrew, CJK, Thai and other scripts are skipped. Users from these countries can add their own synonyms in Lightroom.
+- Affects 23 countries: Bangladesh, Belarus, Bulgaria, Cambodia, China, Cyprus, Egypt, Ethiopia, Greece, Israel, Japan, Jordan, Morocco, Nepal, North Macedonia, Russia, Serbia, South Korea, Sri Lanka, Thailand, Tunisia, Ukraine, United Arab Emirates.
+- The data files are unchanged (native names are still shown in the plugin), only the generated keyword list.
+
+### Country-level keyword list v1.1 (keyword-lists/)
+
+- `LR-Geography-Countries-LioddenMedia-v1-1.txt`: same filter as above, and now includes the Oceans and Seas list v1.1 under `[GEOGRAPHY] > [WORLD] > [OCEANS AND SEAS]`.
+
 ## 0.9.287 — 2026-11-04
 
 ### Country names fixed for New Zealand and Dominican Republic

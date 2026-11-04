@@ -62,6 +62,23 @@ local function splitAlternatives(name)
         return out
 end
 
+-- True when every character is Latin script: ASCII, Latin-1, Latin Extended-A/B
+-- (U+0000–U+024F) or Latin Extended Additional (U+1E00–U+1EFF, e.g. Vietnamese).
+-- Native-name synonyms in other scripts (Arabic, Cyrillic, Greek, CJK, ...) are
+-- skipped; users can add those themselves in Lightroom.
+local function isLatinScript(s)
+        for ch in s:gmatch("[%z\1-\127\194-\244][\128-\191]*") do
+                local b1, b2, b3 = ch:byte(1, 3)
+                local cp
+                if b1 < 128 then cp = b1
+                elseif b1 < 224 then cp = (b1 - 192) * 64 + (b2 - 128)
+                elseif b1 < 240 then cp = (b1 - 224) * 4096 + (b2 - 128) * 64 + (b3 - 128)
+                else return false end
+                if not (cp < 0x250 or (cp >= 0x1E00 and cp <= 0x1EFF)) then return false end
+        end
+        return true
+end
+
 -- Alphabetical sort (byte order). Norwegian Æ Ø Å sort after ASCII which is
 -- fine — Lightroom re-sorts keywords alphabetically on import anyway.
 local function sortedCopy(list)
@@ -242,7 +259,7 @@ function Generator.generate(data, prefs)
                 if nativeName then
                         -- "België / Belgique" → {België} and {Belgique}
                         for _, alt in ipairs(splitAlternatives(sanitize(nativeName))) do
-                                if alt ~= countryName then addSynonym(4, "{" .. alt .. "}") end
+                                if alt ~= countryName and isLatinScript(alt) then addSynonym(4, "{" .. alt .. "}") end
                         end
                 end
 

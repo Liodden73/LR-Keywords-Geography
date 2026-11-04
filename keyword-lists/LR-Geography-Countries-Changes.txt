@@ -1,6 +1,29 @@
 LR-Geography-Countries - Change log
 ===================================
 
+v1.1  (2026-11-04)
+------------------
+
+File: LR-Geography-Countries-LioddenMedia-v1-1.txt
+
+- Removed country synonyms that are not written in Latin script (23):
+  Bangladesh, Belarus, Bulgaria, Cambodia, China, Cyprus, Egypt, Ethiopia,
+  Greece, Israel, Japan, Jordan, Morocco, Nepal, North Macedonia, Russia,
+  Serbia, South Korea, Sri Lanka, Thailand, Tunisia, Ukraine,
+  United Arab Emirates. Latin with accents (Ísland, Việt Nam, Österreich)
+  is kept. Users can add synonyms in other scripts themselves.
+  The plugin (v0.9.288) applies the same filter, so lists generated later
+  in the plugin match this file.
+- Added the Oceans and Seas list v1.1 (LR-Geography-Oceans-and-Seas-
+  LioddenMedia-v1-1.txt) under [GEOGRAPHY] > [WORLD] > [OCEANS AND SEAS].
+  The separate oceans file is still available on its own.
+
+Contents: 199 countries, 28 territories, 168 country/territory synonyms,
+plus 131 ocean/sea lines (531 lines in total).
+Checks: Latin script only, no commas, no slashes, no duplicate keywords,
+correct TAB depth; compared against Generator.lua output for all 199
+countries: 0 differences. Not yet import-tested in Lightroom.
+
 v1.0  (2026-11-04)  - first published version
 ----------------------------------------------
 
