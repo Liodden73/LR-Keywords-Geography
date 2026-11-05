@@ -1,3 +1,11 @@
+## 0.9.299 — 2026-11-05
+
+### Svalbard GPS Extension 1.1.1 (owner corrections)
+
+- `extensions/svalbard_gps.lua` 1.1.1: Tusenøyane no longer mapped to Edgeøya in `place_regions` (now directly under Svalbard); Haugen, Herwighamma and Nybyen removed from the `settlements` list. Polygons unchanged.
+- `keyword-lists/LR-Geography-Svalbard-GPS-LioddenMedia-v1-1.txt` replaced with the owner's revised list (Tusenøyane directly under Svalbard; Nybyen, Haugen and Herwighamma removed).
+- Not yet tested in Lightroom.
+
 ## 0.9.298 — 2026-11-04
 
 ### Svalbard GPS Extension 1.1.0 (3 levels)

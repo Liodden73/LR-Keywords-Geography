@@ -33,7 +33,7 @@
 
 return {
     meta = {
-        version = "1.1.0",
+        version = "1.1.1",
         name = "Svalbard GPS Extension",
         region = "Svalbard",
         country = "Norway",
@@ -48,16 +48,13 @@ return {
     },
 
     svalbard = {
-        -- Settlements without own polygon (unchanged from 1.0.0; not used for GPS lookup).
+        -- Settlements without own polygon (not used for GPS lookup). 1.1.1: Haugen, Herwighamma, Nybyen removed.
         settlements = {
             "Barentsburg",
-            "Haugen",
-            "Herwighamma",
             "Hopen Radio",
             "Hornsund",
             "Longyearbyen",
             "Ny-Ålesund",
-            "Nybyen",
             "Olonkinbyen",
         },
 
@@ -1348,7 +1345,6 @@ return {
             -- Edgeøya
             ["Kapp Lee"] = "Edgeøya",  -- DRAFT: NW cape of Edgeøya; outside the Edgeøya polygon
             ["Tjuvfjorden"] = "Edgeøya",  -- DRAFT: fjord in south Edgeøya; 6 of 9 points inside
-            ["Tusenøyane"] = "Edgeøya",  -- DRAFT: island group south of Edgeøya; outside all regions
             -- Hinlopenstretet
             ["Bastianøyane"] = "Hinlopenstretet",  -- DRAFT: islands in south Hinlopenstretet; outside all regions
             ["Kiepertøya"] = "Hinlopenstretet",  -- DRAFT: island in south Hinlopenstretet; outside all regions

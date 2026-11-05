@@ -10,7 +10,6 @@
 					Edgeøya
 						Kapp Lee
 						Tjuvfjorden
-						Tusenøyane
 					Hinlopenstretet
 						Bastianøyane
 						Kiepertøya
@@ -68,7 +67,6 @@
 						Monacobreen
 						Negribreen
 						Ny-Ålesund
-						Nybyen
 						Pyramiden
 						Raudfjorden
 						Sarstangen
@@ -94,8 +92,6 @@
 					Danskeøya
 					Foynøya
 					Fuglesongen
-					Haugen
-					Herwighamma
 					Hopen
 					Hopen Radio
 					Indre Norskøya
@@ -111,5 +107,6 @@
 					Smeerenburg
 					Storøya
 					Svenskeøya
+					Tusenøyane
 					Virgohamna
 					Ytre Norskeøya
