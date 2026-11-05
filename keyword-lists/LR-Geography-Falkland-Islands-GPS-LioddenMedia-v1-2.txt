@@ -1,0 +1,46 @@
+[GEOGRAPHY]
+	[WORLD]
+		[SOUTH AMERICA]
+			[TERRITORIES]
+				Falkland Islands
+					{United Kingdom}
+					{South Atlantic Ocean}
+					Barren Island
+					Beaver Island
+					Carcass Island
+					Dyke Island
+					East Falkland
+						Adventure Sound
+						Bay of Harbours
+						Berkeley Sound
+						Bleaker Island
+						Bull Point
+						Choiseul Sound
+						Goose Green
+						Gypsy Cove
+						Kidney Cove
+						Low Bay
+						Mare Harbour
+						Mount Pleasant
+						North Arm
+						Port Stanley
+						Volunteer Point
+					Falkland Sound
+						Elephant Cays
+						Great Island
+						Ruggles Bay
+						Ruggles Island
+					George Island
+					Golding Island
+					Keppel Island
+					Lively Island
+					New Island
+					Pebble Island
+					Saunders Island
+					Sea Lion Island
+					South Jason Island
+					Speedwell Island
+					Weddell Island
+					West Falkland
+						Port Howard
+					West Point Island

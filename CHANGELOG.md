@@ -1,3 +1,15 @@
+## 0.9.300 — 2026-11-05
+
+### Falkland Islands GPS Extension 1.2.0 (3 levels)
+
+- `extensions/falkland_islands_gps.lua` 1.2.0 with the owner's polygons from the Falkland Islands polygon editor: 36 Level-1 place polygons, 3 Level-2 regions (East Falkland, West Falkland, Falkland Sound) and a Level-3 `country_polygon` for the Falkland Islands incl. surrounding sea. The old Port Stanley placeholder polygon is replaced.
+- New `place_regions` table (20 places), taken from the owner's keyword list: East Falkland 15, Falkland Sound 4, West Falkland 1 (Port Howard). The other 16 places (outlying islands) sit directly under Falkland Islands.
+- New keyword list `keyword-lists/LR-Geography-Falkland-Islands-GPS-LioddenMedia-v1-2.txt` (owner's revised list; GitHub only). Falkland Sound changes from a place to a region.
+- Falkland Islands polygon editor defaults updated to the new data (data version 1.2.0); stored editor work in the browser is not overwritten.
+- Extensions panel: Falkland Islands description "40 GPS-mapped areas".
+- LR-Wildlife is NOT changed in this release; see the work description for the Wildlife update.
+- Not yet tested in Lightroom.
+
 ## 0.9.299 — 2026-11-05
 
 ### Svalbard GPS Extension 1.1.1 (owner corrections)
